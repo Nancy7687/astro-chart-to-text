@@ -286,8 +286,8 @@ print("Ephemeris check complete. All required files are present.")
 logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
 app = Flask(__name__)
 
-# 在Render佈署網站時使用這句
-port = int(os.environ.get("PORT", 5000))  # 預設5000，Render會自動給定PORT
+# 在Render佈署網站時使用這句(仍先註解掉以測試)
+# port = int(os.environ.get("PORT", 5000))  # 預設5000，Render會自動給定PORT
 
 # 設定 Flask 模板資料夾為當前目錄，這樣可以直接找到 astro3.html (For development)
 
@@ -884,6 +884,16 @@ def calculate_composite_chart_api():
     except Exception as e:
         app.logger.error(f"組合盤後端發生未知錯誤: {e}", exc_info=True)
         return jsonify({"error": f"組合盤伺服器內部錯誤: {e}"}), 500
+    
+if __name__ == '__main__':
+    # 為了能在 Render 上運行，我們需要從環境變數讀取 PORT
+    # os.environ.get('PORT', 10000) 的意思是：
+    # 嘗試讀取 'PORT' 這個環境變數，如果找不到，就使用 10000 作為預設值
+    port = int(os.environ.get('PORT', 10000))
+
+    # 讓 Flask 伺服器監聽在 0.0.0.0，這樣外部才能連線
+    # 並使用 Render 指定的 port
+    app.run(host='0.0.0.0', port=port)
 
 # 先註解掉，在Render佈署網站去跑時
 # if __name__ == '__main__':
