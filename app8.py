@@ -5,9 +5,8 @@
 # NEW: 增加了對組合中點盤 (Composite Chart) 的計算與 API 端點。
 # NOTE: 比較合盤與行運盤的輸出結構與 app4.py 保持一致。
 
-import os # 用於檢查檔案系統路徑
+
 import swisseph as swe # 核心占星計算庫
-import urllib.request
 from flask import Flask, request, jsonify, render_template
 import datetime
 import pytz # 用於處理時區
