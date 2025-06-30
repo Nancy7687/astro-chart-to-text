@@ -290,7 +290,8 @@ app = Flask(__name__)
 
 # 設定 Flask 模板資料夾為當前目錄，這樣可以直接找到 astro3.html (For development)
 
-app.template_folder = '.'
+# 在Render裡不用這句
+# app.template_folder = '.'
 
 # ==============================================================================
 # Global Configuration and Data (全域配置和數據)
