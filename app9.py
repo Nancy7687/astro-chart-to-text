@@ -584,10 +584,15 @@ def aspect_between(p1_name: str, p2_name: str, lon_a: float, lon_b: float, speed
                 diff_next = abs(lon_a_next - lon_b_next)
                 diff_next = min(diff_next, 360 - diff_next)
                 next_deviation = abs(diff_next - target_angle)
-                if next_deviation < current_deviation:
+                # 修正：處理行星停滯 (相對速度為零) 的情況。
+                # 占星學上，停滯的行星通常被視為能量正在匯集的「入相」。
+                # 增加一個微小的容許度 (1e-9) 來處理浮點數計算的誤差。
+                if next_deviation < current_deviation - 1e-9:
                     aspect_type = "入相"
-                elif next_deviation > current_deviation:
+                elif next_deviation > current_deviation + 1e-9:
                     aspect_type = "出相"
+                else: # 相對速度趨近於零 (停滯)
+                    aspect_type = "入相"
             result_aspect = asp_name, current_deviation, aspect_type
             break # 找到第一個符合容許度的相位就跳出
     return result_aspect
@@ -733,14 +738,7 @@ def list_interchart_aspects(chart1_points: dict, chart2_points: dict):
     res = []
     for p1_name, p1_info in chart1_points.items():
         for p2_name, p2_info in chart2_points.items():
-            # 為了讓輸出更精確，我們計算「行星與任何點」的相位，
-            # 但排除「固定點與固定點」之間的相位 (例如：本命上升點與行運天頂點)。
-            # 這與單盤相位的邏輯一致。
-            is_p1_fixed = p1_name in FOUR_ANGLES_AND_NODES
-            is_p2_fixed = p2_name in FOUR_ANGLES_AND_NODES
-            if is_p1_fixed and is_p2_fixed:
-                continue
-
+            
             # 確保 p1_info 和 p2_info 存在且包含 'lon' 鍵
             if not p1_info or 'lon' not in p1_info or not p2_info or 'lon' not in p2_info:
                 continue
