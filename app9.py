@@ -5,7 +5,7 @@
 # NEW: 增加了對組合中點盤 (Composite Chart) 的計算與 API 端點。
 # NOTE: 比較合盤與行運盤的輸出結構與 app4.py 保持一致。
 
-
+import os
 import swisseph as swe # 核心占星計算庫
 from flask import Flask, request, jsonify, render_template
 import datetime
@@ -650,8 +650,31 @@ def list_aspects(detailed_points_info: dict):
     # 根據相位類型和容許度排序
     return sorted(res, key=lambda item: (ASPECTS.get(item["aspect_name"], 361), item["orb"]))
 
+# @app.route('/')
+# def index():
+#     return render_template('astro3.html')
+
 @app.route('/')
 def index():
+    # --- 偵錯用程式碼 ---
+    print(f"--- Debug Information ---")
+    print(f"Flask App Root Path: {app.root_path}")
+    print(f"Flask App Template Folder: {app.template_folder}")
+
+    # 嘗試列出樣板資料夾內的真實檔案
+    try:
+        # 組合出絕對路徑
+        template_dir_path = os.path.join(app.root_path, app.template_folder)
+        print(f"Attempting to list files in: {template_dir_path}")
+        # 列出檔案
+        files_in_dir = os.listdir(template_dir_path)
+        print(f"Files found in template directory: {files_in_dir}")
+    except Exception as e:
+        print(f"Error listing template directory: {e}")
+
+    print(f"--- End Debug Information ---")
+    # --- 偵錯用程式碼結束 ---
+
     return render_template('astro3.html')
 
 @app.route('/calculate_single_chart', methods=['POST'])
