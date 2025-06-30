@@ -1,0 +1,1739 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>占星命盤文字資料</title>
+    <!-- Tailwind CSS CDN for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Base body styling with a modern, saturated multi-color gradient background */
+        body {
+            font-family: 'Inter', 'Noto Sans TC', 'Microsoft JhengHei', sans-serif;
+            background: linear-gradient(to bottom right, #4B0082, #FF69B4); /* Blue Violet to Deep Pink */
+            min-height: 100vh; /* Ensure gradient covers full viewport height */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px; /* Added body padding for small screens */
+            box-sizing: border-box; /* Include padding in element's total width and height */
+            overflow-y: auto; /* Allow scrolling for content that exceeds viewport height */
+        }
+        /* Main container for the application form and results */
+        .container {
+            width: 100%;
+            max-width: 1280px; /* Increased max-width to accommodate two side-by-side forms */
+            margin: auto; /* Centering with auto margin */
+            padding: 32px; /* Increased padding inside the container */
+            background-color: #ffffff;
+            border-radius: 18px; /* More rounded corners for modern look */
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.25); /* Stronger, softer shadow */
+            box-sizing: border-box;
+        }
+
+        /* --- 新增的大標題背景樣式 --- */
+        .header-bg {
+            background: linear-gradient(to right, #6A0DAD, #C71585); /* 紫羅蘭到中等紫羅蘭紅的漸變 */
+            border-radius: 12px; /* 圓角 */
+            padding: 20px 0; /* 內部上下邊距 */
+            margin-bottom: 32px; /* 與下方內容的間距 */
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15); /* 輕微陰影 */
+        }
+
+        .header-bg h1 {
+            color: #ffffff; /* 標題文字顏色改為白色 */
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2); /* 文字陰影增加可讀性 */
+        }
+        /* --- 結束新增樣式 --- */
+
+        /* Styling for individual input groups (label + input) */
+        .input-group {
+            margin-bottom: 12px; /* Adjusted space between input groups for better separation */
+            display: flex; /* Use flexbox for tighter grouping on smaller screens */
+            flex-direction: column; /* Stack label and input vertically by default */
+        }
+        /* Styling for labels */
+        .input-group label {
+            font-weight: 600;
+            color: #4a5568; /* Darker gray for labels */
+            font-size: 1rem; /* Default mobile size */
+            margin-bottom: 4px; /* Small space between label and input */
+        }
+        /* Styling for input fields and select dropdowns */
+        .input-field, .select-field {
+            border: 1px solid #cbd5e0; /* Light gray border */
+            border-radius: 8px; /* Consistent rounded corners */
+            padding: 10px 14px; /* Increased padding slightly for better touch target */
+            font-size: 1rem; /* Default mobile size */
+            color: #2d3748;
+            width: 100%;
+            transition: all 0.2s ease-in-out;
+            /* 優化：為無效輸入添加視覺回饋 */
+            border-color: var(--input-border-color, #cbd5e0);
+        }
+        /* Focus styling for input fields and select dropdowns */
+        .input-field:focus, .select-field:focus {
+            border-color: #4B0082; /* Focus ring matches new gradient colors */
+            box-shadow: 0 0 0 3px rgba(75, 0, 130, 0.3); /* Focus shadow matches new gradient */
+            outline: none;
+        }
+        /* Primary button styling */
+        .btn-primary {
+            background-color: #4B0082; /* Button matches new primary color */
+            color: white;
+            padding: 30px 60px; /* Increased button padding */
+            border-radius: 12px; /* More rounded button */
+            font-weight: 700;
+            cursor: pointer;
+            font-size: 2.25rem; /* 顯著加大字體 (相當於 text-4xl) */
+            line-height: 2.5rem; /* 調整行高以適應大字體 */
+
+            transition: background-color 0.2s ease-in-out, transform 0.1s ease-in-out, box-shadow 0.2s ease-in-out;
+            box-shadow: 0 6px 18px rgba(75, 0, 130, 0.5); /* Stronger button shadow */
+            border: none; /* Remove default button border */
+        }
+        /* Button hover effect */
+        .btn-primary:hover {
+            background-color: #FF69B4; /* Darker shade on hover */
+            transform: translateY(-3px); /* More pronounced lift on hover */
+            box-shadow: 0 9px 25px rgba(75, 0, 130, 0.6);
+        }
+        /* Button active (click) effect */
+        .btn-primary:active {
+            transform: translateY(0);
+            box-shadow: none;
+        }
+        /* Styling for the result output box */
+        .result-box {
+            background-color: #e2e8f0; /* Light gray for output box */
+            border-radius: 10px; /* Slightly more rounded */
+            padding: 24px; /* More padding in result box */
+            min-height: 200px;
+            white-space: pre-wrap; /* Preserve whitespace and allow wrapping */
+            font-family: 'Roboto Mono', 'Courier New', monospace; /* Monospaced font for code-like output */
+            font-size: 1rem; /* Default mobile size */
+            color: #2d3748;
+            overflow-x: auto; /* Allow horizontal scrolling if content is too wide */
+            margin-top: 28px; /* More margin from button */
+            line-height: 1.6; /* Improved readability for output text */
+            box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.05); /* subtle inner shadow */
+        }
+        /* Styling for error messages */
+        .error-message {
+            color: #ef4444; /* Red for errors */
+            font-weight: 600;
+            margin-top: 10px;
+        }
+        /* 優化：為特定輸入欄位錯誤顯示訊息 */
+        .input-error-message {
+            color: #ef4444;
+            font-size: 0.875rem; /* Default mobile size */
+            margin-top: 4px;
+            display: none; /* 預設隱藏 */
+        }
+        /* Styling for the loading spinner */
+        .loading-spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-left-color: #4B0082; /* Spinner matches primary color */
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            animation: spin 1s linear infinite;
+            display: none; /* Hidden by default, shown via JS */
+            vertical-align: middle;
+            margin-left: 10px;
+        }
+        /* Keyframe animation for the spinner */
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* --- 標籤樣式 --- */
+        .tab-buttons {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #e2e8f0; /* Underline for tabs */
+        }
+
+        .tab-button {
+            padding: 10px 15px; /* Default mobile padding */
+            font-weight: 600;
+            cursor: pointer;
+            border-radius: 8px 8px 0 0; /* Rounded top corners */
+            transition: all 0.2s ease-in-out;
+            color: #4a5568;
+            background-color: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-bottom: none; /* No bottom border for tab itself */
+            margin-right: 2px; /* Small gap between tabs */
+            font-size: 1rem; /* Default mobile size */
+            line-height: 1.5rem;
+            letter-spacing: 0.05em; /* 調整字距，您可以根據需要修改這個值 */
+        }
+
+        .tab-button.active {
+            color: #4B0082; /* Active tab text color */
+            background-color: #ffffff; /* Active tab background */
+            border-color: #4B0082; /* Active tab border color */
+            border-bottom: 2px solid #ffffff; /* Cover the main underline */
+            transform: translateY(2px); /* Slight lift for active tab */
+            box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.05); /* Subtle shadow on active tab */
+            z-index: 1; /* Ensure active tab is on top */
+        }
+        .tab-button:hover:not(.active) {
+            background-color: #edf2f7;
+        }
+
+        /* --- 單人/雙人命盤內容區塊樣式 --- */
+        .chart-section {
+            background-color: #fefefe; /* 統一內容區塊背景色 */
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.03); /* 輕微內陰影 */
+            margin-bottom: 20px;
+        }
+
+        /* --- 合盤介面新增的響應式調整 --- */
+        .synastry-inputs-wrapper {
+            display: flex; /* 使用 flexbox 讓兩個命盤區塊並排 */
+            flex-direction: column; /* 預設為垂直堆疊 (小螢幕) */
+            gap: 40px; /* 兩個命盤區塊之間的間距 */
+            margin-top: 24px; /* 與子選單的間距 */
+            margin-bottom: 32px;
+        }
+
+        .synastry-input-section {
+            flex: 1; /* 每個命盤區塊佔用可用空間 */
+            padding: 24px; /* 命盤區塊內部的內邊距 */
+            border: 1px solid #e2e8f0; /* 輕微邊框區分兩個命盤 */
+            border-radius: 12px;
+            background-color: #f8fafc; /* 輕微的背景色區分 */
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        }
+        /* 將日期時間和地點時區部分變成 grid 佈局 */
+        .date-time-grid, .location-timezone-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); /* 自動適應列寬 */
+            gap: 16px; /* 欄位間距 */
+            margin-bottom: 24px; /* 各行之間的間距 */
+        }
+        .location-timezone-grid .input-group.col-span-full {
+             grid-column: 1 / -1; /* 時區欄位跨滿整行 */
+        }
+        .timezone-input-group-container {
+            display: flex; /* Use flexbox to put select and custom input side-by-side */
+            gap: 8px; /* Small gap between select and custom input */
+            flex-wrap: wrap; /* Allow wrapping on smaller screens if they don't fit */
+        }
+        .timezone-input-group-container .select-field,
+        .timezone-input-group-container .input-field {
+            flex: 1; /* Allow them to grow and shrink */
+            min-width: 120px; /* Minimum width to prevent too much squishing */
+        }
+
+
+        /* Responsive grid adjustments for compact layout on medium screens (md) and larger */
+        @media (min-width: 768px) {
+            .date-time-grid {
+                grid-template-columns: repeat(5, minmax(0, 1fr)); /* 確保日期時間為 5 列 */
+            }
+
+            .location-timezone-grid {
+                grid-template-columns: repeat(3, minmax(0, 1fr)); /* 確保地點時區為 3 列 */
+            }
+
+            .input-group {
+                margin-bottom: 0; /* Remove default margin-bottom as grid gap handles it */
+            }
+
+            .synastry-input-section h2 {
+                margin-bottom: 20px; /* 為命盤區塊的 h2 增加更多空間 */
+            }
+            .date-time-grid h2,
+            .location-timezone-grid h2 {
+                margin-bottom: 16px; /* 恢復內部分組的 h2 間距 */
+            }
+
+            /* 在大螢幕上讓兩個命盤區塊並排 */
+            .synastry-inputs-wrapper {
+                flex-direction: row;
+            }
+        }
+
+        /* Chart Type Card Selection Styling (for sub-selection within Synastry tab) */
+        .chart-type-selection-sub {
+            display: flex;
+            flex-wrap: wrap; /* Allow cards to wrap on smaller screens */
+            gap: 1.5rem; /* Space between cards */
+            justify-content: center;
+            margin-bottom: 1rem;
+        }
+
+        .chart-card-sub {
+            background-color: #f7fafc; /* Light background for cards */
+            padding: 1.5rem 1rem;
+            border-radius: 12px;
+            border: 2px solid #e2e8f0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            min-width: 160px; /* Minimum width for cards */
+            flex: 1; /* Allow cards to take up available space */
+            text-align: center;
+            position: relative; /* For active indicator */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .chart-card-sub:hover {
+            border-color: #8B008B; /* Dark Magenta on hover */
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+        }
+
+        .chart-card-sub.active {
+            border-color: #4B0082; /* Active color */
+            background-color: #e6e6fa; /* Lavender for active background */
+            box-shadow: 0 4px 15px rgba(75, 0, 130, 0.25);
+        }
+
+        .chart-card-sub h3 {
+            font-size: 1.1rem; /* Default mobile size */
+            font-weight: 700;
+            color: #2d3748;
+            margin-bottom: 0.25rem;
+        }
+
+        .chart-card-sub p {
+            font-size: 0.875rem; /* Default mobile size */
+            color: #6b7280;
+        }
+
+        /* Utility class for hidden elements */
+        .hidden {
+            display: none;
+        }
+
+        /* --- 響應式設計：針對桌面等較大螢幕的樣式 --- */
+        @media (min-width: 768px) {
+            .input-group label {
+                font-size: 1.5rem; /* Larger on desktop */
+            }
+            .input-field, .select-field {
+                font-size: 1.6rem; /* Larger on desktop */
+            }
+            .result-box {
+                font-size: 1.75rem; /* Larger on desktop */
+            }
+            .input-error-message {
+                font-size: 1.1rem; /* Larger on desktop */
+            }
+            .tab-button {
+                padding: 15px 25px; /* Larger padding on desktop */
+                font-size: 2.25rem; /* Larger on desktop */
+                line-height: 2.5rem;
+            }
+            .chart-card-sub h3 {
+                font-size: 1.5rem; /* Default mobile size */
+            }
+            .chart-card-sub p {
+                font-size: 1.2rem; /* Larger on desktop */
+            }
+        }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Main Header -->
+        <div class="header-bg">
+            <h1 class="text-4xl md:text-6xl font-bold text-center mb-0" style="letter-spacing: 0.1em;">星盤文字資料</h1>
+       </div>
+
+        <!-- Main Tab Buttons -->
+        <div class="tab-buttons">
+            <button id="singleChartTab" class="tab-button active" data-tab-content="singleChartSection">個人星盤 or 占星卜卦盤(Horary)</button>
+            <button id="synaTastryb" class="tab-button" data-tab-content="synastryChartSection">雙人合盤 or 行運盤</button>
+        </div>
+
+        <!-- Single Chart Section Content -->
+        <div id="singleChartSection" class="chart-section">
+            <h2 class="text-xl md:text-3xl font-semibold text-gray-700 mb-4">姓名</h2>
+            <div class="input-group">
+                <label for="single_name"></label>
+                <input type="text" id="single_name" class="input-field" value="您">
+                <p id="single_name-error" class="input-error-message" aria-live="polite"></p>
+            </div>
+            <br>
+            <h2 class="text-3xl font-semibold text-gray-700 mb-4">出生日期與時間</h2>
+            <div class="date-time-grid">
+                <div class="input-group">
+                    <label for="single_year">西元年 (YYYY):</label>
+                    <input type="number" id="single_year" class="input-field" value="1990" min="1900" max="2100">
+                    <p id="single_year-error" class="input-error-message" aria-live="polite"></p>
+                </div>
+                <div class="input-group">
+                    <label for="single_month">月 (1-12):</label>
+                    <input type="number" id="single_month" class="input-field" value="1" min="1" max="12">
+                    <p id="single_month-error" class="input-error-message" aria-live="polite"></p>
+                </div>
+                <div class="input-group">
+                    <label for="single_day">日 (1-31):</label>
+                    <input type="number" id="single_day" class="input-field" value="1" min="1" max="31">
+                    <p id="single_day-error" class="input-error-message" aria-live="polite"></p>
+                </div>
+                <div class="input-group">
+                    <label for="single_hour">時 (0-23):</label>
+                    <input type="number" id="single_hour" class="input-field" value="12" min="0" max="23">
+                    <p id="single_hour-error" class="input-error-message" aria-live="polite"></p>
+                </div>
+                <div class="input-group">
+                    <label for="single_minute">分 (0-59):</label>
+                    <input type="number" id="single_minute" class="input-field" value="30" min="0" max="59">
+                    <p id="single_minute-error" class="input-error-message" aria-live="polite"></p>
+                </div>
+            </div>
+
+            <h2 class="text-xl md:text-3xl font-semibold text-gray-700 mb-4">出生地點與時區</h2>
+            <div class="location-timezone-grid">
+                <div class="input-group">
+                    <label for="single_latitude">緯度 (+N / -S):</label>
+                    <input type="number" id="single_latitude" class="input-field" value="25.09" step="0.01">
+                    <p id="single_latitude-error" class="input-error-message" aria-live="polite"></p>
+                </div>
+                <div class="input-group">
+                    <label for="single_longitude">經度 (+E / -W):</label>
+                    <input type="number" id="single_longitude" class="input-field" value="121.52" step="0.01">
+                    <p id="single_longitude-error" class="input-error-message" aria-live="polite"></p>
+                </div>
+                <div class="input-group col-span-full">
+                    <label for="single_timezone">時區:</label>
+                    <div class="timezone-input-group-container">
+                        <select id="single_timezone" class="select-field timezone-select"></select>
+                        <input type="text" id="single_customTimezone" class="input-field" placeholder="手動輸入 (例如: America/Juneau)">
+                    </div>
+                    <p class="text-sm text-gray-500 mt-2">
+                        如果您的時區不在列表中，請手動輸入 IANA 時區名稱 (例如：`America/Juneau`)。
+                    </p>
+                    <p id="single_timezone-error" class="input-error-message" aria-live="polite"></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Synastry / Transit Chart Section (Initially hidden) -->
+        <div id="synastryChartSection" class="chart-section hidden">
+            <!-- Sub-selection for Comparison vs Transit -->
+            <div class="chart-type-selection-sub" id="chartTypeSelectionSub">
+                <div class="chart-card-sub active" data-chart-type="comparison">
+                    <h3>比較合盤</h3>
+                    <p>兩人關係互動</p>
+                </div>
+                 <div class="chart-card-sub" data-chart-type="composite">
+                    <h3>中點盤</h3>
+                    <p>關係本質與命運</p>
+                </div>
+                <div class="chart-card-sub" data-chart-type="transit">
+                    <h3>行運盤</h3>
+                    <p>當下星體影響</p>
+                </div>
+            </div>
+            <input type="hidden" id="selectedSubChartType" value="comparison"> <!-- Hidden input to store selected sub-type -->
+
+            <!-- Comparison Chart Inputs (Default active when Synastry tab is chosen) -->
+            <div id="comparisonChartInputs" class="synastry-inputs-wrapper">
+                <!-- 命盤 A 輸入區塊 -->
+                <div class="synastry-input-section">
+                    <h3 class="text-xl font-bold text-gray-800 mb-4 text-center">命盤A</h3>
+                    <div class="input-group">
+                        <label for="comp1_name">姓名:</label>
+                        <input type="text" id="comp1_name" class="input-field" value="你">
+                        <p id="comp1_name-error" class="input-error-message" aria-live="polite"></p>
+                    </div>
+                    <h4 class="text-lg md:text-xl font-semibold text-gray-700 mt-6 mb-4">出生日期與時間</h4>
+                    <div class="date-time-grid">
+                        <div class="input-group">
+                            <label for="comp1_year">西元年 (YYYY):</label>
+                            <input type="number" id="comp1_year" class="input-field" value="1990" min="1900" max="2100">
+                            <p id="comp1_year-error" class="input-error-message" aria-live="polite"></p>
+                        </div>
+                        <div class="input-group">
+                            <label for="comp1_month">月 (1-12):</label>
+                            <input type="number" id="comp1_month" class="input-field" value="1" min="1" max="12">
+                            <p id="comp1_month-error" class="input-error-message" aria-live="polite"></p>
+                        </div>
+                        <div class="input-group">
+                            <label for="comp1_day">日 (1-31):</label>
+                            <input type="number" id="comp1_day" class="input-field" value="1" min="1" max="31">
+                            <p id="comp1_day-error" class="input-error-message" aria-live="polite"></p>
+                        </div>
+                        <div class="input-group">
+                            <label for="comp1_hour">時 (0-23):</label>
+                            <input type="number" id="comp1_hour" class="input-field" value="12" min="0" max="23">
+                            <p id="comp1_hour-error" class="input-error-message" aria-live="polite"></p>
+                        </div>
+                        <div class="input-group">
+                            <label for="comp1_minute">分 (0-59):</label>
+                            <input type="number" id="comp1_minute" class="input-field" value="30" min="0" max="59">
+                            <p id="comp1_minute-error" class="input-error-message" aria-live="polite"></p>
+                        </div>
+                    </div>
+                    <h4 class="text-lg md:text-xl font-semibold text-gray-700 mt-6 mb-4">出生地點與時區</h4>
+                    <div class="location-timezone-grid">
+                        <div class="input-group">
+                            <label for="comp1_latitude">緯度 (+N / -S):</label>
+                            <input type="number" id="comp1_latitude" class="input-field" value="25.09" step="0.01">
+                            <p id="comp1_latitude-error" class="input-error-message" aria-live="polite"></p>
+                        </div>
+                        <div class="input-group">
+                            <label for="comp1_longitude">經度 (+E / -W):</label>
+                            <input type="number" id="comp1_longitude" class="input-field" value="121.52" step="0.01">
+                            <p id="comp1_longitude-error" class="input-error-message" aria-live="polite"></p>
+                        </div>
+                        <div class="input-group col-span-full">
+                            <label for="comp1_timezone">時區:</label>
+                            <div class="timezone-input-group-container">
+                                <select id="comp1_timezone" class="select-field timezone-select"></select>
+                                <input type="text" id="comp1_customTimezone" class="input-field" placeholder="手動輸入 (例如: America/Juneau)">
+                            </div>
+                            <p id="comp1_timezone-error" class="input-error-message" aria-live="polite"></p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 命盤 B 輸入區塊 -->
+                <div class="synastry-input-section">
+                    <h3 class="text-xl font-bold text-gray-800 mb-4 text-center">命盤B</h3>
+                    <div class="input-group">
+                        <label for="comp2_name">姓名:</label>
+                        <input type="text" id="comp2_name" class="input-field" value="對方">
+                        <p id="comp2_name-error" class="input-error-message" aria-live="polite"></p>
+                    </div>
+                    <h4 class="text-lg md:text-xl font-semibold text-gray-700 mt-6 mb-4">出生日期與時間</h4>
+                    <div class="date-time-grid">
+                        <div class="input-group">
+                            <label for="comp2_year">西元年 (YYYY):</label>
+                            <input type="number" id="comp2_year" class="input-field" value="1995" min="1900" max="2100">
+                            <p id="comp2_year-error" class="input-error-message" aria-live="polite"></p>
+                        </div>
+                        <div class="input-group">
+                            <label for="comp2_month">月 (1-12):</label>
+                            <input type="number" id="comp2_month" class="input-field" value="6" min="1" max="12">
+                            <p id="comp2_month-error" class="input-error-message" aria-live="polite"></p>
+                        </div>
+                        <div class="input-group">
+                            <label for="comp2_day">日 (1-31):</label>
+                            <input type="number" id="comp2_day" class="input-field" value="15" min="1" max="31">
+                            <p id="comp2_day-error" class="input-error-message" aria-live="polite"></p>
+                        </div>
+                        <div class="input-group">
+                            <label for="comp2_hour">時 (0-23):</label>
+                            <input type="number" id="comp2_hour" class="input-field" value="18" min="0" max="23">
+                            <p id="comp2_hour-error" class="input-error-message" aria-live="polite"></p>
+                        </div>
+                        <div class="input-group">
+                            <label for="comp2_minute">分 (0-59):</label>
+                            <input type="number" id="comp2_minute" class="input-field" value="45" min="0" max="59">
+                            <p id="comp2_minute-error" class="input-error-message" aria-live="polite"></p>
+                        </div>
+                    </div>
+                    <h4 class="text-lg md:text-xl font-semibold text-gray-700 mt-6 mb-4">出生地點與時區</h4>
+                    <div class="location-timezone-grid">
+                        <div class="input-group">
+                            <label for="comp2_latitude">緯度 (+N / -S):</label>
+                            <input type="number" id="comp2_latitude" class="input-field" value="34.05" step="0.01">
+                            <p id="comp2_latitude-error" class="input-error-message" aria-live="polite"></p>
+                        </div>
+                        <div class="input-group">
+                            <label for="comp2_longitude">經度 (+E / -W):</label>
+                            <input type="number" id="comp2_longitude" class="input-field" value="-118.24" step="0.01">
+                            <p id="comp2_longitude-error" class="input-error-message" aria-live="polite"></p>
+                        </div>
+                        <div class="input-group col-span-full">
+                            <label for="comp2_timezone">時區:</label>
+                            <div class="timezone-input-group-container">
+                                <select id="comp2_timezone" class="select-field timezone-select"></select>
+                                <input type="text" id="comp2_customTimezone" class="input-field" placeholder="手動輸入 (例如: America/Juneau)">
+                            </div>
+                            <p id="comp2_timezone-error" class="input-error-message" aria-live="polite"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Transit Chart Inputs (Initially hidden) -->
+            <div id="transitChartInputs" class="synastry-inputs-wrapper hidden">
+                <!-- 本命盤 輸入區塊 -->
+                <div class="synastry-input-section">
+                    <h3 class="text-xl font-bold text-gray-800 mb-4 text-center">本命盤資訊</h3>
+                    <div class="input-group">
+                        <label for="natal_name">姓名:</label>
+                        <input type="text" id="natal_name" class="input-field" value="本命">
+                        <p id="natal_name-error" class="input-error-message" aria-live="polite"></p>
+                    </div>
+                    <h4 class="text-lg md:text-xl font-semibold text-gray-700 mt-6 mb-4">出生日期與時間</h4>
+                    <div class="date-time-grid">
+                        <div class="input-group">
+                            <label for="natal_year">西元年 (YYYY):</label>
+                            <input type="number" id="natal_year" class="input-field" value="1990" min="1900" max="2100">
+                            <p id="natal_year-error" class="input-error-message" aria-live="polite"></p>
+                        </div>
+                        <div class="input-group">
+                            <label for="natal_month">月 (1-12):</label>
+                            <input type="number" id="natal_month" class="input-field" value="1" min="1" max="12">
+                            <p id="natal_month-error" class="input-error-message" aria-live="polite"></p>
+                        </div>
+                        <div class="input-group">
+                            <label for="natal_day">日 (1-31):</label>
+                            <input type="number" id="natal_day" class="input-field" value="1" min="1" max="31">
+                            <p id="natal_day-error" class="input-error-message" aria-live="polite"></p>
+                        </div>
+                        <div class="input-group">
+                            <label for="natal_hour">時 (0-23):</label>
+                            <input type="number" id="natal_hour" class="input-field" value="12" min="0" max="23">
+                            <p id="natal_hour-error" class="input-error-message" aria-live="polite"></p>
+                        </div>
+                        <div class="input-group">
+                            <label for="natal_minute">分 (0-59):</label>
+                            <input type="number" id="natal_minute" class="input-field" value="30" min="0" max="59">
+                            <p id="natal_minute-error" class="input-error-message" aria-live="polite"></p>
+                        </div>
+                    </div>
+                    <h4 class="text-lg md:text-xl font-semibold text-gray-700 mt-6 mb-4">出生地點與時區</h4>
+                    <div class="location-timezone-grid">
+                        <div class="input-group">
+                            <label for="natal_latitude">緯度 (+N / -S):</label>
+                            <input type="number" id="natal_latitude" class="input-field" value="25.09" step="0.01">
+                            <p id="natal_latitude-error" class="input-error-message" aria-live="polite"></p>
+                        </div>
+                        <div class="input-group">
+                            <label for="natal_longitude">經度 (+E / -W):</label>
+                            <input type="number" id="natal_longitude" class="input-field" value="121.52" step="0.01">
+                            <p id="natal_longitude-error" class="input-error-message" aria-live="polite"></p>
+                        </div>
+                        <div class="input-group col-span-full">
+                            <label for="natal_timezone">時區:</label>
+                            <div class="timezone-input-group-container">
+                                <select id="natal_timezone" class="select-field timezone-select"></select>
+                                <input type="text" id="natal_customTimezone" class="input-field" placeholder="手動輸入 (例如: America/Juneau)">
+                            </div>
+                            <p id="natal_timezone-error" class="input-error-message" aria-live="polite"></p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 行運盤 輸入區塊 -->
+                <div class="synastry-input-section">
+                    <h3 class="text-xl font-bold text-gray-800 mb-4 text-center">行運盤資訊</h3>
+                    <div class="input-group">
+                        <label for="transit_name">名稱:</label>
+                        <input type="text" id="transit_name" class="input-field" value="行運">
+                        <p id="transit_name-error" class="input-error-message" aria-live="polite"></p>
+                    </div>
+                    <h4 class="text-lg md:text-xl font-semibold text-gray-700 mt-6 mb-4">日期與時間</h4>
+                    <div class="date-time-grid">
+                        <div class="input-group">
+                            <label for="transit_year">西元年 (YYYY):</label>
+                            <input type="number" id="transit_year" class="input-field" value="2025" min="1900" max="2100">
+                            <p id="transit_year-error" class="input-error-message" aria-live="polite"></p>
+                        </div>
+                        <div class="input-group">
+                            <label for="transit_month">月 (1-12):</label>
+                            <input type="number" id="transit_month" class="input-field" value="6" min="1" max="12">
+                            <p id="transit_month-error" class="input-error-message" aria-live="polite"></p>
+                        </div>
+                        <div class="input-group">
+                            <label for="transit_day">日 (1-31):</label>
+                            <input type="number" id="transit_day" class="input-field" value="25" min="1" max="31">
+                            <p id="transit_day-error" class="input-error-message" aria-live="polite"></p>
+                        </div>
+                        <div class="input-group">
+                            <label for="transit_hour">時 (0-23):</label>
+                            <input type="number" id="transit_hour" class="input-field" value="12" min="0" max="23">
+                            <p id="transit_hour-error" class="input-error-message" aria-live="polite"></p>
+                        </div>
+                        <div class="input-group">
+                            <label for="transit_minute">分 (0-59):</label>
+                            <input type="number" id="transit_minute" class="input-field" value="0" min="0" max="59">
+                            <p id="transit_minute-error" class="input-error-message" aria-live="polite"></p>
+                        </div>
+                    </div>
+                    <h4 class="text-lg md:text-xl font-semibold text-gray-700 mt-6 mb-4">地點與時區</h4>
+                    <div class="location-timezone-grid">
+                        <div class="input-group">
+                            <label for="transit_latitude">緯度 (+N / -S):</label>
+                            <input type="number" id="transit_latitude" class="input-field" value="25.09" step="0.01">
+                            <p id="transit_latitude-error" class="input-error-message" aria-live="polite"></p>
+                        </div>
+                        <div class="input-group">
+                            <label for="transit_longitude">經度 (+E / -W):</label>
+                            <input type="number" id="transit_longitude" class="input-field" value="121.52" step="0.01">
+                            <p id="transit_longitude-error" class="input-error-message" aria-live="polite"></p>
+                        </div>
+                        <div class="input-group col-span-full">
+                            <label for="transit_timezone">時區:</label>
+                            <div class="timezone-input-group-container">
+                                <select id="transit_timezone" class="select-field timezone-select"></select>
+                                <input type="text" id="transit_customTimezone" class="input-field" placeholder="手動輸入 (例如: America/Juneau)">
+                            </div>
+                            <p id="transit_timezone-error" class="input-error-message" aria-live="polite"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Planet Selection Checkboxes -->
+        <div id="planetSelection" class="mb-6 p-4 border border-gray-200 rounded-lg bg-gray-50">
+            <div class="flex justify-between items-center mb-3">
+                <h3 class="text-2xl md:text-4xl font-bold text-gray-700">顯示選項 (小行星/虛點)</h3>
+                <div>
+                    <button id="toggleAllPlanetsBtn" class="text-lg md:text-2xl font-medium text-indigo-600 hover:text-indigo-800">全部取消</button>
+                </div>
+            </div>
+            <div id="optionalPlanetsContainer" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-x-6 gap-y-3">
+                <!-- Checkboxes will be populated here by JavaScript -->
+            </div>
+        </div>
+
+        <!-- Calculate Button and Loading Spinner -->
+        <div class="text-center mb-6">
+            <button id="calculateBtn" class="btn-primary" aria-live="polite">計算星盤</button>
+            <div id="loadingSpinner" class="loading-spinner" role="status" aria-label="計算中，請稍候"></div>
+        </div>
+
+        <!-- Result Output Section -->
+        <div class="result-section">
+            <h2 class="text-3xl md:text-5xl font-semibold text-gray-700 mb-3" id="resultHeader">計算結果</h2>
+            <pre id="resultOutput" class="result-box text-sm" role="region" aria-live="polite" aria-atomic="true"></pre>
+        </div>
+    </div>
+
+    <script>
+        console.log('Script Start Test! Version: Combined Tabs - Multi-Chart Support v2.5 - Critical Debugging');
+
+        // Define the desired display order for planets and points (copied from backend for consistency)
+        const DISPLAY_ORDER_NAMES = [
+            "太陽", "月亮", "水星", "金星", "火星", "木星", "土星", "天王", "海王", "冥王",
+            "凱龍", "穀神", "智神", "婚神", "灶神", "愛神", "莉莉絲", "靈神", "人龍",
+            "北交", "南交", "上升", "下降", "天頂", "天底", "宿命", "福點"
+        ];
+        const FOUR_ANGLES_AND_NODES = ['上升', '下降', '天頂', '天底', '宿命', '福點', '北交', '南交'];
+
+        // IMPORTANT: Define the base URL for your Flask backend API
+        // This MUST match the port your Flask app is running on (default is 5000)
+        const BASE_API_URL = 'http://127.0.0.1:5000';
+
+        // Helper function to get timezone offset string for display
+        function getTimezoneOffsetString(timezoneName) {
+            try {
+                const date = new Date();
+                const utcDate = new Date(date.toLocaleString('en-US', { timeZone: 'UTC' }));
+                const tzDate = new Date(date.toLocaleString('en-US', { timeZone: timezoneName }));
+                const offsetMs = tzDate.getTime() - utcDate.getTime();
+                const offsetHours = offsetMs / (1000 * 60 * 60);
+                const sign = offsetHours >= 0 ? '+' : '-';
+                const hours = Math.abs(Math.floor(offsetHours));
+                const minutes = Math.abs(offsetHours % 1) * 60;
+
+                const offsetString = `UTC${sign}${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
+                
+                let displayAlias = timezoneName.replace(/_/g, ' ');
+                if (timezoneName === "Asia/Taipei") displayAlias = "台北";
+                else if (timezoneName === "Asia/Shanghai") displayAlias = "上海";
+                else if (timezoneName === "Asia/Chongqing") displayAlias = "成都";
+                else if (timezoneName === "Asia/Tokyo") displayAlias = "東京";
+                else if (timezoneName === "Asia/Hong_Kong") displayAlias = "香港";
+                else if (timezoneName === "America/New_York") displayAlias = "紐約";
+                else if (timezoneName === "Europe/London") displayAlias = "倫敦";
+
+                return `${offsetString} ${displayAlias}`;
+
+            } catch (e) {
+                console.warn(`Could not get offset for ${timezoneName}:`, e);
+                return timezoneName.replace(/_/g, ' ');
+            }
+        }
+
+        // List of common timezones to populate the dropdowns
+        const commonTimezones = [
+            "Asia/Taipei", "Asia/Shanghai", "Asia/Chongqing", "Asia/Tokyo", "Asia/Hong_Kong", "Asia/Singapore",
+            "America/New_York", "America/Los_Angeles", "America/Chicago", "America/Denver",
+            "Europe/London", "Europe/Paris", "Europe/Berlin", "Europe/Rome",
+            "Australia/Sydney", "Australia/Melbourne", "Australia/Perth",
+            "Indian/Mauritius", "Africa/Cairo", "Africa/Johannesburg",
+            "Etc/GMT", "Etc/GMT+1", "Etc/GMT-1"
+        ];
+
+        // Function to populate all timezone select dropdowns
+        function populateTimezoneSelects() {
+            document.querySelectorAll('.timezone-select').forEach(selectElement => {
+                selectElement.innerHTML = ''; // Clear existing options
+                const optionsWithFormattedText = commonTimezones.map(tz => ({
+                    value: tz,
+                    text: getTimezoneOffsetString(tz)
+                }));
+                optionsWithFormattedText.sort((a, b) => a.text.localeCompare(b.text)); // Sort options for readability
+
+                optionsWithFormattedText.forEach(optionData => {
+                    const option = document.createElement('option');
+                    option.value = optionData.value;
+                    option.textContent = optionData.text;
+                    selectElement.appendChild(option);
+                });
+                selectElement.value = "Asia/Taipei"; // Set default selected timezone
+            });
+            // Also handle the single chart's direct timezone select
+            const singleTimezoneSelect = document.getElementById('single_timezone');
+            if (singleTimezoneSelect) {
+                singleTimezoneSelect.innerHTML = '';
+                const optionsWithFormattedText = commonTimezones.map(tz => ({
+                    value: tz,
+                    text: getTimezoneOffsetString(tz)
+                }));
+                optionsWithFormattedText.sort((a, b) => a.text.localeCompare(b.text));
+                optionsWithFormattedText.forEach(optionData => {
+                    const option = document.createElement('option');
+                    option.value = optionData.value;
+                    option.textContent = optionData.text;
+                    singleTimezoneSelect.appendChild(option);
+                });
+                singleTimezoneSelect.value = "Asia/Taipei";
+            }
+        }
+
+        // Function to handle custom timezone input interaction for all timezone selects
+        function setupCustomTimezoneListeners() {
+            // General setup for timezone selects with corresponding custom inputs
+            document.querySelectorAll('.timezone-input-group-container').forEach(container => {
+                const selectElement = container.querySelector('.select-field');
+                const customInput = container.querySelector('.input-field');
+
+                if (selectElement && customInput) {
+                    selectElement.addEventListener('change', () => {
+                        if (selectElement.value !== '') { // If a dropdown option is selected
+                            customInput.value = ''; // Clear custom input
+                        }
+                    });
+
+                    customInput.addEventListener('input', () => {
+                        if (customInput.value.trim() !== '') {
+                            selectElement.value = ''; // Deselect any dropdown option if custom input is used
+                        } else {
+                            // If custom input is cleared, try to set to Asia/Taipei if it's in the list
+                            if (commonTimezones.includes("Asia/Taipei")) {
+                                selectElement.value = "Asia/Taipei"; 
+                            } else {
+                                selectElement.value = ''; // Otherwise, keep it empty
+                            }
+                        }
+                    });
+                }
+            });
+
+            // Special handling for the single chart's direct customTimezone input (not in a container)
+            const singleTimezoneSelect = document.getElementById('single_timezone');
+            const singleCustomTimezoneInput = document.getElementById('single_customTimezone');
+            if (singleTimezoneSelect && singleCustomTimezoneInput) {
+                singleTimezoneSelect.addEventListener('change', () => {
+                    if (singleTimezoneSelect.value !== '') {
+                        singleCustomTimezoneInput.value = '';
+                    }
+                });
+                singleCustomTimezoneInput.addEventListener('input', () => {
+                    if (singleCustomTimezoneInput.value.trim() !== '') {
+                        singleTimezoneSelect.value = '';
+                    } else {
+                        if (commonTimezones.includes("Asia/Taipei")) {
+                            singleTimezoneSelect.value = "Asia/Taipei";
+                        } else {
+                            singleTimezoneSelect.value = '';
+                        }
+                    }
+                });
+            }
+        }
+
+
+        // Function to update main tab content visibility
+        function updateMainTabVisibility(activeTabId) {
+            document.querySelectorAll('.tab-button').forEach(button => {
+                button.classList.remove('active');
+            });
+            document.getElementById(activeTabId).classList.add('active');
+
+            document.querySelectorAll('.chart-section').forEach(section => {
+                section.classList.add('hidden');
+            });
+            document.getElementById(document.getElementById(activeTabId).dataset.tabContent).classList.remove('hidden');
+
+            // If switching to Synastry/Transit tab, ensure a sub-chart type is selected and shown
+            if (activeTabId === 'synastryTab') {
+                const selectedSubChartType = document.getElementById('selectedSubChartType').value;
+                updateSubChartVisibility(selectedSubChartType); // Show the default or last selected sub-chart
+            }
+        }
+
+        // Function to update sub-chart type content visibility within Synastry/Transit tab
+        function updateSubChartVisibility(selectedType) {
+            document.querySelectorAll('.chart-card-sub').forEach(card => {
+                card.classList.remove('active');
+            });
+            document.querySelector(`.chart-card-sub[data-chart-type="${selectedType}"]`).classList.add('active');
+            document.getElementById('selectedSubChartType').value = selectedType;
+
+            document.getElementById('comparisonChartInputs').classList.add('hidden');
+            document.getElementById('transitChartInputs').classList.add('hidden');
+
+            if (selectedType === 'comparison' || selectedType === 'composite') {
+                   document.getElementById('comparisonChartInputs').classList.remove('hidden');
+            } else if (selectedType === 'transit') {
+                document.getElementById('transitChartInputs').classList.remove('hidden');
+            }
+        }
+
+
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('DOMContentLoaded fired. Version: Combined Tabs - Multi-Chart Support v2.5 - Critical Debugging');
+            populateTimezoneSelects();
+            setupCustomTimezoneListeners();
+
+            // --- 動態生成小行星/虛點的核取方塊 (優化分組) ---
+            const optionalPlanetsConfig = {
+                '療癒與潛能': ["凱龍", "穀神", "智神", "婚神", "灶神"],
+                '命運與潛意識': ["莉莉絲", "宿命", "福點"],
+                '深度心理': ["愛神", "靈神", "人龍"]
+            };
+            const optionalPlanetsContainer = document.getElementById('optionalPlanetsContainer');
+
+            for (const groupName in optionalPlanetsConfig) {
+                const groupTitle = document.createElement('div');
+                groupTitle.className = 'col-span-full font-semibold text-xl md:text-3xl text-indigo-800 mt-2';
+                groupTitle.textContent = groupName;
+                optionalPlanetsContainer.appendChild(groupTitle);
+
+                optionalPlanetsConfig[groupName].forEach(planet => {
+                    const checkboxWrapper = document.createElement('div');
+                    checkboxWrapper.className = 'flex items-center';
+                    checkboxWrapper.innerHTML = `
+                        <input id="chk-${planet}" type="checkbox" value="${planet}" class="optional-planet-checkbox h-6 w-6 md:h-8 md:w-8 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500" checked>
+                        <label for="chk-${planet}" class="ml-2 block text-lg md:text-3xl text-gray-900">${planet}</label>
+                    `;
+                    optionalPlanetsContainer.appendChild(checkboxWrapper);
+                });
+            }
+
+            // --- 新增：全選/取消全選按鈕的邏輯 (優化版) ---
+            const toggleBtn = document.getElementById('toggleAllPlanetsBtn');
+            // Set initial state using a data attribute
+            toggleBtn.dataset.state = 'all-checked'; 
+
+            toggleBtn.addEventListener('click', () => {
+                const checkboxes = document.querySelectorAll('.optional-planet-checkbox');
+                const currentState = toggleBtn.dataset.state;
+
+                if (currentState === 'all-checked') {
+                    checkboxes.forEach(cb => { cb.checked = false; });
+                    toggleBtn.textContent = '全部選取';
+                    toggleBtn.dataset.state = 'all-unchecked';
+                } else {
+                    checkboxes.forEach(cb => { cb.checked = true; });
+                    toggleBtn.textContent = '全部取消';
+                    toggleBtn.dataset.state = 'all-checked';
+                }
+            });
+
+            // Set initial main tab and sub-tab visibility
+            updateMainTabVisibility('singleChartTab'); // Default to single chart tab
+            updateSubChartVisibility('comparison'); // Default sub-chart in synastry to comparison
+
+            // Event listeners for main tab buttons
+            document.getElementById('singleChartTab').addEventListener('click', (event) => {
+                updateMainTabVisibility(event.target.id);
+            });
+            document.getElementById('synastryTab').addEventListener('click', (event) => {
+                updateMainTabVisibility(event.target.id);
+            });
+
+            // Event listeners for sub-chart type cards within synastry tab
+            document.querySelectorAll('.chart-card-sub').forEach(card => {
+                card.addEventListener('click', () => {
+                    const selectedType = card.dataset.chartType;
+                    updateSubChartVisibility(selectedType);
+                });
+            });
+            
+            const calculateButton = document.getElementById('calculateBtn');
+            if (calculateButton) {
+                calculateButton.addEventListener('click', calculateChart);
+            } else {
+                console.error('Error: Calculate button not found!');
+            }
+            
+            // Add input event listeners to all input fields to clear error messages
+            document.querySelectorAll('.input-field, .select-field').forEach(input => {
+                input.addEventListener('input', (event) => {
+                    const errorElement = document.getElementById(`${event.target.id}-error`);
+                    if (errorElement) {
+                        errorElement.textContent = '';
+                        errorElement.style.display = 'none';
+                        event.target.style.setProperty('--input-border-color', '#cbd5e0');
+                    }
+                });
+                input.addEventListener('change', (event) => { // For select fields
+                    const errorElement = document.getElementById(`${event.target.id}-error`);
+                    if (errorElement) {
+                        errorElement.textContent = '';
+                        errorElement.style.display = 'none';
+                        event.target.style.setProperty('--input-border-color', '#cbd5e0');
+                    }
+                });
+            });
+        });
+
+        /**
+         * Displays an error message for a specific input field.
+         * @param {string} inputId - The ID of the input field.
+         * @param {string} message - The error message to display.
+         */
+        function showInputError(inputId, message) {
+            const inputElement = document.getElementById(inputId);
+            const errorElement = document.getElementById(`${inputId}-error`);
+            if (inputElement && errorElement) {
+                errorElement.textContent = message;
+                errorElement.style.display = 'block';
+                inputElement.style.setProperty('--input-border-color', '#ef4444');
+            }
+        }
+
+        /**
+         * Hides all input field error messages.
+         */
+        function clearAllInputErrors() {
+            document.querySelectorAll('.input-error-message').forEach(el => {
+                el.textContent = '';
+                el.style.display = 'none';
+            });
+            document.querySelectorAll('.input-field, .select-field').forEach(el => {
+                el.style.setProperty('--input-border-color', '#cbd5e0');
+            });
+        }
+
+        /**
+         * Generic function to validate a set of input fields.
+         * @param {string} prefix - Prefix for input IDs (e.g., 'single_', 'comp1_', 'natal_').
+         * @returns {boolean} - True if all fields are valid, false otherwise.
+         */
+        function validateInputs(prefix) {
+            let isValid = true;
+            const fields = ['year', 'month', 'day', 'hour', 'minute', 'latitude', 'longitude'];
+            const labels = ['年份', '月份', '日期', '時', '分', '緯度', '經度']; // For error messages
+
+            fields.forEach((field, index) => {
+                const inputId = `${prefix}${field}`;
+                const inputElement = document.getElementById(inputId);
+                if (!inputElement) { // Skip if element not found (e.g., for optional fields)
+                    return;
+                }
+                const value = inputElement.value;
+                const parsedValue = parseFloat(value); 
+
+                // Basic validation for numbers
+                if (value.trim() === '' || isNaN(parsedValue)) {
+                    showInputError(inputId, `請輸入有效的${labels[index]}。`);
+                    isValid = false;
+                }
+
+                // Range validation specific to each field
+                switch (field) {
+                    case 'year':
+                        if (parsedValue < 1900 || parsedValue > 2100) { showInputError(inputId, '請輸入有效的年份 (1900-2100)。'); isValid = false; }
+                        break;
+                    case 'month':
+                        if (parsedValue < 1 || parsedValue > 12) { showInputError(inputId, '請輸入有效的月份 (1-12)。'); isValid = false; }
+                        break;
+                    case 'day':
+                        if (parsedValue < 1 || parsedValue > 31) { showInputError(inputId, '請輸入有效的日期 (1-31)。'); isValid = false; }
+                        break;
+                    case 'hour':
+                        if (parsedValue < 0 || parsedValue > 23) { showInputError(inputId, '請輸入有效的時 (0-23)。'); isValid = false; }
+                        break;
+                    case 'minute':
+                        if (parsedValue < 0 || parsedValue > 59) { showInputError(inputId, '請輸入有效的分 (0-59)。'); isValid = false; }
+                        break;
+                    case 'latitude':
+                        if (parsedValue < -90 || parsedValue > 90) { showInputError(inputId, '請輸入有效的緯度 (-90 ~ 90)。'); isValid = false; }
+                        break;
+                    case 'longitude':
+                        if (parsedValue < -180 || parsedValue > 180) { showInputError(inputId, '請輸入有效的經度 (-180 ~ 180)。'); isValid = false; }
+                        break;
+                }
+            });
+
+            // Timezone validation
+            const timezoneSelect = document.getElementById(`${prefix}timezone`);
+            const customTimezoneInput = document.getElementById(`${prefix}customTimezone`);
+            
+            let timezoneValue = '';
+            if (customTimezoneInput && customTimezoneInput.value.trim() !== '') {
+                timezoneValue = customTimezoneInput.value.trim(); // Prioritize custom input
+            } else if (timezoneSelect) {
+                timezoneValue = timezoneSelect.value;
+            }
+
+            if (!timezoneValue) {
+                // If neither custom input nor select has a value, show error on select
+                if (timezoneSelect) {
+                    showInputError(timezoneSelect.id, '請選擇或手動輸入時區。');
+                } else if (customTimezoneInput) { // Fallback if for some reason select isn't there
+                    showInputError(customTimezoneInput.id, '請選擇或手動輸入時區。');
+                }
+                isValid = false;
+            }
+            return isValid;
+        }
+
+
+        /**
+         * Asynchronously calls the Flask backend to calculate the astrological chart
+         * based on user inputs and displays the results or errors.
+         */
+        async function calculateChart() {
+            console.log('Calculate button clicked. Starting chart calculation...');
+            
+            clearAllInputErrors();
+            const resultOutput = document.getElementById('resultOutput');
+            const loadingSpinner = document.getElementById('loadingSpinner');
+            resultOutput.textContent = '';
+            resultOutput.classList.remove('error-message');
+
+            const activeMainTab = document.querySelector('.tab-button.active').dataset.tabContent;
+            let payload = {};
+            let apiUrl = '';
+            let chart1Name = ''; // Used for single/natal/comp1 name
+            let chart2Name = ''; // Used for transit/comp2 name
+            let isValid = true;
+
+            // Define a helper to get input value, handling potential null/empty strings
+            const getInputValue = (id) => document.getElementById(id)?.value || '';
+
+            // --- 收集被勾選的額外星體 ---
+            const optionalPlanetCheckboxes = document.querySelectorAll('.optional-planet-checkbox:checked');
+            const optionalPlanets = Array.from(optionalPlanetCheckboxes).map(cb => cb.value);
+
+            if (activeMainTab === 'singleChartSection') {
+                chart1Name = getInputValue('single_name') || "我的星盤";
+                isValid = validateInputs('single_');
+                if (!isValid) {
+                    resultOutput.textContent = "❌ 請更正錯誤後再試。";
+                    resultOutput.classList.add('error-message');
+                    return;
+                }
+                payload = {
+                    year: parseInt(getInputValue('single_year')),
+                    month: parseInt(getInputValue('single_month')),
+                    day: parseInt(getInputValue('single_day')),
+                    hour: parseInt(getInputValue('single_hour')),
+                    minute: parseInt(getInputValue('single_minute')),
+                    latitude: parseFloat(getInputValue('single_latitude')),
+                    longitude: parseFloat(getInputValue('single_longitude')),
+                    timezone: getInputValue('single_customTimezone') || getInputValue('single_timezone'),
+                    optional_planets: optionalPlanets // 將選項加入 payload
+                };
+                apiUrl = `${BASE_API_URL}/calculate_single_chart`;
+                
+            } else if (activeMainTab === 'synastryChartSection') {
+                const selectedSubChartType = document.getElementById('selectedSubChartType').value;
+                if (selectedSubChartType === 'comparison') {
+                    chart1Name = getInputValue('comp1_name') || "你";
+                    chart2Name = getInputValue('comp2_name') || "對方";
+                    isValid = validateInputs('comp1_') && validateInputs('comp2_');
+                    if (!isValid) {
+                        resultOutput.textContent = "❌ 請更正錯誤後再試。";
+                        resultOutput.classList.add('error-message');
+                        return;
+                    }
+                    payload = {
+                        chart1_year: parseInt(getInputValue('comp1_year')),
+                        chart1_month: parseInt(getInputValue('comp1_month')),
+                        chart1_day: parseInt(getInputValue('comp1_day')),
+                        chart1_hour: parseInt(getInputValue('comp1_hour')),
+                        chart1_minute: parseInt(getInputValue('comp1_minute')),
+                        chart1_latitude: parseFloat(getInputValue('comp1_latitude')),
+                        chart1_longitude: parseFloat(getInputValue('comp1_longitude')),
+                        chart1_timezone: getInputValue('comp1_customTimezone') || getInputValue('comp1_timezone'),
+
+                        chart2_year: parseInt(getInputValue('comp2_year')),
+                        chart2_month: parseInt(getInputValue('comp2_month')),
+                        chart2_day: parseInt(getInputValue('comp2_day')),
+                        chart2_hour: parseInt(getInputValue('comp2_hour')),
+                        chart2_minute: parseInt(getInputValue('comp2_minute')),
+                        chart2_latitude: parseFloat(getInputValue('comp2_latitude')),
+                        chart2_longitude: parseFloat(getInputValue('comp2_longitude')),
+                        chart2_timezone: getInputValue('comp2_customTimezone') || getInputValue('comp2_timezone'),
+                        optional_planets: optionalPlanets // 將選項加入 payload
+                   };
+                    apiUrl = `${BASE_API_URL}/calculate_comparison_chart`;
+                } else if (selectedSubChartType === 'composite') {
+                    chart1Name = getInputValue('comp1_name') || "你";
+                    chart2Name = getInputValue('comp2_name') || "對方";
+                    isValid = validateInputs('comp1_') && validateInputs('comp2_');
+                    if (!isValid) {
+                        resultOutput.textContent = "❌ 請更正錯誤後再試。";
+                        resultOutput.classList.add('error-message');
+                        return;
+                    }
+                    payload = {
+                        chart1_year: parseInt(getInputValue('comp1_year')),
+                        chart1_month: parseInt(getInputValue('comp1_month')),
+                        chart1_day: parseInt(getInputValue('comp1_day')),
+                        chart1_hour: parseInt(getInputValue('comp1_hour')),
+                        chart1_minute: parseInt(getInputValue('comp1_minute')),
+                        chart1_latitude: parseFloat(getInputValue('comp1_latitude')),
+                        chart1_longitude: parseFloat(getInputValue('comp1_longitude')),
+                        chart1_timezone: getInputValue('comp1_customTimezone') || getInputValue('comp1_timezone'),
+                        chart2_year: parseInt(getInputValue('comp2_year')),
+                        chart2_month: parseInt(getInputValue('comp2_month')),
+                        chart2_day: parseInt(getInputValue('comp2_day')),
+                        chart2_hour: parseInt(getInputValue('comp2_hour')),
+                        chart2_minute: parseInt(getInputValue('comp2_minute')),
+                        chart2_latitude: parseFloat(getInputValue('comp2_latitude')),
+                        chart2_longitude: parseFloat(getInputValue('comp2_longitude')),
+                        chart2_timezone: getInputValue('comp2_customTimezone') || getInputValue('comp2_timezone'),
+                        optional_planets: optionalPlanets // 將選項加入 payload
+                    };
+                    apiUrl = `${BASE_API_URL}/calculate_composite_chart`;
+                } else if (selectedSubChartType === 'transit') {
+                    chart1Name = getInputValue('natal_name') || "本命";
+                    chart2Name = getInputValue('transit_name') || "行運";
+                    isValid = validateInputs('natal_') && validateInputs('transit_');
+                    if (!isValid) {
+                        resultOutput.textContent = "❌ 請更正錯誤後再試。";
+                        resultOutput.classList.add('error-message');
+                        return;
+                    }
+                    payload = {
+                        natal_year: parseInt(getInputValue('natal_year')),
+                        natal_month: parseInt(getInputValue('natal_month')),
+                        natal_day: parseInt(getInputValue('natal_day')),
+                        natal_hour: parseInt(getInputValue('natal_hour')),
+                        natal_minute: parseInt(getInputValue('natal_minute')),
+                        natal_latitude: parseFloat(getInputValue('natal_latitude')),
+                        natal_longitude: parseFloat(getInputValue('natal_longitude')),
+                        natal_timezone: getInputValue('natal_customTimezone') || getInputValue('natal_timezone'),
+
+                        transit_year: parseInt(getInputValue('transit_year')),
+                        transit_month: parseInt(getInputValue('transit_month')),
+                        transit_day: parseInt(getInputValue('transit_day')),
+                        transit_hour: parseInt(getInputValue('transit_hour')),
+                        transit_minute: parseInt(getInputValue('transit_minute')),
+                        transit_latitude: parseFloat(getInputValue('transit_latitude')),
+                        transit_longitude: parseFloat(getInputValue('transit_longitude')),
+                        transit_timezone: getInputValue('transit_customTimezone') || getInputValue('transit_timezone'),
+                        optional_planets: optionalPlanets // 將選項加入 payload
+                    };
+                    apiUrl = `${BASE_API_URL}/calculate_transit_chart`;
+                }
+            }
+
+            console.log('Sending request to backend with payload:', JSON.stringify(payload, null, 2));
+            loadingSpinner.style.display = 'inline-block';
+
+            try {
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error(`HTTP error! Status: ${response.status} - ${errorText}`);
+                }
+
+                const chartData = await response.json();
+                console.log('Received raw data from backend (FULL JSON):', JSON.stringify(chartData, null, 2)); 
+                
+                 // 修正：如果後端沒有回傳 chart_type，但當前是單盤請求，則手動設定為 'single'
+                if (!chartData.chart_type && activeMainTab === 'singleChartSection' && chartData.timestamps && chartData.planet_positions) {
+                    chartData.chart_type = 'single';
+                    console.warn("WARN: 後端單盤數據缺少 'chart_type' 屬性，已根據請求上下文和數據結構推斷為 'single'。");
+                }
+                
+                if (chartData.error) {
+                    resultOutput.textContent = `❌ 後端計算錯誤：${chartData.error}`;
+                    resultOutput.classList.add('error-message');
+                    console.error('Backend returned an error:', chartData.error);
+                } else {
+                    console.log('Starting frontend formatting...');
+                    console.log("formatChartDataForDisplayFrontend will receive chartData:", chartData);
+                    const formattedText = formatChartDataForDisplayFrontend(chartData, chart1Name, chart2Name);
+                    
+                    // 新增的偵錯日誌
+                    console.log('DEBUG: formattedText length:', formattedText.length);
+                    console.log('DEBUG: formattedText content (first 500 chars):', formattedText.substring(0, 500));
+                    console.log('DEBUG: formattedText content (last 500 chars):', formattedText.substring(formattedText.length - Math.min(formattedText.length, 500)));
+
+                    resultOutput.textContent = formattedText; // 將格式化後的文字設置到結果顯示區
+                    resultOutput.classList.remove('error-message');
+                    console.log('Formatting and display complete.');
+                }
+            } catch (error) {
+                resultOutput.textContent = `❌ 發生網路或未知錯誤：${error.message}`;
+                resultOutput.classList.add('error-message');
+                console.error('Frontend Fetch Error or JSON Parse Error:', error);
+            } finally {
+                loadingSpinner.style.display = 'none';
+                console.log('Chart calculation process finished.');
+            }
+        }
+
+        /**
+         * Formats the astrological chart data received from the backend (Python)
+         * into a human-readable string for display in the HTML.
+         * @param {object} chartData - The JSON object containing chart calculation results.
+         * @param {string} chart1Name - Name of Chart 1 (e.g., "我的", "本命").
+         * @param {string} chart2Name - Name of Chart 2 (e.g., "他的", "行運").
+         * @returns {string} - The formatted string representation of the chart data.
+         */
+        function formatChartDataForDisplayFrontend(chartData, chart1Name = "我的", chart2Name = "他的") {
+            console.log('formatChartDataForDisplayFrontend function started...', chartData);
+            const outputLines = [];
+            const HOUSE_DEFINING_POINTS = ['上升', '下降', '天頂', '天底'];
+
+            // Helper to format a single chart's data (Part A)
+            const formatSingleChartSection = (chartInfo, title) => {
+                console.log(`DEBUG: formatSingleChartSection received chartInfo for: ${title}:`, JSON.stringify(chartInfo, null, 2)); // <-- ENHANCED LOGGING
+                const currentSectionLines = []; // Use a local array for this section
+
+                currentSectionLines.push(`\n=== ${title} ===`);
+                
+                // 時間戳信息
+                if (chartInfo.timestamps) {
+                    console.log(`DEBUG: Entering timestamps block for ${title}. currentSectionLines length before: ${currentSectionLines.length}`); // <-- NEW LOG
+                    const ts = chartInfo.timestamps;
+                    currentSectionLines.push(`本地時間: ${ts.local_time}`);
+                    currentSectionLines.push(`UTC 時間: ${ts.utc_time}`);
+                    currentSectionLines.push(`計算儒略日 (UT): ${ts.julian_day_ut}`);
+                    currentSectionLines.push(`Delta T (秒): ${ts.delta_t_seconds.toFixed(3)}`);
+                    currentSectionLines.push(`計算儒略日 (TT): ${ts.julian_day_tt}`);
+                    console.log(`DEBUG: Finished timestamps block for ${title}. currentSectionLines length after: ${currentSectionLines.length}`); // <-- NEW LOG
+                } else {
+                    currentSectionLines.push("警告：時間戳數據缺失。");
+                    console.warn(`WARN: Timestamps missing for ${title}.`);
+                }
+
+                // 出生資訊
+                if (chartInfo.birth_info) {
+                    console.log(`DEBUG: Entering birth_info block for ${title}. currentSectionLines length before: ${currentSectionLines.length}`); // <-- NEW LOG
+                    currentSectionLines.push(`緯度 ${chartInfo.birth_info.latitude}, 經度 ${chartInfo.birth_info.longitude}`);
+                    console.log(`DEBUG: Finished birth_info block for ${title}. currentSectionLines length after: ${currentSectionLines.length}`); // <-- NEW LOG
+                } else {
+                    currentSectionLines.push("警告：出生資訊數據缺失。");
+                    console.warn(`WARN: Birth info missing for ${title}.`);
+                }
+
+                // 星曆檔案狀態
+                if (chartInfo.ephemeris_path_status) {
+                    console.log(`DEBUG: Entering ephemeris_path_status block for ${title}. currentSectionLines length before: ${currentSectionLines.length}`); // <-- NEW LOG
+                    currentSectionLines.push(`星曆檔案狀態: ${chartInfo.ephemeris_path_status.status} - ${chartInfo.ephemeris_path_status.message}`);
+                    console.log(`DEBUG: Finished ephemeris_path_status block for ${title}. currentSectionLines length after: ${currentSectionLines.length}`); // <-- NEW LOG
+                } else {
+                    currentSectionLines.push("警告：星曆檔案狀態數據缺失。");
+                    console.warn(`WARN: Ephemeris path status missing for ${title}.`);
+                }
+                console.log(`DEBUG: After basic info for ${title}, currentSectionLines length: ${currentSectionLines.length}`);
+                console.log(`DEBUG: currentSectionLines (basic info) for ${title}:`, currentSectionLines.slice(-5));
+
+
+                currentSectionLines.push("\n--- 宮頭星座度數 ---");
+                if (chartInfo.house_cusps && Array.isArray(chartInfo.house_cusps) && chartInfo.house_cusps.length > 0) {
+                    console.log(`DEBUG: Entering house_cusps block for ${title}. currentSectionLines length before: ${currentSectionLines.length}`); // <-- NEW LOG
+                    chartInfo.house_cusps.forEach(cusp => {
+                        currentSectionLines.push(`${String(cusp.house_number).padEnd(2, ' ')}宮頭: ${cusp.zodiac_position_formatted}`);
+                    });
+                    console.log(`DEBUG: Finished house_cusps block for ${title}. currentSectionLines length after: ${currentSectionLines.length}`); // <-- NEW LOG
+                } else {
+                    currentSectionLines.push("沒有宮頭星座度數數據。");
+                    console.warn(`WARN: house_cusps missing or empty for ${title}. Value:`, chartInfo.house_cusps);
+                }
+                console.log(`DEBUG: After house cusps for ${title}, currentSectionLines length: ${currentSectionLines.length}`);
+                console.log(`DEBUG: currentSectionLines (house cusps) for ${title}:`, currentSectionLines.slice(-5));
+
+
+                currentSectionLines.push("\n--- 天體位置 ---");
+                if (chartInfo.planet_positions && typeof chartInfo.planet_positions === 'object' && Object.keys(chartInfo.planet_positions).length > 0) {
+                    console.log(`DEBUG: Entering planet_positions block for ${title}. currentSectionLines length before: ${currentSectionLines.length}`); // <-- NEW LOG
+                    DISPLAY_ORDER_NAMES.forEach(name => {
+                        const pInfo = chartInfo.planet_positions[name];
+                        if (pInfo) {
+                            let displayName = name;
+                            const retrogradeLabel = pInfo.retrograde_label || "";
+                            if (pInfo.is_retrograde && retrogradeLabel) {
+                                displayName += retrogradeLabel;
+                            }
+                            
+                            let targetPadding = 8; 
+                            const chineseCharCount = (displayName.match(/[\u4e00-\u9fff]/g) || []).length;
+                            const actualLength = displayName.length + chineseCharCount; 
+                            const paddingNeeded = Math.max(0, targetPadding - actualLength + (displayName.length - chineseCharCount)); 
+                            const paddedName = displayName + ' '.repeat(paddingNeeded);
+
+                            let line = `${paddedName}${pInfo.zodiac_position_formatted}`;
+                            const houseNum = typeof pInfo.house === 'number' ? pInfo.house : null;
+                            const hdegNum = typeof pInfo.hdeg === 'number' ? pInfo.hdeg : null;
+
+                            // 修正：四軸點不顯示宮位資訊
+                            if (!HOUSE_DEFINING_POINTS.includes(name) && houseNum !== null && hdegNum !== null) {
+                                line += `${houseNum}宮(${hdegNum.toFixed(2)}°)`;
+                            }
+                            currentSectionLines.push(line);
+
+                            // *** 在這裡計算並儲存 full_position_display，供相位部分使用 ***
+                            let fullPlanetPositionString = `${name}${pInfo.retrograde_label || ''}`;
+                            fullPlanetPositionString += `${pInfo.zodiac_position_formatted || ''}`;
+                            if (!HOUSE_DEFINING_POINTS.includes(name) && houseNum !== null && hdegNum !== null) {
+                               fullPlanetPositionString += `${houseNum}宮(${hdegNum.toFixed(2)}°)`;
+                            }
+                            pInfo.full_position_display = fullPlanetPositionString;
+                        
+                        } else {
+                            console.warn(`WARN: Planet ${name} not found in planet_positions for ${title}`);
+                        }
+
+                        });
+                    console.log(`DEBUG: Finished planet_positions block for ${title}. currentSectionLines length after: ${currentSectionLines.length}`); // <-- NEW LOG
+                } else {
+                    currentSectionLines.push("沒有天體位置數據。");
+                    console.warn(`WARN: planet_positions missing or empty for ${title}. Value:`, chartInfo.planet_positions);
+                }
+                console.log(`DEBUG: After planet positions for ${title}, currentSectionLines length: ${currentSectionLines.length}`);
+                console.log(`DEBUG: currentSectionLines (planet positions) for ${title}:`, currentSectionLines.slice(-5));
+
+                                // --- 單盤內主要相位 (修正版) ---
+                currentSectionLines.push("\n--- 單盤內主要相位 ---");
+                if (chartInfo.aspects && Array.isArray(chartInfo.aspects) && chartInfo.aspects.length > 0) {
+
+                    // 用於儲存已經處理過的相位組合，避免重複 (例如 太陽-月亮 和 月亮-太陽)
+                    const processedAspects = new Set();
+                    const uniqueAspects = [];
+
+                    // 1. 扁平化並過濾重複相位
+                    chartInfo.aspects.forEach(asp => {
+                        // 透過排序行星名稱來建立一個唯一的鍵，確保 "A-B" 和 "B-A" 是同一個鍵
+                        const aspectKey = [asp.p1_name, asp.p2_name].sort().join('-');
+
+                        if (!processedAspects.has(aspectKey)) {
+                            uniqueAspects.push(asp);
+                            processedAspects.add(aspectKey);
+                        }
+                    });
+
+                    // 2. 智慧排序：
+                    //    - 主要排序依據：相位組合中，在 DISPLAY_ORDER_NAMES 裡排在最前面的那個星體。
+                    //    - 次要排序依據：相位組合中，排在第二個的那個星體。
+                    //    - 如此可確保輸出結果是分組的，例如先列出所有太陽的相位，再列出所有月亮的相位。
+                    uniqueAspects.sort((a, b) => {
+                        const a_p1_index = DISPLAY_ORDER_NAMES.indexOf(a.p1_name);
+                        const a_p2_index = DISPLAY_ORDER_NAMES.indexOf(a.p2_name);
+                        const b_p1_index = DISPLAY_ORDER_NAMES.indexOf(b.p1_name);
+                        const b_p2_index = DISPLAY_ORDER_NAMES.indexOf(b.p2_name);
+
+                        // 找出每個相位組合中，排序最靠前的星體 (primary planet)
+                        const primary_a_index = Math.min(a_p1_index, a_p2_index);
+                        const primary_b_index = Math.min(b_p1_index, b_p2_index);
+
+                        // 如果主要星體不同，就根據主要星體排序
+                        if (primary_a_index !== primary_b_index) {
+                            return primary_a_index - primary_b_index;
+                        }
+
+                        // 如果主要星體相同 (例如 太陽-月亮 vs 太陽-火星)，則根據次要星體排序
+                        const secondary_a_index = Math.max(a_p1_index, a_p2_index);
+                        const secondary_b_index = Math.max(b_p1_index, b_p2_index);
+                        return secondary_a_index - secondary_b_index;
+                    });
+
+                    // 3. 遍歷處理過的相位並產生輸出
+                    uniqueAspects.forEach(aspItem => {
+                        // 根據 DISPLAY_ORDER_NAMES 的順序，決定哪個星體在前，哪個在後，以保持輸出的美觀一致
+                        const p1_is_first = DISPLAY_ORDER_NAMES.indexOf(aspItem.p1_name) < DISPLAY_ORDER_NAMES.indexOf(aspItem.p2_name);
+                        const p1_name = p1_is_first ? aspItem.p1_name : aspItem.p2_name;
+                        const p2_name = p1_is_first ? aspItem.p2_name : aspItem.p1_name;
+
+                        // 從 planet_positions 中取得預先格式化好的完整位置字串
+                        const p1DisplayString = chartInfo.planet_positions[p1_name]?.full_position_display || `[${p1_name}位置缺失]`;
+                        const p2DisplayString = chartInfo.planet_positions[p2_name]?.full_position_display || `[${p2_name}位置缺失]`;
+
+                        let aspectLine = `${p1DisplayString}${aspItem.aspect_name}${p2DisplayString}`;
+                        if (aspItem.orb !== undefined) {
+                            if (aspItem.aspect_type) { // 如果有 "入相" 或 "出相"
+                                aspectLine += `，${aspItem.aspect_type}${aspItem.orb.toFixed(2)}°。`;
+                            } else { // 如果沒有，就加上 "容許度"
+                                aspectLine += `，容許度${aspItem.orb.toFixed(2)}°。`;
+                            }
+                        }
+                        currentSectionLines.push(aspectLine);
+                    });
+
+                } else {
+                    currentSectionLines.push("此星盤中沒有偵測到主要相位。");
+                    console.warn(`WARN: aspects missing or empty for ${title}. Value:`, chartInfo.aspects);
+                }
+
+                currentSectionLines.push("--------------------------------------------------");
+                outputLines.push(...currentSectionLines); // Add all lines from this section to the main outputLines
+                
+                // outputLines.push(DISPLAY_ORDER_NAMES);
+            };
+           
+            // Main logic based on chart type
+            console.log('DEBUG: Received chartData.chart_type:', chartData.chart_type); // <-- NEW LOG HERE
+            
+            if (Object.keys(chartData).length === 0) { // Check if it's an empty object
+                outputLines.push("錯誤：從後端接收到的星盤數據為空。");
+                console.error("ERROR: Received empty chartData object from backend.");
+            } else if (chartData.chart_type === 'single') {
+                // For single chart, chartData *is* the formatted data from backend
+                formatSingleChartSection(chartData, `${chart1Name}的星盤資訊`);
+            } else if (chartData.chart_type === 'comparison') {
+                formatSingleChartSection(chartData.chart1_data, `${chart1Name}的星盤資訊`);
+                formatSingleChartSection(chartData.chart2_data, `${chart2Name}的星盤資訊`);
+            
+                // (B-1) 對方星體落本命宮位
+                outputLines.push(`\n=== ${chart2Name} 的行星在 ${chart1Name} 宮位 (B-1) ===`);
+                if (!chartData.chart2_planets_in_chart1_houses || chartData.chart2_planets_in_chart1_houses.length === 0) {
+                    outputLines.push("目前沒有偵測到行星落入本命宮位。");
+                } else {
+                    chartData.chart2_planets_in_chart1_houses.sort((a, b) =>
+                        DISPLAY_ORDER_NAMES.indexOf(a.planet_name) - DISPLAY_ORDER_NAMES.indexOf(b.planet_name)
+                    );
+                    chartData.chart2_planets_in_chart1_houses.forEach(overlay => {
+                        outputLines.push(
+                            `${chart2Name}的${overlay.planet_name}${overlay.retrograde_label || ''} ${overlay.zodiac_position_formatted} 在 ${chart1Name} 的` +
+                            `${overlay.house_in_target_chart}宮(${overlay.degree_in_target_house.toFixed(2)}°)。`
+                        );
+                    });
+                }
+
+                outputLines.push(`\n=== ${chart2Name} 與 ${chart1Name} 之間的相位 (B-2) ===`);
+                if (!chartData.inter_aspects || chartData.inter_aspects.length === 0) {
+                    outputLines.push("目前沒有偵測到跨盤相位。");
+                } else {
+                    const b2_aspects = [...chartData.inter_aspects];
+                    b2_aspects.sort((a, b) => {
+                        const p2IndexA = DISPLAY_ORDER_NAMES.indexOf(a.p2_name);
+                        const p2IndexB = DISPLAY_ORDER_NAMES.indexOf(b.p2_name);
+                        if (p2IndexA !== p2IndexB) return p2IndexA - p2IndexB;
+                        return DISPLAY_ORDER_NAMES.indexOf(a.p1_name) - DISPLAY_ORDER_NAMES.indexOf(b.p1_name);
+                    });
+
+                    b2_aspects.forEach(asp => {
+                        // 找出 chart2 的行星落入 chart1 的宮位資訊
+                        const p2OverlayInChart1 = chartData.chart2_planets_in_chart1_houses.find(o => o.planet_name === asp.p2_name);
+                        const p2HouseDisplay = p2OverlayInChart1 ? `在${chart1Name}的${p2OverlayInChart1.house_in_target_chart}宮(${p2OverlayInChart1.degree_in_target_house.toFixed(2)}°)` : '';
+                        
+                        // chart1 行星在自己盤中的宮位資訊
+                        const p1House = typeof asp.p1_details.house === 'number' ? `${asp.p1_details.house}宮` : '';
+                        const p1Hdeg = typeof asp.p1_details.hdeg === 'number' ? `(${asp.p1_details.hdeg.toFixed(2)}°)` : '';
+
+                        let aspectLine = `${chart2Name}的${asp.p2_name}${asp.p2_details.retrograde_label || ''}${asp.p2_details.zodiac_position_formatted}${p2HouseDisplay}，` +
+                                         `${asp.aspect_name}${chart1Name}的${asp.p1_name}${asp.p1_details.retrograde_label || ''}${asp.p1_details.zodiac_position_formatted}${p1House}${p1Hdeg}`;
+                        
+                        if (asp.orb !== undefined) {
+                            if (asp.aspect_type) {
+                                aspectLine += `，${asp.aspect_type}${asp.orb.toFixed(2)}°。`;
+                            } else {
+                                aspectLine += `，容許度${asp.orb.toFixed(2)}°。`;
+                            }
+                        }
+                        outputLines.push(aspectLine);
+                    });
+                }
+
+                outputLines.push(`\n=== ${chart1Name} 的行星在 ${chart2Name} 宮位 (C-1) ===`);
+                if (!chartData.chart1_planets_in_chart2_houses || chartData.chart1_planets_in_chart2_houses.length === 0) {
+                    outputLines.push("目前沒有偵測到行星落入對方宮位。");
+                } else {
+                    chartData.chart1_planets_in_chart2_houses.sort((a, b) => 
+                        DISPLAY_ORDER_NAMES.indexOf(a.planet_name) - DISPLAY_ORDER_NAMES.indexOf(b.planet_name)
+                    );
+                    chartData.chart1_planets_in_chart2_houses.forEach(overlay => {
+                        outputLines.push(
+                            `${chart1Name}的${overlay.planet_name}${overlay.retrograde_label || ''}${overlay.zodiac_position_formatted}在${chart2Name}的` +
+                            `${overlay.house_in_target_chart}宮(${overlay.degree_in_target_house.toFixed(2)}°)。`
+                        );
+                    });
+                }
+
+                outputLines.push(`\n=== ${chart1Name} 與 ${chart2Name} 之間的相位 (C-2) ===`);
+                if (!chartData.inter_aspects || chartData.inter_aspects.length === 0) {
+                    outputLines.push("目前沒有偵測到跨盤相位。");
+                } else {
+                    const c2_aspects = [...chartData.inter_aspects];
+                    c2_aspects.sort((a, b) => {
+                        const p1IndexA = DISPLAY_ORDER_NAMES.indexOf(a.p1_name);
+                        const p1IndexB = DISPLAY_ORDER_NAMES.indexOf(b.p1_name);
+                        if (p1IndexA !== p1IndexB) return p1IndexA - p1IndexB;
+                        return DISPLAY_ORDER_NAMES.indexOf(a.p2_name) - DISPLAY_ORDER_NAMES.indexOf(b.p2_name);
+                    });
+                    
+                    c2_aspects.forEach(asp => {
+                        // 找出 chart1 的行星落入 chart2 的宮位資訊
+                        const p1OverlayInChart2 = chartData.chart1_planets_in_chart2_houses.find(o => o.planet_name === asp.p1_name);
+                        const p1HouseInTarget = p1OverlayInChart2 ? `在${chart2Name}的${p1OverlayInChart2.house_in_target_chart}宮(${p1OverlayInChart2.degree_in_target_house.toFixed(2)}°)` : '';
+
+                        // chart2 行星在自己盤中的宮位資訊
+                        const p2House = typeof asp.p2_details.house === 'number' ? `${asp.p2_details.house}宮` : '';
+                        const p2Hdeg = typeof asp.p2_details.hdeg === 'number' ? `(${asp.p2_details.hdeg.toFixed(2)}°)` : '';
+
+                        let aspectLine = `${chart1Name}的${asp.p1_name}${asp.p1_details.retrograde_label || ''}${asp.p1_details.zodiac_position_formatted}${p1HouseInTarget}，` +
+                                         `${asp.aspect_name}${chart2Name}的${asp.p2_name}${asp.p2_details.retrograde_label || ''}${asp.p2_details.zodiac_position_formatted}${p2House}${p2Hdeg}`;
+
+                        if (asp.orb !== undefined) {
+                            if (asp.aspect_type) {
+                                aspectLine += `，${asp.aspect_type}${asp.orb.toFixed(2)}°。`;
+                            } else {
+                                aspectLine += `，容許度${asp.orb.toFixed(2)}°。`;
+                            }
+                        }
+                        outputLines.push(aspectLine);
+                    });
+                }
+
+                
+            } else if (chartData.chart_type === 'composite') {
+                // 對於組合中點盤，顯示中點盤本身，然後可選地顯示兩個原始本命盤以供參考。
+                formatSingleChartSection(chartData.composite_chart_data, `${chart1Name}與${chart2Name}的組合中點盤`);
+                
+                // 添加分隔符，然後顯示兩個本命盤
+                outputLines.push("\n\n==================================================");
+                outputLines.push("=== 參考：個人本命盤 ===");
+                outputLines.push("==================================================\n");
+
+                formatSingleChartSection(chartData.natal_chart1_data, `${chart1Name}的本命盤資訊`);
+                formatSingleChartSection(chartData.natal_chart2_data, `${chart2Name}的本命盤資訊`);
+            
+            } else if (chartData.chart_type === 'transit') {
+                formatSingleChartSection(chartData.natal_chart_data, `${chart1Name}的星盤資訊 (本命盤)`);
+                formatSingleChartSection(chartData.transit_chart_data, `${chart2Name}的星盤資訊 (行運盤)`);
+
+                outputLines.push(`\n=== ${chart2Name} 的行星在 ${chart1Name} 宮位 (行運星體落本命宮位) (B-1) ===`);
+                if (!chartData.transit_planets_in_natal_houses || chartData.transit_planets_in_natal_houses.length === 0) {
+                    outputLines.push("目前沒有偵測到行星落入本命宮位。");
+                } else {
+                    chartData.transit_planets_in_natal_houses.sort((a, b) => 
+                        DISPLAY_ORDER_NAMES.indexOf(a.planet_name) - DISPLAY_ORDER_NAMES.indexOf(b.planet_name)
+                    );
+                    chartData.transit_planets_in_natal_houses.forEach(overlay => {
+                        outputLines.push(
+                            `${chart2Name}的${overlay.planet_name}${overlay.retrograde_label || ''}${overlay.zodiac_position_formatted}在${chart1Name}的` +
+                            `${overlay.house_in_target_chart}宮(${overlay.degree_in_target_house.toFixed(2)}°)。`
+                        );
+                    });
+                }
+
+                outputLines.push(`\n=== ${chart2Name} 與 ${chart1Name} 之間的相位 (行運星體與本命星體相位) (B-2) ===`);
+                if (!chartData.inter_aspects || chartData.inter_aspects.length === 0) {
+                    outputLines.push("目前沒有偵測到跨盤相位。");
+                } else {
+                    // For B-2 (Transit to Natal), we sort by transit planets (p2) first.
+                    const b2_aspects = [...chartData.inter_aspects]; // Create a copy to sort
+                   
+                    b2_aspects.sort((a, b) => {
+                        const p2IndexA = DISPLAY_ORDER_NAMES.indexOf(a.p2_name);
+                        const p2IndexB = DISPLAY_ORDER_NAMES.indexOf(b.p2_name);
+                        if (p2IndexA !== p2IndexB) return p2IndexA - p2IndexB;
+                        return DISPLAY_ORDER_NAMES.indexOf(a.p1_name) - DISPLAY_ORDER_NAMES.indexOf(b.p1_name);
+                    });
+
+                    b2_aspects.forEach(asp => {
+                        const p2OverlayInChart1 = chartData.transit_planets_in_natal_houses.find(o => o.planet_name === asp.p2_name);
+                        const p2HouseDisplay = p2OverlayInChart1 ? `在${chart1Name}的${p2OverlayInChart1.house_in_target_chart}宮(${p2OverlayInChart1.degree_in_target_house.toFixed(2)}°)` : '';
+                        
+                        // 修正：安全地處理 p1 的宮位資訊
+                        const p1House = typeof asp.p1_details.house === 'number' ? `${asp.p1_details.house}宮` : '';
+                        const p1Hdeg = typeof asp.p1_details.hdeg === 'number' ? `(${asp.p1_details.hdeg.toFixed(2)}°)` : '';
+
+                        let aspectLine = `${chart2Name}的${asp.p2_name}${asp.p2_details.retrograde_label || ''}${asp.p2_details.zodiac_position_formatted}在${chart1Name}的${p2HouseDisplay}，` +
+                                         `${asp.aspect_name} ${chart1Name}的${asp.p1_name}${asp.p1_details.retrograde_label || ''}${asp.p1_details.zodiac_position_formatted}${p1House}${p1Hdeg}`;
+
+                        if (asp.orb !== undefined) {
+                            if (asp.aspect_type) {
+                                aspectLine += `，${asp.aspect_type}${asp.orb.toFixed(2)}°。`;
+                            } else {
+                                aspectLine += `，容許度${asp.orb.toFixed(2)}°。`;
+                            }
+                        }
+                        outputLines.push(aspectLine);
+                    });
+                }
+
+                outputLines.push(`\n=== ${chart1Name} 的行星在 ${chart2Name} 宮位 (本命星體落行運宮位) (C-1) ===`);
+                if (!chartData.natal_planets_in_transit_houses || chartData.natal_planets_in_transit_houses.length === 0) {
+                    outputLines.push("目前沒有偵測到本命星體落入行運宮位。");
+                } else {
+                    chartData.natal_planets_in_transit_houses.sort((a, b) => 
+                        DISPLAY_ORDER_NAMES.indexOf(a.planet_name) - DISPLAY_ORDER_NAMES.indexOf(b.planet_name)
+                    );
+                    chartData.natal_planets_in_transit_houses.forEach(overlay => {
+                        outputLines.push(
+                            `${chart1Name}的${overlay.planet_name}${overlay.retrograde_label || ''}${overlay.zodiac_position_formatted}在${chart2Name}的` +
+                            `${overlay.house_in_target_chart}宮(${overlay.degree_in_target_house.toFixed(2)}°)。`
+                        );
+                    });
+                }
+
+                outputLines.push(`\n=== ${chart1Name} 與 ${chart2Name} 之間的相位 (本命星體與行運星體相位) (C-2) ===`);
+                if (!chartData.inter_aspects || chartData.inter_aspects.length === 0) {
+                    outputLines.push("目前沒有偵測到跨盤相位。");
+                } else {
+                    // For C-2 (Natal to Transit), we sort by natal planets (p1) first.
+                    const c2_aspects = [...chartData.inter_aspects]; // Create a copy to sort
+                    c2_aspects.sort((a, b) => {
+                        const p1IndexA = DISPLAY_ORDER_NAMES.indexOf(a.p1_name);
+                        const p1IndexB = DISPLAY_ORDER_NAMES.indexOf(b.p1_name);
+                        if (p1IndexA !== p1IndexB) return p1IndexA - p1IndexB;
+                        return DISPLAY_ORDER_NAMES.indexOf(a.p2_name) - DISPLAY_ORDER_NAMES.indexOf(b.p2_name);
+                    });
+                    
+                    c2_aspects.forEach(asp => {
+                        const p1OverlayInChart2 = chartData.natal_planets_in_transit_houses.find(o => o.planet_name === asp.p1_name);
+                        const p1HouseInTarget = p1OverlayInChart2 ? `在${chart2Name}的${p1OverlayInChart2.house_in_target_chart}宮(${p1OverlayInChart2.degree_in_target_house.toFixed(2)}°)` : '';
+
+                        // 修正：安全地處理 p2 的宮位資訊
+                        const p2House = typeof asp.p2_details.house === 'number' ? `${asp.p2_details.house}宮` : '';
+                        const p2Hdeg = typeof asp.p2_details.hdeg === 'number' ? `(${asp.p2_details.hdeg.toFixed(2)}°)` : '';
+
+                        let aspectLine = `${chart1Name}的${asp.p1_name}${asp.p1_details.retrograde_label || ''}${asp.p1_details.zodiac_position_formatted}${p1HouseInTarget}，` +
+                                         `${asp.aspect_name}${chart2Name}的${asp.p2_name}${asp.p2_details.retrograde_label || ''}${asp.p2_details.zodiac_position_formatted}${p2House}${p2Hdeg}`;
+
+                        if (asp.orb !== undefined) {
+                            if (asp.aspect_type) {
+                                aspectLine += `，${asp.aspect_type}${asp.orb.toFixed(2)}°。`;
+                            } else {
+                                aspectLine += `，容許度${asp.orb.toFixed(2)}°。`;
+                            }
+                        }
+                        outputLines.push(aspectLine);
+                    });
+                }
+
+            } else { // <-- NEW ELSE BLOCK FOR UNKNOWN CHART TYPES
+                outputLines.push(`錯誤：未知的星盤類型 '${chartData.chart_type || "未指定"}'。請檢查後端輸出。`);
+                console.error(`ERROR: Unknown chart_type received: ${chartData.chart_type}. Full chartData:`, JSON.stringify(chartData, null, 2));
+            }
+            // 新增的偵錯日誌
+            console.log('DEBUG: Final outputLines array length:', outputLines.length);
+            console.log('DEBUG: First few lines of outputLines:', outputLines.slice(0, 5)); // Log first 5 lines
+            console.log('DEBUG: Last few lines of outputLines:', outputLines.slice(-5)); // Log last 5 lines
+
+            console.log('formatChartDataForDisplayFrontend function finished.');
+            return outputLines.join('\n'); 
+        }
+    </script>
+</body>
+</html>
