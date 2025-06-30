@@ -884,15 +884,6 @@ def calculate_composite_chart_api():
         app.logger.error(f"組合盤後端發生未知錯誤: {e}", exc_info=True)
         return jsonify({"error": f"組合盤伺服器內部錯誤: {e}"}), 500
     
-if __name__ == '__main__':
-    # 為了能在 Render 上運行，我們需要從環境變數讀取 PORT
-    # os.environ.get('PORT', 10000) 的意思是：
-    # 嘗試讀取 'PORT' 這個環境變數，如果找不到，就使用 10000 作為預設值
-    port = int(os.environ.get('PORT', 10000))
-
-    # 讓 Flask 伺服器監聽在 0.0.0.0，這樣外部才能連線
-    # 並使用 Render 指定的 port
-    app.run(host='0.0.0.0', port=port)
 
 # 先註解掉，在Render佈署網站去跑時
 # if __name__ == '__main__':
