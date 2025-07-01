@@ -5,10 +5,11 @@
 # NEW: 增加了對組合中點盤 (Composite Chart) 的計算與 API 端點。
 # NOTE: 比較合盤與行運盤的輸出結構與 app4.py 保持一致。
 
-from flask_cors import CORS
 import os
+from flask import Flask, render_template, request, jsonify
+from flask_cors import CORS
+import traceback
 import swisseph as swe # 核心占星計算庫
-from flask import Flask, request, jsonify, render_template
 import datetime
 import pytz # 用於處理時區
 import json # 用於處理JSON數據
@@ -284,8 +285,12 @@ import math # 用於數學計算，特別是組合盤宮位
 
 # 配置日誌，以便在終端機中看到更多詳細訊息
 logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
-app = Flask(__name__)
-CORS(app)  # <--- 在這裡加上這一行，為您的整個應用啟用 CORS
+app = Flask(__name__, template_folder='templates')
+# --- 設定 CORS ---
+# 這是關鍵步驟，允許您在 onrender.com 上的前端訪問後端 API
+# origins="*" 允許所有來源，您也可以設定為您的網站網址，例如 "https://your-app-name.onrender.com"
+CORS(app, resources={r"/*": {"origins": "*"}})
+
 
 # 在Render佈署網站時使用這句(仍先註解掉以測試)
 # port = int(os.environ.get("PORT", 5000))  # 預設5000，Render會自動給定PORT
@@ -658,12 +663,14 @@ def list_aspects(detailed_points_info: dict):
     # 根據相位類型和容許度排序
     return sorted(res, key=lambda item: (ASPECTS.get(item["aspect_name"], 361), item["orb"]))
 
-# @app.route('/')
-# def index():
-#     return render_template('astro3.html')
 
-@app.route('/calculate_single_chart', methods=['POST']) # <-- 請確保這裡的路徑完全匹配
-def a_function_name_for_single_chart():
+# --- 主頁面路由 ---
+# 這個路由會渲染並回傳 astro3.html
+@app.route('/')
+def index():
+    # 確保您的 astro3.html 檔案在 'templates' 資料夾中
+    return render_template('astro3.html')
+
 
     # --- 偵錯用程式碼 ---
     print(f"--- Debug Information ---")
@@ -686,10 +693,14 @@ def a_function_name_for_single_chart():
 
     return render_template('astro3.html')
 
+# --- API 路由 ---
+# 這裡我們為每種星盤類型建立對應的 API 端點
+# 這些路徑必須與 astro3.html 中的 apiUrl 完全匹配
+
 @app.route('/calculate_single_chart', methods=['POST'])
-def calculate_single_chart_api():
-    data = request.get_json(force=True)
+def handle_single_chart():
     try:
+        data = request.get_json(force=True)
         raw_chart_data = calculate_astrology_chart(
             int(data['year']), int(data['month']), int(data['day']),
             int(data['hour']), int(data['minute']),
@@ -925,4 +936,4 @@ def calculate_composite_chart_api():
 #        print(f"錯誤：無法設定 Swisseph 星曆檔案路徑: {e}")
 #        print("請檢查 pyswisseph 安裝和星曆檔案的配置。")
 
-#    app.run(debug=True, port=5000)
+#    app.run(debug=True, port=5001)
