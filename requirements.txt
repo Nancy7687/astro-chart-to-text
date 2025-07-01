@@ -3,3 +3,4 @@ Flask
 gunicorn  # 非常重要！這是 Render 實際用來運行您網站的工具
 pyswisseph  # <--- 新增這一行！
 pytz
+Flask-CORS  # <--- 新增這一行

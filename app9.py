@@ -5,6 +5,7 @@
 # NEW: 增加了對組合中點盤 (Composite Chart) 的計算與 API 端點。
 # NOTE: 比較合盤與行運盤的輸出結構與 app4.py 保持一致。
 
+from flask_cors import CORS
 import os
 import swisseph as swe # 核心占星計算庫
 from flask import Flask, request, jsonify, render_template
@@ -284,6 +285,7 @@ import math # 用於數學計算，特別是組合盤宮位
 # 配置日誌，以便在終端機中看到更多詳細訊息
 logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
 app = Flask(__name__)
+CORS(app)  # <--- 在這裡加上這一行，為您的整個應用啟用 CORS
 
 # 在Render佈署網站時使用這句(仍先註解掉以測試)
 # port = int(os.environ.get("PORT", 5000))  # 預設5000，Render會自動給定PORT
