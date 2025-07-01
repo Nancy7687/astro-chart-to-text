@@ -10,15 +10,19 @@
 # --- 1. 標準函式庫模組 ---
 import os
 import sys # 為了除錯日誌，確保 sys 在這裡
+import traceback # 如果需要詳細的錯誤追蹤
+import urllib.request # 用於 FTP 下載
+import time # 用於下載延遲
 import datetime
 import json
 import logging
 import math
-import traceback # 如果需要詳細的錯誤追蹤
 
 # --- 2. 第三方函式庫模組 (非 Flask 相關) ---
 import pytz # 用於處理時區
 import swisseph as swe # 核心占星計算庫
+# --- 4. 直接在 app9.py 頂層執行星曆下載和設定邏輯 ---
+debug_print("app9.py - Starting in-line ephemeris data setup...")
 
 # --- 3. Flask 及其相關擴展 (確保在其他 Flask 相關程式碼之前) ---
 from flask import Flask, render_template, request, jsonify
@@ -28,6 +32,23 @@ from flask_cors import CORS # 如果使用了 Flask-CORS
 # 注意：如果 download_ephe 內部不需要 Flask 才能執行，
 # 且你需要它在 Flask 應用程式初始化前完成星曆下載，這個位置是合適的。
 import download_ephe
+
+# --- 3. 除錯工具函式 ---
+# (為了保險起見，雖然 sys 應該已經導入了，但仍然保留這個包裝)
+_sys_imported = False
+try:
+    import sys
+    _sys_imported = True
+except ImportError:
+    pass
+
+def debug_print(message):
+    if _sys_imported:
+        print(f"DEBUG: {message}", file=sys.stderr, flush=True)
+    else:
+        print(f"DEBUG (no sys): {message}")
+
+
 
 # --- 除錯工具函式 (如果你還保留著) ---
 _sys_imported = False
@@ -45,6 +66,78 @@ def debug_print(message):
 
 
 # --- Flask 應用程式實例定義 (現在 Flask 類別已經可用了) ---
+debug_print("app9.py - Initializing Flask app...")
+app = Flask(__name__, template_folder='templates')
+CORS(app) # 應用 CORS
+debug_print("app9.py - Flask app initialized. Setting up routes.")
+
+# 星曆檔案的 FTP 伺服器基礎 URL
+BASE_URL = "ftp://ftp.astro.com/pub/swisseph/ephe/"
+# 存放星曆資料的目錄名稱，相對於你的 Python 腳本
+EPHE_DIR_NAME = "ephe" # 這會創建在 /opt/render/project/src/ephe
+
+try:
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    EPHE_PATH_ABS = os.path.join(script_dir, EPHE_DIR_NAME)
+
+    debug_print(f"Calculated ephemeris path: {EPHE_PATH_ABS}")
+
+    if not os.path.exists(EPHE_PATH_ABS):
+        debug_print(f"Creating ephemeris data directory at: {EPHE_PATH_ABS}")
+        os.makedirs(EPHE_PATH_ABS)
+    else:
+        debug_print(f"Ephemeris data directory already exists at: {EPHE_PATH_ABS}")
+
+    REQUIRED_FILES = [
+        "seas_18.se1", "sefl_18.se1", "semc_18.se1", "sent_18.se1",
+        "sepl_18.se1", "test.se1", "jplde.se1", "deltat.eph"
+    ]
+
+    for relative_path in REQUIRED_FILES:
+        local_filepath = os.path.join(EPHE_PATH_ABS, relative_path)
+        local_dir = os.path.dirname(local_filepath)
+
+        if not os.path.exists(local_dir):
+            os.makedirs(local_dir, exist_ok=True)
+
+        if not os.path.exists(local_filepath):
+            url_path = relative_path.replace(os.path.sep, '/')
+            download_url = BASE_URL + url_path
+            
+            debug_print(f"Downloading '{relative_path}' from {download_url}...")
+            try:
+                urllib.request.urlretrieve(download_url, local_filepath)
+                debug_print(f"Successfully downloaded '{relative_path}'.")
+            except Exception as e:
+                # 這裡是關鍵：如果下載失敗，我們需要知道原因！
+                debug_print(f"CRITICAL DOWNLOAD ERROR: Failed to download '{relative_path}'. Error: {e}")
+                debug_print(traceback.format_exc()) # 打印詳細追溯
+                # 在這裡我們可以決定是直接終止（raise）還是繼續
+                raise # <-- 強制應用程式在這裡崩潰，讓 Render 顯示完整的錯誤
+            time.sleep(0.5) # 短暫延遲，避免過度請求 FTP 伺服器
+
+    debug_print("--- Ephemeris File Download & Check Complete ---")
+
+    os.environ['SE_PATH'] = EPHE_PATH_ABS
+    debug_print(f"Swisseph path set to environment variable SE_PATH: {os.environ['SE_PATH']}")
+
+    try:
+        # 驗證 swisseph 是否能找到路徑
+        actual_ephe_path = swe.get_ephe_path()
+        debug_print(f"Swisseph is actually looking in: {actual_ephe_path}")
+    except Exception as e:
+        debug_print(f"WARNING: Could not retrieve Swisseph's effective path after setting: {e}")
+        debug_print(traceback.format_exc())
+
+    debug_print("app9.py - In-line ephemeris data setup finished.")
+
+except Exception as e:
+    debug_print(f"FATAL ERROR during ephemeris setup: {e}")
+    debug_print(traceback.format_exc()) # 打印完整的錯誤追溯
+    sys.exit(1) # <-- 強制退出，確保錯誤被 Render 捕獲
+
+
+# --- Flask 應用程式實例定義 (必須在頂層) ---
 debug_print("app9.py - Initializing Flask app...")
 app = Flask(__name__, template_folder='templates')
 CORS(app) # 應用 CORS
