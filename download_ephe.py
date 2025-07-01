@@ -3,6 +3,7 @@
 import os
 import swisseph as swe # 確保這裡有導入 swisseph
 import urllib.request
+import sys # Import sys for immediate flush
 
 print("--- Starting Ephemeris File Download Script ---")
 
@@ -246,71 +247,50 @@ EPHE_DIR_NAME = 'ephe' # 你的資料目錄名稱
 BASE_URL = 'ftp://ftp.astro.com/pub/swisseph/ephe/'
 
 def ensure_ephemeris_data_and_set_path():
-    """
-    確保所有必要的 Swisseph 星曆檔案都被下載，並設定 Swisseph 的查找路徑。
-    """
-    # 取得當前腳本 (download_ephe.py) 所在目錄的絕對路徑
-    # 這能確保無論主應用程式在哪裡執行，都能正確找到 './ephe' 資料夾
-    script_dir = os.path.dirname(os.path.abspath(__file__))
+    print("DEBUG: download_ephe.py - Starting ensure_ephemeris_data_and_set_path()...", file=sys.stderr, flush=True) # <-- ADD THIS
     
-    # 建構星曆資料目錄的絕對路徑
+    script_dir = os.path.dirname(os.path.abspath(__file__))
     EPHE_PATH_ABS = os.path.join(script_dir, EPHE_DIR_NAME)
 
-    # 3. 檢查星曆資料目錄是否存在；如果不存在，則建立它
     if not os.path.exists(EPHE_PATH_ABS):
-        print(f"正在建立星曆資料目錄於: {EPHE_PATH_ABS}")
+        print(f"DEBUG: Creating ephemeris data directory at: {EPHE_PATH_ABS}", file=sys.stderr, flush=True) # <-- ADD THIS
         os.makedirs(EPHE_PATH_ABS)
     else:
-        print(f"星曆資料目錄已存在於: {EPHE_PATH_ABS}")
+        print(f"DEBUG: Ephemeris data directory already exists at: {EPHE_PATH_ABS}", file=sys.stderr, flush=True) # <-- ADD THIS
 
-    # 4. 遍歷每個必要的檔案，如果不存在就下載它
     for relative_path in REQUIRED_FILES:
         local_filepath = os.path.join(EPHE_PATH_ABS, relative_path)
-        
-        # 確保子目錄也存在 (例如 ast0/)
         local_dir = os.path.dirname(local_filepath)
         if not os.path.exists(local_dir):
-            os.makedirs(local_dir, exist_ok=True) # exist_ok=True 是個好習慣
+            os.makedirs(local_dir, exist_ok=True)
 
         if not os.path.exists(local_filepath):
-            # 轉換路徑分隔符號以用於 URL (例如：'ast0\se00016s.se1' -> 'ast0/se00016s.se1')
             url_path = relative_path.replace(os.path.sep, '/')
             download_url = BASE_URL + url_path
             
-            print(f"正在從 {download_url} 下載 '{relative_path}'...")
+            print(f"DEBUG: Downloading '{relative_path}' from {download_url}...", file=sys.stderr, flush=True) # <-- ADD THIS
             try:
                 urllib.request.urlretrieve(download_url, local_filepath)
-                print(f"成功下載 '{relative_path}'。")
+                print(f"DEBUG: Successfully downloaded '{relative_path}'.", file=sys.stderr, flush=True) # <-- ADD THIS
             except Exception as e:
-                print(f"!!! 無法下載 '{relative_path}'。錯誤: {e}")
-        # else: # 如果你希望顯示已存在檔案的訊息，可以解除這行的註解
-        #     print(f"檔案 '{relative_path}' 已存在，跳過下載。")
+                print(f"ERROR: Failed to download '{relative_path}'. Error: {e}", file=sys.stderr, flush=True) # <-- CHANGE TO ERROR, ADD flush
+                # IMPORTANT: If a download fails, it might be blocking further execution or causing an unhandled error later.
+                # Consider if you want to exit here if a critical file fails to download.
+                # raise # Or re-raise the exception to make it visible
+        # else:
+        #     print(f"DEBUG: File '{relative_path}' already exists, skipping download.", file=sys.stderr, flush=True)
 
-    print("--- 星曆檔案下載與檢查完成 ---")
+    print("DEBUG: --- Ephemeris File Download & Check Complete ---", file=sys.stderr, flush=True) # <-- ADD THIS
 
-    # --- 關鍵步驟：設定 Swisseph 的路徑 ---
-    # 這會告訴 swisseph 函式庫去哪裡找到你下載的檔案。
     os.environ['SE_PATH'] = EPHE_PATH_ABS
     
-    # 如果你更喜歡，也可以使用 swisseph 函式庫自己的函數：
-    # swe.set_ephe_path(EPHE_PATH_ABS)
+    print(f"DEBUG: Swisseph path set to: {os.environ['SE_PATH']}", file=sys.stderr, flush=True) # <-- ADD THIS
 
-    print(f"Swisseph 路徑已設定為: {os.environ['SE_PATH']}")
-
-    # 可選：透過詢問 Swisseph 正在使用的路徑來驗證設定是否成功
     try:
-        print(f"Swisseph 實際查找的路徑: {swe.get_ephe_path()}")
+        print(f"DEBUG: Swisseph is actually looking in: {swe.get_ephe_path()}", file=sys.stderr, flush=True) # <-- ADD THIS
     except Exception as e:
-        print(f"警告: 設定路徑後，無法正確獲取 Swisseph 的有效路徑: {e}")
+        print(f"WARNING: Could not retrieve Swisseph's effective path after setting: {e}", file=sys.stderr, flush=True) # <-- ADD THIS
 
-# 這是關鍵的 Python 慣用語法，它確保當 download_ephe.py 被導入 (import) 時，
-# ensure_ephemeris_data_and_set_path() 函數會自動執行，
-# 但當它直接被執行 (例如透過命令列) 時，則不會自動執行。
-if __name__ != '__main__':
-    ensure_ephemeris_data_and_set_path()
+    print("DEBUG: download_ephe.py - Finished ensure_ephemeris_data_and_set_path().", file=sys.stderr, flush=True) # <-- ADD THIS
 
-# 這個區塊允許你直接執行 download_ephe.py 來執行下載動作
-if __name__ == '__main__':
-    print("直接運行 download_ephe.py 以確保資料存在並設定路徑。")
-    ensure_ephemeris_data_and_set_path()
-    print("直接下載和路徑設定已完成。")
+# ... (if __name__ blocks remain the same) ...

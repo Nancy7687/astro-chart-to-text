@@ -5,10 +5,10 @@
 # NEW: 增加了對組合中點盤 (Composite Chart) 的計算與 API 端點。
 # NOTE: 比較合盤與行運盤的輸出結構與 app4.py 保持一致。
 
-# 在任何使用 swisseph 的程式碼之前，先導入 download_ephe。
-# 這會觸發 download_ephe.py 中定義的下載和路徑設定邏輯。
+print("DEBUG: app9.py - Importing download_ephe...", file=sys.stderr, flush=True) # <-- ADD THIS
 import download_ephe 
-# 現在可以安全地導入 swisseph 函式庫了，因為路徑已經被 download_ephe 設定好了。
+print("DEBUG: app9.py - download_ephe imported.", file=sys.stderr, flush=True) # <-- ADD THIS
+# --- 接著導入 swisseph 函式庫 ---
 import os
 from flask import Flask, render_template, request, jsonify
 from flask_cors import CORS
@@ -19,6 +19,11 @@ import pytz # 用於處理時區
 import json # 用於處理JSON數據
 import logging # 引入日誌模組
 import math # 用於數學計算，特別是組合盤宮位
+import sys # Import sys for immediate flush
+
+print("DEBUG: app9.py - Initializing Flask app...", file=sys.stderr, flush=True) # <-- ADD THIS
+app = Flask(__name__, template_folder='templates')
+print("DEBUG: app9.py - Flask app initialized. Waiting for Gunicorn to bind port.", file=sys.stderr, flush=True) # <-- ADD THIS
 
 
 
@@ -291,7 +296,6 @@ import math # 用於數學計算，特別是組合盤宮位
 
 # 配置日誌，以便在終端機中看到更多詳細訊息
 logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
-app = Flask(__name__, template_folder='templates')
 # --- 設定 CORS ---
 # 這是關鍵步驟，允許您在 onrender.com 上的前端訪問後端 API
 # origins="*" 允許所有來源，您也可以設定為您的網站網址，例如 "https://your-app-name.onrender.com"
