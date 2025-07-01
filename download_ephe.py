@@ -1,7 +1,7 @@
 # 預備下載星曆相關
 
-import os
 import sys # Import sys for immediate flush
+import os
 import swisseph as swe # 確保這裡有導入 swisseph
 import urllib.request
 

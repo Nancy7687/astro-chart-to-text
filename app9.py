@@ -7,10 +7,8 @@
 
 print("DEBUG: app9.py - Importing download_ephe...", file=sys.stderr, flush=True) # <-- ADD THIS
 import download_ephe 
-print("DEBUG: app9.py - download_ephe imported.", file=sys.stderr, flush=True) # <-- ADD THIS
-# --- 接著導入 swisseph 函式庫 ---
-import os
 import sys # Import sys for immediate flush
+import os
 from flask import Flask, render_template, request, jsonify
 from flask_cors import CORS
 import traceback
