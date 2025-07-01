@@ -662,8 +662,9 @@ def list_aspects(detailed_points_info: dict):
 # def index():
 #     return render_template('astro3.html')
 
-@app.route('/')
-def index():
+@app.route('/calculate_single_chart', methods=['POST']) # <-- 請確保這裡的路徑完全匹配
+def a_function_name_for_single_chart():
+
     # --- 偵錯用程式碼 ---
     print(f"--- Debug Information ---")
     print(f"Flask App Root Path: {app.root_path}")
