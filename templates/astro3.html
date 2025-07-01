@@ -10,7 +10,6 @@
         /* Base body styling with a modern, saturated multi-color gradient background */
         body {
             font-family: 'Inter', 'Noto Sans TC', 'Microsoft JhengHei', sans-serif;
-            background: linear-gradient(to bottom right, #4B0082, #FF69B4); /* Blue Violet to Deep Pink */
             min-height: 100vh; /* Ensure gradient covers full viewport height */
             display: flex;
             justify-content: center;
@@ -18,6 +17,36 @@
             padding: 20px; /* Added body padding for small screens */
             box-sizing: border-box; /* Include padding in element's total width and height */
             overflow-y: auto; /* Allow scrolling for content that exceeds viewport height */
+            transition: background 1s ease-in-out; /* 平滑的背景切換效果 */
+        }
+
+        /* 動態背景的動畫 */
+        @keyframes move-bg {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* 個人星盤背景 (深邃宇宙) */
+        .bg-single {
+            background: 
+                radial-gradient(circle at top left, #00008B, transparent 40%),
+                radial-gradient(circle at top right, #4B0082, transparent 40%),
+                radial-gradient(circle at bottom left, #008080, transparent 40%),
+                radial-gradient(circle at bottom right, #2F4F4F, transparent 40%);
+            background-size: 400% 400%;
+            animation: move-bg 20s ease infinite;
+        }
+
+        /* 雙人合盤背景 (熱情關係) */
+        .bg-synastry {
+            background: 
+                radial-gradient(circle at top left, #FF4500, transparent 40%),
+                radial-gradient(circle at top right, #FF69B4, transparent 40%),
+                radial-gradient(circle at bottom left, #DA70D6, transparent 40%),
+                radial-gradient(circle at bottom right, #8A2BE2, transparent 40%);
+            background-size: 400% 400%;
+            animation: move-bg 20s ease infinite;
         }
         /* Main container for the application form and results */
         .container {
@@ -347,7 +376,7 @@
 
     </style>
 </head>
-<body>
+<body class="bg-single">
     <div class="container">
         <!-- Main Header -->
         <div class="header-bg">
@@ -860,6 +889,14 @@
 
         // Function to update main tab content visibility
         function updateMainTabVisibility(activeTabId) {
+            const body = document.body;
+            body.classList.remove('bg-single', 'bg-synastry');
+            if (activeTabId === 'singleChartTab') {
+                body.classList.add('bg-single');
+            } else {
+                body.classList.add('bg-synastry');
+            }
+
             document.querySelectorAll('.tab-button').forEach(button => {
                 button.classList.remove('active');
             });
