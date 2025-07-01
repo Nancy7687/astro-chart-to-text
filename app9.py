@@ -5,38 +5,27 @@
 # NEW: 增加了對組合中點盤 (Composite Chart) 的計算與 API 端點。
 # NOTE: 比較合盤與行運盤的輸出結構與 app4.py 保持一致。
 
-# app9.py
-
-# --- 1. 標準函式庫模組 ---
+# --- 1. 必要的導入 (優先導入標準庫，確保 sys 正常工作) ---
 import os
-import sys # 為了除錯日誌，確保 sys 在這裡
-import traceback # 如果需要詳細的錯誤追蹤
+import sys # 確保 sys 在這裡！
+import traceback # 用於打印詳細錯誤
 import urllib.request # 用於 FTP 下載
 import time # 用於下載延遲
+
+# --- 2. 第三方庫導入 ---
+import swisseph as swe # 核心占星計算庫
+from flask import Flask, render_template, request, jsonify # Flask 及其相關，確保在前面
+from flask_cors import CORS
 import datetime
-import json
+import pytz # 用於處理時區
+import json # 用於處理JSON數據
 import logging
 import math
 
-# --- 2. 第三方函式庫模組 (非 Flask 相關) ---
-import pytz # 用於處理時區
-import swisseph as swe # 核心占星計算庫
-# --- 4. 直接在 app9.py 頂層執行星曆下載和設定邏輯 ---
-debug_print("app9.py - Starting in-line ephemeris data setup...")
-
-# --- 3. Flask 及其相關擴展 (確保在其他 Flask 相關程式碼之前) ---
-from flask import Flask, render_template, request, jsonify
-from flask_cors import CORS # 如果使用了 Flask-CORS
-
-# --- 4. 你自己的模組 (放在 Flask 導入之後，因為它可能會間接用到 Flask 或其他第三方庫) ---
-# 注意：如果 download_ephe 內部不需要 Flask 才能執行，
-# 且你需要它在 Flask 應用程式初始化前完成星曆下載，這個位置是合適的。
-import download_ephe
-
-# --- 3. 除錯工具函式 ---
-# (為了保險起見，雖然 sys 應該已經導入了，但仍然保留這個包裝)
+# --- 3. 除錯工具函式定義 (放在所有 debug_print() 呼叫之前) ---
 _sys_imported = False
 try:
+    # 這裡的 sys 導入是確保 debug_print 函式本身能用
     import sys
     _sys_imported = True
 except ImportError:
@@ -49,27 +38,8 @@ def debug_print(message):
         print(f"DEBUG (no sys): {message}")
 
 
-
-# --- 除錯工具函式 (如果你還保留著) ---
-_sys_imported = False
-try:
-    import sys
-    _sys_imported = True
-except ImportError:
-    pass # 如果 sys 無法導入，_sys_imported 仍為 False
-
-def debug_print(message):
-    if _sys_imported:
-        print(f"DEBUG: {message}", file=sys.stderr, flush=True)
-    else:
-        print(f"DEBUG (no sys): {message}") # Fallback if sys somehow isn't imported
-
-
-# --- Flask 應用程式實例定義 (現在 Flask 類別已經可用了) ---
-debug_print("app9.py - Initializing Flask app...")
-app = Flask(__name__, template_folder='templates')
-CORS(app) # 應用 CORS
-debug_print("app9.py - Flask app initialized. Setting up routes.")
+# --- 4. 直接在 app9.py 頂層執行星曆下載和設定邏輯 ---
+debug_print("app9.py - Starting in-line ephemeris data setup...")
 
 # 星曆檔案的 FTP 伺服器基礎 URL
 BASE_URL = "ftp://ftp.astro.com/pub/swisseph/ephe/"
@@ -87,6 +57,7 @@ try:
         os.makedirs(EPHE_PATH_ABS)
     else:
         debug_print(f"Ephemeris data directory already exists at: {EPHE_PATH_ABS}")
+
 
     REQUIRED_FILES = [
         "seas_18.se1", "sefl_18.se1", "semc_18.se1", "sent_18.se1",
@@ -112,7 +83,6 @@ try:
                 # 這裡是關鍵：如果下載失敗，我們需要知道原因！
                 debug_print(f"CRITICAL DOWNLOAD ERROR: Failed to download '{relative_path}'. Error: {e}")
                 debug_print(traceback.format_exc()) # 打印詳細追溯
-                # 在這裡我們可以決定是直接終止（raise）還是繼續
                 raise # <-- 強制應用程式在這裡崩潰，讓 Render 顯示完整的錯誤
             time.sleep(0.5) # 短暫延遲，避免過度請求 FTP 伺服器
 
@@ -793,86 +763,57 @@ def list_aspects(detailed_points_info: dict):
 
 # --- 主頁面路由 ---
 # 這個路由會渲染並回傳 astro3.html
+# --- 你的所有路由和業務邏輯 ---
 @app.route('/')
-def index():
-    # 確保您的 astro3.html 檔案在 'templates' 資料夾中
-    return render_template('astro3.html')
+def home():
+    debug_print("Request to / home route.")
+    return "<h1>Swisseph Celestial Calculator is running! Access /calculate_chart_api for calculations.</h1>"
 
-
-    # --- 偵錯用程式碼 ---
-    print(f"--- Debug Information ---")
-    print(f"Flask App Root Path: {app.root_path}")
-    print(f"Flask App Template Folder: {app.template_folder}")
-
-    # 嘗試列出樣板資料夾內的真實檔案
+@app.route('/calculate_chart_api', methods=['POST'])
+def calculate_celestial_body():
+    debug_print("Request to /calculate_chart_api received.")
     try:
-        # 組合出絕對路徑
-        template_dir_path = os.path.join(app.root_path, app.template_folder)
-        print(f"Attempting to list files in: {template_dir_path}")
-        # 列出檔案
-        files_in_dir = os.listdir(template_dir_path)
-        print(f"Files found in template directory: {files_in_dir}")
+        data = request.get_json()
+        
+        year = data.get('year')
+        month = data.get('month')
+        day = data.get('day')
+        hour_utc = data.get('hour_utc') 
+        minute_utc = data.get('minute_utc')
+        second_utc = data.get('second_utc')
+        
+        jd_utc = swe.julday(year, month, day, hour_utc + minute_utc/60.0 + second_utc/3600.0)
+
+        planets_data = {}
+        planets_to_calculate = [
+            (swe.SUN, "Sun"), (swe.MOON, "Moon"), (swe.MERCURY, "Mercury"),
+            (swe.VENUS, "Venus"), (swe.MARS, "Mars"), (swe.JUPITER, "Jupiter"),
+            (swe.SATURN, "Saturn"), (swe.URANUS, "Uranus"), (swe.NEPTUNE, "Neptune"),
+            (swe.PLUTO, "Pluto"), (swe.CERES, "Ceres"), (swe.PALLAS, "Pallas")
+        ]
+
+        for obj_id, name in planets_to_calculate:
+            try:
+                ret, xx = swe.calc_ut(jd_utc, obj_id, swe.FLG_SWIEPH)
+                planets_data[name] = f"{xx[0]:.4f}°"
+            except swe.Error as e:
+                planets_data[name] = f"計算失敗: {e}"
+                debug_print(f"WARNING: 計算 {name} 失敗: {e}")
+
+        debug_print("Calculation successful.")
+        return jsonify({
+            "status": "success",
+            "message": "星盤計算完成",
+            "input_time_utc": f"{year}-{month}-{day} {hour_utc}:{minute_utc}:{second_utc}",
+            "planets_positions": planets_data
+        })
+
     except Exception as e:
-        print(f"Error listing template directory: {e}")
+        debug_print(f"ERROR: API 請求處理失敗: {e}")
+        debug_print(traceback.format_exc())
+        return jsonify({"status": "error", "message": f"伺服器內部錯誤: {e}"}), 500
 
-    print(f"--- End Debug Information ---")
-    # --- 偵錯用程式碼結束 ---
 
-    return render_template('astro3.html')
-
-# --- API 路由 ---
-# 這裡我們為每種星盤類型建立對應的 API 端點
-# 這些路徑必須與 astro3.html 中的 apiUrl 完全匹配
-
-@app.route('/calculate_single_chart', methods=['POST'])
-def handle_single_chart():
-    try:
-        data = request.get_json(force=True)
-        raw_chart_data = calculate_astrology_chart(
-            int(data['year']), int(data['month']), int(data['day']),
-            int(data['hour']), int(data['minute']),
-            float(data['latitude']), float(data['longitude']),
-            data['timezone'], data.get('optional_planets', []))
-        if "error" in raw_chart_data:
-            app.logger.error(f"單盤計算錯誤: {raw_chart_data['error']}")
-            return jsonify(raw_chart_data), 400
-        formatted_output = format_chart_data_for_display(raw_chart_data)
-        formatted_output['chart_type'] = 'single'
-        return jsonify(formatted_output)
-    except Exception as e:
-        app.logger.error(f"後端發生未知錯誤: {e}", exc_info=True)
-        return jsonify({"error": f"伺服器內部錯誤: {e}"}), 500
-
-@app.route('/calculate_comparison_chart', methods=['POST'])
-def calculate_comparison_chart_api():
-    data = request.get_json(force=True)
-    try:
-        optional_planets = data.get('optional_planets', [])
-        c1_raw = calculate_astrology_chart(
-            int(data['chart1_year']), int(data['chart1_month']), int(data['chart1_day']),
-            int(data['chart1_hour']), int(data['chart1_minute']),
-            float(data['chart1_latitude']), float(data['chart1_longitude']),
-            data['chart1_timezone'], optional_planets)
-        c2_raw = calculate_astrology_chart(
-            int(data['chart2_year']), int(data['chart2_month']), int(data['chart2_day']),
-            int(data['chart2_hour']), int(data['chart2_minute']),
-            float(data['chart2_latitude']), float(data['chart2_longitude']),
-            data['chart2_timezone'], optional_planets)
-        if "error" in c1_raw or "error" in c2_raw:
-            app.logger.error(f"比較盤計算錯誤: Chart 1 Error: {c1_raw.get('error', 'N/A')}, Chart 2 Error: {c2_raw.get('error', 'N/A')}")
-            return jsonify({"error": f"Chart 1 Error: {c1_raw.get('error', 'N/A')}, Chart 2 Error: {c2_raw.get('error', 'N/A')}"}), 400
-        response_data = {
-            "chart_type": "comparison",
-            "chart1_data": format_chart_data_for_display(c1_raw),
-            "chart2_data": format_chart_data_for_display(c2_raw),
-            "inter_aspects": list_interchart_aspects(c1_raw['planet_positions'], c2_raw['planet_positions']),
-            "chart1_planets_in_chart2_houses": get_planet_overlays_in_houses(c1_raw['planet_positions'], c2_raw['house_cusps']),
-            "chart2_planets_in_chart1_houses": get_planet_overlays_in_houses(c2_raw['planet_positions'], c1_raw['house_cusps']),
-        }
-        return jsonify(response_data)
-    except Exception as e:
-        app.logger.error(f"後端發生未知錯誤: {e}", exc_info=True)
-        return jsonify({"error": f"伺服器內部錯誤: {e}"}), 500
     
 def list_interchart_aspects(chart1_points: dict, chart2_points: dict):
     """列出兩個星盤之間所有天體之間的相位。"""
