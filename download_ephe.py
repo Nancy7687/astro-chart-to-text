@@ -1,14 +1,17 @@
-# 預備下載星曆相關
-
-import sys # Import sys for immediate flush
 import os
-import swisseph as swe # 確保這裡有導入 swisseph
+import swisseph as swe  # 核心占星計算庫
 import urllib.request
+import time  # 引入 time 模組用於延遲
 
-print("--- Starting Ephemeris File Download Script ---")
+# 星曆檔案的 FTP 伺服器基礎 URL
+BASE_URL = "ftp://ftp.astro.com/pub/swisseph/ephe/"
+# 存放星曆資料的目錄名稱，相對於你的 Python 腳本
+EPHE_DIR_NAME = "ephe"
 
-# 1. 定義所有您需要的星曆檔案名稱列表
+# 需要下載的星曆檔案列表
+# 這是 swisseph 正常運行所需的一些基本檔案
 REQUIRED_FILES = [
+
     'all_long.txt',
 'all_short.txt',
 'ast0/se00016s.se1',
@@ -240,57 +243,74 @@ REQUIRED_FILES = [
 'sepm9999.se1',
 
     # --- 請在這裡繼續加入您需要的其他檔案名，例如凱龍星 'sech_18.se1' ---
+
 ]
 
-# 2. 定義星曆檔案將存放的目錄名稱和下載來源
-EPHE_DIR_NAME = 'ephe' # 你的資料目錄名稱
-BASE_URL = 'ftp://ftp.astro.com/pub/swisseph/ephe/'
-
 def ensure_ephemeris_data_and_set_path():
-    # 這裡所有的 print 語句都只用普通的 print，不要帶 file=sys.stderr, flush=True
-    print("DEBUG: download_ephe.py - Starting ensure_ephemeris_data_and_set_path()...") 
-    
+    """
+    檢查星曆資料目錄是否存在並確保所需檔案已被下載。
+    同時設定 swisseph 的星曆路徑。
+    """
+    print("DEBUG: download_ephe.py - Starting ensure_ephemeris_data_and_set_path()...")
+
+    # 獲取當前腳本的絕對路徑
     script_dir = os.path.dirname(os.path.abspath(__file__))
+    # 構建星曆資料的絕對路徑
     EPHE_PATH_ABS = os.path.join(script_dir, EPHE_DIR_NAME)
 
+    # 檢查並創建星曆資料目錄
     if not os.path.exists(EPHE_PATH_ABS):
         print(f"DEBUG: Creating ephemeris data directory at: {EPHE_PATH_ABS}")
         os.makedirs(EPHE_PATH_ABS)
     else:
         print(f"DEBUG: Ephemeris data directory already exists at: {EPHE_PATH_ABS}")
 
+    # 遍歷所需檔案，檢查並下載
     for relative_path in REQUIRED_FILES:
         local_filepath = os.path.join(EPHE_PATH_ABS, relative_path)
         local_dir = os.path.dirname(local_filepath)
+
+        # 確保本地子目錄存在 (如果檔案在子目錄中)
         if not os.path.exists(local_dir):
             os.makedirs(local_dir, exist_ok=True)
 
         if not os.path.exists(local_filepath):
+            # 將相對路徑中的系統分隔符轉換為 URL 中的斜槓
             url_path = relative_path.replace(os.path.sep, '/')
             download_url = BASE_URL + url_path
-            
+
             print(f"DEBUG: Downloading '{relative_path}' from {download_url}...")
             try:
+                # 使用 urllib.request 進行下載
                 urllib.request.urlretrieve(download_url, local_filepath)
                 print(f"DEBUG: Successfully downloaded '{relative_path}'.")
             except Exception as e:
                 print(f"ERROR: Failed to download '{relative_path}'. Error: {e}")
-                # 如果這裡是致命錯誤，你可能需要 raise e 來阻止應用程式啟動
-                # raise
-        # else:
-        #     print(f"DEBUG: File '{relative_path}' already exists, skipping download.")
+                # 在生產環境中，如果關鍵檔案下載失敗，你可能希望這裡拋出異常或終止應用程式
+                # raise  # 如果要強制停止，可以取消註解這行
+                time.sleep(1) # 短暫延遲，避免連續失敗導致過度請求
+        else:
+            # print(f"DEBUG: File '{relative_path}' already exists, skipping download.")
+            pass # 為了保持日誌簡潔，已存在檔案時不打印
 
     print("DEBUG: --- Ephemeris File Download & Check Complete ---")
 
+    # 設定 swisseph 的星曆路徑環境變數
     os.environ['SE_PATH'] = EPHE_PATH_ABS
-    
+
     print(f"DEBUG: Swisseph path set to: {os.environ['SE_PATH']}")
 
+    # 驗證 swisseph 是否能找到路徑
     try:
+        # swisseph.get_ephe_path() 函式返回 swisseph 當前正在尋找星曆檔案的路徑
         print(f"DEBUG: Swisseph is actually looking in: {swe.get_ephe_path()}")
     except Exception as e:
         print(f"WARNING: Could not retrieve Swisseph's effective path after setting: {e}")
 
-    print("DEBUG: download_ephe.py - Finished ensure_ephemeris_data_and_set_path().")
 
-# ... (if __name__ blocks remain the same) ...
+if __name__ == '__main__':
+    # 這個區塊只在 download_ephe.py 被直接執行時運行
+    # 在導入時不會執行，這有助於在開發時獨立測試這個腳本
+    print("Running download_ephe.py directly for testing...")
+    ensure_ephemeris_data_and_set_path()
+    print("Direct execution of ephemeris setup complete.")
