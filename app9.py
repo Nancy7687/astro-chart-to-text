@@ -5,6 +5,10 @@
 # NEW: 增加了對組合中點盤 (Composite Chart) 的計算與 API 端點。
 # NOTE: 比較合盤與行運盤的輸出結構與 app4.py 保持一致。
 
+# 在任何使用 swisseph 的程式碼之前，先導入 download_ephe。
+# 這會觸發 download_ephe.py 中定義的下載和路徑設定邏輯。
+import download_ephe 
+# 現在可以安全地導入 swisseph 函式庫了，因為路徑已經被 download_ephe 設定好了。
 import os
 from flask import Flask, render_template, request, jsonify
 from flask_cors import CORS
@@ -15,6 +19,8 @@ import pytz # 用於處理時區
 import json # 用於處理JSON數據
 import logging # 引入日誌模組
 import math # 用於數學計算，特別是組合盤宮位
+
+
 
 # # --- 自動下載星曆資料的區塊 ---
 

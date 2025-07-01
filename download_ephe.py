@@ -1,6 +1,7 @@
-# 所有預備下載相關
+# 預備下載星曆相關
 
-import os # 用於檢查檔案系統路徑
+import os
+import swisseph as swe # 確保這裡有導入 swisseph
 import urllib.request
 
 print("--- Starting Ephemeris File Download Script ---")
@@ -240,34 +241,76 @@ REQUIRED_FILES = [
     # --- 請在這裡繼續加入您需要的其他檔案名，例如凱龍星 'sech_18.se1' ---
 ]
 
-# 2. 定義路徑和下載來源
-EPHE_PATH = './ephe'
+# 2. 定義星曆檔案將存放的目錄名稱和下載來源
+EPHE_DIR_NAME = 'ephe' # 你的資料目錄名稱
 BASE_URL = 'ftp://ftp.astro.com/pub/swisseph/ephe/'
 
-# 3. 檢查資料夾是否存在，不存在就建立一個
-if not os.path.exists(EPHE_PATH):
-    print(f"Creating ephemeris data directory at: {EPHE_PATH}")
-    os.makedirs(EPHE_PATH)
-
-# 4. 迴圈檢查每一個必要的檔案，如果不存在就自動下載
-for relative_path in REQUIRED_FILES:
-    local_filepath = os.path.join(EPHE_PATH, relative_path)
+def ensure_ephemeris_data_and_set_path():
+    """
+    確保所有必要的 Swisseph 星曆檔案都被下載，並設定 Swisseph 的查找路徑。
+    """
+    # 取得當前腳本 (download_ephe.py) 所在目錄的絕對路徑
+    # 這能確保無論主應用程式在哪裡執行，都能正確找到 './ephe' 資料夾
+    script_dir = os.path.dirname(os.path.abspath(__file__))
     
-    local_dir = os.path.dirname(local_filepath)
-    if not os.path.exists(local_dir):
-        os.makedirs(local_dir, exist_ok=True) # exist_ok=True 是好習慣
+    # 建構星曆資料目錄的絕對路徑
+    EPHE_PATH_ABS = os.path.join(script_dir, EPHE_DIR_NAME)
 
-    if not os.path.exists(local_filepath):
-        url_path = relative_path.replace(os.path.sep, '/')
-        download_url = BASE_URL + url_path
+    # 3. 檢查星曆資料目錄是否存在；如果不存在，則建立它
+    if not os.path.exists(EPHE_PATH_ABS):
+        print(f"正在建立星曆資料目錄於: {EPHE_PATH_ABS}")
+        os.makedirs(EPHE_PATH_ABS)
+    else:
+        print(f"星曆資料目錄已存在於: {EPHE_PATH_ABS}")
+
+    # 4. 遍歷每個必要的檔案，如果不存在就下載它
+    for relative_path in REQUIRED_FILES:
+        local_filepath = os.path.join(EPHE_PATH_ABS, relative_path)
         
-        print(f"Downloading '{relative_path}'...")
-        try:
-            urllib.request.urlretrieve(download_url, local_filepath)
-            print(f"Successfully downloaded '{relative_path}'.")
-        except Exception as e:
-            print(f"!!! Failed to download '{relative_path}'. Error: {e}")
+        # 確保子目錄也存在 (例如 ast0/)
+        local_dir = os.path.dirname(local_filepath)
+        if not os.path.exists(local_dir):
+            os.makedirs(local_dir, exist_ok=True) # exist_ok=True 是個好習慣
 
-print("--- Ephemeris File Download Script Finished ---")
+        if not os.path.exists(local_filepath):
+            # 轉換路徑分隔符號以用於 URL (例如：'ast0\se00016s.se1' -> 'ast0/se00016s.se1')
+            url_path = relative_path.replace(os.path.sep, '/')
+            download_url = BASE_URL + url_path
+            
+            print(f"正在從 {download_url} 下載 '{relative_path}'...")
+            try:
+                urllib.request.urlretrieve(download_url, local_filepath)
+                print(f"成功下載 '{relative_path}'。")
+            except Exception as e:
+                print(f"!!! 無法下載 '{relative_path}'。錯誤: {e}")
+        # else: # 如果你希望顯示已存在檔案的訊息，可以解除這行的註解
+        #     print(f"檔案 '{relative_path}' 已存在，跳過下載。")
 
-# --- 自動下載區塊結束 ---
+    print("--- 星曆檔案下載與檢查完成 ---")
+
+    # --- 關鍵步驟：設定 Swisseph 的路徑 ---
+    # 這會告訴 swisseph 函式庫去哪裡找到你下載的檔案。
+    os.environ['SE_PATH'] = EPHE_PATH_ABS
+    
+    # 如果你更喜歡，也可以使用 swisseph 函式庫自己的函數：
+    # swe.set_ephe_path(EPHE_PATH_ABS)
+
+    print(f"Swisseph 路徑已設定為: {os.environ['SE_PATH']}")
+
+    # 可選：透過詢問 Swisseph 正在使用的路徑來驗證設定是否成功
+    try:
+        print(f"Swisseph 實際查找的路徑: {swe.get_ephe_path()}")
+    except Exception as e:
+        print(f"警告: 設定路徑後，無法正確獲取 Swisseph 的有效路徑: {e}")
+
+# 這是關鍵的 Python 慣用語法，它確保當 download_ephe.py 被導入 (import) 時，
+# ensure_ephemeris_data_and_set_path() 函數會自動執行，
+# 但當它直接被執行 (例如透過命令列) 時，則不會自動執行。
+if __name__ != '__main__':
+    ensure_ephemeris_data_and_set_path()
+
+# 這個區塊允許你直接執行 download_ephe.py 來執行下載動作
+if __name__ == '__main__':
+    print("直接運行 download_ephe.py 以確保資料存在並設定路徑。")
+    ensure_ephemeris_data_and_set_path()
+    print("直接下載和路徑設定已完成。")
