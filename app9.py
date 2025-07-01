@@ -10,6 +10,7 @@ import download_ephe
 print("DEBUG: app9.py - download_ephe imported.", file=sys.stderr, flush=True) # <-- ADD THIS
 # --- 接著導入 swisseph 函式庫 ---
 import os
+import sys # Import sys for immediate flush
 from flask import Flask, render_template, request, jsonify
 from flask_cors import CORS
 import traceback
@@ -19,7 +20,6 @@ import pytz # 用於處理時區
 import json # 用於處理JSON數據
 import logging # 引入日誌模組
 import math # 用於數學計算，特別是組合盤宮位
-import sys # Import sys for immediate flush
 
 print("DEBUG: app9.py - Initializing Flask app...", file=sys.stderr, flush=True) # <-- ADD THIS
 app = Flask(__name__, template_folder='templates')

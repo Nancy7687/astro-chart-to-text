@@ -1,9 +1,9 @@
 # 預備下載星曆相關
 
 import os
+import sys # Import sys for immediate flush
 import swisseph as swe # 確保這裡有導入 swisseph
 import urllib.request
-import sys # Import sys for immediate flush
 
 print("--- Starting Ephemeris File Download Script ---")
 
