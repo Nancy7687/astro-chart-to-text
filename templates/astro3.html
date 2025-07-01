@@ -6,6 +6,8 @@
     <title>占星命盤文字資料</title>
     <!-- Tailwind CSS CDN for styling -->
     <script src="https://cdn.tailwindcss.com"></script>
+     <!-- Axios CDN for simplified HTTP requests -->
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <style>
         /* Base body styling with a modern, saturated multi-color gradient background */
         body {
@@ -1312,19 +1314,11 @@
             loadingSpinner.style.display = 'inline-block';
 
             try {
-                const response = await fetch(apiUrl, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
+                // --- 使用 Axios 發送請求 ---
+                const response = await axios.post(apiUrl, payload);
+                const chartData = response.data; // Axios 自動解析 JSON
 
-                if (!response.ok) {
-                    const errorText = await response.text();
-                    throw new Error(`HTTP error! Status: ${response.status} - ${errorText}`);
-                }
-
-                const chartData = await response.json();
-                console.log('Received raw data from backend (FULL JSON):', JSON.stringify(chartData, null, 2)); 
+console.log('Received raw data from backend (FULL JSON):', JSON.stringify(chartData, null, 2)); 
                 
                  // 修正：如果後端沒有回傳 chart_type，但當前是單盤請求，則手動設定為 'single'
                 if (!chartData.chart_type && activeMainTab === 'singleChartSection' && chartData.timestamps && chartData.planet_positions) {
@@ -1350,11 +1344,22 @@
                     resultOutput.classList.remove('error-message');
                     console.log('Formatting and display complete.');
                 }
-            } catch (error) {
-                resultOutput.textContent = `❌ 發生網路或未知錯誤：${error.message}`;
+            } catch (error) { // --- Axios 的錯誤處理 ---
                 resultOutput.classList.add('error-message');
-                console.error('Frontend Fetch Error or JSON Parse Error:', error);
-            } finally {
+                if (error.response) {
+                    // 伺服器有回應，但狀態碼不是 2xx
+                    const serverError = error.response.data?.error || error.response.statusText || '未知伺服器錯誤';
+                    resultOutput.textContent = `❌ 伺服器錯誤 ${error.response.status}: ${serverError}`;
+                    console.error('Backend Error:', error.response.data);
+                } else if (error.request) {
+                    // 請求已發出，但沒有收到回應
+                    resultOutput.textContent = '❌ 網路錯誤：無法連接到伺服器，請檢查後端是否正在運行。';
+                    console.error('Network Error:', error.request);
+                } else {
+                    // 設置請求時發生錯誤
+                    resultOutput.textContent = `❌ 請求錯誤：${error.message}`;
+                    console.error('Axios Setup Error:', error.message);
+                }} finally {
                 loadingSpinner.style.display = 'none';
                 console.log('Chart calculation process finished.');
             }
