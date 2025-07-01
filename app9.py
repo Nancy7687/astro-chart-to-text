@@ -5,50 +5,50 @@
 # NEW: 增加了對組合中點盤 (Composite Chart) 的計算與 API 端點。
 # NOTE: 比較合盤與行運盤的輸出結構與 app4.py 保持一致。
 
-# 在所有其他導入之前，優先導入 sys，確保它絕不會出錯。
+# app9.py
+
+# --- 1. 標準函式庫模組 ---
+import os
+import sys # 為了除錯日誌，確保 sys 在這裡
+import datetime
+import json
+import logging
+import math
+import traceback # 如果需要詳細的錯誤追蹤
+
+# --- 2. 第三方函式庫模組 (非 Flask 相關) ---
+import pytz # 用於處理時區
+import swisseph as swe # 核心占星計算庫
+
+# --- 3. Flask 及其相關擴展 (確保在其他 Flask 相關程式碼之前) ---
+from flask import Flask, render_template, request, jsonify
+from flask_cors import CORS # 如果使用了 Flask-CORS
+
+# --- 4. 你自己的模組 (放在 Flask 導入之後，因為它可能會間接用到 Flask 或其他第三方庫) ---
+# 注意：如果 download_ephe 內部不需要 Flask 才能執行，
+# 且你需要它在 Flask 應用程式初始化前完成星曆下載，這個位置是合適的。
+import download_ephe
+
+# --- 除錯工具函式 (如果你還保留著) ---
+_sys_imported = False
 try:
     import sys
     _sys_imported = True
 except ImportError:
-    _sys_imported = False
+    pass # 如果 sys 無法導入，_sys_imported 仍為 False
 
 def debug_print(message):
     if _sys_imported:
         print(f"DEBUG: {message}", file=sys.stderr, flush=True)
     else:
-        # Fallback if sys somehow isn't imported (shouldn't happen with the try-except)
-        print(f"DEBUG (no sys): {message}")
+        print(f"DEBUG (no sys): {message}") # Fallback if sys somehow isn't imported
 
 
-# --- 關鍵：導入 download_ephe (必須在任何使用 swisseph 之前) ---
-debug_print("app9.py - Importing download_ephe...")
-import download_ephe
-debug_print("app9.py - download_ephe imported and path set.")
-
-# --- 初始化 Flask 應用程式 (只有一次，且必須在頂層) ---
+# --- Flask 應用程式實例定義 (現在 Flask 類別已經可用了) ---
 debug_print("app9.py - Initializing Flask app...")
 app = Flask(__name__, template_folder='templates')
-CORS(app) # 如果你使用了 CORS，這應該在 app 定義之後
+CORS(app) # 應用 CORS
 debug_print("app9.py - Flask app initialized. Setting up routes.")
-
-
-print("DEBUG: app9.py - Importing download_ephe...", file=sys.stderr, flush=True) # <-- ADD THIS
-import download_ephe 
-import os
-from flask import Flask, render_template, request, jsonify
-from flask_cors import CORS
-import traceback
-import swisseph as swe # 核心占星計算庫
-import datetime
-import pytz # 用於處理時區
-import json # 用於處理JSON數據
-import logging # 引入日誌模組
-import math # 用於數學計算，特別是組合盤宮位
-
-print("DEBUG: app9.py - Initializing Flask app...", file=sys.stderr, flush=True) # <-- ADD THIS
-app = Flask(__name__, template_folder='templates')
-print("DEBUG: app9.py - Flask app initialized. Waiting for Gunicorn to bind port.", file=sys.stderr, flush=True) # <-- ADD THIS
-
 
 
 # # --- 自動下載星曆資料的區塊 ---
