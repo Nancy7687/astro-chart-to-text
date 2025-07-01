@@ -5,9 +5,35 @@
 # NEW: 增加了對組合中點盤 (Composite Chart) 的計算與 API 端點。
 # NOTE: 比較合盤與行運盤的輸出結構與 app4.py 保持一致。
 
+# 在所有其他導入之前，優先導入 sys，確保它絕不會出錯。
+try:
+    import sys
+    _sys_imported = True
+except ImportError:
+    _sys_imported = False
+
+def debug_print(message):
+    if _sys_imported:
+        print(f"DEBUG: {message}", file=sys.stderr, flush=True)
+    else:
+        # Fallback if sys somehow isn't imported (shouldn't happen with the try-except)
+        print(f"DEBUG (no sys): {message}")
+
+
+# --- 關鍵：導入 download_ephe (必須在任何使用 swisseph 之前) ---
+debug_print("app9.py - Importing download_ephe...")
+import download_ephe
+debug_print("app9.py - download_ephe imported and path set.")
+
+# --- 初始化 Flask 應用程式 (只有一次，且必須在頂層) ---
+debug_print("app9.py - Initializing Flask app...")
+app = Flask(__name__, template_folder='templates')
+CORS(app) # 如果你使用了 CORS，這應該在 app 定義之後
+debug_print("app9.py - Flask app initialized. Setting up routes.")
+
+
 print("DEBUG: app9.py - Importing download_ephe...", file=sys.stderr, flush=True) # <-- ADD THIS
 import download_ephe 
-import sys # Import sys for immediate flush
 import os
 from flask import Flask, render_template, request, jsonify
 from flask_cors import CORS

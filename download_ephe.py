@@ -247,16 +247,17 @@ EPHE_DIR_NAME = 'ephe' # 你的資料目錄名稱
 BASE_URL = 'ftp://ftp.astro.com/pub/swisseph/ephe/'
 
 def ensure_ephemeris_data_and_set_path():
-    print("DEBUG: download_ephe.py - Starting ensure_ephemeris_data_and_set_path()...", file=sys.stderr, flush=True) # <-- ADD THIS
+    # 這裡所有的 print 語句都只用普通的 print，不要帶 file=sys.stderr, flush=True
+    print("DEBUG: download_ephe.py - Starting ensure_ephemeris_data_and_set_path()...") 
     
     script_dir = os.path.dirname(os.path.abspath(__file__))
     EPHE_PATH_ABS = os.path.join(script_dir, EPHE_DIR_NAME)
 
     if not os.path.exists(EPHE_PATH_ABS):
-        print(f"DEBUG: Creating ephemeris data directory at: {EPHE_PATH_ABS}", file=sys.stderr, flush=True) # <-- ADD THIS
+        print(f"DEBUG: Creating ephemeris data directory at: {EPHE_PATH_ABS}")
         os.makedirs(EPHE_PATH_ABS)
     else:
-        print(f"DEBUG: Ephemeris data directory already exists at: {EPHE_PATH_ABS}", file=sys.stderr, flush=True) # <-- ADD THIS
+        print(f"DEBUG: Ephemeris data directory already exists at: {EPHE_PATH_ABS}")
 
     for relative_path in REQUIRED_FILES:
         local_filepath = os.path.join(EPHE_PATH_ABS, relative_path)
@@ -268,29 +269,28 @@ def ensure_ephemeris_data_and_set_path():
             url_path = relative_path.replace(os.path.sep, '/')
             download_url = BASE_URL + url_path
             
-            print(f"DEBUG: Downloading '{relative_path}' from {download_url}...", file=sys.stderr, flush=True) # <-- ADD THIS
+            print(f"DEBUG: Downloading '{relative_path}' from {download_url}...")
             try:
                 urllib.request.urlretrieve(download_url, local_filepath)
-                print(f"DEBUG: Successfully downloaded '{relative_path}'.", file=sys.stderr, flush=True) # <-- ADD THIS
+                print(f"DEBUG: Successfully downloaded '{relative_path}'.")
             except Exception as e:
-                print(f"ERROR: Failed to download '{relative_path}'. Error: {e}", file=sys.stderr, flush=True) # <-- CHANGE TO ERROR, ADD flush
-                # IMPORTANT: If a download fails, it might be blocking further execution or causing an unhandled error later.
-                # Consider if you want to exit here if a critical file fails to download.
-                # raise # Or re-raise the exception to make it visible
+                print(f"ERROR: Failed to download '{relative_path}'. Error: {e}")
+                # 如果這裡是致命錯誤，你可能需要 raise e 來阻止應用程式啟動
+                # raise
         # else:
-        #     print(f"DEBUG: File '{relative_path}' already exists, skipping download.", file=sys.stderr, flush=True)
+        #     print(f"DEBUG: File '{relative_path}' already exists, skipping download.")
 
-    print("DEBUG: --- Ephemeris File Download & Check Complete ---", file=sys.stderr, flush=True) # <-- ADD THIS
+    print("DEBUG: --- Ephemeris File Download & Check Complete ---")
 
     os.environ['SE_PATH'] = EPHE_PATH_ABS
     
-    print(f"DEBUG: Swisseph path set to: {os.environ['SE_PATH']}", file=sys.stderr, flush=True) # <-- ADD THIS
+    print(f"DEBUG: Swisseph path set to: {os.environ['SE_PATH']}")
 
     try:
-        print(f"DEBUG: Swisseph is actually looking in: {swe.get_ephe_path()}", file=sys.stderr, flush=True) # <-- ADD THIS
+        print(f"DEBUG: Swisseph is actually looking in: {swe.get_ephe_path()}")
     except Exception as e:
-        print(f"WARNING: Could not retrieve Swisseph's effective path after setting: {e}", file=sys.stderr, flush=True) # <-- ADD THIS
+        print(f"WARNING: Could not retrieve Swisseph's effective path after setting: {e}")
 
-    print("DEBUG: download_ephe.py - Finished ensure_ephemeris_data_and_set_path().", file=sys.stderr, flush=True) # <-- ADD THIS
+    print("DEBUG: download_ephe.py - Finished ensure_ephemeris_data_and_set_path().")
 
 # ... (if __name__ blocks remain the same) ...
