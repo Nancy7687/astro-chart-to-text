@@ -1,4 +1,4 @@
-# swiss_ephe_downloader.py (Final Correct Version v2)
+# swiss_ephe_downloader.py (Final Correct Version v3 - Using GitHub Mirror)
 import os
 import requests
 from tqdm import tqdm
@@ -12,9 +12,9 @@ EPHE_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), '.data', 'ep
 
 # ========================================================================
 # ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼
-# FIX: 將下載協定從 http 改為 https，以解決 404 Not Found 錯誤
+# FIX: 將下載來源從 astro.com 更換為穩定的 GitHub 鏡像，以解決 Connection Refused 問題
 # ========================================================================
-BASE_URL = "https://www.astro.com/ftp/swisseph/ephe/"
+BASE_URL = "https://raw.githubusercontent.com/astrorigin/swisseph-files/main/"
 # ========================================================================
 # ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
 
