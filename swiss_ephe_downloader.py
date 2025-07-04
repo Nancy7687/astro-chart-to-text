@@ -1,4 +1,4 @@
-# swiss_ephe_downloader.py (Final Correct Version)
+# swiss_ephe_downloader.py (Final Correct Version v2)
 import os
 import requests
 from tqdm import tqdm
@@ -9,13 +9,16 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(
 
 # --- 配置 ---
 EPHE_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), '.data', 'ephe')
-BASE_URL = "http://www.astro.com/ftp/swisseph/ephe/"
 
 # ========================================================================
-# FINAL & CORRECT FILE LIST
+# ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼
+# FIX: 將下載協定從 http 改為 https，以解決 404 Not Found 錯誤
 # ========================================================================
-# 這是一個為標準占星盤（個人、行運等）精心挑選的列表。
-# 它的大小適中，下載速度快，並且完整涵蓋您程式中定義的所有星體。
+BASE_URL = "https://www.astro.com/ftp/swisseph/ephe/"
+# ========================================================================
+# ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
+
+# 這是一個為標準占星盤精心挑選的列表。
 FILES_TO_DOWNLOAD = [
     # 主要行星 (太陽到冥王星) - 現代 (1800-2400 AD)
     "sepl_18.se1",
@@ -52,10 +55,8 @@ def ensure_ephe_files_exist():
     logging.info(f"目標資料夾 '{EPHE_DIR}' 已確認存在。")
 
     for filename in FILES_TO_DOWNLOAD:
-        # 處理包含子目錄的路徑，例如 'ast/file.se1'
         full_path = os.path.join(EPHE_DIR, filename)
         
-        # 如果檔案路徑包含子目錄，請確保該子目錄存在
         if '/' in filename:
             sub_dir = os.path.dirname(full_path)
             os.makedirs(sub_dir, exist_ok=True)
@@ -68,7 +69,7 @@ def ensure_ephe_files_exist():
         logging.info(f"檔案 '{filename}' 不存在，開始從 {url} 下載...")
         
         try:
-            response = requests.get(url, stream=True, timeout=60) # 增加超時時間
+            response = requests.get(url, stream=True, timeout=60)
             response.raise_for_status()
             total_size = int(response.headers.get('content-length', 0))
             
