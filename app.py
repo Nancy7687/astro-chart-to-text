@@ -151,6 +151,19 @@ def compute_four_angles(jd_tt: float, lat: float, lon: float):
         raise Exception(f"計算四軸時發生錯誤，請檢查經緯度及時間設定，或星曆檔案: {e}")
 
 def calculate_astrology_chart(year, month, day, hour, minute, latitude, longitude, timezone_str, optional_planets=None, generate_image=False):
+    # ==================================================================
+    # NEW: 強制在每次計算前都設定星曆路徑
+    # 這是為了確保在 Gunicorn 的多進程環境下，每個工作進程都能正確找到路徑
+    # ==================================================================
+    try:
+        swe.set_ephe_path(EPHE_PATH_CONFIG)
+    except Exception as e:
+        # 如果在這裡設定失敗，直接回傳錯誤，避免後續計算出錯
+        app.logger.error(f"在計算過程中設定星曆路徑失敗: {e}", exc_info=True)
+        return {"error": f"無法在計算時設定星曆路徑: {e}"}
+    # ==================================================================
+    # END NEW CODE
+    # ==================================================================
     try:
         if timezone_str == "Asia/Chongqing":
             utc_offset = datetime.timedelta(hours=8)
