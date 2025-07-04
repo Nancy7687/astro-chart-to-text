@@ -12,7 +12,7 @@
 # # 這是 swisseph 正常運行所需的一些基本檔案
 # REQUIRED_FILES = [
 
-#     'all_long.txt',
+# 'all_long.txt',
 # 'all_short.txt',
 # 'ast0/se00016s.se1',
 # 'ast0/se00393s.se1',

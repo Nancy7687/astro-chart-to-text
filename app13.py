@@ -1,401 +1,32 @@
-# app.py - 占星命盤生成器後端程式碼 (修正版)
+# app.py - 占星命盤生成器後端程式碼
 # VERSION: Multi-Chart Support with Composite Chart
-# FIX: 修正了組合中點盤在計算相位時，因四軸點缺少 'house' 鍵而導致的 KeyError。
-# FIX: 修正了 IndentationError。
-# NEW: 增加了對組合中點盤 (Composite Chart) 的計算與 API 端點。
-# NOTE: 比較合盤與行運盤的輸出結構與 app4.py 保持一致。
+#
+# NEW: Added '/calculate_composite_chart' endpoint for composite chart calculations.
+# NEW: Added `get_midpoint` helper function for composite chart logic.
+# FIX: Refactored core calculation into `calculate_single_chart_raw` for reusability.
+# FIX: Removed a NameError in the main execution block.
 
-# --- 1. 必要的導入 (優先導入標準庫，確保 sys 正常工作) ---
-import os
-import sys # 確保 sys 在這裡！
-import traceback # 用於打印詳細錯誤
-import urllib.request # 用於 FTP 下載
-import time # 用於下載延遲
-
-# --- 2. 第三方庫導入 ---
-import swisseph as swe # 核心占星計算庫
-from flask import Flask, render_template, request, jsonify # Flask 及其相關，確保在前面
-from flask_cors import CORS
+from flask import Flask, request, jsonify, render_template
 import datetime
 import pytz # 用於處理時區
+import swisseph as swe # 核心占星計算庫
 import json # 用於處理JSON數據
-import logging
-import math
-
-# --- 3. 除錯工具函式定義 (放在所有 debug_print() 呼叫之前) ---
-_sys_imported = False
-try:
-    # 這裡的 sys 導入是確保 debug_print 函式本身能用
-    import sys
-    _sys_imported = True
-except ImportError:
-    pass
-
-def debug_print(message):
-    if _sys_imported:
-        print(f"DEBUG: {message}", file=sys.stderr, flush=True)
-    else:
-        print(f"DEBUG (no sys): {message}")
-
-
-# --- 4. 直接在 app9.py 頂層執行星曆下載和設定邏輯 ---
-debug_print("app9.py - Starting in-line ephemeris data setup...")
-
-# 星曆檔案的 FTP 伺服器基礎 URL
-BASE_URL = "ftp://ftp.astro.com/pub/swisseph/ephe/"
-# 存放星曆資料的目錄名稱，相對於你的 Python 腳本
-EPHE_DIR_NAME = "ephe" # 這會創建在 /opt/render/project/src/ephe
-
-try:
-    script_dir = os.path.dirname(os.path.abspath(__file__))
-    EPHE_PATH_ABS = os.path.join(script_dir, EPHE_DIR_NAME)
-
-    debug_print(f"Calculated ephemeris path: {EPHE_PATH_ABS}")
-
-    if not os.path.exists(EPHE_PATH_ABS):
-        debug_print(f"Creating ephemeris data directory at: {EPHE_PATH_ABS}")
-        os.makedirs(EPHE_PATH_ABS)
-    else:
-        debug_print(f"Ephemeris data directory already exists at: {EPHE_PATH_ABS}")
-
-
-    REQUIRED_FILES = [
-        "seas_18.se1", "sefl_18.se1", "semc_18.se1", "sent_18.se1",
-        "sepl_18.se1", "test.se1", "jplde.se1", "deltat.eph"
-    ]
-
-    for relative_path in REQUIRED_FILES:
-        local_filepath = os.path.join(EPHE_PATH_ABS, relative_path)
-        local_dir = os.path.dirname(local_filepath)
-
-        if not os.path.exists(local_dir):
-            os.makedirs(local_dir, exist_ok=True)
-
-        if not os.path.exists(local_filepath):
-            url_path = relative_path.replace(os.path.sep, '/')
-            download_url = BASE_URL + url_path
-            
-            debug_print(f"Downloading '{relative_path}' from {download_url}...")
-            try:
-                urllib.request.urlretrieve(download_url, local_filepath)
-                debug_print(f"Successfully downloaded '{relative_path}'.")
-            except Exception as e:
-                # 這裡是關鍵：如果下載失敗，我們需要知道原因！
-                debug_print(f"CRITICAL DOWNLOAD ERROR: Failed to download '{relative_path}'. Error: {e}")
-                debug_print(traceback.format_exc()) # 打印詳細追溯
-                raise # <-- 強制應用程式在這裡崩潰，讓 Render 顯示完整的錯誤
-            time.sleep(0.5) # 短暫延遲，避免過度請求 FTP 伺服器
-
-    debug_print("--- Ephemeris File Download & Check Complete ---")
-
-    os.environ['SE_PATH'] = EPHE_PATH_ABS
-    debug_print(f"Swisseph path set to environment variable SE_PATH: {os.environ['SE_PATH']}")
-
-    try:
-        # 驗證 swisseph 是否能找到路徑
-        actual_ephe_path = swe.get_ephe_path()
-        debug_print(f"Swisseph is actually looking in: {actual_ephe_path}")
-    except Exception as e:
-        debug_print(f"WARNING: Could not retrieve Swisseph's effective path after setting: {e}")
-        debug_print(traceback.format_exc())
-
-    debug_print("app9.py - In-line ephemeris data setup finished.")
-
-except Exception as e:
-    debug_print(f"FATAL ERROR during ephemeris setup: {e}")
-    debug_print(traceback.format_exc()) # 打印完整的錯誤追溯
-    sys.exit(1) # <-- 強制退出，確保錯誤被 Render 捕獲
-
-
-# --- Flask 應用程式實例定義 (必須在頂層) ---
-debug_print("app9.py - Initializing Flask app...")
-app = Flask(__name__, template_folder='templates')
-CORS(app) # 應用 CORS
-debug_print("app9.py - Flask app initialized. Setting up routes.")
-
-
-# # --- 自動下載星曆資料的區塊 ---
-
-# # 1. 定義所有您需要的星曆檔案名稱列表
-# REQUIRED_FILES = [
-#     'all_long.txt',
-# 'all_short.txt',
-# 'ast0/se00016s.se1',
-# 'ast0/se00393s.se1',
-# 'ast0/se00433s.se1',
-# 'list_long.txt',
-# 'list_short.txt',
-# 'plmolist.txt',
-# 'sat/plmolist.txt',
-# 'sat/sepm9401.se1',
-# 'sat/sepm9402.se1',
-# 'sat/sepm9501.se1',
-# 'sat/sepm9502.se1',
-# 'sat/sepm9503.se1',
-# 'sat/sepm9504.se1',
-# 'sat/sepm9599.se1',
-# 'sat/sepm9601.se1',
-# 'sat/sepm9602.se1',
-# 'sat/sepm9603.se1',
-# 'sat/sepm9604.se1',
-# 'sat/sepm9605.se1',
-# 'sat/sepm9606.se1',
-# 'sat/sepm9607.se1',
-# 'sat/sepm9608.se1',
-# 'sat/sepm9699.se1',
-# 'sat/sepm9701.se1',
-# 'sat/sepm9702.se1',
-# 'sat/sepm9703.se1',
-# 'sat/sepm9704.se1',
-# 'sat/sepm9705.se1',
-# 'sat/sepm9799.se1',
-# 'sat/sepm9801.se1',
-# 'sat/sepm9802.se1',
-# 'sat/sepm9808.se1',
-# 'sat/sepm9899.se1',
-# 'sat/sepm9901.se1',
-# 'sat/sepm9902.se1',
-# 'sat/sepm9903.se1',
-# 'sat/sepm9904.se1',
-# 'sat/sepm9905.se1',
-# 'sat/sepm9999.se1',
-# 'se00016s.se1',
-# 'se00393s.se1',
-# 'se00433s.se1',
-# 'seasm06.se1',
-# 'seasm102.se1',
-# 'seasm108.se1',
-# 'seasm114.se1',
-# 'seasm12.se1',
-# 'seasm120.se1',
-# 'seasm126.se1',
-# 'seasm132.se1',
-# 'seasm18.se1',
-# 'seasm24.se1',
-# 'seasm30.se1',
-# 'seasm36.se1',
-# 'seasm42.se1',
-# 'seasm48.se1',
-# 'seasm54.se1',
-# 'seasm60.se1',
-# 'seasm66.se1',
-# 'seasm72.se1',
-# 'seasm78.se1',
-# 'seasm84.se1',
-# 'seasm90.se1',
-# 'seasm96.se1',
-# 'seasnam.txt',
-# 'seas_00.se1',
-# 'seas_06.se1',
-# 'seas_102.se1',
-# 'seas_108.se1',
-# 'seas_114.se1',
-# 'seas_12.se1',
-# 'seas_120.se1',
-# 'seas_126.se1',
-# 'seas_132.se1',
-# 'seas_138.se1',
-# 'seas_144.se1',
-# 'seas_150.se1',
-# 'seas_156.se1',
-# 'seas_162.se1',
-# 'seas_18.se1',
-# 'seas_24.se1',
-# 'seas_30.se1',
-# 'seas_36.se1',
-# 'seas_42.se1',
-# 'seas_48.se1',
-# 'seas_54.se1',
-# 'seas_60.se1',
-# 'seas_66.se1',
-# 'seas_72.se1',
-# 'seas_78.se1',
-# 'seas_84.se1',
-# 'seas_90.se1',
-# 'seas_96.se1',
-# 'sefstars.txt',
-# 'semom06.se1',
-# 'semom102.se1',
-# 'semom108.se1',
-# 'semom114.se1',
-# 'semom12.se1',
-# 'semom120.se1',
-# 'semom126.se1',
-# 'semom132.se1',
-# 'semom18.se1',
-# 'semom24.se1',
-# 'semom30.se1',
-# 'semom36.se1',
-# 'semom42.se1',
-# 'semom48.se1',
-# 'semom54.se1',
-# 'semom60.se1',
-# 'semom66.se1',
-# 'semom72.se1',
-# 'semom78.se1',
-# 'semom84.se1',
-# 'semom90.se1',
-# 'semom96.se1',
-# 'semo_00.se1',
-# 'semo_06.se1',
-# 'semo_102.se1',
-# 'semo_108.se1',
-# 'semo_114.se1',
-# 'semo_12.se1',
-# 'semo_120.se1',
-# 'semo_126.se1',
-# 'semo_132.se1',
-# 'semo_138.se1',
-# 'semo_144.se1',
-# 'semo_150.se1',
-# 'semo_156.se1',
-# 'semo_162.se1',
-# 'semo_18.se1',
-# 'semo_24.se1',
-# 'semo_30.se1',
-# 'semo_36.se1',
-# 'semo_42.se1',
-# 'semo_48.se1',
-# 'semo_54.se1',
-# 'semo_60.se1',
-# 'semo_66.se1',
-# 'semo_72.se1',
-# 'semo_78.se1',
-# 'semo_84.se1',
-# 'semo_90.se1',
-# 'semo_96.se1',
-# 'seorbel.txt',
-# 'seplm06.se1',
-# 'seplm102.se1',
-# 'seplm108.se1',
-# 'seplm114.se1',
-# 'seplm12.se1',
-# 'seplm120.se1',
-# 'seplm126.se1',
-# 'seplm132.se1',
-# 'seplm18.se1',
-# 'seplm24.se1',
-# 'seplm30.se1',
-# 'seplm36.se1',
-# 'seplm42.se1',
-# 'seplm48.se1',
-# 'seplm54.se1',
-# 'seplm60.se1',
-# 'seplm66.se1',
-# 'seplm72.se1',
-# 'seplm78.se1',
-# 'seplm84.se1',
-# 'seplm90.se1',
-# 'seplm96.se1',
-# 'sepl_00.se1',
-# 'sepl_06.se1',
-# 'sepl_102.se1',
-# 'sepl_108.se1',
-# 'sepl_114.se1',
-# 'sepl_12.se1',
-# 'sepl_120.se1',
-# 'sepl_126.se1',
-# 'sepl_132.se1',
-# 'sepl_138.se1',
-# 'sepl_144.se1',
-# 'sepl_150.se1',
-# 'sepl_156.se1',
-# 'sepl_162.se1',
-# 'sepl_18.se1',
-# 'sepl_24.se1',
-# 'sepl_30.se1',
-# 'sepl_36.se1',
-# 'sepl_42.se1',
-# 'sepl_48.se1',
-# 'sepl_54.se1',
-# 'sepl_60.se1',
-# 'sepl_66.se1',
-# 'sepl_72.se1',
-# 'sepl_78.se1',
-# 'sepl_84.se1',
-# 'sepl_90.se1',
-# 'sepl_96.se1',
-# 'sepm9401.se1',
-# 'sepm9402.se1',
-# 'sepm9501.se1',
-# 'sepm9502.se1',
-# 'sepm9503.se1',
-# 'sepm9504.se1',
-# 'sepm9599.se1',
-# 'sepm9601.se1',
-# 'sepm9602.se1',
-# 'sepm9603.se1',
-# 'sepm9604.se1',
-# 'sepm9605.se1',
-# 'sepm9606.se1',
-# 'sepm9607.se1',
-# 'sepm9608.se1',
-# 'sepm9699.se1',
-# 'sepm9701.se1',
-# 'sepm9702.se1',
-# 'sepm9703.se1',
-# 'sepm9704.se1',
-# 'sepm9705.se1',
-# 'sepm9799.se1',
-# 'sepm9801.se1',
-# 'sepm9802.se1',
-# 'sepm9808.se1',
-# 'sepm9899.se1',
-# 'sepm9901.se1',
-# 'sepm9902.se1',
-# 'sepm9903.se1',
-# 'sepm9904.se1',
-# 'sepm9905.se1',
-# 'sepm9999.se1',
-
-#     # --- 請在這裡繼續加入您需要的其他檔案名，例如凱龍星 'sech_18.se1' ---
-# ]
-
-# # 2. 定義星曆檔案要存放的路徑和下載來源
-# EPHE_PATH = './ephe'
-# # 注意：這是 Swiss Ephemeris 官方的 FTP 伺服器位置
-# BASE_URL = 'ftp://ftp.astro.com/pub/swisseph/ephe/'
-
-# # 3. 檢查資料夾是否存在，不存在就建立一個
-# if not os.path.exists(EPHE_PATH):
-#     print(f"Creating ephemeris data directory at: {EPHE_PATH}")
-#     os.makedirs(EPHE_PATH)
-
-# # 4. 迴圈檢查每一個必要的檔案，如果不存在就自動下載
-# for filename in REQUIRED_FILES:
-#     filepath = os.path.join(EPHE_PATH, filename)
-#     if not os.path.exists(filepath):
-#         download_url = BASE_URL + filename
-#         print(f"'{filename}' not found. Downloading from {download_url}...")
-#         try:
-#             urllib.request.urlretrieve(download_url, filepath)
-#             print(f"Successfully downloaded '{filename}'.")
-#         except Exception as e:
-#             print(f"!!! Failed to download '{filename}'. Error: {e}")
-#             # 如果某個檔案下載失敗，您可以在這裡決定是否要讓程式中止
-
-# # 5. 告訴 swisseph 函式庫要去哪裡找資料
-# swe.set_ephe_path(EPHE_PATH)
-
-# print("Ephemeris check complete. All required files are present.")
-
-# --- 自動下載區塊結束 ---
+import os # 用於檢查檔案系統路徑
+import logging # 引入日誌模組
+import math # 用於數學計算，特別是組合盤宮位
 
 # 配置日誌，以便在終端機中看到更多詳細訊息
 logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
-# --- 設定 CORS ---
-# 這是關鍵步驟，允許您在 onrender.com 上的前端訪問後端 API
-# origins="*" 允許所有來源，您也可以設定為您的網站網址，例如 "https://your-app-name.onrender.com"
-CORS(app, resources={r"/*": {"origins": "*"}})
+app = Flask(__name__)
 
+# 設定 Flask 模板資料夾為當前目錄，這樣可以直接找到 astro2.html
+app.template_folder = '.'
 
-# 在Render佈署網站時使用這句(仍先註解掉以測試)
-# port = int(os.environ.get("PORT", 5000))  # 預設5000，Render會自動給定PORT
+# ==============================================================================
+# Global Configuration and Data (全域配置和數據)
+# ==============================================================================
 
-# 設定 Flask 模板資料夾為當前目錄，這樣可以直接找到 astro3.html (For development)
-
-# 在Render裡不用這句
-# app.template_folder = '.'
+EPHE_PATH_CONFIG = "C:/swisseph/ephe"
 
 # ==============================================================================
 # Global Configuration and Data (全域配置和數據)
@@ -760,60 +391,59 @@ def list_aspects(detailed_points_info: dict):
     # 根據相位類型和容許度排序
     return sorted(res, key=lambda item: (ASPECTS.get(item["aspect_name"], 361), item["orb"]))
 
-
-# --- 主頁面路由 ---
-# 這個路由會渲染並回傳 astro3.html
-# --- 你的所有路由和業務邏輯 ---
 @app.route('/')
-def home():
-    debug_print("Request to / home route.")
-    return "<h1>Swisseph Celestial Calculator is running! Access /calculate_chart_api for calculations.</h1>"
+def index():
+    return render_template('astro__.html')
 
-@app.route('/calculate_chart_api', methods=['POST'])
-def calculate_celestial_body():
-    debug_print("Request to /calculate_chart_api received.")
+@app.route('/calculate_single_chart', methods=['POST'])
+def calculate_single_chart_api():
+    data = request.get_json(force=True)
     try:
-        data = request.get_json()
-        
-        year = data.get('year')
-        month = data.get('month')
-        day = data.get('day')
-        hour_utc = data.get('hour_utc') 
-        minute_utc = data.get('minute_utc')
-        second_utc = data.get('second_utc')
-        
-        jd_utc = swe.julday(year, month, day, hour_utc + minute_utc/60.0 + second_utc/3600.0)
-
-        planets_data = {}
-        planets_to_calculate = [
-            (swe.SUN, "Sun"), (swe.MOON, "Moon"), (swe.MERCURY, "Mercury"),
-            (swe.VENUS, "Venus"), (swe.MARS, "Mars"), (swe.JUPITER, "Jupiter"),
-            (swe.SATURN, "Saturn"), (swe.URANUS, "Uranus"), (swe.NEPTUNE, "Neptune"),
-            (swe.PLUTO, "Pluto"), (swe.CERES, "Ceres"), (swe.PALLAS, "Pallas")
-        ]
-
-        for obj_id, name in planets_to_calculate:
-            try:
-                ret, xx = swe.calc_ut(jd_utc, obj_id, swe.FLG_SWIEPH)
-                planets_data[name] = f"{xx[0]:.4f}°"
-            except swe.Error as e:
-                planets_data[name] = f"計算失敗: {e}"
-                debug_print(f"WARNING: 計算 {name} 失敗: {e}")
-
-        debug_print("Calculation successful.")
-        return jsonify({
-            "status": "success",
-            "message": "星盤計算完成",
-            "input_time_utc": f"{year}-{month}-{day} {hour_utc}:{minute_utc}:{second_utc}",
-            "planets_positions": planets_data
-        })
-
+        raw_chart_data = calculate_astrology_chart(
+            int(data['year']), int(data['month']), int(data['day']),
+            int(data['hour']), int(data['minute']),
+            float(data['latitude']), float(data['longitude']),
+            data['timezone'], data.get('optional_planets', []))
+        if "error" in raw_chart_data:
+            app.logger.error(f"單盤計算錯誤: {raw_chart_data['error']}")
+            return jsonify(raw_chart_data), 400
+        formatted_output = format_chart_data_for_display(raw_chart_data)
+        formatted_output['chart_type'] = 'single'
+        return jsonify(formatted_output)
     except Exception as e:
-        debug_print(f"ERROR: API 請求處理失敗: {e}")
-        debug_print(traceback.format_exc())
-        return jsonify({"status": "error", "message": f"伺服器內部錯誤: {e}"}), 500
+        app.logger.error(f"後端發生未知錯誤: {e}", exc_info=True)
+        return jsonify({"error": f"伺服器內部錯誤: {e}"}), 500
 
-
+@app.route('/calculate_comparison_chart', methods=['POST'])
+def calculate_comparison_chart_api():
+    data = request.get_json(force=True)
+    try:
+        optional_planets = data.get('optional_planets', [])
+        c1_raw = calculate_astrology_chart(
+            int(data['chart1_year']), int(data['chart1_month']), int(data['chart1_day']),
+            int(data['chart1_hour']), int(data['chart1_minute']),
+            float(data['chart1_latitude']), float(data['chart1_longitude']),
+            data['chart1_timezone'], optional_planets)
+        c2_raw = calculate_astrology_chart(
+            int(data['chart2_year']), int(data['chart2_month']), int(data['chart2_day']),
+            int(data['chart2_hour']), int(data['chart2_minute']),
+            float(data['chart2_latitude']), float(data['chart2_longitude']),
+            data['chart2_timezone'], optional_planets)
+        if "error" in c1_raw or "error" in c2_raw:
+            app.logger.error(f"比較盤計算錯誤: Chart 1 Error: {c1_raw.get('error', 'N/A')}, Chart 2 Error: {c2_raw.get('error', 'N/A')}")
+            return jsonify({"error": f"Chart 1 Error: {c1_raw.get('error', 'N/A')}, Chart 2 Error: {c2_raw.get('error', 'N/A')}"}), 400
+        response_data = {
+            "chart_type": "comparison",
+            "chart1_data": format_chart_data_for_display(c1_raw),
+            "chart2_data": format_chart_data_for_display(c2_raw),
+            "inter_aspects": list_interchart_aspects(c1_raw['planet_positions'], c2_raw['planet_positions']),
+            "chart1_planets_in_chart2_houses": get_planet_overlays_in_houses(c1_raw['planet_positions'], c2_raw['house_cusps']),
+            "chart2_planets_in_chart1_houses": get_planet_overlays_in_houses(c2_raw['planet_positions'], c1_raw['house_cusps']),
+        }
+        return jsonify(response_data)
+    except Exception as e:
+        app.logger.error(f"後端發生未知錯誤: {e}", exc_info=True)
+        return jsonify({"error": f"伺服器內部錯誤: {e}"}), 500
     
 def list_interchart_aspects(chart1_points: dict, chart2_points: dict):
     """列出兩個星盤之間所有天體之間的相位。"""
@@ -987,21 +617,19 @@ def calculate_composite_chart_api():
     except Exception as e:
         app.logger.error(f"組合盤後端發生未知錯誤: {e}", exc_info=True)
         return jsonify({"error": f"組合盤伺服器內部錯誤: {e}"}), 500
-    
 
-# 先註解掉，在Render佈署網站去跑時
-# if __name__ == '__main__':
-#    try:
-#        ephe_path_to_use = EPHE_PATH_CONFIG
-#        if not os.path.exists(ephe_path_to_use):
-#            print(f"警告：找不到星曆檔案資料夾 '{ephe_path_to_use}'。請下載 Swisseph 星曆檔案並將其放置在此目錄中，否則計算可能無法進行或不準確。")
-#            print("您可以從 http://www.astro.com/ftp/swisseph/ephe/ 處下載相關檔案。")
-#            
-#        swe.set_ephe_path(ephe_path_to_use)
-#        print(f"Swisseph 星曆檔案路徑已設定為: {ephe_path_to_use}")
+if __name__ == '__main__':
+    try:
+        ephe_path_to_use = EPHE_PATH_CONFIG
+        if not os.path.exists(ephe_path_to_use):
+            print(f"警告：找不到星曆檔案資料夾 '{ephe_path_to_use}'。請下載 Swisseph 星曆檔案並將其放置在此目錄中，否則計算可能無法進行或不準確。")
+            print("您可以從 http://www.astro.com/ftp/swisseph/ephe/ 處下載相關檔案。")
+            
+        swe.set_ephe_path(ephe_path_to_use)
+        print(f"Swisseph 星曆檔案路徑已設定為: {ephe_path_to_use}")
         
-#    except Exception as e:
-#        print(f"錯誤：無法設定 Swisseph 星曆檔案路徑: {e}")
-#        print("請檢查 pyswisseph 安裝和星曆檔案的配置。")
+    except Exception as e:
+        print(f"錯誤：無法設定 Swisseph 星曆檔案路徑: {e}")
+        print("請檢查 pyswisseph 安裝和星曆檔案的配置。")
 
-#    app.run(debug=True, port=5001)
+    app.run(debug=True, port=5000)

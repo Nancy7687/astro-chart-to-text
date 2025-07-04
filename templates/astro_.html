@@ -6,7 +6,7 @@
     <title>占星命盤文字資料</title>
     <!-- Tailwind CSS CDN for styling -->
     <script src="https://cdn.tailwindcss.com"></script>
-     <!-- Axios CDN for simplified HTTP requests -->
+    <!-- Axios CDN for simplified HTTP requests -->
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <style>
         /* Base body styling with a modern, saturated multi-color gradient background */
@@ -19,7 +19,8 @@
             padding: 20px; /* Added body padding for small screens */
             box-sizing: border-box; /* Include padding in element's total width and height */
             overflow-y: auto; /* Allow scrolling for content that exceeds viewport height */
-            background: linear-gradient(to right, #6A0DAD, #C71585); /* 紫羅蘭到中等紫羅蘭紅的漸變 */
+            /* 紫羅蘭到中等紫羅蘭紅的漸變 */
+            /* background: linear-gradient(to right, #6A0DAD, #C71585);  */
             transition: background 1s ease-in-out; /* 平滑的背景切換效果 */
         }
 
@@ -30,24 +31,51 @@
             100% { background-position: 0% 50%; }
         }
 
+        /* 輸入畫面動態漸層背景 */
+        /* #singleChartSection,  */
+        /* #singleChartTab 
+        {
+            background: 
+                linear-gradient(to right, #88e8da, #009d95);  */
+                /* radial-gradient(circle at top left, #FF4500, transparent 40%),
+                radial-gradient(circle at top right, #FF69B4, transparent 40%),
+                radial-gradient(circle at bottom left, #DA70D6, transparent 40%),
+                radial-gradient(circle at bottom right, #8A2BE2, transparent 40%);
+            background-size: 400% 400%;
+            animation: move-bg 20s ease infinite; */
+        /* } */
+
+        /* #synastryChartSection,  */
+        /* #synastryTab 
+        {
+            background: 
+                linear-gradient(to right, #5800aa, #C71585);  */
+                /* radial-gradient(circle at top left, #00008B, transparent 40%),
+                radial-gradient(circle at top right, #4B0082, transparent 40%),
+                radial-gradient(circle at bottom left, #008080, transparent 40%),
+                radial-gradient(circle at bottom right, #2F4F4F, transparent 40%);
+            background-size: 400% 400%;
+            animation: move-bg 20s ease infinite; */
+        /* } */
         /* 個人星盤背景 (深邃宇宙) */
         .bg-single {
             background: 
                 radial-gradient(circle at top left, #00008B, transparent 40%),
-                radial-gradient(circle at top right, #4B0082, transparent 40%),
-                radial-gradient(circle at bottom left, #008080, transparent 40%),
+                radial-gradient(circle at top right, #ffd13b, transparent 40%),
+                radial-gradient(circle at bottom left, #009d95, transparent 40%),
                 radial-gradient(circle at bottom right, #2F4F4F, transparent 40%);
             background-size: 400% 400%;
             animation: move-bg 20s ease infinite;
         }
 
+
         /* 雙人合盤背景 (熱情關係) */
         .bg-synastry {
             background: 
                 radial-gradient(circle at top left, #FF4500, transparent 40%),
-                radial-gradient(circle at top right, #FF69B4, transparent 40%),
+                radial-gradient(circle at top right, #ff45a2, transparent 40%),
                 radial-gradient(circle at bottom left, #DA70D6, transparent 40%),
-                radial-gradient(circle at bottom right, #8A2BE2, transparent 40%);
+                radial-gradient(circle at bottom right, #5800aa, transparent 40%);
             background-size: 400% 400%;
             animation: move-bg 20s ease infinite;
         }
@@ -196,6 +224,7 @@
             border-radius: 8px 8px 0 0; /* Rounded top corners */
             transition: all 0.2s ease-in-out;
             color: #4a5568;
+            /* color: #ffffff; */
             background-color: #f8fafc;
             border: 1px solid #e2e8f0;
             border-bottom: none; /* No bottom border for tab itself */
@@ -206,7 +235,9 @@
         }
 
         .tab-button.active {
-            color: #4B0082; /* Active tab text color */
+            /* Active tab text color */
+            color: #4B0082; 
+            /* color: #ffffff; */
             background-color: #ffffff; /* Active tab background */
             border-color: #4B0082; /* Active tab border color */
             border-bottom: 2px solid #ffffff; /* Cover the main underline */
@@ -383,7 +414,7 @@
     <div class="container">
         <!-- Main Header -->
         <div class="header-bg">
-            <h1 class="text-4xl md:text-6xl font-bold text-center mb-0" style="letter-spacing: 0.1em;">星盤文字資料</h1>
+            <h1 class="text-4xl md:text-6xl font-bold text-center mb-0" style="letter-spacing: 0.1em;">星盤文字資料生成</h1>
        </div>
 
         <!-- Main Tab Buttons -->
@@ -474,6 +505,29 @@
                 </div>
             </div>
             <input type="hidden" id="selectedSubChartType" value="comparison"> <!-- Hidden input to store selected sub-type -->
+
+            <!-- Midpoint Method Selection (for Composite Chart) -->
+            <div id="compositeMethodSelection" class="hidden my-6">
+                <h4 class="text-xl md:text-2xl font-semibold text-gray-700 mb-4 text-center">中點盤計算方式</h4>
+                <div class="flex flex-col md:flex-row justify-center gap-4">
+                    <!-- Option 1: Reference Plane -->
+                    <label class="flex-1 p-4 border-2 rounded-lg cursor-pointer transition-all duration-200 has-[:checked]:bg-indigo-50 has-[:checked]:border-indigo-500">
+                        <input type="radio" name="composite_method" value="reference_plane" class="sr-only" checked>
+                        <div class="text-center">
+                            <h5 class="font-bold text-lg md:text-xl text-gray-800">參考平面中點法 (標準)</h5>
+                            <p class="text-sm md:text-base text-gray-600 mt-1">將兩盤的行星、四軸、宮位分別取中點，形成一張新的星盤。象徵兩人能量的「平均值」。</p>
+                        </div>
+                    </label>
+                    <!-- Option 2: Direct Midpoint (Davison) -->
+                    <label class="flex-1 p-4 border-2 rounded-lg cursor-pointer transition-all duration-200 has-[:checked]:bg-indigo-50 has-[:checked]:border-indigo-500">
+                        <input type="radio" name="composite_method" value="direct" class="sr-only">
+                        <div class="text-center">
+                            <h5 class="font-bold text-lg md:text-xl text-gray-800">直接中點法 (Davison)</h5>
+                            <p class="text-sm md:text-base text-gray-600 mt-1">計算兩人出生時間與地點的「時空中點」，以此新時空點繪製一張獨立的星盤。象徵關係本身的「實體」。</p>
+                        </div>
+                    </label>
+                </div>
+            </div>
 
             <!-- Comparison Chart Inputs (Default active when Synastry tab is chosen) -->
             <div id="comparisonChartInputs" class="synastry-inputs-wrapper">
@@ -739,7 +793,7 @@
 
         <!-- Result Output Section -->
         <div class="result-section">
-            <h2 class="text-3xl md:text-5xl font-semibold text-gray-700 mb-3" id="resultHeader">計算結果</h2>
+            <h2 class="text-3xl md:text-5xl font-semibold text-gray-700 mb-3" id="resultHeader">生成結果</h2>
             <pre id="resultOutput" class="result-box text-sm" role="region" aria-live="polite" aria-atomic="true"></pre>
         </div>
     </div>
@@ -757,7 +811,7 @@
 
         // IMPORTANT: Define the base URL for your Flask backend API
         // This MUST match the port your Flask app is running on (default is 5000)
-        const BASE_API_URL = '';
+        const BASE_API_URL = 'http://127.0.0.1:5000';
 
         // Helper function to get timezone offset string for display
         function getTimezoneOffsetString(timezoneName) {
@@ -928,6 +982,14 @@
             document.getElementById('comparisonChartInputs').classList.add('hidden');
             document.getElementById('transitChartInputs').classList.add('hidden');
 
+            // Show/hide composite method selection
+            const compositeMethodDiv = document.getElementById('compositeMethodSelection');
+            if (selectedType === 'composite') {
+                compositeMethodDiv.classList.remove('hidden');
+            } else {
+                compositeMethodDiv.classList.add('hidden');
+            }
+
             if (selectedType === 'comparison' || selectedType === 'composite') {
                    document.getElementById('comparisonChartInputs').classList.remove('hidden');
             } else if (selectedType === 'transit') {
@@ -951,7 +1013,7 @@
 
             for (const groupName in optionalPlanetsConfig) {
                 const groupTitle = document.createElement('div');
-                groupTitle.className = 'col-span-full font-semibold text-xl md:text-3xl text-indigo-800 mt-2';
+                groupTitle.className = 'leading-relaxed col-span-full font-semibold text-xl md:text-3xl text-fuchsia-900 mt-2';
                 groupTitle.textContent = groupName;
                 optionalPlanetsContainer.appendChild(groupTitle);
 
@@ -1228,6 +1290,7 @@
                         resultOutput.classList.add('error-message');
                         return;
                     }
+
                     payload = {
                         chart1_year: parseInt(getInputValue('comp1_year')),
                         chart1_month: parseInt(getInputValue('comp1_month')),
@@ -1258,6 +1321,9 @@
                         resultOutput.classList.add('error-message');
                         return;
                     }
+                    // Get the selected composite method
+                    const compositeMethod = document.querySelector('input[name="composite_method"]:checked').value;
+                    
                     payload = {
                         chart1_year: parseInt(getInputValue('comp1_year')),
                         chart1_month: parseInt(getInputValue('comp1_month')),
@@ -1275,7 +1341,8 @@
                         chart2_latitude: parseFloat(getInputValue('comp2_latitude')),
                         chart2_longitude: parseFloat(getInputValue('comp2_longitude')),
                         chart2_timezone: getInputValue('comp2_customTimezone') || getInputValue('comp2_timezone'),
-                        optional_planets: optionalPlanets // 將選項加入 payload
+                        optional_planets: optionalPlanets, 
+                        composite_method: compositeMethod 
                     };
                     apiUrl = `${BASE_API_URL}/calculate_composite_chart`;
                 } else if (selectedSubChartType === 'transit') {
@@ -1311,40 +1378,27 @@
                 }
             }
 
-            console.log('Sending request to backend with payload:', JSON.stringify(payload, null, 2));
             loadingSpinner.style.display = 'inline-block';
 
             try {
                 // --- 使用 Axios 發送請求 ---
                 const response = await axios.post(apiUrl, payload);
                 const chartData = response.data; // Axios 自動解析 JSON
-
-console.log('Received raw data from backend (FULL JSON):', JSON.stringify(chartData, null, 2)); 
-                
+    
                  // 修正：如果後端沒有回傳 chart_type，但當前是單盤請求，則手動設定為 'single'
                 if (!chartData.chart_type && activeMainTab === 'singleChartSection' && chartData.timestamps && chartData.planet_positions) {
                     chartData.chart_type = 'single';
-                    console.warn("WARN: 後端單盤數據缺少 'chart_type' 屬性，已根據請求上下文和數據結構推斷為 'single'。");
-                }
+                    }
                 
                 if (chartData.error) {
                     resultOutput.textContent = `❌ 後端計算錯誤：${chartData.error}`;
                     resultOutput.classList.add('error-message');
-                    console.error('Backend returned an error:', chartData.error);
-                } else {
-                    console.log('Starting frontend formatting...');
-                    console.log("formatChartDataForDisplayFrontend will receive chartData:", chartData);
+                    } else {
                     const formattedText = formatChartDataForDisplayFrontend(chartData, chart1Name, chart2Name);
                     
-                    // 新增的偵錯日誌
-                    console.log('DEBUG: formattedText length:', formattedText.length);
-                    console.log('DEBUG: formattedText content (first 500 chars):', formattedText.substring(0, 500));
-                    console.log('DEBUG: formattedText content (last 500 chars):', formattedText.substring(formattedText.length - Math.min(formattedText.length, 500)));
-
                     resultOutput.textContent = formattedText; // 將格式化後的文字設置到結果顯示區
                     resultOutput.classList.remove('error-message');
-                    console.log('Formatting and display complete.');
-                }
+                    }
             } catch (error) { // --- Axios 的錯誤處理 ---
                 resultOutput.classList.add('error-message');
                 if (error.response) {
@@ -1362,7 +1416,6 @@ console.log('Received raw data from backend (FULL JSON):', JSON.stringify(chartD
                     console.error('Axios Setup Error:', error.message);
                 }} finally {
                 loadingSpinner.style.display = 'none';
-                console.log('Chart calculation process finished.');
             }
         }
 
@@ -1375,27 +1428,23 @@ console.log('Received raw data from backend (FULL JSON):', JSON.stringify(chartD
          * @returns {string} - The formatted string representation of the chart data.
          */
         function formatChartDataForDisplayFrontend(chartData, chart1Name = "我的", chart2Name = "他的") {
-            console.log('formatChartDataForDisplayFrontend function started...', chartData);
             const outputLines = [];
             const HOUSE_DEFINING_POINTS = ['上升', '下降', '天頂', '天底'];
 
             // Helper to format a single chart's data (Part A)
             const formatSingleChartSection = (chartInfo, title) => {
-                console.log(`DEBUG: formatSingleChartSection received chartInfo for: ${title}:`, JSON.stringify(chartInfo, null, 2)); // <-- ENHANCED LOGGING
                 const currentSectionLines = []; // Use a local array for this section
 
                 currentSectionLines.push(`\n=== ${title} ===`);
                 
                 // 時間戳信息
                 if (chartInfo.timestamps) {
-                    console.log(`DEBUG: Entering timestamps block for ${title}. currentSectionLines length before: ${currentSectionLines.length}`); // <-- NEW LOG
                     const ts = chartInfo.timestamps;
                     currentSectionLines.push(`本地時間: ${ts.local_time}`);
                     currentSectionLines.push(`UTC 時間: ${ts.utc_time}`);
                     currentSectionLines.push(`計算儒略日 (UT): ${ts.julian_day_ut}`);
                     currentSectionLines.push(`Delta T (秒): ${ts.delta_t_seconds.toFixed(3)}`);
                     currentSectionLines.push(`計算儒略日 (TT): ${ts.julian_day_tt}`);
-                    console.log(`DEBUG: Finished timestamps block for ${title}. currentSectionLines length after: ${currentSectionLines.length}`); // <-- NEW LOG
                 } else {
                     currentSectionLines.push("警告：時間戳數據缺失。");
                     console.warn(`WARN: Timestamps missing for ${title}.`);
@@ -1575,11 +1624,9 @@ console.log('Received raw data from backend (FULL JSON):', JSON.stringify(chartD
                 // For single chart, chartData *is* the formatted data from backend
                 formatSingleChartSection(chartData, `${chart1Name}的星盤資訊`);
             } else if (chartData.chart_type === 'comparison') {
-                formatSingleChartSection(chartData.chart1_data, `${chart1Name}的星盤資訊`);
-                formatSingleChartSection(chartData.chart2_data, `${chart2Name}的星盤資訊`);
-            
+
                 // (B-1) 對方星體落本命宮位
-                outputLines.push(`\n=== ${chart2Name} 的行星在 ${chart1Name} 宮位 (B-1) ===`);
+                outputLines.push(`\n=== ${chart2Name}的行星在${chart1Name}宮位 (B-1) ===`);
                 if (!chartData.chart2_planets_in_chart1_houses || chartData.chart2_planets_in_chart1_houses.length === 0) {
                     outputLines.push("目前沒有偵測到行星落入本命宮位。");
                 } else {
@@ -1588,13 +1635,13 @@ console.log('Received raw data from backend (FULL JSON):', JSON.stringify(chartD
                     );
                     chartData.chart2_planets_in_chart1_houses.forEach(overlay => {
                         outputLines.push(
-                            `${chart2Name}的${overlay.planet_name}${overlay.retrograde_label || ''} ${overlay.zodiac_position_formatted} 在 ${chart1Name} 的` +
+                            `${chart2Name}的${overlay.planet_name}${overlay.retrograde_label || ''}${overlay.zodiac_position_formatted}在${chart1Name}的` +
                             `${overlay.house_in_target_chart}宮(${overlay.degree_in_target_house.toFixed(2)}°)。`
                         );
                     });
                 }
 
-                outputLines.push(`\n=== ${chart2Name} 與 ${chart1Name} 之間的相位 (B-2) ===`);
+                outputLines.push(`\n=== ${chart2Name}與${chart1Name}之間的相位 (B-2) ===`);
                 if (!chartData.inter_aspects || chartData.inter_aspects.length === 0) {
                     outputLines.push("目前沒有偵測到跨盤相位。");
                 } else {
@@ -1629,7 +1676,7 @@ console.log('Received raw data from backend (FULL JSON):', JSON.stringify(chartD
                     });
                 }
 
-                outputLines.push(`\n=== ${chart1Name} 的行星在 ${chart2Name} 宮位 (C-1) ===`);
+                outputLines.push(`\n=== ${chart1Name}的行星在${chart2Name}宮位 (C-1) ===`);
                 if (!chartData.chart1_planets_in_chart2_houses || chartData.chart1_planets_in_chart2_houses.length === 0) {
                     outputLines.push("目前沒有偵測到行星落入對方宮位。");
                 } else {
@@ -1644,7 +1691,7 @@ console.log('Received raw data from backend (FULL JSON):', JSON.stringify(chartD
                     });
                 }
 
-                outputLines.push(`\n=== ${chart1Name} 與 ${chart2Name} 之間的相位 (C-2) ===`);
+                outputLines.push(`\n=== ${chart1Name}與${chart2Name}之間的相位 (C-2) ===`);
                 if (!chartData.inter_aspects || chartData.inter_aspects.length === 0) {
                     outputLines.push("目前沒有偵測到跨盤相位。");
                 } else {
@@ -1677,6 +1724,8 @@ console.log('Received raw data from backend (FULL JSON):', JSON.stringify(chartD
                         }
                         outputLines.push(aspectLine);
                     });
+                    formatSingleChartSection(chartData.chart1_data, `${chart1Name}的星盤資訊`);
+                    formatSingleChartSection(chartData.chart2_data, `${chart2Name}的星盤資訊`);
                 }
 
                 
@@ -1693,25 +1742,9 @@ console.log('Received raw data from backend (FULL JSON):', JSON.stringify(chartD
                 formatSingleChartSection(chartData.natal_chart2_data, `${chart2Name}的本命盤資訊`);
             
             } else if (chartData.chart_type === 'transit') {
-                formatSingleChartSection(chartData.natal_chart_data, `${chart1Name}的星盤資訊 (本命盤)`);
-                formatSingleChartSection(chartData.transit_chart_data, `${chart2Name}的星盤資訊 (行運盤)`);
-
-                outputLines.push(`\n=== ${chart2Name} 的行星在 ${chart1Name} 宮位 (行運星體落本命宮位) (B-1) ===`);
-                if (!chartData.transit_planets_in_natal_houses || chartData.transit_planets_in_natal_houses.length === 0) {
-                    outputLines.push("目前沒有偵測到行星落入本命宮位。");
-                } else {
-                    chartData.transit_planets_in_natal_houses.sort((a, b) => 
-                        DISPLAY_ORDER_NAMES.indexOf(a.planet_name) - DISPLAY_ORDER_NAMES.indexOf(b.planet_name)
-                    );
-                    chartData.transit_planets_in_natal_houses.forEach(overlay => {
-                        outputLines.push(
-                            `${chart2Name}的${overlay.planet_name}${overlay.retrograde_label || ''}${overlay.zodiac_position_formatted}在${chart1Name}的` +
-                            `${overlay.house_in_target_chart}宮(${overlay.degree_in_target_house.toFixed(2)}°)。`
-                        );
-                    });
-                }
-
-                outputLines.push(`\n=== ${chart2Name} 與 ${chart1Name} 之間的相位 (行運星體與本命星體相位) (B-2) ===`);
+                
+                
+                outputLines.push(`\n=== ${chart2Name}與${chart1Name}之間的相位 (行運星體與本命星體相位) (B-2) ===`);
                 if (!chartData.inter_aspects || chartData.inter_aspects.length === 0) {
                     outputLines.push("目前沒有偵測到跨盤相位。");
                 } else {
@@ -1735,11 +1768,11 @@ console.log('Received raw data from backend (FULL JSON):', JSON.stringify(chartD
 
                         let aspectLine = `${chart2Name}的${asp.p2_name}${asp.p2_details.retrograde_label || ''}${asp.p2_details.zodiac_position_formatted}在${chart1Name}的${p2HouseDisplay}，` +
                                          `${asp.aspect_name} ${chart1Name}的${asp.p1_name}${asp.p1_details.retrograde_label || ''}${asp.p1_details.zodiac_position_formatted}${p1House}${p1Hdeg}`;
-
-                        if (asp.orb !== undefined) {
-                            if (asp.aspect_type) {
-                                aspectLine += `，${asp.aspect_type}${asp.orb.toFixed(2)}°。`;
-                            } else {
+                                         
+                                         if (asp.orb !== undefined) {
+                                             if (asp.aspect_type) {
+                                                 aspectLine += `，${asp.aspect_type}${asp.orb.toFixed(2)}°。`;
+                                                } else {
                                 aspectLine += `，容許度${asp.orb.toFixed(2)}°。`;
                             }
                         }
@@ -1747,55 +1780,73 @@ console.log('Received raw data from backend (FULL JSON):', JSON.stringify(chartD
                     });
                 }
 
-                outputLines.push(`\n=== ${chart1Name} 的行星在 ${chart2Name} 宮位 (本命星體落行運宮位) (C-1) ===`);
-                if (!chartData.natal_planets_in_transit_houses || chartData.natal_planets_in_transit_houses.length === 0) {
-                    outputLines.push("目前沒有偵測到本命星體落入行運宮位。");
+                outputLines.push(`\n=== ${chart2Name}的行星在${chart1Name}宮位 (行運星體落本命宮位) (B-1) ===`);
+                if (!chartData.transit_planets_in_natal_houses || chartData.transit_planets_in_natal_houses.length === 0) {
+                    outputLines.push("目前沒有偵測到行星落入本命宮位。");
                 } else {
-                    chartData.natal_planets_in_transit_houses.sort((a, b) => 
+                    chartData.transit_planets_in_natal_houses.sort((a, b) => 
                         DISPLAY_ORDER_NAMES.indexOf(a.planet_name) - DISPLAY_ORDER_NAMES.indexOf(b.planet_name)
                     );
-                    chartData.natal_planets_in_transit_houses.forEach(overlay => {
+                    chartData.transit_planets_in_natal_houses.forEach(overlay => {
                         outputLines.push(
-                            `${chart1Name}的${overlay.planet_name}${overlay.retrograde_label || ''}${overlay.zodiac_position_formatted}在${chart2Name}的` +
+                            `${chart2Name}的${overlay.planet_name}${overlay.retrograde_label || ''}${overlay.zodiac_position_formatted}在${chart1Name}的` +
                             `${overlay.house_in_target_chart}宮(${overlay.degree_in_target_house.toFixed(2)}°)。`
                         );
                     });
                 }
 
-                outputLines.push(`\n=== ${chart1Name} 與 ${chart2Name} 之間的相位 (本命星體與行運星體相位) (C-2) ===`);
-                if (!chartData.inter_aspects || chartData.inter_aspects.length === 0) {
-                    outputLines.push("目前沒有偵測到跨盤相位。");
-                } else {
-                    // For C-2 (Natal to Transit), we sort by natal planets (p1) first.
-                    const c2_aspects = [...chartData.inter_aspects]; // Create a copy to sort
-                    c2_aspects.sort((a, b) => {
-                        const p1IndexA = DISPLAY_ORDER_NAMES.indexOf(a.p1_name);
-                        const p1IndexB = DISPLAY_ORDER_NAMES.indexOf(b.p1_name);
-                        if (p1IndexA !== p1IndexB) return p1IndexA - p1IndexB;
-                        return DISPLAY_ORDER_NAMES.indexOf(a.p2_name) - DISPLAY_ORDER_NAMES.indexOf(b.p2_name);
-                    });
+                formatSingleChartSection(chartData.natal_chart_data, `${chart1Name}的星盤資訊 (本命盤)`);
+                formatSingleChartSection(chartData.transit_chart_data, `${chart2Name}的星盤資訊 (行運盤)`);
+
+                // outputLines.push(`\n=== ${chart1Name} 的行星在 ${chart2Name} 宮位 (本命星體落行運宮位) (C-1) ===`);
+                // if (!chartData.natal_planets_in_transit_houses || chartData.natal_planets_in_transit_houses.length === 0) {
+                //     outputLines.push("目前沒有偵測到本命星體落入行運宮位。");
+                // } else {
+                //     chartData.natal_planets_in_transit_houses.sort((a, b) => 
+                //         DISPLAY_ORDER_NAMES.indexOf(a.planet_name) - DISPLAY_ORDER_NAMES.indexOf(b.planet_name)
+                //     );
+                //     chartData.natal_planets_in_transit_houses.forEach(overlay => {
+                //         outputLines.push(
+                //             `${chart1Name}的${overlay.planet_name}${overlay.retrograde_label || ''}${overlay.zodiac_position_formatted}在${chart2Name}的` +
+                //             `${overlay.house_in_target_chart}宮(${overlay.degree_in_target_house.toFixed(2)}°)。`
+                //         );
+                //     });
+                // }
+
+                // outputLines.push(`\n=== ${chart1Name} 與 ${chart2Name} 之間的相位 (本命星體與行運星體相位) (C-2) ===`);
+                // if (!chartData.inter_aspects || chartData.inter_aspects.length === 0) {
+                //     outputLines.push("目前沒有偵測到跨盤相位。");
+                // } else {
+                //     // For C-2 (Natal to Transit), we sort by natal planets (p1) first.
+                //     const c2_aspects = [...chartData.inter_aspects]; // Create a copy to sort
+                //     c2_aspects.sort((a, b) => {
+                //         const p1IndexA = DISPLAY_ORDER_NAMES.indexOf(a.p1_name);
+                //         const p1IndexB = DISPLAY_ORDER_NAMES.indexOf(b.p1_name);
+                //         if (p1IndexA !== p1IndexB) return p1IndexA - p1IndexB;
+                //         return DISPLAY_ORDER_NAMES.indexOf(a.p2_name) - DISPLAY_ORDER_NAMES.indexOf(b.p2_name);
+                //     });
                     
-                    c2_aspects.forEach(asp => {
-                        const p1OverlayInChart2 = chartData.natal_planets_in_transit_houses.find(o => o.planet_name === asp.p1_name);
-                        const p1HouseInTarget = p1OverlayInChart2 ? `在${chart2Name}的${p1OverlayInChart2.house_in_target_chart}宮(${p1OverlayInChart2.degree_in_target_house.toFixed(2)}°)` : '';
+                //     c2_aspects.forEach(asp => {
+                //         const p1OverlayInChart2 = chartData.natal_planets_in_transit_houses.find(o => o.planet_name === asp.p1_name);
+                //         const p1HouseInTarget = p1OverlayInChart2 ? `在${chart2Name}的${p1OverlayInChart2.house_in_target_chart}宮(${p1OverlayInChart2.degree_in_target_house.toFixed(2)}°)` : '';
 
-                        // 修正：安全地處理 p2 的宮位資訊
-                        const p2House = typeof asp.p2_details.house === 'number' ? `${asp.p2_details.house}宮` : '';
-                        const p2Hdeg = typeof asp.p2_details.hdeg === 'number' ? `(${asp.p2_details.hdeg.toFixed(2)}°)` : '';
+                //         // 修正：安全地處理 p2 的宮位資訊
+                //         const p2House = typeof asp.p2_details.house === 'number' ? `${asp.p2_details.house}宮` : '';
+                //         const p2Hdeg = typeof asp.p2_details.hdeg === 'number' ? `(${asp.p2_details.hdeg.toFixed(2)}°)` : '';
 
-                        let aspectLine = `${chart1Name}的${asp.p1_name}${asp.p1_details.retrograde_label || ''}${asp.p1_details.zodiac_position_formatted}${p1HouseInTarget}，` +
-                                         `${asp.aspect_name}${chart2Name}的${asp.p2_name}${asp.p2_details.retrograde_label || ''}${asp.p2_details.zodiac_position_formatted}${p2House}${p2Hdeg}`;
+                //         let aspectLine = `${chart1Name}的${asp.p1_name}${asp.p1_details.retrograde_label || ''}${asp.p1_details.zodiac_position_formatted}${p1HouseInTarget}，` +
+                //                          `${asp.aspect_name}${chart2Name}的${asp.p2_name}${asp.p2_details.retrograde_label || ''}${asp.p2_details.zodiac_position_formatted}${p2House}${p2Hdeg}`;
 
-                        if (asp.orb !== undefined) {
-                            if (asp.aspect_type) {
-                                aspectLine += `，${asp.aspect_type}${asp.orb.toFixed(2)}°。`;
-                            } else {
-                                aspectLine += `，容許度${asp.orb.toFixed(2)}°。`;
-                            }
-                        }
-                        outputLines.push(aspectLine);
-                    });
-                }
+                //         if (asp.orb !== undefined) {
+                //             if (asp.aspect_type) {
+                //                 aspectLine += `，${asp.aspect_type}${asp.orb.toFixed(2)}°。`;
+                //             } else {
+                //                 aspectLine += `，容許度${asp.orb.toFixed(2)}°。`;
+                //             }
+                //         }
+                //         outputLines.push(aspectLine);
+                //     });
+                // }
 
             } else { // <-- NEW ELSE BLOCK FOR UNKNOWN CHART TYPES
                 outputLines.push(`錯誤：未知的星盤類型 '${chartData.chart_type || "未指定"}'。請檢查後端輸出。`);
