@@ -1,7 +1,7 @@
-# requirements.txt
 Flask
-gunicorn  # 非常重要！這是 Render 實際用來運行您網站的工具
-pyswisseph  # <--- 新增這一行！
+pyswisseph
 pytz
-Flask-CORS  # <--- 新增這一行
-# numpy       <-- 加上其他您需要的函式庫
+requests
+gunicorn
+Flask-Cors
+tqdm
