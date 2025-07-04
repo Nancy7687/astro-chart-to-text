@@ -1,5 +1,7 @@
 Flask
 pyswisseph
 pytz
+requests
 gunicorn
 Flask-Cors
+tqdm

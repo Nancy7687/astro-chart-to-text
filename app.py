@@ -1,4 +1,4 @@
-# app.py (Simplified version - Reads local ephe files)
+# app.py (Final Verified Version)
 from flask import Flask, request, jsonify, render_template
 from flask_cors import CORS
 import datetime
@@ -9,14 +9,32 @@ import os
 import logging
 import math
 
+# --- Import our downloader script ---
+import swiss_ephe_downloader
+
+# Configure logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+
+# --- Standard Flask App Initialization ---
 app = Flask(__name__, template_folder='templates')
 CORS(app)
 
-# --- NEW: Point directly to the local 'ephe' folder ---
-EPHE_PATH_CONFIG = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'ephe')
-swe.set_ephe_path(EPHE_PATH_CONFIG)
-logging.info(f"Swisseph 星曆檔案路徑已設定為: {EPHE_PATH_CONFIG}")
+# ==============================================================================
+# --- Run the downloader and set the ephemeris path at startup ---
+# ==============================================================================
+# Use the path defined in the downloader to ensure consistency
+EPHE_PATH_CONFIG = swiss_ephe_downloader.EPHE_DIR
+
+try:
+    # This will trigger downloads on the server if files are missing
+    swiss_ephe_downloader.ensure_ephe_files_exist()
+    # Then, tell the swisseph engine where to find them
+    swe.set_ephe_path(EPHE_PATH_CONFIG)
+    logging.info(f"Successfully set Swisseph ephemeris path to: {EPHE_PATH_CONFIG}")
+except Exception as e:
+    logging.critical(f"FATAL ERROR: Could not set up or download ephemeris files. App cannot run. Error: {e}", exc_info=True)
+# ==============================================================================
+
 
 
 PLANET_IDS = {
