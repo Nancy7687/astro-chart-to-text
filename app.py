@@ -1,14 +1,6 @@
-# app.py - 占星命盤生成器後端程式碼 (已為 Render 部署優化)
-# VERSION: Render-Ready with Downloader & CORS
-#
-# NEW: 整合 swiss_ephe_downloader，在啟動時自動下載星曆檔案。
-# NEW: 新增 Flask-Cors 支援，以處理部署後的跨域 API 請求。
-# FIX: 將 EPHE_PATH_CONFIG 改為相對路徑，使其在任何環境中都能運作。
-# FIX: 標準化 Flask 應用程式和模板資料夾的初始化。
-# FIX: 更新主執行區塊，以適應 Gunicorn 部署。
-
+# app.py (Simplified version - Reads local ephe files)
 from flask import Flask, request, jsonify, render_template
-from flask_cors import CORS # NEW: 匯入 CORS
+from flask_cors import CORS
 import datetime
 import pytz
 import swisseph as swe
@@ -17,39 +9,14 @@ import os
 import logging
 import math
 
-# --- NEW: 匯入我們自訂的星曆下載器 ---
-import swiss_ephe_downloader
-
-# 配置日誌
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
-
-# --- FIX: 標準化 Flask 應用程式初始化 ---
-# 告訴 Flask 模板檔案位於 'templates' 資料夾中
 app = Flask(__name__, template_folder='templates')
-
-# --- NEW: 設定 CORS ---
-# 允許所有來源的請求，這對於公開的 API 是最簡單的設定
 CORS(app)
 
-# ==============================================================================
-# Global Configuration and Data (全域配置和數據)
-# ==============================================================================
-
-# --- FIX: 動態設定星曆檔案路徑 ---
-# 使用下載器模組中定義的路徑，確保兩邊一致
-EPHE_PATH_CONFIG = swiss_ephe_downloader.EPHE_DIR
-
-# 在應用程式啟動時，就先設定好星曆路徑
-# 這是一個關鍵步驟，確保所有後續的 swe 計算都能找到檔案
-try:
-    # 首先，確保檔案都存在 (如果不存在，會觸發下載)
-    swiss_ephe_downloader.ensure_ephe_files_exist()
-    # 然後，告訴 swisseph 引擎去哪裡找這些檔案
-    swe.set_ephe_path(EPHE_PATH_CONFIG)
-    logging.info(f"Swisseph 星曆檔案路徑已成功設定為: {EPHE_PATH_CONFIG}")
-except Exception as e:
-    logging.critical(f"！！！嚴重錯誤：無法設定或下載星曆檔案，應用程式無法正常運作。錯誤: {e}", exc_info=True)
-    # 在實際部署中，這可能會導致應用程式啟動失敗，這是預期行為，因為沒有星曆檔案無法計算。
+# --- NEW: Point directly to the local 'ephe' folder ---
+EPHE_PATH_CONFIG = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'ephe')
+swe.set_ephe_path(EPHE_PATH_CONFIG)
+logging.info(f"Swisseph 星曆檔案路徑已設定為: {EPHE_PATH_CONFIG}")
 
 
 PLANET_IDS = {
