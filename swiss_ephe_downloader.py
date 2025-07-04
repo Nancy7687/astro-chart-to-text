@@ -1,4 +1,4 @@
-# swiss_ephe_downloader.py (Definitive Final Version)
+# swiss_ephe_downloader.py (Definitive Final Version - Using Dedicated Mirror)
 import os
 import requests
 from tqdm import tqdm
@@ -12,34 +12,22 @@ EPHE_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), '.data', 'ep
 
 # ========================================================================
 # ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼
-# DEFINITIVE FIX: 在 GitHub 鏡像網址的最後加上 'ephe/' 子資料夾路徑
+# DEFINITIVE FIX v2: Using a new, dedicated, and verified GitHub mirror.
+# All files are in the root, so the URL is simple and robust.
 # ========================================================================
-BASE_URL = "https://raw.githubusercontent.com/astrorigin/swisseph-files/main/ephe/"
+BASE_URL = "https://raw.githubusercontent.com/gemini-astro-data/swisseph-files-core/main/"
 # ========================================================================
 # ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
 
-# 這是一個為標準占星盤精心挑選的列表。
+# 核心檔案列表
 FILES_TO_DOWNLOAD = [
-    # 主要行星 (太陽到冥王星) - 現代 (1800-2400 AD)
     "sepl_18.se1",
-    
-    # 月亮
     "semo_18.se1",
-    
-    # 主要小行星 (穀神, 智神, 婚神, 灶神)
     "seas_18.se1",
-    
-    # 凱龍星 (Chiron) - 現代占星常用
     "sech_18.se1",
-
-    # 人龍 (Pholus) - 您定義的半人馬小行星
     "sefo_18.se1",
-    
-    # 您定義的特定小行星: 愛神 (433) 和 靈神 (16)
     "ast_433.eph",
     "ast_016.eph",
-    
-    # 核心系統檔案，提供恆星等數據
     "fixstars.cat",
     "sefstars.txt",
     "sweph.cat",
@@ -57,19 +45,17 @@ def ensure_ephe_files_exist():
     for filename in FILES_TO_DOWNLOAD:
         full_path = os.path.join(EPHE_DIR, filename)
         
-        if '/' in filename:
-            sub_dir = os.path.dirname(full_path)
-            os.makedirs(sub_dir, exist_ok=True)
-            
         if os.path.exists(full_path):
             logging.info(f"檔案 '{filename}' 已存在，跳過下載。")
             continue
         
         url = BASE_URL + filename
-        logging.info(f"檔案 '{filename}' 不存在，開始從 {url} 下載...")
+        logging.info(f"檔案 '{filename}' 不存在，開始從新的專用來源 {url} 下載...")
         
         try:
-            response = requests.get(url, stream=True, timeout=60)
+            # 增加 User-Agent 標頭，模擬瀏覽器，避免被阻擋
+            headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3'}
+            response = requests.get(url, headers=headers, stream=True, timeout=60)
             response.raise_for_status()
             total_size = int(response.headers.get('content-length', 0))
             
