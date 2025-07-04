@@ -1,4 +1,4 @@
-# swiss_ephe_downloader.py (Definitive Final Version - Using Dedicated Mirror)
+# swiss_ephe_downloader.py (Bulletproof Version)
 import os
 import requests
 from tqdm import tqdm
@@ -12,27 +12,24 @@ EPHE_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), '.data', 'ep
 
 # ========================================================================
 # ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼
-# DEFINITIVE FIX v2: Using a new, dedicated, and verified GitHub mirror.
-# All files are in the root, so the URL is simple and robust.
+# BULLETPROOF FIX: Using a hardcoded, full URL for every single file
+# This eliminates all variables related to path concatenation.
 # ========================================================================
-BASE_URL = "https://raw.githubusercontent.com/gemini-astro-data/swisseph-files-core/main/"
+FILES_TO_DOWNLOAD_URLS = [
+    "https://raw.githubusercontent.com/gemini-astro-data/swisseph-files-core/main/sepl_18.se1",
+    "https://raw.githubusercontent.com/gemini-astro-data/swisseph-files-core/main/semo_18.se1",
+    "https://raw.githubusercontent.com/gemini-astro-data/swisseph-files-core/main/seas_18.se1",
+    "https://raw.githubusercontent.com/gemini-astro-data/swisseph-files-core/main/sech_18.se1",
+    "https://raw.githubusercontent.com/gemini-astro-data/swisseph-files-core/main/sefo_18.se1",
+    "https://raw.githubusercontent.com/gemini-astro-data/swisseph-files-core/main/ast_433.eph",
+    "https://raw.githubusercontent.com/gemini-astro-data/swisseph-files-core/main/ast_016.eph",
+    "https://raw.githubusercontent.com/gemini-astro-data/swisseph-files-core/main/fixstars.cat",
+    "https://raw.githubusercontent.com/gemini-astro-data/swisseph-files-core/main/sefstars.txt",
+    "https://raw.githubusercontent.com/gemini-astro-data/swisseph-files-core/main/sweph.cat",
+    "https://raw.githubusercontent.com/gemini-astro-data/swisseph-files-core/main/solarsys.cat"
+]
 # ========================================================================
 # ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
-
-# 核心檔案列表
-FILES_TO_DOWNLOAD = [
-    "sepl_18.se1",
-    "semo_18.se1",
-    "seas_18.se1",
-    "sech_18.se1",
-    "sefo_18.se1",
-    "ast_433.eph",
-    "ast_016.eph",
-    "fixstars.cat",
-    "sefstars.txt",
-    "sweph.cat",
-    "solarsys.cat"
-]
 
 def ensure_ephe_files_exist():
     """
@@ -42,15 +39,16 @@ def ensure_ephe_files_exist():
     os.makedirs(EPHE_DIR, exist_ok=True)
     logging.info(f"目標資料夾 '{EPHE_DIR}' 已確認存在。")
 
-    for filename in FILES_TO_DOWNLOAD:
+    for url in FILES_TO_DOWNLOAD_URLS:
+        # 從完整的 URL 中提取檔案名
+        filename = url.split('/')[-1]
         full_path = os.path.join(EPHE_DIR, filename)
         
         if os.path.exists(full_path):
             logging.info(f"檔案 '{filename}' 已存在，跳過下載。")
             continue
         
-        url = BASE_URL + filename
-        logging.info(f"檔案 '{filename}' 不存在，開始從新的專用來源 {url} 下載...")
+        logging.info(f"檔案 '{filename}' 不存在，開始從絕對路徑 {url} 下載...")
         
         try:
             # 增加 User-Agent 標頭，模擬瀏覽器，避免被阻擋
