@@ -1725,23 +1725,8 @@
                 formatSingleChartSection(chartData, `${chart1Name}的星盤資訊`);
             } else if (chartData.chart_type === 'comparison') {
 
-                // (B-1) 對方星體落本命宮位
-                outputLines.push(`\n=== ${chart2Name}的行星在${chart1Name}宮位 (B-1) ===`);
-                if (!chartData.chart2_planets_in_chart1_houses || chartData.chart2_planets_in_chart1_houses.length === 0) {
-                    outputLines.push("目前沒有偵測到行星落入本命宮位。");
-                } else {
-                    chartData.chart2_planets_in_chart1_houses.sort((a, b) =>
-                        DISPLAY_ORDER_NAMES.indexOf(a.planet_name) - DISPLAY_ORDER_NAMES.indexOf(b.planet_name)
-                    );
-                    chartData.chart2_planets_in_chart1_houses.forEach(overlay => {
-                        outputLines.push(
-                            `${chart2Name}的${overlay.planet_name}${overlay.retrograde_label || ''}${overlay.zodiac_position_formatted}在${chart1Name}的` +
-                            `${overlay.house_in_target_chart}宮(${overlay.degree_in_target_house.toFixed(2)}°)。`
-                        );
-                    });
-                }
-
-                outputLines.push(`\n=== ${chart2Name}與${chart1Name}之間的相位 (B-2) ===`);
+                
+                outputLines.push(`\n=== ${chart2Name}與${chart1Name}之間的相位 ===`);
                 if (!chartData.inter_aspects || chartData.inter_aspects.length === 0) {
                     outputLines.push("目前沒有偵測到跨盤相位。");
                 } else {
@@ -1761,9 +1746,9 @@
                         // chart1 行星在自己盤中的宮位資訊
                         const p1House = typeof asp.p1_details.house === 'number' ? `${asp.p1_details.house}宮` : '';
                         const p1Hdeg = typeof asp.p1_details.hdeg === 'number' ? `(${asp.p1_details.hdeg.toFixed(2)}°)` : '';
-
+                        
                         let aspectLine = `${chart2Name}的${asp.p2_name}${asp.p2_details.retrograde_label || ''}${asp.p2_details.zodiac_position_formatted}${p2HouseDisplay}，` +
-                                         `${asp.aspect_name}${chart1Name}的${asp.p1_name}${asp.p1_details.retrograde_label || ''}${asp.p1_details.zodiac_position_formatted}${p1House}${p1Hdeg}`;
+                        `${asp.aspect_name}${chart1Name}的${asp.p1_name}${asp.p1_details.retrograde_label || ''}${asp.p1_details.zodiac_position_formatted}${p1House}${p1Hdeg}`;
                         
                         if (asp.orb !== undefined) {
                             if (asp.aspect_type) {
@@ -1775,23 +1760,8 @@
                         outputLines.push(aspectLine);
                     });
                 }
-
-                outputLines.push(`\n=== ${chart1Name}的行星在${chart2Name}宮位 (C-1) ===`);
-                if (!chartData.chart1_planets_in_chart2_houses || chartData.chart1_planets_in_chart2_houses.length === 0) {
-                    outputLines.push("目前沒有偵測到行星落入對方宮位。");
-                } else {
-                    chartData.chart1_planets_in_chart2_houses.sort((a, b) => 
-                        DISPLAY_ORDER_NAMES.indexOf(a.planet_name) - DISPLAY_ORDER_NAMES.indexOf(b.planet_name)
-                    );
-                    chartData.chart1_planets_in_chart2_houses.forEach(overlay => {
-                        outputLines.push(
-                            `${chart1Name}的${overlay.planet_name}${overlay.retrograde_label || ''}${overlay.zodiac_position_formatted}在${chart2Name}的` +
-                            `${overlay.house_in_target_chart}宮(${overlay.degree_in_target_house.toFixed(2)}°)。`
-                        );
-                    });
-                }
-
-                outputLines.push(`\n=== ${chart1Name}與${chart2Name}之間的相位 (C-2) ===`);
+                
+                outputLines.push(`\n=== ${chart1Name}與${chart2Name}之間的相位 ===`);
                 if (!chartData.inter_aspects || chartData.inter_aspects.length === 0) {
                     outputLines.push("目前沒有偵測到跨盤相位。");
                 } else {
@@ -1824,6 +1794,36 @@
                         }
                         outputLines.push(aspectLine);
                     });
+                    // (B-1) 對方星體落本命宮位
+                    outputLines.push(`\n=== ${chart2Name}的行星在${chart1Name}宮位 ===`);
+                    if (!chartData.chart2_planets_in_chart1_houses || chartData.chart2_planets_in_chart1_houses.length === 0) {
+                        outputLines.push("目前沒有偵測到行星落入本命宮位。");
+                    } else {
+                        chartData.chart2_planets_in_chart1_houses.sort((a, b) =>
+                            DISPLAY_ORDER_NAMES.indexOf(a.planet_name) - DISPLAY_ORDER_NAMES.indexOf(b.planet_name)
+                        );
+                        chartData.chart2_planets_in_chart1_houses.forEach(overlay => {
+                            outputLines.push(
+                                `${chart2Name}的${overlay.planet_name}${overlay.retrograde_label || ''}${overlay.zodiac_position_formatted}在${chart1Name}的` +
+                                `${overlay.house_in_target_chart}宮(${overlay.degree_in_target_house.toFixed(2)}°)。`
+                            );
+                        });
+                    }
+                    // (C-1) 本命星體落對方宮位
+                    outputLines.push(`\n=== ${chart1Name}的行星在${chart2Name}宮位 ===`);
+                    if (!chartData.chart1_planets_in_chart2_houses || chartData.chart1_planets_in_chart2_houses.length === 0) {
+                        outputLines.push("目前沒有偵測到行星落入對方宮位。");
+                    } else {
+                        chartData.chart1_planets_in_chart2_houses.sort((a, b) => 
+                            DISPLAY_ORDER_NAMES.indexOf(a.planet_name) - DISPLAY_ORDER_NAMES.indexOf(b.planet_name)
+                        );
+                        chartData.chart1_planets_in_chart2_houses.forEach(overlay => {
+                            outputLines.push(
+                                `${chart1Name}的${overlay.planet_name}${overlay.retrograde_label || ''}${overlay.zodiac_position_formatted}在${chart2Name}的` +
+                                `${overlay.house_in_target_chart}宮(${overlay.degree_in_target_house.toFixed(2)}°)。`
+                            );
+                        });
+                    }
                     formatSingleChartSection(chartData.chart1_data, `${chart1Name}的星盤資訊`);
                     formatSingleChartSection(chartData.chart2_data, `${chart2Name}的星盤資訊`);
                 }
@@ -1843,8 +1843,8 @@
             
             } else if (chartData.chart_type === 'transit') {
                 
-                
-                outputLines.push(`\n=== ${chart2Name}與${chart1Name}之間的相位 (行運星體與本命星體相位) (B-2) ===`);
+                //  行運星體與本命星體之間的相位 (B-2)
+                outputLines.push(`\n=== ${chart2Name}與${chart1Name}之間的相位 ===`);
                 if (!chartData.inter_aspects || chartData.inter_aspects.length === 0) {
                     outputLines.push("目前沒有偵測到跨盤相位。");
                 } else {
@@ -1867,7 +1867,7 @@
                         const p1Hdeg = typeof asp.p1_details.hdeg === 'number' ? `(${asp.p1_details.hdeg.toFixed(2)}°)` : '';
 
                         let aspectLine = `${chart2Name}的${asp.p2_name}${asp.p2_details.retrograde_label || ''}${asp.p2_details.zodiac_position_formatted}在${chart1Name}的${p2HouseDisplay}，` +
-                                         `${asp.aspect_name} ${chart1Name}的${asp.p1_name}${asp.p1_details.retrograde_label || ''}${asp.p1_details.zodiac_position_formatted}${p1House}${p1Hdeg}`;
+                                         `${asp.aspect_name}${chart1Name}的${asp.p1_name}${asp.p1_details.retrograde_label || ''}${asp.p1_details.zodiac_position_formatted}${p1House}${p1Hdeg}`;
                                          
                                          if (asp.orb !== undefined) {
                                              if (asp.aspect_type) {
@@ -1880,7 +1880,8 @@
                     });
                 }
 
-                outputLines.push(`\n=== ${chart2Name}的行星在${chart1Name}宮位 (行運星體落本命宮位) (B-1) ===`);
+                // 行運星體落入本命的宮位
+                outputLines.push(`\n=== ${chart2Name}的行星落入${chart1Name}的宮位 ===`);
                 if (!chartData.transit_planets_in_natal_houses || chartData.transit_planets_in_natal_houses.length === 0) {
                     outputLines.push("目前沒有偵測到行星落入本命宮位。");
                 } else {
