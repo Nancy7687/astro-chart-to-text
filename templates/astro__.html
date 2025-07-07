@@ -1467,9 +1467,31 @@
                 resultOutput.classList.add('error-message');
                 if (error.response) {
                     // 伺服器有回應，但狀態碼不是 2xx
-                    const serverError = error.response.data?.error || error.response.statusText || '未知伺服器錯誤';
-                    resultOutput.textContent = `❌ 伺服器錯誤 ${error.response.status}: ${serverError}`;
+                    // 從後端回傳的 data 中取出 message 字段
+                    const backendMessage = error.response.data?.message; // 這行是重點！
+
+                    // 優先顯示後端傳來的友善訊息
+                    if (backendMessage) {
+                        resultOutput.textContent = backendMessage; // 直接顯示後端的友善訊息
+                    } else {
+                        // 如果後端沒有提供 'message' 字段，就顯示原有的通用錯誤訊息
+                        const serverError = error.response.data?.error || error.response.statusText || '未知伺服器錯誤';
+                        resultOutput.textContent = `❌ 伺服器錯誤 ${error.response.status}: ${serverError}`;
+                    }
+
                     console.error('Backend Error:', error.response.data);
+
+                    // 你可以在這裡加入針對特定錯誤類型 (例如 error.response.data?.error_type) 的視覺提示
+                    // 像是讓時區輸入框邊框變紅等
+                    if (error.response.data?.error_type === "invalid_timezone_format") {
+                        // 假設你的時區輸入框 ID 是 'single_customTimezone'
+                        const customTimezoneInput = document.getElementById('single_customTimezone');
+                        if (customTimezoneInput) {
+                            customTimezoneInput.focus();
+                            customTimezoneInput.style.borderColor = 'red';
+                        }
+                    }
+
                 } else if (error.request) {
                     // 請求已發出，但沒有收到回應
                     resultOutput.textContent = '❌ 網路錯誤：無法連接到伺服器，請檢查後端是否正在運行。';
@@ -1478,7 +1500,8 @@
                     // 設置請求時發生錯誤
                     resultOutput.textContent = `❌ 請求錯誤：${error.message}`;
                     console.error('Axios Setup Error:', error.message);
-                }} finally {
+                }
+            } finally {
                 loadingSpinner.style.display = 'none';
             }
         }
