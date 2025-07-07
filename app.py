@@ -161,6 +161,29 @@ def calculate_astrology_chart(year, month, day, hour, minute, latitude, longitud
     # ==================================================================
     # END NEW CODE
     # ==================================================================
+
+
+    try:
+        user_timezone = pytz.timezone(custom_timezone_str)
+        # ... (成功時的星盤計算邏輯) ...
+
+    except pytz.UnknownTimeZoneError:
+        # 當 pytz 發生 UnknownTimeZoneError 時，回傳這個自定義的友善訊息
+        return jsonify({
+            "success": False,
+            "message": "您輸入的時區格式不正確。請確認時區名稱為國際標準格式 (如：`Asia/Taipei`, `America/New_York`)，或從建議列表中選擇。",
+            "error_type": "invalid_timezone_format" # 這個字段有助於前端精確判斷
+        }), 400 # HTTP 狀態碼 400 表示客戶端請求有問題
+
+    except Exception as e: # 捕捉其他未預期的錯誤
+        print(f"後端發生未預期錯誤: {e}")
+        return jsonify({
+            "success": False,
+            "message": "抱歉，計算星盤時發生未知錯誤。請檢查您的輸入並重試。",
+            "error_type": "server_error"
+        }), 500
+    
+    
     try:
         if timezone_str == "Asia/Chongqing":
             utc_offset = datetime.timedelta(hours=8)
