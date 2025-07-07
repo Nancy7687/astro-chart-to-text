@@ -15,8 +15,9 @@ load_dotenv()
 # --- 組態設定 (Configuration) ---
 # ==============================================================================
 
-# 您的星盤 API 的 URL (目前指向本地伺服器)
-ASTRO_API_URL = "http://127.0.0.1:5000/api/v1/chart/single"
+# 當您要呼叫部署在 Render 上的服務時，請將此 URL 換成您的 Render 服務網址。
+# 您的 Render 網址格式通常是： https://your-app-name.onrender.com
+ASTRO_API_URL = "https://astro-chart-to-text.onrender.com/api/v1/chart/single" # <-- 請將 'astro-chart-to-text' 換成您在 Render 上的真實服務名稱
 
 # 從環境變數讀取您的金鑰 (現在會由 .env 檔案提供)
 ASTRO_API_KEY = os.getenv("ASTRO_API_KEY")
@@ -41,7 +42,9 @@ def get_chart_data_from_api(payload):
         "Content-Type": "application/json",
         "X-API-Key": ASTRO_API_KEY
     }
-    print("1. 正在向您的本地星盤 API 發送請求...")
+    # 根據 URL 動態判斷是本地還是雲端，讓日誌更清晰
+    api_location = "雲端" if "onrender.com" in ASTRO_API_URL else "本地"
+    print(f"1. 正在向您的{api_location}星盤 API ({ASTRO_API_URL}) 發送請求...")
     response = requests.post(ASTRO_API_URL, headers=headers, data=json.dumps(payload))
     response.raise_for_status() # 確保請求成功
     print("   ✅ 成功獲取星盤數據！")
