@@ -167,9 +167,16 @@ def calculate_astrology_chart(year, month, day, hour, minute, latitude, longitud
             fixed_tz = datetime.timezone(utc_offset, name="UTC+08:00 (Astrological Correction for Chengdu)")
             local_dt = datetime.datetime(year, month, day, hour, minute, 0, tzinfo=fixed_tz)
         else:
-            local_tz = pytz.timezone(timezone_str)
-            local_dt = local_tz.localize(datetime.datetime(year, month, day, hour, minute, 0))
-
+            try:
+                local_tz = pytz.timezone(timezone_str)
+                local_dt = local_tz.localize(datetime.datetime(year, month, day, hour, minute, 0))
+            except pytz.UnknownTimeZoneError:
+                app.logger.warning(f"無效的時區名稱: '{timezone_str}'")
+                return {
+                    "error": f"您手動輸入的時區 '{timezone_str}' 無效。請檢查拼寫，或從下拉選單中選擇。有效的時區格式為 '洲/城市'，例如 'Asia/Taipei' 或 'America/New_York'。",
+                    "error_type": "invalid_timezone"
+                }
+ 
         utc_dt = local_dt.astimezone(pytz.utc)
         jd_ut = swe.julday(utc_dt.year, utc_dt.month, utc_dt.day,
                            utc_dt.hour + utc_dt.minute / 60 + utc_dt.second / 3600)
@@ -438,14 +445,20 @@ def calculate_comparison_chart_api():
             int(data['chart1_hour']), int(data['chart1_minute']),
             float(data['chart1_latitude']), float(data['chart1_longitude']),
             data['chart1_timezone'], optional_planets)
+        if "error" in c1_raw:
+            c1_raw["error_source"] = "chart1"
+            app.logger.error(f"比較盤計算錯誤 (命盤A): {c1_raw.get('error', 'N/A')}")
+            return jsonify(c1_raw), 400
+        
         c2_raw = calculate_astrology_chart(
             int(data['chart2_year']), int(data['chart2_month']), int(data['chart2_day']),
             int(data['chart2_hour']), int(data['chart2_minute']),
             float(data['chart2_latitude']), float(data['chart2_longitude']),
             data['chart2_timezone'], optional_planets)
-        if "error" in c1_raw or "error" in c2_raw:
-            app.logger.error(f"比較盤計算錯誤: Chart 1 Error: {c1_raw.get('error', 'N/A')}, Chart 2 Error: {c2_raw.get('error', 'N/A')}")
-            return jsonify({"error": f"Chart 1 Error: {c1_raw.get('error', 'N/A')}, Chart 2 Error: {c2_raw.get('error', 'N/A')}"}), 400
+        if "error" in c2_raw:
+            c2_raw["error_source"] = "chart2"
+            app.logger.error(f"比較盤計算錯誤 (命盤B): {c2_raw.get('error', 'N/A')}")
+            return jsonify(c2_raw), 400
         response_data = {
             "chart_type": "comparison",
             "chart1_data": format_chart_data_for_display(c1_raw),
@@ -469,14 +482,20 @@ def calculate_transit_chart_api():
             int(data['natal_hour']), int(data['natal_minute']),
             float(data['natal_latitude']), float(data['natal_longitude']),
             data['natal_timezone'], optional_planets)
+        if "error" in natal_raw:
+            natal_raw["error_source"] = "chart1"
+            app.logger.error(f"行運盤計算錯誤 (本命盤): {natal_raw.get('error', 'N/A')}")
+            return jsonify(natal_raw), 400
+        
         transit_raw = calculate_astrology_chart(
             int(data['transit_year']), int(data['transit_month']), int(data['transit_day']),
             int(data['transit_hour']), int(data['transit_minute']),
             float(data['transit_latitude']), float(data['transit_longitude']),
             data['transit_timezone'], optional_planets)
-        if "error" in natal_raw or "error" in transit_raw:
-            app.logger.error(f"行運盤計算錯誤: Natal Error: {natal_raw.get('error', 'N/A')}, Transit Error: {transit_raw.get('error', 'N/A')}")
-            return jsonify({"error": f"Natal Error: {natal_raw.get('error', 'N/A')}, Transit Error: {transit_raw.get('error', 'N/A')}"}), 400
+        if "error" in transit_raw:
+            transit_raw["error_source"] = "chart2"
+            app.logger.error(f"行運盤計算錯誤 (行運盤): {transit_raw.get('error', 'N/A')}")
+            return jsonify(transit_raw), 400
         response_data = {
             "chart_type": "transit",
             "natal_chart_data": format_chart_data_for_display(natal_raw),
@@ -502,14 +521,19 @@ def calculate_composite_chart_api():
             int(data['chart1_hour']), int(data['chart1_minute']),
             float(data['chart1_latitude']), float(data['chart1_longitude']),
             data['chart1_timezone'], optional_planets)
+        if "error" in c1_raw:
+            c1_raw["error_source"] = "chart1"
+            app.logger.error(f"組合盤計算錯誤 (命盤A): {c1_raw.get('error', 'N/A')}")
+            return jsonify(c1_raw), 400
         c2_raw = calculate_astrology_chart(
             int(data['chart2_year']), int(data['chart2_month']), int(data['chart2_day']),
             int(data['chart2_hour']), int(data['chart2_minute']),
             float(data['chart2_latitude']), float(data['chart2_longitude']),
             data['chart2_timezone'], optional_planets)
-        if "error" in c1_raw or "error" in c2_raw:
-            app.logger.error(f"組合盤計算錯誤: Chart 1 Error: {c1_raw.get('error', 'N/A')}, Chart 2 Error: {c2_raw.get('error', 'N/A')}")
-            return jsonify({"error": f"Chart 1 Error: {c1_raw.get('error', 'N/A')}, Chart 2 Error: {c2_raw.get('error', 'N/A')}"}), 400
+        if "error" in c2_raw:
+            c2_raw["error_source"] = "chart2"
+            app.logger.error(f"組合盤計算錯誤 (命盤B): {c2_raw.get('error', 'N/A')}")
+            return jsonify(c2_raw), 400
         
         composite_positions_raw = {}
         planets_to_process = list(dict.fromkeys(BASE_PLANETS + optional_planets))

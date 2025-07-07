@@ -1464,12 +1464,48 @@
                     resultOutput.classList.remove('error-message');
                     }
             } catch (error) { // --- Axios 的錯誤處理 ---
+                const resultOutput = document.getElementById('resultOutput');
                 resultOutput.classList.add('error-message');
                 if (error.response) {
                     // 伺服器有回應，但狀態碼不是 2xx
-                    const serverError = error.response.data?.error || error.response.statusText || '未知伺服器錯誤';
-                    resultOutput.textContent = `❌ 伺服器錯誤 ${error.response.status}: ${serverError}`;
-                    console.error('Backend Error:', error.response.data);
+                    const errorData = error.response.data;
+
+                    // --- 新增：處理特定的無效時區錯誤 ---
+                    if (error.response.status === 400 && errorData && errorData.error_type === 'invalid_timezone') {
+                        resultOutput.textContent = '❌ 時區輸入錯誤，請修正上方標示的欄位。';
+                        
+                        const errorSource = errorData.error_source; // 'chart1' or 'chart2'
+                        let prefix = '';
+
+                        const activeMainTab = document.querySelector('.tab-button.active').dataset.tabContent;
+                        if (activeMainTab === 'singleChartSection') {
+                            prefix = 'single_';
+                        } else { // synastryChartSection
+                            const selectedSubChartType = document.getElementById('selectedSubChartType').value;
+                            if (errorSource === 'chart1') {
+                                prefix = (selectedSubChartType === 'transit') ? 'natal_' : 'comp1_';
+                            } else { // errorSource === 'chart2'
+                                prefix = (selectedSubChartType === 'transit') ? 'transit_' : 'comp2_';
+                            }
+                        }
+
+                        const timezoneSelectId = `${prefix}timezone`;
+                        const customTimezoneInputId = `${prefix}customTimezone`;
+                        
+                        // 在對應的時區欄位顯示詳細錯誤訊息
+                        showInputError(timezoneSelectId, errorData.error);
+
+                        // 同時將手動輸入框也標示為紅色
+                        const customInput = document.getElementById(customTimezoneInputId);
+                        if (customInput) {
+                            customInput.style.setProperty('--input-border-color', '#ef4444');
+                        }
+                    } else {
+                        // --- 原有的通用錯誤處理 ---
+                        const serverError = errorData?.error || error.response.statusText || '未知伺服器錯誤';
+                        resultOutput.textContent = `❌ 伺服器錯誤 ${error.response.status}: ${serverError}`;
+                        console.error('Backend Error:', errorData);
+                    }
                 } else if (error.request) {
                     // 請求已發出，但沒有收到回應
                     resultOutput.textContent = '❌ 網路錯誤：無法連接到伺服器，請檢查後端是否正在運行。';
