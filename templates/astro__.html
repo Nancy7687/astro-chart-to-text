@@ -137,6 +137,28 @@
             box-shadow: 0 0 0 3px rgba(75, 0, 130, 0.3); /* Focus shadow matches new gradient */
             outline: none;
         }
+
+        /* 簡單的 CSS 樣式，讓建議列表看起來好一點 */
+        .timezone-suggestions {
+            border: 1px solid #ccc;
+            max-height: 200px;
+            overflow-y: auto;
+            display: none; /* 預設隱藏 */
+            background-color: #fff;
+            z-index: 1000; /* 確保它在其他元素之上 */
+            position: absolute; /* 如果需要，確保它疊加在其他元素上 */
+            width: inherit; /* 或設置一個固定寬度 */
+        }
+        .timezone-suggestions div {
+            padding: 8px;
+            cursor: pointer;
+            background-color: #f9f9f9;
+            border-bottom: 1px solid #eee;
+        }
+        .timezone-suggestions div:hover {
+            background-color: #e9e9e9;
+        }
+
         /* Primary button styling */
         .btn-primary {
             background-color: #4B0082; /* Button matches new primary color */
@@ -478,9 +500,11 @@
                     <div class="timezone-input-group-container">
                         <select id="single_timezone" class="select-field timezone-select"></select>
                         <input type="text" id="single_customTimezone" class="input-field" placeholder="手動輸入 (例如: America/Juneau)">
+                        <div id="singleTimezoneSuggestions" class="timezone-suggestions"></div>
                     </div>
                     <p class="text-sm text-gray-500 mt-2">
-                        如果您的時區不在列表中，請手動輸入 IANA 時區名稱 (例如：`America/Juneau`)。
+                        如果您的時區不在列表中，請手動輸入 IANA 完整時區名稱。
+                        ( 例如："America/Juneau"或"America/New_York")
                     </p>
                     <p id="single_timezone-error" class="input-error-message" aria-live="polite"></p>
                 </div>
@@ -561,6 +585,7 @@
                             <div class="timezone-input-group-container">
                                 <select id="comp1_timezone" class="select-field timezone-select"></select>
                                 <input type="text" id="comp1_customTimezone" class="input-field" placeholder="手動輸入 (例如: America/Juneau)">
+                                <div id="comp1TimezoneSuggestions" class="timezone-suggestions"></div>
                             </div>
                             <p id="comp1_timezone-error" class="input-error-message" aria-live="polite"></p>
                         </div>
@@ -620,6 +645,7 @@
                             <div class="timezone-input-group-container">
                                 <select id="comp2_timezone" class="select-field timezone-select"></select>
                                 <input type="text" id="comp2_customTimezone" class="input-field" placeholder="手動輸入 (例如: America/Juneau)">
+                                <div id="comp2TimezoneSuggestions" class="timezone-suggestions"></div>
                             </div>
                             <p id="comp2_timezone-error" class="input-error-message" aria-live="polite"></p>
                         </div>
@@ -682,7 +708,8 @@
                             <div class="timezone-input-group-container">
                                 <select id="natal_timezone" class="select-field timezone-select"></select>
                                 <input type="text" id="natal_customTimezone" class="input-field" placeholder="手動輸入 (例如: America/Juneau)">
-                            </div>
+                                <div id="natalTimezoneSuggestions" class="timezone-suggestions"></div>
+                        </div>
                             <p id="natal_timezone-error" class="input-error-message" aria-live="polite"></p>
                         </div>
                     </div>
@@ -741,6 +768,7 @@
                             <div class="timezone-input-group-container">
                                 <select id="transit_timezone" class="select-field timezone-select"></select>
                                 <input type="text" id="transit_customTimezone" class="input-field" placeholder="手動輸入 (例如: America/Juneau)">
+                                <div id="transitTimezoneSuggestions" class="timezone-suggestions"></div>
                             </div>
                             <p id="transit_timezone-error" class="input-error-message" aria-live="polite"></p>
                         </div>
@@ -778,6 +806,89 @@
     <script>
         console.log('Script Start Test! Version: Combined Tabs - Multi-Chart Support v2.5 - Critical Debugging');
 
+
+        let allTimezones = []; // 儲存從後端獲取的時區列表
+
+            // 1. 從後端獲取時區列表
+            async function fetchTimezones() {
+                try {
+                    // 假設你的後端 API 在 /api/timezones
+                    const response = await fetch('/api/timezones');
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    allTimezones = await response.json();
+                    console.log('時區列表載入成功！');
+                } catch (error) {
+                    console.error('載入時區列表失敗:', error);
+                }
+            }
+
+            // 2. 建立一個通用的自動完成函數
+            function setupAutocomplete(inputId, suggestionsContainerId) {
+                const inputField = document.getElementById(inputId);
+                const suggestionsContainer = document.getElementById(suggestionsContainerId);
+
+                if (!inputField || !suggestionsContainer) {
+                    console.error(`找不到元素: Input ID: ${inputId}, Container ID: ${suggestionsContainerId}`);
+                    return;
+                }
+
+                inputField.addEventListener('input', function () {
+                    const inputValue = this.value.toLowerCase();
+                    suggestionsContainer.innerHTML = ''; // 清空之前的建議
+
+                    if (inputValue.length < 2) { // 輸入至少兩個字元才開始建議
+                        suggestionsContainer.style.display = 'none';
+                        return;
+                    }
+
+                    const filteredSuggestions = allTimezones.filter(tz =>
+                        tz.toLowerCase().includes(inputValue)
+                    ).slice(0, 10); // 只顯示前10個
+
+                    if (filteredSuggestions.length > 0) {
+                        filteredSuggestions.forEach(tz => {
+                            const div = document.createElement('div');
+                            div.textContent = tz;
+                            div.addEventListener('click', function () {
+                                inputField.value = this.textContent;
+                                suggestionsContainer.style.display = 'none';
+                            });
+                            suggestionsContainer.appendChild(div);
+                        });
+                        suggestionsContainer.style.display = 'block';
+                        // 將建議列表的位置設置在輸入框下方
+                        // 根據你的佈局可能需要調整，這裡只是簡單的定位
+                        const rect = inputField.getBoundingClientRect();
+                        suggestionsContainer.style.top = `${rect.bottom + window.scrollY}px`;
+                        suggestionsContainer.style.left = `${rect.left + window.scrollX}px`;
+                        suggestionsContainer.style.width = `${rect.width}px`;
+                        suggestionsContainer.style.position = 'absolute'; // 確保可以疊加
+                    } else {
+                        suggestionsContainer.style.display = 'none';
+                    }
+                });
+
+                // 點擊外面時隱藏建議列表
+                document.addEventListener('click', function (event) {
+                    if (!inputField.contains(event.target) && !suggestionsContainer.contains(event.target)) {
+                        suggestionsContainer.style.display = 'none';
+                    }
+                });
+            }
+
+            // 頁面載入完成後，先獲取時區列表，然後為每個輸入框設置自動完成
+            document.addEventListener('DOMContentLoaded', async () => {
+                await fetchTimezones(); // 等待時區列表載入完成
+
+                // 為你的五個輸入框分別設定自動完成
+                setupAutocomplete('single_customTimezone', 'singleTimezoneSuggestions');
+                setupAutocomplete('comp1_customTimezone', 'comp1TimezoneSuggestions');
+                setupAutocomplete('comp2_customTimezone', 'comp2TimezoneSuggestions');
+                setupAutocomplete('natal_customTimezone', 'natalTimezoneSuggestions');
+                setupAutocomplete('transit_customTimezone', 'transitTimezoneSuggestions');
+            });
         // Define the desired display order for planets and points (copied from backend for consistency)
         const DISPLAY_ORDER_NAMES = [
             "太陽", "月亮", "水星", "金星", "火星", "木星", "土星", "天王", "海王", "冥王",

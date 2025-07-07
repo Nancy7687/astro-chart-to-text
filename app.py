@@ -12,12 +12,24 @@ import math
 # --- Import our downloader script ---
 import swiss_ephe_downloader
 
+
 # Configure logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 # --- Standard Flask App Initialization ---
 app = Flask(__name__, template_folder='templates')
 CORS(app)
+
+# 取得所有 IANA 時區名稱
+all_timezones = pytz.all_timezones
+
+# 可以選擇性地過濾掉一些比較不常用的或內部使用的時區，
+# 但對於自動完成來說，全部提供通常也沒問題
+# 例如：過濾掉 POSIX 時區，或只留下常見的時區
+# filtered_timezones = [tz for tz in all_timezones if not tz.startswith('Etc/') and not tz.startswith('SystemV/')]
+
+# 將列表轉換成 JSON 格式傳給前端
+# print(json.dumps(list(all_timezones)))
 
 # ==============================================================================
 # --- Run the downloader and set the ephemeris path at startup ---
@@ -378,6 +390,17 @@ def get_planet_overlays_in_houses(source_chart_points: dict, target_chart_cusps:
 # ==============================================================================
 # API Routes (API 路由)
 # ==============================================================================
+
+# 定義 API 接口 (這段程式碼放在應用程式初始化之後，運行之前)
+
+@app.route('/api/timezones')
+def get_timezones():
+    """
+    提供所有 IANA 時區名稱的 API 接口
+    """
+    # 將 all_timezones 列表轉換為 JSON 格式回傳
+    return jsonify(list(all_timezones)) # 使用上面定義的 all_timezones
+
 
 @app.route('/')
 def index():
