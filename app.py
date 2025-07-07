@@ -9,6 +9,9 @@ import os
 import logging
 import math
 from functools import wraps
+from dotenv import load_dotenv
+
+load_dotenv() # 在應用程式啟動時從 .env 載入變數
 
 # --- Import our downloader script ---
 import swiss_ephe_downloader
@@ -24,7 +27,10 @@ CORS(app)
 # ==============================================================================
 # --- API Security Configuration ---
 # ==============================================================================
-API_KEY = "#L,S!r6z$c5w9_aD^~eU~xzC!{b(_s5d`~[?zM7>6l2\WsrO63Ja}'GTR1;i\;N" # 警告：請務必將此金鑰更換為您自己的隨機字串！
+API_KEY = os.getenv("ASTRO_API_KEY")
+if not API_KEY:
+    logging.warning("警告：在 .env 檔案中找不到 ASTRO_API_KEY。API 端點將無法訪問。")
+
 
 # 取得所有 IANA 時區名稱
 all_timezones = pytz.all_timezones

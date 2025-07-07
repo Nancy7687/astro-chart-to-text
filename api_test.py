@@ -1,14 +1,21 @@
 # api_test.py
 import requests
 import json
+import os
+from dotenv import load_dotenv
+
+# 從 .env 檔案載入環境變數
+load_dotenv()
 
 # --- 設定 ---
 # 如果您是在本機測試，URL 就是 http://127.0.0.1:5000
 # 如果您已經部署到雲端，請換成您的雲端 URL
 API_URL = "http://127.0.0.1:5000/api/v1/chart/single"
 
-# !!! 重要：請在這裡貼上您在 app.py 中設定的 API 金鑰 !!!
-YOUR_API_KEY = "#L,S!r6z$c5w9_aD^~eU~xzC!{b(_s5d`~[?zM7>6l2\WsrO63Ja}'GTR1;i\;N"
+# 從環境變數讀取金鑰
+YOUR_API_KEY = os.getenv("ASTRO_API_KEY")
+if not YOUR_API_KEY:
+    raise ValueError("錯誤：請在 .env 檔案中設定 ASTRO_API_KEY。")
 
 # 要計算的星盤資料
 chart_payload = {

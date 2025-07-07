@@ -208,3 +208,16 @@ __marimo__/
 
 # ephe
 .data
+
+# Environment variables
+.env
+
+# Python build artifacts
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# IDE / Editor specific settings
+.vscode/
+.idea/
