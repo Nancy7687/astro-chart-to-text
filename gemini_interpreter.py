@@ -19,7 +19,7 @@ load_dotenv()
 # 您的 Render 網址格式通常是： https://your-app-name.onrender.com
 # 請將 'astro-chart-to-text' 換成您在 Render 上的真實服務名稱
 # 修正：指向正確的 AI API 端點
-ASTRO_API_URL = "ASTRO_API_URL = "https://astro-chart-to-text.onrender.com/api/v1/chart/single"
+ASTRO_API_URL = "https://astro-chart-to-text.onrender.com/api/v1/chart/single"
 
 # 從環境變數讀取您的金鑰 (現在會由 .env 檔案提供)
 ASTRO_API_KEY = os.getenv("ASTRO_API_KEY")
