@@ -8,6 +8,7 @@ import json
 import os
 import logging
 import math
+from functools import wraps
 
 # --- Import our downloader script ---
 import swiss_ephe_downloader
@@ -19,6 +20,11 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(
 # --- Standard Flask App Initialization ---
 app = Flask(__name__, template_folder='templates')
 CORS(app)
+
+# ==============================================================================
+# --- API Security Configuration ---
+# ==============================================================================
+API_KEY = "#L,S!r6z$c5w9_aD^~eU~xzC!{b(_s5d`~[?zM7>6l2\WsrO63Ja}'GTR1;i\;N" # 警告：請務必將此金鑰更換為您自己的隨機字串！
 
 # 取得所有 IANA 時區名稱
 all_timezones = pytz.all_timezones
@@ -398,6 +404,32 @@ def get_planet_overlays_in_houses(source_chart_points: dict, target_chart_cusps:
 # API Routes (API 路由)
 # ==============================================================================
 
+# --- API Key Decorator ---
+def api_key_required(f):
+    """
+    一個裝飾器，用於驗證請求中是否包含有效的 API 金鑰。
+    金鑰應該放在請求的 Header 中，例如：'X-API-Key: YOUR_SECRET_API_KEY_HERE'
+    """
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        # 從請求標頭中獲取 API 金鑰
+        provided_key = request.headers.get('X-API-Key')
+        
+        # 檢查金鑰是否存在且是否與我們設定的相符
+        if not provided_key or provided_key != API_KEY:
+            app.logger.warning(f"無效的 API 金鑰嘗試: {provided_key}")
+            # 如果驗證失敗，返回 403 Forbidden 錯誤
+            return jsonify({"error": "未經授權的訪問。請提供有效的 API 金鑰。"}), 403
+        
+        # 如果金鑰有效，則繼續執行原始的路由函式
+        return f(*args, **kwargs)
+    return decorated_function
+
+
+# ==============================================================================
+# --- End of API Security ---
+# ==============================================================================
+
 # 定義 API 接口 (這段程式碼放在應用程式初始化之後，運行之前)
 
 @app.route('/api/timezones')
@@ -407,7 +439,6 @@ def get_timezones():
     """
     # 將 all_timezones 列表轉換為 JSON 格式回傳
     return jsonify(list(all_timezones)) # 使用上面定義的 all_timezones
-
 
 @app.route('/')
 def index():
@@ -606,6 +637,43 @@ def calculate_composite_chart_api():
     except Exception as e:
         app.logger.error(f"組合盤後端發生未知錯誤: {e}", exc_info=True)
         return jsonify({"error": f"組合盤伺服器內部錯誤: {e}"}), 500
+    
+# ==============================================================================
+# --- NEW: API Endpoint for AI/Gemini Integration ---
+# ==============================================================================
+@app.route('/api/v1/chart/single', methods=['POST'])
+@api_key_required # 使用我們上面定義的裝飾器來保護這個端點
+def calculate_single_chart_for_ai():
+    """
+    這個端點專為 AI 整合設計。
+    它直接回傳未經格式化的原始星盤數據 JSON，方便程式解析。
+    """
+    data = request.get_json(force=True)
+    if not data:
+        return jsonify({"error": "請求中未提供 JSON 數據"}), 400
+        
+    try:
+        # 直接呼叫核心計算函式
+        raw_chart_data = calculate_astrology_chart(
+            int(data['year']), int(data['month']), int(data['day']),
+            int(data['hour']), int(data['minute']),
+            float(data['latitude']), float(data['longitude']),
+            data['timezone'], data.get('optional_planets', []))
+
+        # 檢查計算過程中是否有錯誤，如果有的話直接回傳
+        if "error" in raw_chart_data:
+            app.logger.error(f"AI API - 單盤計算錯誤: {raw_chart_data['error']}")
+            return jsonify(raw_chart_data), 400
+
+        # 成功：直接回傳原始的、未經格式化的 JSON 數據
+        return jsonify(raw_chart_data)
+
+    except KeyError as e:
+        app.logger.error(f"AI API - 請求中缺少必要欄位: {e}", exc_info=True)
+        return jsonify({"error": f"請求的 JSON 中缺少必要欄位: {e}"}), 400
+    except Exception as e:
+        app.logger.error(f"AI API - 後端發生未知錯誤: {e}", exc_info=True)
+        return jsonify({"error": f"伺服器內部錯誤: {e}"}), 500
 
 # --- FIX: 更新主執行區塊 ---
 # 這個區塊現在主要用於本地開發測試。
