@@ -403,6 +403,30 @@
             display: none;
         }
 
+        /* --- Copy Button Styling --- */
+        .copy-btn {
+            background-color: #6b7280; /* Gray */
+            color: white;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
+            border: none;
+            white-space: nowrap; /* Prevent text wrapping */
+        }
+
+        .copy-btn:hover {
+            background-color: #4b5563; /* Darker Gray */
+        }
+
+        .copy-btn.copied {
+            background-color: #10b981; /* Green for success */
+            color: white;
+        }
+
+
         /* --- 響應式設計：針對桌面等較大螢幕的樣式 --- */
         @media (min-width: 768px) {
             .input-group label {
@@ -427,6 +451,10 @@
             }
             .chart-card-sub p {
                 font-size: 1.2rem; /* Larger on desktop */
+            }
+            .copy-btn {
+                font-size: 1.25rem; /* Larger on desktop */
+                padding: 10px 20px;
             }
         }
 
@@ -503,7 +531,10 @@
                         <div id="singleTimezoneSuggestions" class="timezone-suggestions"></div>
                     </div>
                     <p class="text-sm text-gray-500 mt-2">
-                        如果您的時區不在列表中，請手動輸入正確經緯度以及 IANA完整時區名稱 ( 例如：台灣的IANA時區是 Asia/Taipei，中國是 Asia/Shanghai，日本是 Asia/Tokyo，韓國是 Asia/Seoul，美國依不同地點分為 America/New_York等各個時區) 以取得正確星盤資訊，若不知道出生地的IANA時區，可用AI聊天如ChatGPT，Gemini ai等或Google查詢。
+                        如果您的時區不在列表中，請手動輸入正確經緯度以及 IANA完整時區名稱
+                         ( 例如：台灣的IANA時區是 Asia/Taipei，中國是 Asia/Shanghai，日本是 Asia/Tokyo，韓國是 Asia/Seoul，
+                         美國依不同地點分為 America/New_York等各個時區) 以取得正確星盤資訊，
+                         若不知道出生地的IANA時區，可用AI聊天如ChatGPT，Gemini ai等或Google查詢。
                         
                     </p>
                     <p id="single_timezone-error" class="input-error-message" aria-live="polite"></p>
@@ -798,7 +829,10 @@
 
         <!-- Result Output Section -->
         <div class="result-section">
-            <h2 class="text-3xl md:text-5xl font-semibold text-gray-700 mb-3" id="resultHeader">生成結果</h2>
+            <div class="flex justify-between items-center mb-3">
+                <h2 class="text-3xl md:text-5xl font-semibold text-gray-700" id="resultHeader">生成結果</h2>
+                <button id="copyResultBtn" class="copy-btn hidden">複製內容</button>
+            </div>
             <pre id="resultOutput" class="result-box text-sm" role="region" aria-live="polite" aria-atomic="true"></pre>
         </div>
     </div>
@@ -1131,6 +1165,33 @@
                     updateSubChartVisibility(selectedType);
                 });
             });
+
+            const copyButton = document.getElementById('copyResultBtn');
+            if (copyButton) {
+                copyButton.addEventListener('click', () => {
+                    const resultOutput = document.getElementById('resultOutput');
+                    const textToCopy = resultOutput.textContent;
+
+                    if (textToCopy && navigator.clipboard) {
+                        navigator.clipboard.writeText(textToCopy).then(() => {
+                            // Success feedback
+                            copyButton.textContent = '已複製！';
+                            copyButton.classList.add('copied');
+                            setTimeout(() => {
+                                copyButton.textContent = '複製內容';
+                                copyButton.classList.remove('copied');
+                            }, 2000); // Revert after 2 seconds
+                        }).catch(err => {
+                            console.error('無法複製文字: ', err);
+                            // Error feedback
+                            copyButton.textContent = '複製失敗';
+                            setTimeout(() => {
+                                copyButton.textContent = '複製內容';
+                            }, 2000);
+                        });
+                    }
+                });
+            }
             
             const calculateButton = document.getElementById('calculateBtn');
             if (calculateButton) {
@@ -1304,8 +1365,10 @@
             
             clearAllInputErrors();
             const resultOutput = document.getElementById('resultOutput');
+            const copyButton = document.getElementById('copyResultBtn');
             const loadingSpinner = document.getElementById('loadingSpinner');
             resultOutput.textContent = '';
+            copyButton.classList.add('hidden'); // Hide button at the start of calculation
             resultOutput.classList.remove('error-message');
 
             const activeMainTab = document.querySelector('.tab-button.active').dataset.tabContent;
@@ -1457,11 +1520,15 @@
                 if (chartData.error) {
                     resultOutput.textContent = `❌ 後端計算錯誤：${chartData.error}`;
                     resultOutput.classList.add('error-message');
+                     // Button remains hidden on error
                     } else {
                     const formattedText = formatChartDataForDisplayFrontend(chartData, chart1Name, chart2Name);
                     
                     resultOutput.textContent = formattedText; // 將格式化後的文字設置到結果顯示區
                     resultOutput.classList.remove('error-message');
+                    if (formattedText.trim() !== '') {
+                        copyButton.classList.remove('hidden'); // Show button on success with content
+                    }
                     }
             } catch (error) { // --- Axios 的錯誤處理 ---
                 const resultOutput = document.getElementById('resultOutput');
