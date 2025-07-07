@@ -503,8 +503,8 @@
                         <div id="singleTimezoneSuggestions" class="timezone-suggestions"></div>
                     </div>
                     <p class="text-sm text-gray-500 mt-2">
-                        如果您的時區不在列表中，請手動輸入 IANA 完整時區名稱。
-                        ( 例如："America/Juneau"或"America/New_York")
+                        如果您的時區不在列表中，請手動輸入正確經緯度以及 IANA完整時區名稱 ( 例如：台灣的IANA時區是 Asia/Taipei，中國是 Asia/Shanghai，日本是 Asia/Tokyo，韓國是 Asia/Seoul，美國依不同地點分為 America/New_York等各個時區) 以取得正確星盤資訊，若不知道出生地的IANA時區，可用AI聊天如ChatGPT，Gemini ai等或Google查詢。
+                        
                     </p>
                     <p id="single_timezone-error" class="input-error-message" aria-live="polite"></p>
                 </div>
@@ -950,7 +950,8 @@
                     value: tz,
                     text: getTimezoneOffsetString(tz)
                 }));
-                optionsWithFormattedText.sort((a, b) => a.text.localeCompare(b.text)); // Sort options for readability
+                // 根據使用者要求，將時區從 UTC+ 大到小排序 (descending)
+                optionsWithFormattedText.sort((a, b) => b.text.localeCompare(a.text)); 
 
                 optionsWithFormattedText.forEach(optionData => {
                     const option = document.createElement('option');
@@ -960,23 +961,6 @@
                 });
                 selectElement.value = "Asia/Taipei"; // Set default selected timezone
             });
-            // Also handle the single chart's direct timezone select
-            const singleTimezoneSelect = document.getElementById('single_timezone');
-            if (singleTimezoneSelect) {
-                singleTimezoneSelect.innerHTML = '';
-                const optionsWithFormattedText = commonTimezones.map(tz => ({
-                    value: tz,
-                    text: getTimezoneOffsetString(tz)
-                }));
-                optionsWithFormattedText.sort((a, b) => a.text.localeCompare(b.text));
-                optionsWithFormattedText.forEach(optionData => {
-                    const option = document.createElement('option');
-                    option.value = optionData.value;
-                    option.textContent = optionData.text;
-                    singleTimezoneSelect.appendChild(option);
-                });
-                singleTimezoneSelect.value = "Asia/Taipei";
-            }
         }
 
         // Function to handle custom timezone input interaction for all timezone selects
@@ -1617,7 +1601,7 @@
                 console.log(`DEBUG: After planet positions for ${title}, currentSectionLines length: ${currentSectionLines.length}`);
                 console.log(`DEBUG: currentSectionLines (planet positions) for ${title}:`, currentSectionLines.slice(-5));
 
-                                // --- 單盤內主要相位 (修正版) ---
+                // --- 單盤內主要相位 (修正版) ---
                 currentSectionLines.push("\n--- 單盤內主要相位 ---");
                 if (chartInfo.aspects && Array.isArray(chartInfo.aspects) && chartInfo.aspects.length > 0) {
 
