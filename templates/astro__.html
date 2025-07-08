@@ -246,7 +246,7 @@
             transition: all 0.2s ease-in-out;
             color: #4a5568;
             /* color: #ffffff; */
-            background-color: #a9bfd6;
+            background-color: #cdd0d3;
             border: 1px solid #e2e8f0;
             border-bottom: none; /* No bottom border for tab itself */
             margin-right: 2px; /* Small gap between tabs */
@@ -266,7 +266,7 @@
             z-index: 1; /* Ensure active tab is on top */
         }
         .tab-button:hover:not(.active) {
-            background-color: #c3dbf5;;
+            background-color: #e0efff;;
         }
 
         /* --- 單人/雙人命盤內容區塊樣式 --- */
@@ -298,7 +298,8 @@
         /* 將日期時間和地點時區部分變成 grid 佈局 */
         .date-time-grid, .location-timezone-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); /* 自動適應列寬 */
+            /* Mobile-first: 預設為兩欄式佈局，確保在手機上完美對齊 */
+            grid-template-columns: repeat(2, minmax(0, 1fr));
             gap: 16px; /* 欄位間距 */
             margin-bottom: 24px; /* 各行之間的間距 */
         }
@@ -456,7 +457,7 @@
         /* --- NEW: Special styling for interchart aspect titles --- */
 
         .interchart-header {
-            background: linear-gradient(to right, #e9d5ff, #d2a8ff); /* Light purple gradient */
+            background: linear-gradient(to right, #f0e2ff, #d2a8ff); /* Light purple gradient */
         }
         
         .interchart-header h3.interchart-aspect-title {
@@ -467,7 +468,7 @@
         
         /* NEW: Renamed and corrected style for Transit headers */
         .transit-header {
-            background: linear-gradient(to right, #cffafe, #a5f3fc); /* Light Cyan/Teal gradient */
+            background: linear-gradient(to right, #ceffe6, #68d09c); /* Light Cyan/Teal gradient */
         }
         .transit-header h3 {
             font-size: 1.3rem;
@@ -480,7 +481,7 @@
 
         /* --- NEW: Styling for single chart titles --- */
         .single-chart-header {
-            background: linear-gradient(to right, #c4ddff, #2084ff); /* Light blue gradient */
+            background: linear-gradient(to right, #dfecff, #2084ff); /* Light blue gradient */
         }
         .single-chart-header h3 {
             font-size: 2rem;
@@ -629,10 +630,10 @@
                         <div id="singleTimezoneSuggestions" class="timezone-suggestions"></div>
                     </div>
                     <p class="text-sm text-gray-500 mt-2">
-                        如果您的時區不在列表中，請手動輸入正確經緯度(十進制)以及 IANA完整時區名稱，<br>
-                         ( 例如：台灣的IANA時區是 Asia/Taipei，中國是 Asia/Shanghai，日本是 Asia/Tokyo，韓國是 Asia/Seoul，<br>
+                        如果您的時區不在列表中，請手動輸入正確經緯度（ 十進制 ）以及 IANA 完整時區名稱，<br>
+                         ( 例如：台灣的 IANA 時區是 Asia/Taipei，中國是 Asia/Shanghai，日本是 Asia/Tokyo，韓國是 Asia/Seoul，<br>
                          美國依不同地點分為 America/New_York等各個時區) 以取得正確星盤資訊，<br>
-                         若不知道出生地的IANA時區，可用AI聊天如ChatGPT，Gemini ai等或Google查詢。
+                         若不知道出生地的 IANA 時區，可用 AI聊天如 ChatGPT，Gemini ai 等或 由Google 查詢。
                         
                     </p>
                     <p id="single_timezone-error" class="input-error-message" aria-live="polite"></p>
@@ -1711,9 +1712,7 @@
                 } else if (title.includes("之間的相位") || title.includes("的行星落入")) {
                     sectionTitle.classList.add('interchart-aspect-title');
                     sectionHeader.classList.add('interchart-header');
-                } else if (title.includes("的組合中點盤")) {
-                    sectionHeader.classList.add('composite-chart-header');
-                } else if (title.includes("的星盤資訊")) {
+                } else if (title.includes("的星盤資訊") || (title.includes("的組合中點盤"))) {
                    sectionHeader.classList.add('single-chart-header');
                 } else if (title.includes("宮頭星座度數") || title.includes("天體位置") || title.includes("內主要相位")) {
                     sectionHeader.classList.add('single-chart-header-sub');
