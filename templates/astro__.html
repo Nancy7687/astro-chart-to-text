@@ -246,7 +246,7 @@
             transition: all 0.2s ease-in-out;
             color: #4a5568;
             /* color: #ffffff; */
-            background-color: #f8fafc;
+            background-color: #cde3fa;
             border: 1px solid #e2e8f0;
             border-bottom: none; /* No bottom border for tab itself */
             margin-right: 2px; /* Small gap between tabs */
@@ -266,7 +266,7 @@
             z-index: 1; /* Ensure active tab is on top */
         }
         .tab-button:hover:not(.active) {
-            background-color: #bfddfb;
+            background-color: #c6e0fc;;
         }
 
         /* --- 單人/雙人命盤內容區塊樣式 --- */
@@ -475,7 +475,7 @@
             font-weight: 800;
         }
         .single-chart-header-sub {
-            background: linear-gradient(to right, #b6faff, #52eef9); /* Light blue gradient */
+            background: linear-gradient(to right, #d9f1ff, #b4e3ff); /* Light blue gradient */
 
         }   
         
@@ -498,6 +498,9 @@
                 font-size: 2.25rem; /* Larger on desktop */
                 line-height: 2.5rem;
             }
+            .tab-button br {
+                display: none; /* 將 <br> 隱藏，使其不再強制換行 */ 
+            }
             .chart-card-sub h3 {
                 font-size: 2rem; /* Default mobile size */
             }
@@ -517,6 +520,10 @@
             .section-copy-btn {
                 font-size: 1rem;
                 padding: 8px 16px;
+            }
+
+            .planetSelection-text {
+                line-height: 2;
             }
             /* Apply the same specificity fix for the responsive style */
             .interchart-header h3.interchart-aspect-title {
@@ -546,8 +553,8 @@
 
         <!-- Main Tab Buttons -->
         <div class="tab-buttons">
-            <button id="singleChartTab" class="tab-button active" data-tab-content="singleChartSection">個人星盤<wbr><wbr> or <wbr><wbr>占星卜卦盤(Horary)</button>
-            <button id="synastryTab" class="tab-button" data-tab-content="synastryChartSection">雙人合盤<wbr><wbr> or <wbr><wbr>行運盤</button>
+            <button id="singleChartTab" class="tab-button active" data-tab-content="singleChartSection">個人星盤<br> or <br>占星卜卦盤(Horary)</button>
+            <button id="synastryTab" class="tab-button" data-tab-content="synastryChartSection">雙人合盤<br> or <br>行運盤</button>
         </div><!-- Single Chart Section Content -->
         <div id="singleChartSection" class="chart-section">
             <h2 class="text-xl md:text-3xl font-semibold text-gray-700 mb-4">姓名</h2>
@@ -886,7 +893,7 @@
         <!-- Planet Selection Checkboxes -->
         <div id="planetSelection" class="mb-6 p-4 border border-gray-200 rounded-lg bg-gray-50">
             <div class="flex justify-between items-center mb-3">
-                <h3 class="text-2xl md:text-4xl font-bold text-gray-700">顯示選項<br>(小行星/虛點)</h3>
+                <h3 class="planetSelection-text text-2xl md:text-4xl font-bold text-gray-700">顯示選項<br>(小行星/虛點)</h3>
                 <div>
                     <button id="toggleAllPlanetsBtn" class="text-lg md:text-2xl font-medium text-indigo-600 hover:text-indigo-800">全部取消</button>
                 </div>
@@ -1186,7 +1193,7 @@
 
             for (const groupName in optionalPlanetsConfig) {
                 const groupTitle = document.createElement('div');
-                groupTitle.className = 'leading-relaxed col-span-full font-semibold text-xl md:text-3xl text-fuchsia-900 mt-2';
+                groupTitle.className = 'leading-relaxed col-span-full planetSelection-text font-semibold text-xl md:text-3xl text-fuchsia-900 mt-2';
                 groupTitle.textContent = groupName;
                 optionalPlanetsContainer.appendChild(groupTitle);
 
@@ -1195,7 +1202,7 @@
                     checkboxWrapper.className = 'flex items-center';
                     checkboxWrapper.innerHTML = `
                         <input id="chk-${planet}" type="checkbox" value="${planet}" class="optional-planet-checkbox h-6 w-6 md:h-8 md:w-8 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500" checked>
-                        <label for="chk-${planet}" class="ml-2 block text-lg md:text-3xl text-gray-900">${planet}</label>
+                        <label for="chk-${planet}" class="planetSelection-text ml-2 block text-lg md:text-3xl text-gray-900">${planet}</label>
                     `;
                     optionalPlanetsContainer.appendChild(checkboxWrapper);
                 });
