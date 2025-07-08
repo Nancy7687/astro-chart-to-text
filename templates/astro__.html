@@ -456,7 +456,7 @@
         /* --- NEW: Special styling for interchart aspect titles --- */
 
         .interchart-header {
-            background: linear-gradient(to right, #e9d5ff, #d8b4fe); /* Light purple gradient */
+            background: linear-gradient(to right, #e9d5ff, #d2a8ff); /* Light purple gradient */
         }
         
         .interchart-header h3.interchart-aspect-title {
@@ -465,13 +465,18 @@
             font-weight: 800; /* Bolder */
                 }
         
-        .interchart-transit-aspect-title {
-            background: linear-gradient(to right, #d5fcff, #80c2c6); /* Light purple gradient */
+        /* NEW: Renamed and corrected style for Transit headers */
+        .transit-header {
+            background: linear-gradient(to right, #cffafe, #a5f3fc); /* Light Cyan/Teal gradient */
         }
+        .transit-header h3 {
+            font-size: 1.3rem;
+            color: #164e63; /* Dark Cyan text for contrast */
+            font-weight: 800;}
 
         .composite-chart-header {
-            background: linear-gradient(to right, #fffbb8, #fbf24f); /* Light purple gradient */
-        }
+            background: linear-gradient(to right, #fef9c3, #fde047); /* Light Yellow gradient */
+       }
 
         /* --- NEW: Styling for single chart titles --- */
         .single-chart-header {
@@ -495,15 +500,15 @@
             }
             .input-field, .select-field { font-size: 1.5rem; /* Adjusted desktop font size (18px) */ }
             .result-box {
-                padding: 26px;
-                line-height: 2.5rem;
+                padding: 33px;
+                line-height: 2rem;
             }
             .input-error-message {
                 font-size: 1.5rem; /* Adjusted desktop result font size (16px) */
             }
             .tab-button {
-                padding: 15px 25px; /* Larger padding on desktop */
-                font-size: 1.75rem; /* Larger on desktop */
+                padding: 10px 15px; /* Larger padding on desktop */
+                font-size: 1.25rem; /* Larger on desktop */
                 line-height: 2.5rem;
             }
             .tab-button br {
@@ -536,6 +541,9 @@
             /* Apply the same specificity fix for the responsive style */
             .interchart-header h3.interchart-aspect-title {
                 font-size: 1.5rem; /* Even larger on desktop */
+            }
+            .transit-header h3 {
+                font-size: 1.5rem; /* Larger on desktop */
             }
             .single-chart-header h3 {
                 font-size: 1.5rem;
@@ -920,7 +928,7 @@
         <!-- Result Output Section -->
         <div class="result-section">
             <div class="flex justify-between items-center mb-3">
-                <h2 class="text-3xl md:text-5xl font-semibold text-gray-700" id="resultHeader">生成結果</h2>
+                <h2 class="text-3xl md:text-5xl font-semibold text-gray-700 border-top: 10px" id="resultHeader">生成結果</h2>
                 <!-- The global copy button is removed, individual buttons will be generated -->
             </div>
             <div id="resultOutput" class="result-box" role="region" aria-live="polite" aria-atomic="true"></div>
@@ -1696,20 +1704,19 @@
 
                 const sectionTitle = document.createElement('h3');
                 sectionTitle.textContent = title;
-                // NEW: Add a special class if the title is for inter-chart aspects
-                if  (title.includes("行運")) {
-                    sectionTitle.classList.add('interchart-transit-aspect-title');
-                    } else if(title.includes("之間的相位")) {
+                
+                // Revised Logic for applying header styles
+                if (title.includes("行運") && (title.includes("之間的相位") || title.includes("的行星落入"))) {
+                    sectionHeader.classList.add('transit-header');
+                } else if (title.includes("之間的相位") || title.includes("的行星落入")) {
                     sectionTitle.classList.add('interchart-aspect-title');
-                    // ALSO add a class to the header for background styling
                     sectionHeader.classList.add('interchart-header');
-                    } else if (title.includes("的星盤資訊")) {
-                    // NEW: Add a special class for single chart and composite chart headers
-                    sectionHeader.classList.add('single-chart-header');
-                    } else if (title.includes("的組合中點盤")) {
-                        sectionHeader.classList.add('composite-chart-header');
-                    } else if (title.includes("宮頭星座度數") || title.includes("天體位置")|| title.includes("內主要相位")) {
-                    sectionHeader.classList.add('single-chart-header-sub');                
+                } else if (title.includes("的組合中點盤")) {
+                    sectionHeader.classList.add('composite-chart-header');
+                } else if (title.includes("的星盤資訊")) {
+                   sectionHeader.classList.add('single-chart-header');
+                } else if (title.includes("宮頭星座度數") || title.includes("天體位置") || title.includes("內主要相位")) {
+                    sectionHeader.classList.add('single-chart-header-sub');
                 }
 
                 const copyBtn = document.createElement('button');
@@ -2066,10 +2073,9 @@
                 formatSingleChartSection(chartData.composite_chart_data, `${chart1Name}與${chart2Name}的組合中點盤`);
                 
                 // 添加分隔符，然後顯示兩個本命盤
-                outputLines.push("=== 參考：個人本命盤 ===");
                 
-                formatSingleChartSection(chartData.natal_chart1_data, `${chart1Name}的本命盤資訊`);
-                formatSingleChartSection(chartData.natal_chart2_data, `${chart2Name}的本命盤資訊`);
+                formatSingleChartSection(chartData.natal_chart1_data, `${chart1Name}的本命星盤資訊`);
+                formatSingleChartSection(chartData.natal_chart2_data, `${chart2Name}的本命星盤資訊`);
             
             } else if (chartData.chart_type === 'transit') {
                 
