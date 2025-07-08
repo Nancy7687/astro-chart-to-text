@@ -399,65 +399,7 @@
             display: none;
         }
 
-        /* --- Sectioned Result Styling --- */
-        .result-section-item {
-            background-color: #f8fafc; /* Slightly off-white background for each section */
-            border: 1px solid #e2e8f0;
-            border-radius: 8px;
-            margin-bottom: 16px;
-            overflow: hidden; /* To contain the pre's background */
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-        }
-
-        .result-section-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 12px 16px;
-            background-color: #edf2f7; /* Header background */
-            border-bottom: 1px solid #e2e8f0;
-        }
-
-        .result-section-header h3 {
-            font-size: 1.1rem;
-            font-weight: 700;
-            color: #2d3748;
-            font-family: 'Inter', 'Noto Sans TC', sans-serif; /* Use UI font for header */
-        }
-
-        .result-section-content {
-            padding: 16px;
-            white-space: pre-wrap;
-            font-family: 'Roboto Mono', 'Courier New', monospace;
-            font-size: 1rem;
-            color: #2d3748;
-            background-color: #fdfdff;
-            line-height: 1.6;
-            overflow-x: auto;
-        }
-
-        .section-copy-btn {
-            background-color: #6b7280;
-            color: white;
-            padding: 6px 12px;
-            border-radius: 6px;
-            font-weight: 600;
-            cursor: pointer;
-            font-size: 0.875rem;
-            transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
-            border: none;
-            white-space: nowrap;
-        }
-
-        .section-copy-btn:hover {
-            background-color: #4b5563;
-        }
-
-        .section-copy-btn.copied {
-            background-color: #10b981;
-        }
-
-
+        
         /* --- 響應式設計：針對桌面等較大螢幕的樣式 --- */
         @media (min-width: 768px) {
             .input-group label {
@@ -1496,10 +1438,8 @@
             
             clearAllInputErrors();
             const resultOutput = document.getElementById('resultOutput');
-            const copyButton = document.getElementById('copyResultBtn');
             const loadingSpinner = document.getElementById('loadingSpinner');
             resultOutput.textContent = '';
-            copyButton.classList.add('hidden'); // Hide button at the start of calculation
             resultOutput.classList.remove('error-message');
 
             const activeMainTab = document.querySelector('.tab-button.active').dataset.tabContent;
@@ -1775,7 +1715,7 @@
                 resultContainer.appendChild(currentSection.element);
             }
         }
-        
+
         /**
          * Formats the astrological chart data received from the backend (Python)
          * into a human-readable string for display in the HTML.
