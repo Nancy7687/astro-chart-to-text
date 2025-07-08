@@ -1672,6 +1672,9 @@
                     sectionTitle.classList.add('interchart-aspect-title');
                     // ALSO add a class to the header for background styling
                     sectionHeader.classList.add('interchart-header');
+                    } else if (title.includes("的星盤資訊") || title.includes("的組合中點盤")) {
+                    // NEW: Add a special class for single chart and composite chart headers
+                    sectionHeader.classList.add('single-chart-header');                
                 }
 
                 const copyBtn = document.createElement('button');
