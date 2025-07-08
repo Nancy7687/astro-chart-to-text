@@ -456,12 +456,22 @@
         .interchart-header {
             background: linear-gradient(to right, #e9d5ff, #d8b4fe); /* Light purple gradient */
         }
-        /* Combine all special title styles into one, more specific rule to override the base style */
         
         .interchart-header h3.interchart-aspect-title {
             font-size: 1.3rem; /* Larger than the default section title */
             color: #581c87; 
             font-weight: 800; /* Bolder */
+                }
+
+        /* --- NEW: Styling for single chart titles --- */
+        .single-chart-header {
+            background: linear-gradient(to right, #dbeafe, #bfdbfe); /* Light blue gradient */
+        }
+        .single-chart-header h3 {
+            font-size: 1.3rem;
+            color: #1e40af; /* Darker blue text */
+            font-weight: 800;
+        }   
         
         /* --- 響應式設計：針對桌面等較大螢幕的樣式 --- */
         @media (min-width: 768px) {
@@ -503,6 +513,9 @@
             /* Apply the same specificity fix for the responsive style */
             .interchart-header h3.interchart-aspect-title {
                 font-size: 1.5rem; /* Even larger on desktop */
+            }
+            .single-chart-header h3 {
+                font-size: 1.5rem;
             }
         }
 
