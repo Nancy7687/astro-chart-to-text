@@ -118,6 +118,7 @@
             color: #4a5568; /* Darker gray for labels */
             font-size: 1rem; /* Smaller mobile font size (14px) */
             margin-bottom: 4px; /* Small space between label and input */
+            line-height: 1.5rem;
         }
         /* Styling for input fields and select dropdowns */
         .input-field, .select-field {
@@ -129,6 +130,7 @@
             width: 100%;
             transition: all 0.2s ease-in-out;
             /* 優化：為無效輸入添加視覺回饋 */
+            line-height: 1.1rem;
             border-color: var(--input-border-color, #cbd5e0);
         }
         /* Focus styling for input fields and select dropdowns */
@@ -163,11 +165,11 @@
         .btn-primary {
             background-color: #4B0082; /* Button matches new primary color */
             color: white;
-            padding: 0.75rem 1.5rem; /* Mobile-friendly padding */
+            padding: 1rem 1.75rem; /* Mobile-friendly padding */
             border-radius: 12px; /* More rounded button */
             font-weight: 700;
             cursor: pointer;
-            font-size: 3.5rem; /* 顯著加大字體 (相當於 text-4xl) */
+            font-size: 2.5rem; /* 顯著加大字體 (相當於 text-4xl) */
             line-height: 2.5rem; /* 調整行高以適應大字體 */
 
             transition: background-color 0.2s ease-in-out, transform 0.1s ease-in-out, box-shadow 0.2s ease-in-out;
@@ -249,8 +251,7 @@
             border: 1px solid #e2e8f0;
             border-bottom: none; /* No bottom border for tab itself */
             margin-right: 2px; /* Small gap between tabs */
-            font-size: 1rem; /* Default mobile size */
-            line-height: 1.5rem;
+            font-size: 1.5rem; /* Default mobile size */
             letter-spacing: 0.05em; /* 調整字距，您可以根據需要修改這個值 */
         }
 
