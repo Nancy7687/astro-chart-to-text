@@ -116,15 +116,15 @@
         .input-group label {
             font-weight: 600;
             color: #4a5568; /* Darker gray for labels */
-            font-size: 1rem; /* Default mobile size */
+            font-size: 0.875rem; /* Smaller mobile font size (14px) */
             margin-bottom: 4px; /* Small space between label and input */
         }
         /* Styling for input fields and select dropdowns */
         .input-field, .select-field {
             border: 1px solid #cbd5e0; /* Light gray border */
             border-radius: 8px; /* Consistent rounded corners */
-            padding: 10px 14px; /* Increased padding slightly for better touch target */
-            font-size: 1rem; /* Default mobile size */
+            padding: 8px 12px; /* Adjusted padding for smaller font */
+            font-size: 0.875rem; /* Smaller mobile font size (14px) */
             color: #2d3748;
             width: 100%;
             transition: all 0.2s ease-in-out;
@@ -428,8 +428,8 @@
         .result-section-content {
             padding: 16px;
             white-space: pre-wrap;
-            font-family: 'Roboto Mono', 'Courier New', monospace;
-            font-size: 1rem;
+            font-family: 'Roboto Mono', 'Courier New', monospace; /* Monospaced font for code-like output */
+            font-size: 0.9rem; /* Slightly smaller result text for mobile */
             color: #2d3748;
             background-color: #fdfdff;
             line-height: 1.6;
@@ -476,14 +476,14 @@
         /* --- 響應式設計：針對桌面等較大螢幕的樣式 --- */
         @media (min-width: 768px) {
             .input-group label {
-                font-size: 1.5rem; /* Larger on desktop */
+                font-size: 1.125rem; /* Adjusted desktop font size (18px) */
             }
-            .input-field, .select-field { font-size: 1.6rem; /* Larger on desktop */ }
+            .input-field, .select-field { font-size: 1.125rem; /* Adjusted desktop font size (18px) */ }
             .result-box {
                 padding: 24px;
             }
             .input-error-message {
-                font-size: 1.1rem; /* Larger on desktop */
+                font-size: 1rem; /* Adjusted desktop result font size (16px) */
             }
             .tab-button {
                 padding: 15px 25px; /* Larger padding on desktop */
