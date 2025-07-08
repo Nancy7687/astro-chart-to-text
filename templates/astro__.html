@@ -13,10 +13,10 @@
         body {
             font-family: 'Inter', 'Noto Sans TC', 'Microsoft JhengHei', sans-serif;
             min-height: 100vh; /* Ensure gradient covers full viewport height */
-            display: flex; /* Use flexbox for centering the container */
-            justify-content: center; /* Center container horizontally */
-            align-items: flex-start; /* Align container to the top, better for scrolling */
-            padding: 1rem; /* Standardized padding (16px), similar to Gemini's mobile view */
+            display: flex;
+            justify-content: center;
+            align-items: flex-start; /* Align to top, better for scrolling on mobile */
+            padding: 0.5rem; /* Reduced body padding for tighter mobile layout (8px) */
             box-sizing: border-box; /* Include padding in element's total width and height */
             overflow-y: auto; /* Allow scrolling for content that exceeds viewport height */
             /* 紫羅蘭到中等紫羅蘭紅的漸變 */
@@ -83,8 +83,8 @@
         .container {
             width: 100%;
             max-width: 1280px; /* Increased max-width to accommodate two side-by-side forms */
-            margin: 0 auto; /* Centering with auto margin */
-            padding: 1.5rem; /* Adjusted for better mobile spacing (24px) */
+            margin: 0 auto;
+            padding: 1rem; /* Reduced container padding for tighter mobile layout (16px) */
             background-color: #ffffff;
             border-radius: 18px; /* More rounded corners for modern look */
             box-shadow: 0 10px 40px rgba(0, 0, 0, 0.25); /* Stronger, softer shadow */
@@ -163,7 +163,7 @@
         .btn-primary {
             background-color: #4B0082; /* Button matches new primary color */
             color: white;
-            padding: 30px 60px; /* Increased button padding */
+            padding: 0.75rem 1.5rem; /* Mobile-friendly padding */
             border-radius: 12px; /* More rounded button */
             font-weight: 700;
             cursor: pointer;
@@ -517,6 +517,14 @@
             .single-chart-header h3 {
                 font-size: 1.5rem;
             }
+            .container {
+                padding: 2rem; /* Restore larger padding for desktop */
+            }
+            .btn-primary {
+                /* Restore larger button size for desktop */
+                padding: 1.25rem 2.5rem;
+                font-size: 1.875rem; /* text-3xl */
+            }
         }
 
     </style>
@@ -525,7 +533,7 @@
     <div class="container">
         <!-- Main Header -->
         <div class="header-bg">
-            <h1 class="text-4xl md:text-6xl font-bold text-center mb-0" style="letter-spacing: 0.1em;">星盤文字資料生成</h1>
+            <h1 class="text-3xl md:text-5xl font-bold text-center mb-0" style="letter-spacing: 0.1em;">星盤文字資料生成</h1>
        </div>
 
         <!-- Main Tab Buttons -->
