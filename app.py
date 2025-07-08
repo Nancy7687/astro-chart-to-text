@@ -120,6 +120,71 @@ def zodiac_format(deg: float) -> str:
     deg_in_sign = deg % 30
     return f"{ZODIAC_SIGNS[sign_idx]}({degree_format(deg_in_sign)})"
 
+def convert_decimal_to_dms(decimal_degrees):
+    """
+    將十進制度數轉換為度-分-秒（DMS）格式。
+
+    這個函式會把一個像「25.75度」這樣的數字，變成「25度45分0秒」的形式。
+    想像一下，就像我們把2.5小時變成2小時30分鐘一樣。
+
+    Args:
+        decimal_degrees (float): 待轉換的十進制度數。
+                                 例如：25.75 表示 25又四分之三度。
+
+    Returns:
+        tuple: 包含三個整數的元組 (度, 分, 秒)。
+               例如：(25, 45, 0)
+    """
+    # 判斷度數的正負，因為「分」和「秒」通常是正值
+    # 我們先取絕對值來計算分和秒，最後再把負號加回去給度數
+    is_negative = decimal_degrees < 0
+    abs_decimal_degrees = abs(decimal_degrees)
+
+    # 取出整數部分，這就是「度」
+    degrees = int(abs_decimal_degrees)
+
+    # 剩下的小數部分，這就是我們要轉換成「分」和「秒」的
+    # 舉例：25.75度 - 25度 = 0.75度
+    remainder = abs_decimal_degrees - degrees
+
+    # 把小數部分乘以60，得到「分」的十進制值
+    # 舉例：0.75 * 60 = 45.0
+    minutes_decimal = remainder * 60
+
+    # 取出「分」的整數部分
+    # 舉例：int(45.0) = 45
+    minutes = int(minutes_decimal)
+
+    # 「分」的小數部分，這就是要轉換成「秒」的
+    # 舉例：45.0 - 45 = 0.0
+    remainder_minutes = minutes_decimal - minutes
+
+    # 把「分」的小數部分再乘以60，得到「秒」的十進制值
+    # 舉例：0.0 * 60 = 0.0
+    seconds_decimal = remainder_minutes * 60
+
+    # 因為秒可能會有小數，我們通常會四捨五入到最接近的整數
+    # 舉例：round(0.0) = 0
+    seconds = round(seconds_decimal)
+
+    # 處理四捨五入可能導致秒變成60的情況（例如59.8秒四捨五入變60秒）
+    # 如果秒是60，就進位到分，秒歸零
+    if seconds >= 60:
+        minutes += 1
+        seconds = 0
+
+    # 處理分變成60的情況
+    # 如果分是60，就進位到度，分歸零
+    if minutes >= 60:
+        degrees += 1
+        minutes = 0
+
+    # 如果原始度數是負的，我們讓度數也變負的
+    if is_negative:
+        degrees = -degrees
+
+    return (degrees, minutes, seconds)
+
 def get_midpoint(deg1: float, deg2: float) -> float:
     rad1 = math.radians(deg1)
     rad2 = math.radians(deg2)
