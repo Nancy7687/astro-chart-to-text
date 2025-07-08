@@ -452,17 +452,16 @@
         .section-copy-btn.copied { background-color: #10b981; }
 
         /* --- NEW: Special styling for interchart aspect titles --- */
-        .interchart-aspect-title {
-            font-size: 1.3rem; /* Larger than the default section title */
-            /* Color is now handled by the header class for better context */
-        }
+
         .interchart-header {
             background: linear-gradient(to right, #e9d5ff, #d8b4fe); /* Light purple gradient */
         }
+        /* Combine all special title styles into one, more specific rule to override the base style */
+        
         .interchart-header h3.interchart-aspect-title {
-            /* Make the text darker for contrast against the new light background */
+            font-size: 1.3rem; /* Larger than the default section title */
             color: #581c87; 
-            font-weight: 800; /* Bolder */}
+            font-weight: 800; /* Bolder */
         
         /* --- 響應式設計：針對桌面等較大螢幕的樣式 --- */
         @media (min-width: 768px) {
@@ -501,7 +500,8 @@
                 font-size: 1rem;
                 padding: 8px 16px;
             }
-            .interchart-aspect-title {
+            /* Apply the same specificity fix for the responsive style */
+            .interchart-header h3.interchart-aspect-title {
                 font-size: 1.5rem; /* Even larger on desktop */
             }
         }
