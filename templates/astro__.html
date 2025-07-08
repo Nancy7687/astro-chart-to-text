@@ -485,6 +485,104 @@
                 font-size: 1.25rem; /* Larger on desktop */
                 padding: 10px 20px;
             }
+            .result-section-header h3 {
+                font-size: 1.25rem;
+            }
+            .result-section-content {
+                font-size: 1.1rem;
+            }
+            .section-copy-btn {
+                font-size: 1rem;
+                padding: 8px 16px;
+            }
+        }
+
+        /* --- Sectioned Result Styling --- */
+        .result-section-item {
+            background-color: #f8fafc; /* Slightly off-white background for each section */
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            margin-bottom: 16px;
+            overflow: hidden; /* To contain the pre's background */
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .result-section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 16px;
+            background-color: #edf2f7; /* Header background */
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .result-section-header h3 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #2d3748;
+            font-family: 'Inter', 'Noto Sans TC', sans-serif; /* Use UI font for header */
+        }
+
+        .result-section-content {
+            padding: 16px;
+            white-space: pre-wrap;
+            font-family: 'Roboto Mono', 'Courier New', monospace;
+            font-size: 1rem;
+            color: #2d3748;
+            background-color: #fdfdff;
+            line-height: 1.6;
+            overflow-x: auto;
+        }
+
+        .section-copy-btn {
+            background-color: #6b7280;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 0.875rem;
+            transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
+            border: none;
+            white-space: nowrap;
+        }
+
+        .section-copy-btn:hover {
+            background-color: #4b5563;
+        }
+
+        .section-copy-btn.copied {
+            background-color: #10b981;
+        }
+
+
+        /* --- 響應式設計：針對桌面等較大螢幕的樣式 --- */
+        @media (min-width: 768px) {
+            .input-group label {
+                font-size: 1.5rem; /* Larger on desktop */
+            }
+            .input-field, .select-field { font-size: 1.6rem; /* Larger on desktop */ }
+            .result-box {
+                padding: 24px;
+            }
+            .input-error-message {
+                font-size: 1.1rem; /* Larger on desktop */
+            }
+            .tab-button {
+                padding: 15px 25px; /* Larger padding on desktop */
+                font-size: 2.25rem; /* Larger on desktop */
+                line-height: 2.5rem;
+            }
+            .chart-card-sub h3 {
+                font-size: 1.5rem; /* Default mobile size */
+            }
+            .chart-card-sub p {
+                font-size: 1.2rem; /* Larger on desktop */
+            }
+            .copy-btn {
+                font-size: 1.25rem; /* Larger on desktop */
+                padding: 10px 20px;
+            }
         }
 
     </style>
@@ -860,9 +958,9 @@
         <div class="result-section">
             <div class="flex justify-between items-center mb-3">
                 <h2 class="text-3xl md:text-5xl font-semibold text-gray-700" id="resultHeader">生成結果</h2>
-                <button id="copyResultBtn" class="copy-btn hidden">複製內容</button>
+                <!-- The global copy button is removed, individual buttons will be generated -->
             </div>
-            <pre id="resultOutput" class="result-box text-sm" role="region" aria-live="polite" aria-atomic="true"></pre>
+            <div id="resultOutput" class="result-box" role="region" aria-live="polite" aria-atomic="true"></div>
         </div>
     </div>
 
@@ -1195,29 +1293,33 @@
                 });
             });
 
-            const copyButton = document.getElementById('copyResultBtn');
-            if (copyButton) {
-                copyButton.addEventListener('click', () => {
-                    const resultOutput = document.getElementById('resultOutput');
-                    const textToCopy = resultOutput.textContent;
+            // --- NEW: Event delegation for section copy buttons ---
+            const resultOutputContainer = document.getElementById('resultOutput');
+            if (resultOutputContainer) {
+                resultOutputContainer.addEventListener('click', (event) => {
+                    if (event.target.classList.contains('section-copy-btn')) {
+                        const copyButton = event.target;
+                        const sectionContent = copyButton.closest('.result-section-item').querySelector('.result-section-content');
+                        const textToCopy = sectionContent.textContent;
 
-                    if (textToCopy && navigator.clipboard) {
-                        navigator.clipboard.writeText(textToCopy).then(() => {
-                            // Success feedback
-                            copyButton.textContent = '已複製！';
-                            copyButton.classList.add('copied');
-                            setTimeout(() => {
-                                copyButton.textContent = '複製內容';
-                                copyButton.classList.remove('copied');
-                            }, 2000); // Revert after 2 seconds
-                        }).catch(err => {
-                            console.error('無法複製文字: ', err);
-                            // Error feedback
-                            copyButton.textContent = '複製失敗';
-                            setTimeout(() => {
-                                copyButton.textContent = '複製內容';
-                            }, 2000);
-                        });
+                        if (textToCopy && navigator.clipboard) {
+                            navigator.clipboard.writeText(textToCopy).then(() => {
+                                // Success feedback
+                                copyButton.textContent = '已複製！';
+                                copyButton.classList.add('copied');
+                                setTimeout(() => {
+                                    copyButton.textContent = '複製';
+                                    copyButton.classList.remove('copied');
+                                }, 2000); // Revert after 2 seconds
+                            }).catch(err => {
+                                console.error('無法複製文字: ', err);
+                                // Error feedback
+                                copyButton.textContent = '複製失敗';
+                                setTimeout(() => {
+                                    copyButton.textContent = '複製';
+                                }, 2000);
+                            });
+                        }
                     }
                 });
             }
@@ -1552,12 +1654,10 @@
                      // Button remains hidden on error
                     } else {
                     const formattedText = formatChartDataForDisplayFrontend(chartData, chart1Name, chart2Name);
-                    
-                    resultOutput.textContent = formattedText; // 將格式化後的文字設置到結果顯示區
+                    // NEW: Render the text as sections instead of a single block
+                    renderSectionsFromText(formattedText);
                     resultOutput.classList.remove('error-message');
-                    if (formattedText.trim() !== '') {
-                        copyButton.classList.remove('hidden'); // Show button on success with content
-                    }
+                    // The global copy button is removed, so no need to show it.
                     }
             } catch (error) { // --- Axios 的錯誤處理 ---
                 const resultOutput = document.getElementById('resultOutput');
@@ -1615,6 +1715,67 @@
             }
         }
 
+        /**
+         * NEW: Renders the formatted text into distinct sections with copy buttons.
+         * @param {string} fullText - The complete formatted string from the backend.
+         */
+        function renderSectionsFromText(fullText) {
+            const resultContainer = document.getElementById('resultOutput');
+            resultContainer.innerHTML = ''; // Clear previous results
+
+            const lines = fullText.split('\n');
+            let currentSection = null;
+
+            const createNewSection = (title) => {
+                const sectionItem = document.createElement('div');
+                sectionItem.className = 'result-section-item';
+
+                const sectionHeader = document.createElement('div');
+                sectionHeader.className = 'result-section-header';
+
+                const sectionTitle = document.createElement('h3');
+                sectionTitle.textContent = title;
+
+                const copyBtn = document.createElement('button');
+                copyBtn.className = 'section-copy-btn';
+                copyBtn.textContent = '複製';
+
+                const sectionContent = document.createElement('pre');
+                sectionContent.className = 'result-section-content';
+
+                sectionHeader.appendChild(sectionTitle);
+                sectionHeader.appendChild(copyBtn);
+                sectionItem.appendChild(sectionHeader);
+                sectionItem.appendChild(sectionContent);
+
+                return {
+                    element: sectionItem,
+                    contentElement: sectionContent,
+                    contentLines: []
+                };
+            };
+
+            lines.forEach(line => {
+                const trimmedLine = line.trim();
+                const headerMatch = trimmedLine.match(/^(?:===|---)\s*(.*?)\s*(?:===|---)?$/);
+
+                if (headerMatch && headerMatch[1]) {
+                    if (currentSection) {
+                        currentSection.contentElement.textContent = currentSection.contentLines.join('\n').trim();
+                        resultContainer.appendChild(currentSection.element);
+                    }
+                    currentSection = createNewSection(headerMatch[1].trim());
+                } else if (currentSection && line.trim() !== '') { // Avoid adding empty lines between sections
+                    currentSection.contentLines.push(line);
+                }
+            });
+
+            if (currentSection) {
+                currentSection.contentElement.textContent = currentSection.contentLines.join('\n').trim();
+                resultContainer.appendChild(currentSection.element);
+            }
+        }
+        
         /**
          * Formats the astrological chart data received from the backend (Python)
          * into a human-readable string for display in the HTML.
