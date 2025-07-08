@@ -5,6 +5,8 @@ import json
 import google.generativeai as genai
 from dotenv import load_dotenv
 import google.api_core.exceptions
+from rich.console import Console
+from rich.markdown import Markdown
 import argparse
 
 # 從 .env 檔案載入環境變數
@@ -44,12 +46,9 @@ def get_chart_data_from_api(payload):
         "Content-Type": "application/json",
         "X-API-Key": ASTRO_API_KEY
     }
-    # 根據 URL 動態判斷是本地還是雲端，讓日誌更清晰
-    api_location = "雲端" if "onrender.com" in ASTRO_API_URL else "本地"
-    print(f"1. 正在向您的{api_location}星盤 API ({ASTRO_API_URL}) 發送請求...")
+    # 注意：使用者介面的回饋現在由主執行區塊的 status 指示器處理
     response = requests.post(ASTRO_API_URL, headers=headers, data=json.dumps(payload))
     response.raise_for_status() # 確保請求成功
-    print("   ✅ 成功獲取星盤數據！")
     return response.json()
 
 
@@ -90,16 +89,14 @@ def get_interpretation_from_gemini(chart_data, custom_question=None):
         ---
         """
     
-    print("\n2. 正在將星盤數據和提示發送給 Gemini API...")
+    # 注意：使用者介面的回饋現在由主執行區塊的 status 指示器處理
     model = genai.GenerativeModel('gemini-1.5-flash') # 您也可以試試 'gemini-1.5-pro'
     response = model.generate_content(prompt)
     # 新增：檢查 Gemini 是否有回傳內容
     if not response.parts:
-        print("   ⚠️ Gemini API 回應為空，可能是因為內容安全設定。")
         if response.prompt_feedback:
-            print(f"   提示回饋: {response.prompt_feedback}")
+            raise google.api_core.exceptions.GoogleAPICallError(f"Gemini API 回應為空，可能是因為內容安全設定。提示回饋: {response.prompt_feedback}")
         return "無法從 Gemini 獲取有效的解讀。"
-    print("   ✅ 成功從 Gemini 獲取分析結果！")
 
     return response.text
 
@@ -128,6 +125,7 @@ def parse_arguments():
 # ==============================================================================
 
 if __name__ == "__main__":
+    console = Console()
     args = parse_arguments()
 
     # 從解析的參數建立 payload
@@ -139,33 +137,33 @@ if __name__ == "__main__":
     }
 
     try:
-        # 步驟 1: 從您的 API 獲取星盤數據
-        astro_data = get_chart_data_from_api(chart_payload)
+        with console.status("[bold yellow]正在獲取星盤數據...", spinner="dots") as status:
+            # 步驟 1: 從您的 API 獲取星盤數據
+            astro_data = get_chart_data_from_api(chart_payload)
         
-        # 步驟 2: 將數據和您的問題（如果有的話）交給 Gemini 進行解讀
-        interpretation = get_interpretation_from_gemini(astro_data, custom_question=args.question)
+        with console.status("[bold yellow]Gemini 正在思考中...", spinner="dots") as status:
+            # 步驟 2: 將數據和您的問題（如果有的話）交給 Gemini 進行解讀
+            interpretation = get_interpretation_from_gemini(astro_data, custom_question=args.question)
         
         # 步驟 3: 印出最終結果
-        print("\n" + "="*60)
+        console.rule("[bold magenta]✨ Gemini 占星大師的分析結果 ✨", style="magenta")
         if args.question:
-            print(f"✨ 對於問題「{args.question}」的分析結果 ✨")
-        else:
-            print("✨ Gemini 占星大師的分析結果 ✨")
-        print("="*60)
-        print(interpretation)
+            console.print(f"[bold]您問：[/bold] [italic]{args.question}[/italic]\n")
+        
+        console.print(Markdown(interpretation))
+        console.rule(style="magenta")
 
     except requests.exceptions.HTTPError as e:
-        print(f"\n❌ 您的星盤 API 回應錯誤: {e.response.status_code}")
-        print(f"   回應內容: {e.response.text}")
-        
+        console.print(f"\n[bold red]❌ 您的星盤 API 回應錯誤: {e.response.status_code}[/bold red]")
+        console.print(f"   回應內容: {e.response.text}")
     except requests.exceptions.RequestException as e:
-        print(f"\n❌ 錯誤：無法連接到您的本地星盤 API。請確認 app.py 正在運行。")
-        print(f"   詳細資訊: {e}")
+        console.print(f"\n[bold red]❌ 錯誤：無法連接到您的星盤 API。請確認您的雲端服務正在運行。[/bold red]")
+        console.print(f"   詳細資訊: {e}")
     except google.api_core.exceptions.GoogleAPICallError as e:
-        print(f"\n❌ Gemini API 呼叫失敗: {e}")
+        console.print(f"\n[bold red]❌ Gemini API 呼叫失敗: {e}[/bold red]")
     except ValueError as e:
         # 捕捉我們自己拋出的 ValueError，例如找不到 API 金鑰
-        print(f"\n❌ 設定錯誤: {e}")
+        console.print(f"\n[bold red]❌ 設定錯誤: {e}[/bold red]")
     except Exception as e:
-        print(f"\n❌ 發生未知錯誤: {e}")
+        console.print(f"\n[bold red]❌ 發生未知錯誤: {e}[/bold red]")
 
