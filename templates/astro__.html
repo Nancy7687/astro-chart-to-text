@@ -122,9 +122,9 @@
         }
         /* Styling for input fields and select dropdowns */
         .input-field, .select-field {
-            border: 1px solid #cbd5e0; /* Light gray border */
+            border: .5px solid #cbd5e0; /* Light gray border */
             border-radius: 8px; /* Consistent rounded corners */
-            padding: 8px 12px; /* Adjusted padding for smaller font */
+            padding: 9px 13px; /* Adjusted padding for smaller font */
             font-size: 1rem; /* Smaller mobile font size (14px) */
             color: #2d3748;
             width: 100%;
@@ -386,7 +386,7 @@
         }
 
         .chart-card-sub h3 {
-            font-size: 1.1rem; /* Default mobile size */
+            font-size: 1.5rem; /* Default mobile size */
             font-weight: 700;
             color: #2d3748;
             margin-bottom: 0.25rem;
@@ -474,6 +474,10 @@
             font-size: 1.5rem;
             color: #1e40af; /* Darker blue text */
             font-weight: 800;
+        }
+        .single-chart-header-sub {
+            background: linear-gradient(to right, #deebfd, #5a9efe); /* Light blue gradient */
+
         }   
         
         /* --- 響應式設計：針對桌面等較大螢幕的樣式 --- */
@@ -626,7 +630,7 @@
                         <div id="singleTimezoneSuggestions" class="timezone-suggestions"></div>
                     </div>
                     <p class="text-sm text-gray-500 mt-2">
-                        如果您的時區不在列表中，請手動輸入正確經緯度以及 IANA完整時區名稱，<br>
+                        如果您的時區不在列表中，請手動輸入正確經緯度(十進制)以及 IANA完整時區名稱，<br>
                          ( 例如：台灣的IANA時區是 Asia/Taipei，中國是 Asia/Shanghai，日本是 Asia/Tokyo，韓國是 Asia/Seoul，<br>
                          美國依不同地點分為 America/New_York等各個時區) 以取得正確星盤資訊，<br>
                          若不知道出生地的IANA時區，可用AI聊天如ChatGPT，Gemini ai等或Google查詢。
@@ -906,7 +910,7 @@
         <!-- Planet Selection Checkboxes -->
         <div id="planetSelection" class="mb-6 p-4 border border-gray-200 rounded-lg bg-gray-50">
             <div class="flex justify-between items-center mb-3">
-                <h3 class="text-2xl md:text-4xl font-bold text-gray-700">顯示選項 (小行星/虛點)</h3>
+                <h3 class="text-2xl md:text-4xl font-bold text-gray-700">顯示選項<br>(小行星/虛點)</h3>
                 <div>
                     <button id="toggleAllPlanetsBtn" class="text-lg md:text-2xl font-medium text-indigo-600 hover:text-indigo-800">全部取消</button>
                 </div>
@@ -1708,7 +1712,10 @@
                     sectionHeader.classList.add('interchart-header');
                     } else if (title.includes("的星盤資訊") || title.includes("的組合中點盤")) {
                     // NEW: Add a special class for single chart and composite chart headers
-                    sectionHeader.classList.add('single-chart-header');                
+                    sectionHeader.classList.add('single-chart-header'); 
+                    } else if (title.includes("宮頭星座度數") || title.includes("天體位置")|| title.includes("內主要相位")) {
+                    
+                    sectionHeader.classList.add('single-chart-header-sub');                
                 }
 
                 const copyBtn = document.createElement('button');

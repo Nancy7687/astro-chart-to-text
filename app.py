@@ -101,10 +101,19 @@ BASE_PLANETS = [
 # ==============================================================================
 # Helper Functions (輔助函數)
 # ==============================================================================
-# ... (這裡的所有輔助函數，從 degree_format 到 get_planet_overlays_in_houses，都保持不變) ...
-# ... 我將省略貼上這部分相同的程式碼，請直接從您的 app13.py 複製過來 ...
+def dms_format(deg: float) -> str:
+    """將十進制度數轉換為度、分、秒的 60 進制格式"""
+    d = int(deg)
+    m_float = (deg - d) * 60
+    m = int(m_float)
+    s = int((m_float - m) * 60)
+    # 格式化為 XX°XX'XX"
+    return f"{str(d).zfill(2)}°{str(m).zfill(2)}'{str(s).zfill(2)}\""
+
 def degree_format(deg: float) -> str:
-    return f"{deg:.2f}°"
+    # OLD: return f"{deg:.2f}°"
+    # NEW: Use the new DMS formatter
+    return dms_format(deg)
 
 def zodiac_format(deg: float) -> str:
     sign_idx = int(deg // 30)
