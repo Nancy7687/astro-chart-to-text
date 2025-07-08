@@ -54,28 +54,44 @@ def get_chart_data_from_api(payload):
 
 
 
-def get_interpretation_from_gemini(chart_data):
+def get_interpretation_from_gemini(chart_data, custom_question=None):
     """將星盤數據發送給 Gemini 並獲取解讀"""
     
-    # --- 這就是「提示工程 (Prompt Engineering)」的關鍵 ---
-    prompt = f"""
-    你是一位溫暖、專業且富有洞察力的占星大師。你的任務是根據下面提供的 JSON 格式的個人星盤數據，為使用者提供一段深入的個性分析。請避免使用過於宿命論的語氣，而是著重於潛能的啟發與自我理解。
+    # --- 動態提示工程 (Dynamic Prompt Engineering) ---
+    if custom_question:
+        # 如果使用者提供了特定問題，使用這個更直接的提示
+        prompt = f"""
+        你是一位專業的占星師。請根據以下提供的 JSON 格式的星盤數據，用清晰、易懂的方式回答使用者的問題。
 
-    請你依據以下步驟進行分析：
-    1.  **核心個性**：分析太陽、月亮、上升星座的位置與意義，描述這個人的基本性格、情感需求和給外界的第一印象。
-    2.  **心智與溝通**：分析水星所在的星座與宮位，解釋他們的思維模式、溝通風格和學習方式。
-    3.  **愛情與價值觀**：分析金星所在的星座與宮位，描述他們的愛情觀、審美偏好以及他們所珍視的事物。
-    4.  **關鍵相位**：從 `aspects` 列表中，挑選 1-2 個最重要（容許度 `orb` 最小）的相位進行解釋，特別是涉及個人行星（太陽到火星）的相位，說明這些能量是如何互相影響的。
+        使用者的問題: "{custom_question}"
 
-    請用流暢、自然的散文形式呈現你的分析，而不是條列式地回答。
+        ---
+        星盤數據:
+        ```json
+        {json.dumps(chart_data, indent=2, ensure_ascii=False)}
+        ```
+        ---
+        """
+    else:
+        # 如果沒有特定問題，則使用預設的完整分析提示
+        prompt = f"""
+        你是一位溫暖、專業且富有洞察力的占星大師。你的任務是根據下面提供的 JSON 格式的個人星盤數據，為使用者提供一段深入的個性分析。請避免使用過於宿命論的語氣，而是著重於潛能的啟發與自我理解。
 
-    ---
-    星盤數據:
-    ```json
-    {json.dumps(chart_data, indent=2, ensure_ascii=False)}
-    ```
-    ---
-    """
+        請你依據以下步驟進行分析：
+        1.  **核心個性**：分析太陽、月亮、上升星座的位置與意義，描述這個人的基本性格、情感需求和給外界的第一印象。
+        2.  **心智與溝通**：分析水星所在的星座與宮位，解釋他們的思維模式、溝通風格和學習方式。
+        3.  **愛情與價值觀**：分析金星所在的星座與宮位，描述他們的愛情觀、審美偏好以及他們所珍視的事物。
+        4.  **關鍵相位**：從 `aspects` 列表中，挑選 1-2 個最重要（容許度 `orb` 最小）的相位進行解釋，特別是涉及個人行星（太陽到火星）的相位，說明這些能量是如何互相影響的。
+
+        請用流暢、自然的散文形式呈現你的分析，而不是條列式地回答。
+
+        ---
+        星盤數據:
+        ```json
+        {json.dumps(chart_data, indent=2, ensure_ascii=False)}
+        ```
+        ---
+        """
     
     print("\n2. 正在將星盤數據和提示發送給 Gemini API...")
     model = genai.GenerativeModel('gemini-1.5-flash') # 您也可以試試 'gemini-1.5-pro'
@@ -106,6 +122,7 @@ def parse_arguments():
     parser.add_argument("--lon", type=float, default=121.52, help="經度 (+E / -W)")
     parser.add_argument("--tz", type=str, default="Asia/Taipei", help="時區 (例如: 'Asia/Taipei')")
     parser.add_argument("--planets", nargs='*', default=["凱龍", "莉莉絲", "福點"], help="要計算的額外星體列表 (例如: --planets 凱龍 穀神)")
+    parser.add_argument("-q", "--question", type=str, help="向 Gemini 提出一個關於此星盤的特定問題。")
 
     return parser.parse_args()
 
@@ -128,12 +145,15 @@ if __name__ == "__main__":
         # 步驟 1: 從您的 API 獲取星盤數據
         astro_data = get_chart_data_from_api(chart_payload)
         
-        # 步驟 2: 將數據交給 Gemini 進行解讀
-        interpretation = get_interpretation_from_gemini(astro_data)
+        # 步驟 2: 將數據和您的問題（如果有的話）交給 Gemini 進行解讀
+        interpretation = get_interpretation_from_gemini(astro_data, custom_question=args.question)
         
         # 步驟 3: 印出最終結果
         print("\n" + "="*60)
-        print("✨ Gemini 占星大師的分析結果 ✨")
+        if args.question:
+            print(f"✨ 對於問題「{args.question}」的分析結果 ✨")
+        else:
+            print("✨ Gemini 占星大師的分析結果 ✨")
         print("="*60)
         print(interpretation)
 
