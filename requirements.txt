@@ -6,3 +6,4 @@ gunicorn
 Flask-Cors
 tqdm
 python-dotenv
+rich
