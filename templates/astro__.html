@@ -399,6 +399,18 @@
             display: none;
         }
 
+        /* --- NEW: Special styling for interchart aspect titles --- */
+        .interchart-aspect-title {
+            font-size: 1.3rem; /* Larger than the default section title */
+            /* Color is now handled by the header class for better context */
+        }
+        .interchart-header {
+            background: linear-gradient(to right, #e9d5ff, #d8b4fe); /* Light purple gradient */
+        }
+        .interchart-header h3.interchart-aspect-title {
+            /* Make the text darker for contrast against the new light background */
+            color: #581c87; 
+            font-weight: 800; /* Bolder */}
         
         /* --- 響應式設計：針對桌面等較大螢幕的樣式 --- */
         @media (min-width: 768px) {
@@ -437,93 +449,8 @@
                 font-size: 1rem;
                 padding: 8px 16px;
             }
-        }
-
-        /* --- Sectioned Result Styling --- */
-        .result-section-item {
-            background-color: #f8fafc; /* Slightly off-white background for each section */
-            border: 1px solid #e2e8f0;
-            border-radius: 8px;
-            margin-bottom: 16px;
-            overflow: hidden; /* To contain the pre's background */
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-        }
-
-        .result-section-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 12px 16px;
-            background-color: #edf2f7; /* Header background */
-            border-bottom: 1px solid #e2e8f0;
-        }
-
-        .result-section-header h3 {
-            font-size: 1.1rem;
-            font-weight: 700;
-            color: #2d3748;
-            font-family: 'Inter', 'Noto Sans TC', sans-serif; /* Use UI font for header */
-        }
-
-        .result-section-content {
-            padding: 16px;
-            white-space: pre-wrap;
-            font-family: 'Roboto Mono', 'Courier New', monospace;
-            font-size: 1rem;
-            color: #2d3748;
-            background-color: #fdfdff;
-            line-height: 1.6;
-            overflow-x: auto;
-        }
-
-        .section-copy-btn {
-            background-color: #6b7280;
-            color: white;
-            padding: 6px 12px;
-            border-radius: 6px;
-            font-weight: 600;
-            cursor: pointer;
-            font-size: 0.875rem;
-            transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
-            border: none;
-            white-space: nowrap;
-        }
-
-        .section-copy-btn:hover {
-            background-color: #4b5563;
-        }
-
-        .section-copy-btn.copied {
-            background-color: #10b981;
-        }
-
-
-        /* --- 響應式設計：針對桌面等較大螢幕的樣式 --- */
-        @media (min-width: 768px) {
-            .input-group label {
-                font-size: 1.5rem; /* Larger on desktop */
-            }
-            .input-field, .select-field { font-size: 1.6rem; /* Larger on desktop */ }
-            .result-box {
-                padding: 24px;
-            }
-            .input-error-message {
-                font-size: 1.1rem; /* Larger on desktop */
-            }
-            .tab-button {
-                padding: 15px 25px; /* Larger padding on desktop */
-                font-size: 2.25rem; /* Larger on desktop */
-                line-height: 2.5rem;
-            }
-            .chart-card-sub h3 {
-                font-size: 1.5rem; /* Default mobile size */
-            }
-            .chart-card-sub p {
-                font-size: 1.2rem; /* Larger on desktop */
-            }
-            .copy-btn {
-                font-size: 1.25rem; /* Larger on desktop */
-                padding: 10px 20px;
+            .interchart-aspect-title {
+                font-size: 1.5rem; /* Even larger on desktop */
             }
         }
 
@@ -1675,6 +1602,12 @@
 
                 const sectionTitle = document.createElement('h3');
                 sectionTitle.textContent = title;
+                // NEW: Add a special class if the title is for inter-chart aspects
+                if (title.includes("之間的相位")) {
+                    sectionTitle.classList.add('interchart-aspect-title');
+                    // ALSO add a class to the header for background styling
+                    sectionHeader.classList.add('interchart-header');
+                }
 
                 const copyBtn = document.createElement('button');
                 copyBtn.className = 'section-copy-btn';
@@ -1905,7 +1838,6 @@
                     console.warn(`WARN: aspects missing or empty for ${title}. Value:`, chartInfo.aspects);
                 }
 
-                currentSectionLines.push("--------------------------------------------------");
                 outputLines.push(...currentSectionLines); // Add all lines from this section to the main outputLines
                 
                 // outputLines.push(DISPLAY_ORDER_NAMES);
@@ -2031,10 +1963,8 @@
                 formatSingleChartSection(chartData.composite_chart_data, `${chart1Name}與${chart2Name}的組合中點盤`);
                 
                 // 添加分隔符，然後顯示兩個本命盤
-                outputLines.push("\n\n==================================================");
                 outputLines.push("=== 參考：個人本命盤 ===");
-                outputLines.push("==================================================\n");
-
+                
                 formatSingleChartSection(chartData.natal_chart1_data, `${chart1Name}的本命盤資訊`);
                 formatSingleChartSection(chartData.natal_chart2_data, `${chart2Name}的本命盤資訊`);
             
