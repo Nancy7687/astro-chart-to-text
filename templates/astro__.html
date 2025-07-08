@@ -169,7 +169,7 @@
             border-radius: 12px; /* More rounded button */
             font-weight: 700;
             cursor: pointer;
-            font-size: 2.5rem; /* 顯著加大字體 (相當於 text-4xl) */
+            font-size: 2rem; /* 顯著加大字體 (相當於 text-4xl) */
             line-height: 2.5rem; /* 調整行高以適應大字體 */
 
             transition: background-color 0.2s ease-in-out, transform 0.1s ease-in-out, box-shadow 0.2s ease-in-out;
@@ -531,19 +531,41 @@
             }
         }
 
+         /* --- NEW: Responsive Tab Button Text for Mobile --- */
+        @media (max-width: 767px) {
+            .tab-button {
+                /* Adjust padding and line-height for multi-line text */
+                padding: 0.5rem; /* 8px */
+                line-height: 1.3;
+                text-align: center; /* Center the text parts */
+                font-size: 1rem; /* Reduce font size for better fit (16px) */
+            }
+            .tab-button .tab-text-part {
+                display: block; /* Each part on its own line */
+            }
+        }
+
     </style>
 </head>
 <body class="bg-single">
     <div class="container">
         <!-- Main Header -->
         <div class="header-bg">
-            <h1 class="text-3xl md:text-5xl font-bold text-center mb-0" style="letter-spacing: 0.1em;">星盤文字資料生成</h1>
+            <h1 class="text-4xl md:text-5xl font-bold text-center mb-0" style="letter-spacing: 0.1em;">星盤文字資料生成</h1>
        </div>
 
         <!-- Main Tab Buttons -->
         <div class="tab-buttons">
-            <button id="singleChartTab" class="tab-button active" data-tab-content="singleChartSection">個人星盤 or 占星卜卦盤(Horary)</button>
-            <button id="synastryTab" class="tab-button" data-tab-content="synastryChartSection">雙人合盤 or 行運盤</button>
+            <button id="singleChartTab" class="tab-button active" data-tab-content="singleChartSection">
+                <span class="tab-text-part">個人星盤</span>
+                <span class="tab-text-part">or</span>
+                <span class="tab-text-part">占星卜卦盤(Horary)</span>
+            </button>
+            <button id="synastryTab" class="tab-button" data-tab-content="synastryChartSection">
+                <span class="tab-text-part">雙人合盤</span>
+                <span class="tab-text-part">or</span>
+                <span class="tab-text-part">行運盤</span>
+            </button>
         </div>
 
         <!-- Single Chart Section Content -->
