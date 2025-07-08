@@ -464,6 +464,14 @@
             color: #581c87; 
             font-weight: 800; /* Bolder */
                 }
+        
+        .interchart-transit-aspect-title {
+            background: linear-gradient(to right, #d5fcff, #80c2c6); /* Light purple gradient */
+        }
+
+        .composite-chart-header {
+            background: linear-gradient(to right, #fffbb8, #fbf24f); /* Light purple gradient */
+        }
 
         /* --- NEW: Styling for single chart titles --- */
         .single-chart-header {
@@ -487,7 +495,7 @@
             }
             .input-field, .select-field { font-size: 1.5rem; /* Adjusted desktop font size (18px) */ }
             .result-box {
-                padding: 24px;
+                padding: 26px;
                 line-height: 2.5rem;
             }
             .input-error-message {
@@ -495,7 +503,7 @@
             }
             .tab-button {
                 padding: 15px 25px; /* Larger padding on desktop */
-                font-size: 2.25rem; /* Larger on desktop */
+                font-size: 1.75rem; /* Larger on desktop */
                 line-height: 2.5rem;
             }
             .tab-button br {
@@ -523,7 +531,7 @@
             }
 
             .planetSelection-text {
-                line-height: 2;
+                line-height: 3;
             }
             /* Apply the same specificity fix for the responsive style */
             .interchart-header h3.interchart-aspect-title {
@@ -1689,15 +1697,18 @@
                 const sectionTitle = document.createElement('h3');
                 sectionTitle.textContent = title;
                 // NEW: Add a special class if the title is for inter-chart aspects
-                if (title.includes("之間的相位")) {
+                if  (title.includes("行運")) {
+                    sectionTitle.classList.add('interchart-transit-aspect-title');
+                    } else if(title.includes("之間的相位")) {
                     sectionTitle.classList.add('interchart-aspect-title');
                     // ALSO add a class to the header for background styling
                     sectionHeader.classList.add('interchart-header');
-                    } else if (title.includes("的星盤資訊") || title.includes("的組合中點盤")) {
+                    } else if (title.includes("的星盤資訊")) {
                     // NEW: Add a special class for single chart and composite chart headers
-                    sectionHeader.classList.add('single-chart-header'); 
+                    sectionHeader.classList.add('single-chart-header');
+                    } else if (title.includes("的組合中點盤")) {
+                        sectionHeader.classList.add('composite-chart-header');
                     } else if (title.includes("宮頭星座度數") || title.includes("天體位置")|| title.includes("內主要相位")) {
-                    
                     sectionHeader.classList.add('single-chart-header-sub');                
                 }
 
