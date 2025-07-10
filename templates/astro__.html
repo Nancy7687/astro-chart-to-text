@@ -1943,7 +1943,8 @@
                         // const p2Retrograde = chartInfo.planet_positions[p2_name]?.is_retrograde ? '(R)' : '';
 
                         // 組裝輸出字串，只包含你需要的資訊
-                        let aspectLine = `${p1_name}${p1Retrograde} ${aspItem.aspect_name} ${p2_name}${p2Retrograde}`;
+                        // let aspectLine = `${p1_name}${p1Retrograde} ${aspItem.aspect_name} ${p2_name}${p2Retrograde}`;
+                        let aspectLine = `${p1_name}　${aspItem.aspect_name}　${p2_name}`;
 
                         // 處理相位動態和容許度
                         if (aspItem.orb !== undefined) {
