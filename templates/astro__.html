@@ -1877,80 +1877,84 @@
                 console.log(`DEBUG: currentSectionLines (planet positions) for ${title}:`, currentSectionLines.slice(-5));
 
                 // --- 單盤內主要相位 (修正版) ---
-                currentSectionLines.push("\n--- 單盤內主要相位 ---");
-                if (chartInfo.aspects && Array.isArray(chartInfo.aspects) && chartInfo.aspects.length > 0) {
+currentSectionLines.push("\n--- 單盤內主要主要相位 ---");
+if (chartInfo.aspects && Array.isArray(chartInfo.aspects) && chartInfo.aspects.length > 0) {
 
-                    // 用於儲存已經處理過的相位組合，避免重複 (例如 太陽-月亮 和 月亮-太陽)
-                    const processedAspects = new Set();
-                    const uniqueAspects = [];
+    // 用於儲存已經處理過的相位組合，避免重複 (例如 太陽-月亮 和 月亮-太陽)
+    const processedAspects = new Set();
+    const uniqueAspects = [];
 
-                    // 1. 扁平化並過濾重複相位
-                    chartInfo.aspects.forEach(asp => {
-                        // 透過排序行星名稱來建立一個唯一的鍵，確保 "A-B" 和 "B-A" 是同一個鍵
-                        const aspectKey = [asp.p1_name, asp.p2_name].sort().join('-');
+    // 1. 扁平化並過濾重複相位
+    chartInfo.aspects.forEach(asp => {
+        // 透過排序行星名稱來建立一個唯一的鍵，確保 "A-B" 和 "B-A" 是同一個鍵
+        const aspectKey = [asp.p1_name, asp.p2_name].sort().join('-');
 
-                        if (!processedAspects.has(aspectKey)) {
-                            uniqueAspects.push(asp);
-                            processedAspects.add(aspectKey);
-                        }
-                    });
+        if (!processedAspects.has(aspectKey)) {
+            uniqueAspects.push(asp);
+            processedAspects.add(aspectKey);
+        }
+    });
 
-                    // 2. 智慧排序：
-                    //    - 主要排序依據：相位組合中，在 DISPLAY_ORDER_NAMES 裡排在最前面的那個星體。
-                    //    - 次要排序依據：相位組合中，排在第二個的那個星體。
-                    //    - 如此可確保輸出結果是分組的，例如先列出所有太陽的相位，再列出所有月亮的相位。
-                    uniqueAspects.sort((a, b) => {
-                        const a_p1_index = DISPLAY_ORDER_NAMES.indexOf(a.p1_name);
-                        const a_p2_index = DISPLAY_ORDER_NAMES.indexOf(a.p2_name);
-                        const b_p1_index = DISPLAY_ORDER_NAMES.indexOf(b.p1_name);
-                        const b_p2_index = DISPLAY_ORDER_NAMES.indexOf(b.p2_name);
+    // 2. 智慧排序：
+    //    - 主要排序依據：相位組合中，在 DISPLAY_ORDER_NAMES 裡排在最前面的那個星體。
+    //    - 次要排序依據：相位組合中，排在第二個的那個星體。
+    //    - 如此可確保輸出結果是分組的，例如先列出所有太陽的相位，再列出所有月亮的相位。
+    uniqueAspects.sort((a, b) => {
+        const a_p1_index = DISPLAY_ORDER_NAMES.indexOf(a.p1_name);
+        const a_p2_index = DISPLAY_ORDER_NAMES.indexOf(a.p2_name);
+        const b_p1_index = DISPLAY_ORDER_NAMES.indexOf(b.p1_name);
+        const b_p2_index = DISPLAY_ORDER_NAMES.indexOf(b.p2_name);
 
-                        // 找出每個相位組合中，排序最靠前的星體 (primary planet)
-                        const primary_a_index = Math.min(a_p1_index, a_p2_index);
-                        const primary_b_index = Math.min(b_p1_index, b_p2_index);
+        // 找出每個相位組合中，排序最靠前的星體 (primary planet)
+        const primary_a_index = Math.min(a_p1_index, a_p2_index);
+        const primary_b_index = Math.min(b_p1_index, b_p2_index);
 
-                        // 如果主要星體不同，就根據主要星體排序
-                        if (primary_a_index !== primary_b_index) {
-                            return primary_a_index - primary_b_index;
-                        }
+        // 如果主要星體不同，就根據主要星體排序
+        if (primary_a_index !== primary_b_index) {
+            return primary_a_index - primary_b_index;
+        }
 
-                        // 如果主要星體相同 (例如 太陽-月亮 vs 太陽-火星)，則根據次要星體排序
-                        const secondary_a_index = Math.max(a_p1_index, a_p2_index);
-                        const secondary_b_index = Math.max(b_p1_index, b_p2_index);
-                        return secondary_a_index - secondary_b_index;
-                    });
+        // 如果主要星體相同 (例如 太陽-月亮 vs 太陽-火星)，則根據次要星體排序
+        const secondary_a_index = Math.max(a_p1_index, a_p2_index);
+        const secondary_b_index = Math.max(b_p1_index, b_p2_index);
+        return secondary_a_index - secondary_b_index;
+    });
 
-                    // 3. 遍歷處理過的相位並產生輸出
-                    uniqueAspects.forEach(aspItem => {
-                        // 根據 DISPLAY_ORDER_NAMES 的順序，決定哪個星體在前，哪個在後，以保持輸出的美觀一致
-                        const p1_is_first = DISPLAY_ORDER_NAMES.indexOf(aspItem.p1_name) < DISPLAY_ORDER_NAMES.indexOf(aspItem.p2_name);
-                        const p1_name = p1_is_first ? aspItem.p1_name : aspItem.p2_name;
-                        const p2_name = p1_is_first ? aspItem.p2_name : aspItem.p1_name;
+    // 3. 遍歷處理過的相位並產生輸出
+    uniqueAspects.forEach(aspItem => {
+        // 根據 DISPLAY_ORDER_NAMES 的順序，決定哪個星體在前，哪個在後，以保持輸出的美觀一致
+        const p1_is_first = DISPLAY_ORDER_NAMES.indexOf(aspItem.p1_name) < DISPLAY_ORDER_NAMES.indexOf(aspItem.p2_name);
+        const p1_name = p1_is_first ? aspItem.p1_name : aspItem.p2_name;
+        const p2_name = p1_is_first ? aspItem.p2_name : aspItem.p1_name;
 
-                        // 從 planet_positions 中取得預先格式化好的完整位置字串
-                        const p1DisplayString = chartInfo.planet_positions[p1_name]?.full_position_display || `[${p1_name}位置缺失]`;
-                        const p2DisplayString = chartInfo.planet_positions[p2_name]?.full_position_display || `[${p2_name}位置缺失]`;
+        // 取得逆行狀態，如果沒有則預設為空字串
+        // const p1Retrograde = chartInfo.planet_positions[p1_name]?.is_retrograde ? '(R)' : '';
+        // const p2Retrograde = chartInfo.planet_positions[p2_name]?.is_retrograde ? '(R)' : '';
 
-                        let aspectLine = `${p1DisplayString}${aspItem.aspect_name}${p2DisplayString}`;
-                        if (aspItem.orb !== undefined) {
-                            if (aspItem.aspect_type) { // 如果有 "入相" 或 "出相"
-                                aspectLine += `，${aspItem.aspect_type}${aspItem.orb.toFixed(2)}°。`;
-                            } else { // 如果沒有，就加上 "容許度"
-                                aspectLine += `，容許度${aspItem.orb.toFixed(2)}°。`;
-                            }
-                        }
-                        currentSectionLines.push(aspectLine);
-                    });
+        // 組裝輸出字串，只包含你需要的資訊
+        let aspectLine = `${p1_name}${p1Retrograde} ${aspItem.aspect_name} ${p2_name}${p2Retrograde}`;
 
-                } else {
-                    currentSectionLines.push("此星盤中沒有偵測到主要相位。");
-                    console.warn(`WARN: aspects missing or empty for ${title}. Value:`, chartInfo.aspects);
-                }
+        // 處理相位動態和容許度
+        if (aspItem.orb !== undefined) {
+            if (aspItem.aspect_type) { // 如果有 "入相" 或 "出相"
+                aspectLine += ` ${aspItem.aspect_type} ${aspItem.orb.toFixed(2)}°`;
+            } else { // 如果沒有相位動態，直接加上 "容許度"
+                aspectLine += ` 容許度${aspItem.orb.toFixed(2)}°`;
+            }
+        } else {
+            aspectLine += ``; // 如果沒有容許度，直接結束
+        }
+        currentSectionLines.push(aspectLine);
+    });
 
-                outputLines.push(...currentSectionLines); // Add all lines from this section to the main outputLines
-                
-                // outputLines.push(DISPLAY_ORDER_NAMES);
-            };
+} else {
+    currentSectionLines.push("此星盤中沒有偵測到主要相位。");
+    console.warn(`WARN: aspects missing or empty for ${title}. Value:`, chartInfo.aspects);
+}
+
+outputLines.push(...currentSectionLines); // Add all lines from this section to the main outputLines
+
+// outputLines.push(DISPLAY_ORDER_NAMES);
            
             // Main logic based on chart type
             console.log('DEBUG: Received chartData.chart_type:', chartData.chart_type); // <-- NEW LOG HERE
