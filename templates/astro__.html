@@ -1842,7 +1842,7 @@
                             let displayName = name;
                             const retrogradeLabel = pInfo.retrograde_label || "";
                             if (pInfo.is_retrograde && retrogradeLabel) {
-                                displayName += retrogradeLabel;
+                                displayName += 　retrogradeLabel;
                             }
                             
                             let targetPadding = 8; 
@@ -1857,7 +1857,7 @@
 
                             // 修正：四軸點不顯示宮位資訊
                             if (!HOUSE_DEFINING_POINTS.includes(name) && houseNum !== null && hdegNum !== null) {
-                                line += `${houseNum}宮　(${hdegNum.toFixed(2)}°)`;
+                                line += `　${houseNum}宮　(${hdegNum.toFixed(2)}°)`;
                             }
                             currentSectionLines.push(line);
 
@@ -1980,6 +1980,9 @@
 
                 
                 outputLines.push(`\n=== ${chart2Name}與${chart1Name}之間的相位 ===`);
+                currentSectionLines.push("\n＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝");
+                currentSectionLines.push(`\n${chart2Name}的星體名稱　相位名稱　${chart1Name}的星體名稱　相位動態　容許度(度)`); // 新增這行標題
+                currentSectionLines.push("\n－－－－－－－－－－－－－－－－－－－－");
                 if (!chartData.inter_aspects || chartData.inter_aspects.length === 0) {
                     outputLines.push("目前沒有偵測到跨盤相位。");
                 } else {
@@ -1992,22 +1995,18 @@
                     });
 
                     b2_aspects.forEach(asp => {
-                        // 找出 chart2 的行星落入 chart1 的宮位資訊
-                        const p2OverlayInChart1 = chartData.chart2_planets_in_chart1_houses.find(o => o.planet_name === asp.p2_name);
-                        const p2HouseDisplay = p2OverlayInChart1 ? `在${chart1Name}的${p2OverlayInChart1.house_in_target_chart}宮(${p2OverlayInChart1.degree_in_target_house.toFixed(2)}°)` : '';
-                        
-                        // chart1 行星在自己盤中的宮位資訊
-                        const p1House = typeof asp.p1_details.house === 'number' ? `${asp.p1_details.house}宮` : '';
-                        const p1Hdeg = typeof asp.p1_details.hdeg === 'number' ? `(${asp.p1_details.hdeg.toFixed(2)}°)` : '';
-                        
-                        let aspectLine = `${chart2Name}的${asp.p2_name}${asp.p2_details.retrograde_label || ''}${asp.p2_details.zodiac_position_formatted}${p2HouseDisplay}，` +
-                        `${asp.aspect_name}${chart1Name}的${asp.p1_name}${asp.p1_details.retrograde_label || ''}${asp.p1_details.zodiac_position_formatted}${p1House}${p1Hdeg}`;
-                        
+                        // --- START: 修改這裡，只保留需要的資訊 ---
+                        // 由於這次是 chart2 的星體在前，所以使用 asp.p2_name 和 asp.p1_name
+                        let aspectLine = `${asp.p2_name}　${asp.aspect_name}　${asp.p1_name}`;
+                        // --- END: 修改完成 ---
+
                         if (asp.orb !== undefined) {
                             if (asp.aspect_type) {
-                                aspectLine += `，${asp.aspect_type}${asp.orb.toFixed(2)}°。`;
+                                // 相位動態和容許度
+                                aspectLine += `　${asp.aspect_type}　${asp.orb.toFixed(2)}°`;
                             } else {
-                                aspectLine += `，容許度${asp.orb.toFixed(2)}°。`;
+                                // 如果沒有 aspect_type，就只顯示容許度
+                                aspectLine += `　容許度　${asp.orb.toFixed(2)}°`;
                             }
                         }
                         outputLines.push(aspectLine);
@@ -2015,6 +2014,9 @@
                 }
                 
                 outputLines.push(`\n=== ${chart1Name}與${chart2Name}之間的相位 ===`);
+                currentSectionLines.push("\n＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝");
+                currentSectionLines.push(`\n${chart1Name}的星體名稱　相位名稱　${chart2Name}的星體名稱　相位動態　容許度(度)`);
+                currentSectionLines.push("\n－－－－－－－－－－－－－－－－－－－－");
                 if (!chartData.inter_aspects || chartData.inter_aspects.length === 0) {
                     outputLines.push("目前沒有偵測到跨盤相位。");
                 } else {
@@ -2025,28 +2027,22 @@
                         if (p1IndexA !== p1IndexB) return p1IndexA - p1IndexB;
                         return DISPLAY_ORDER_NAMES.indexOf(a.p2_name) - DISPLAY_ORDER_NAMES.indexOf(b.p2_name);
                     });
-                    
+
                     c2_aspects.forEach(asp => {
-                        // 找出 chart1 的行星落入 chart2 的宮位資訊
-                        const p1OverlayInChart2 = chartData.chart1_planets_in_chart2_houses.find(o => o.planet_name === asp.p1_name);
-                        const p1HouseInTarget = p1OverlayInChart2 ? `在${chart2Name}的${p1OverlayInChart2.house_in_target_chart}宮(${p1OverlayInChart2.degree_in_target_house.toFixed(2)}°)` : '';
-
-                        // chart2 行星在自己盤中的宮位資訊
-                        const p2House = typeof asp.p2_details.house === 'number' ? `${asp.p2_details.house}宮` : '';
-                        const p2Hdeg = typeof asp.p2_details.hdeg === 'number' ? `(${asp.p2_details.hdeg.toFixed(2)}°)` : '';
-
-                        let aspectLine = `${chart1Name}的${asp.p1_name}${asp.p1_details.retrograde_label || ''}${asp.p1_details.zodiac_position_formatted}${p1HouseInTarget}，` +
-                                         `${asp.aspect_name}${chart2Name}的${asp.p2_name}${asp.p2_details.retrograde_label || ''}${asp.p2_details.zodiac_position_formatted}${p2House}${p2Hdeg}`;
+                        // --- START: 修改這裡，只保留需要的資訊 ---
+                        let aspectLine = `${asp.p1_name}　${asp.aspect_name}　${asp.p2_name}`;
+                        // --- END: 修改完成 ---
 
                         if (asp.orb !== undefined) {
                             if (asp.aspect_type) {
-                                aspectLine += `　${asp.aspect_type}${asp.orb.toFixed(2)}°`;
+                                aspectLine += `　${asp.aspect_type}　${asp.orb.toFixed(2)}°`; // 相位動態和容許度
                             } else {
-                                aspectLine += `　容許度${asp.orb.toFixed(2)}°`;
+                                aspectLine += `　容許度　${asp.orb.toFixed(2)}°`; // 如果沒有 aspect_type，就只顯示容許度
                             }
                         }
                         outputLines.push(aspectLine);
                     });
+                }
                     // (B-1) 對方星體落本命宮位
                     outputLines.push(`\n=== ${chart2Name}的行星在${chart1Name}宮位 ===`);
                     if (!chartData.chart2_planets_in_chart1_houses || chartData.chart2_planets_in_chart1_houses.length === 0) {
