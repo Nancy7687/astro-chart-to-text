@@ -2188,7 +2188,7 @@
 
                 outputLines.push(`\n=== ${chart2Name}與${chart1Name}之間的相位 ===`);
                 outputLines.push("\n＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝");
-                outputLines.push(`\n${chart2Name}星體名稱 | ${chart2Name}星體星座 | ${chart2Name}星體星座度數 (度分秒) | ${chart2Name}星體落入${chart1Name}之宮位 | ${chart2Name}星體落入${chart1Name}之宮位內度數(度分秒)`); // 新增這行標題
+                outputLines.push(`\n${chart2Name}星體名稱 |　相位名稱 | ${chart1Name}星體名稱 | 相位動態 | 容許度(度分秒)`);
                 outputLines.push("\n－－－－－－－－－－－－－－－－－－－－");
                 if (!chartData.inter_aspects || chartData.inter_aspects.length === 0) {
                     outputLines.push("目前沒有偵測到跨盤相位。");
@@ -2222,7 +2222,7 @@
 
                 outputLines.push(`\n=== ${chart1Name}與${chart2Name}之間的相位 ===`);
                 outputLines.push("\n＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝");
-                outputLines.push(`\n${chart1Name}星體名稱 | ${chart1Name}星體星座 | ${chart1Name}星體星座度數 (度分秒) | ${chart1Name}星體落入${chart2Name}之宮位 | ${chart1Name}星體落入${chart2Name}之宮位內度數(度分秒)`);
+                outputLines.push(`\n${chart1Name}星體名稱 |　相位名稱 | ${chart1Name}星體名稱 | 相位動態 | 容許度(度分秒)`);
                 outputLines.push("\n－－－－－－－－－－－－－－－－－－－－");
                 if (!chartData.inter_aspects || chartData.inter_aspects.length === 0) {
                     outputLines.push("目前沒有偵測到跨盤相位。");
@@ -2251,9 +2251,9 @@
                     });
                 }
                 // (B-1) 對方星體落本命宮位
-                outputLines.push(`\n=== ${chart2Name}的行星在${chart1Name}宮位 ===`);
+                outputLines.push(`\n=== ${chart2Name}的星體在${chart1Name}宮位 ===`);
                 outputLines.push("\n＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝");
-                outputLines.push(`\n${chart2Name}的星體名稱　${chart1Name}的宮位`);
+                outputLines.push(`\n${chart2Name}星體名稱 | ${chart2Name}星體星座 | ${chart2Name}星體星座度數 (度分秒) | ${chart2Name}星體落入${chart1Name}之宮位 | ${chart2Name}星體落入${chart1Name}之宮位內度數(度分秒)`); // 新增這行標題
                 outputLines.push("\n－－－－－－－－－－－－－－－－－－－－");
                 if (!chartData.chart2_planets_in_chart1_houses || chartData.chart2_planets_in_chart1_houses.length === 0) {
                     outputLines.push("目前沒有偵測到行星落入本命宮位。");
@@ -2269,7 +2269,7 @@
                     });
                 }
                 // (C-1) 本命星體落對方宮位
-                outputLines.push(`\n=== ${chart1Name}的行星在${chart2Name}宮位 ===`);
+                outputLines.push(`\n=== ${chart1Name}的星體在${chart2Name}宮位 ===`);
                 outputLines.push("\n＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝");
                 outputLines.push(`\n${chart1Name}的星體名稱　${chart1Name}的星座　${chart1Name}的星座度數　落入${chart2Name}的宮位　落入${chart2Name}的宮位度數`);
                 outputLines.push("\n－－－－－－－－－－－－－－－－－－－－");
