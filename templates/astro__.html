@@ -1820,7 +1820,6 @@
                     console.log(`DEBUG: Entering house_cusps block for ${title}. currentSectionLines length before: ${currentSectionLines.length}`); // <-- NEW LOG
                     chartInfo.house_cusps.forEach(cusp => {
                         currentSectionLines.push(`${String(cusp.house_number).padEnd(2, ' ')}宮頭: ${cusp.zodiac_position_formatted}`);
-                        currentSectionLines.push("\n＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝");
                     });
                     console.log(`DEBUG: Finished house_cusps block for ${title}. currentSectionLines length after: ${currentSectionLines.length}`); // <-- NEW LOG
                 } else {
@@ -1861,7 +1860,6 @@
                                 line += `${houseNum}宮(${hdegNum.toFixed(2)}°)`;
                             }
                             currentSectionLines.push(line);
-                            currentSectionLines.push("\n＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝");
 
                             // *** 在這裡計算並儲存 full_position_display，供相位部分使用 ***
                             // let fullPlanetPositionString = `${name}${pInfo.retrograde_label || ''}`;
@@ -2042,9 +2040,9 @@
 
                         if (asp.orb !== undefined) {
                             if (asp.aspect_type) {
-                                aspectLine += `，${asp.aspect_type}${asp.orb.toFixed(2)}°。`;
+                                aspectLine += `　${asp.aspect_type}${asp.orb.toFixed(2)}°`;
                             } else {
-                                aspectLine += `，容許度${asp.orb.toFixed(2)}°。`;
+                                aspectLine += `　容許度${asp.orb.toFixed(2)}°`;
                             }
                         }
                         outputLines.push(aspectLine);
