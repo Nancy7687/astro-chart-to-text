@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="zh-Hant">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -12,23 +13,37 @@
         /* Base body styling with a modern, saturated multi-color gradient background */
         body {
             font-family: 'Inter', 'Noto Sans TC', 'Microsoft JhengHei', sans-serif;
-            min-height: 100vh; /* Ensure gradient covers full viewport height */
+            min-height: 100vh;
+            /* Ensure gradient covers full viewport height */
             display: flex;
             justify-content: center;
-            align-items: flex-start; /* Align to top, better for scrolling on mobile */
-            padding: 0.5rem; /* Reduced body padding for tighter mobile layout (8px) */
-            box-sizing: border-box; /* Include padding in element's total width and height */
-            overflow-y: auto; /* Allow scrolling for content that exceeds viewport height */
+            align-items: flex-start;
+            /* Align to top, better for scrolling on mobile */
+            padding: 0.5rem;
+            /* Reduced body padding for tighter mobile layout (8px) */
+            box-sizing: border-box;
+            /* Include padding in element's total width and height */
+            overflow-y: auto;
+            /* Allow scrolling for content that exceeds viewport height */
             /* 紫羅蘭到中等紫羅蘭紅的漸變 */
             /* background: linear-gradient(to right, #6A0DAD, #C71585);  */
-            transition: background 1s ease-in-out; /* 平滑的背景切換效果 */
+            transition: background 1s ease-in-out;
+            /* 平滑的背景切換效果 */
         }
 
         /* 動態背景的動畫 */
         @keyframes move-bg {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
+            0% {
+                background-position: 0% 50%;
+            }
+
+            50% {
+                background-position: 100% 50%;
+            }
+
+            100% {
+                background-position: 0% 50%;
+            }
         }
 
         /* 輸入畫面動態漸層背景 */
@@ -37,7 +52,7 @@
         {
             background: 
                 linear-gradient(to right, #88e8da, #009d95);  */
-                /* radial-gradient(circle at top left, #FF4500, transparent 40%),
+        /* radial-gradient(circle at top left, #FF4500, transparent 40%),
                 radial-gradient(circle at top right, #FF69B4, transparent 40%),
                 radial-gradient(circle at bottom left, #DA70D6, transparent 40%),
                 radial-gradient(circle at bottom right, #8A2BE2, transparent 40%);
@@ -50,7 +65,7 @@
         {
             background: 
                 linear-gradient(to right, #5800aa, #C71585);  */
-                /* radial-gradient(circle at top left, #00008B, transparent 40%),
+        /* radial-gradient(circle at top left, #00008B, transparent 40%),
                 radial-gradient(circle at top right, #4B0082, transparent 40%),
                 radial-gradient(circle at bottom left, #008080, transparent 40%),
                 radial-gradient(circle at bottom right, #2F4F4F, transparent 40%);
@@ -59,7 +74,7 @@
         /* } */
         /* 個人星盤背景 (深邃宇宙) */
         .bg-single {
-            background: 
+            background:
                 radial-gradient(circle at top left, #00008B, transparent 40%),
                 radial-gradient(circle at top right, #ffd13b, transparent 40%),
                 radial-gradient(circle at bottom left, #009d95, transparent 40%),
@@ -71,7 +86,7 @@
 
         /* 雙人合盤背景 (熱情關係) */
         .bg-synastry {
-            background: 
+            background:
                 radial-gradient(circle at top left, #FF4500, transparent 40%),
                 radial-gradient(circle at top right, #ff45a2, transparent 40%),
                 radial-gradient(circle at bottom left, #DA70D6, transparent 40%),
@@ -79,53 +94,79 @@
             background-size: 400% 400%;
             animation: move-bg 20s ease infinite;
         }
+
         /* Main container for the application form and results */
         .container {
             width: 100%;
-            max-width: 1280px; /* Increased max-width to accommodate two side-by-side forms */
+            max-width: 1280px;
+            /* Increased max-width to accommodate two side-by-side forms */
             margin: 0 auto;
-            padding: .5rem; /* Reduced container padding for tighter mobile layout (16px) */
+            padding: .5rem;
+            /* Reduced container padding for tighter mobile layout (16px) */
             background-color: #ffffff;
-            border-radius: 18px; /* More rounded corners for modern look */
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.25); /* Stronger, softer shadow */
+            border-radius: 18px;
+            /* More rounded corners for modern look */
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.25);
+            /* Stronger, softer shadow */
             box-sizing: border-box;
         }
 
         /* --- 新增的大標題背景樣式 --- */
         .header-bg {
-            background: linear-gradient(to right, #6A0DAD, #C71585); /* 紫羅蘭到中等紫羅蘭紅的漸變 */
-            border-radius: 12px; /* 圓角 */
-            padding: 20px 0; /* 內部上下邊距 */
-            margin-bottom: 32px; /* 與下方內容的間距 */
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15); /* 輕微陰影 */
+            background: linear-gradient(to right, #6A0DAD, #C71585);
+            /* 紫羅蘭到中等紫羅蘭紅的漸變 */
+            border-radius: 12px;
+            /* 圓角 */
+            padding: 20px 0;
+            /* 內部上下邊距 */
+            margin-bottom: 32px;
+            /* 與下方內容的間距 */
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+            /* 輕微陰影 */
         }
 
         .header-bg h1 {
-            color: #ffffff; /* 標題文字顏色改為白色 */
-            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2); /* 文字陰影增加可讀性 */
+            color: #ffffff;
+            /* 標題文字顏色改為白色 */
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
+            /* 文字陰影增加可讀性 */
         }
+
         /* --- 結束新增樣式 --- */
 
         /* Styling for individual input groups (label + input) */
         .input-group {
-            margin-bottom: 12px; /* Adjusted space between input groups for better separation */
-            display: flex; /* Use flexbox for tighter grouping on smaller screens */
-            flex-direction: column; /* Stack label and input vertically by default */
+            margin-bottom: 12px;
+            /* Adjusted space between input groups for better separation */
+            display: flex;
+            /* Use flexbox for tighter grouping on smaller screens */
+            flex-direction: column;
+            /* Stack label and input vertically by default */
         }
+
         /* Styling for labels */
         .input-group label {
             font-weight: 600;
-            color: #4a5568; /* Darker gray for labels */
-            font-size: 1rem; /* Smaller mobile font size (14px) */
-            margin-bottom: 4px; /* Small space between label and input */
+            color: #4a5568;
+            /* Darker gray for labels */
+            font-size: 1rem;
+            /* Smaller mobile font size (14px) */
+            margin-bottom: 4px;
+            /* Small space between label and input */
             line-height: 1.5rem;
         }
+
         /* Styling for input fields and select dropdowns */
-        .input-field, .select-field {
-            border: .5px solid #cbd5e0; /* Light gray border */
-            border-radius: 8px; /* Consistent rounded corners */
-            padding: 9px 13px; /* Adjusted padding for smaller font */
-            font-size: 1rem; /* Smaller mobile font size (14px) */
+        .input-field,
+        .select-field {
+            border: .5px solid #cbd5e0;
+            /* Light gray border */
+            border-radius: 8px;
+            /* Consistent rounded corners */
+            padding: 9px 13px;
+            /* Adjusted padding for smaller font */
+            font-size: 1rem;
+            /* Smaller mobile font size (14px) */
             color: #2d3748;
             width: 100%;
             transition: all 0.2s ease-in-out;
@@ -133,10 +174,14 @@
             line-height: 1.1rem;
             border-color: var(--input-border-color, #cbd5e0);
         }
+
         /* Focus styling for input fields and select dropdowns */
-        .input-field:focus, .select-field:focus {
-            border-color: #4B0082; /* Focus ring matches new gradient colors */
-            box-shadow: 0 0 0 3px rgba(75, 0, 130, 0.3); /* Focus shadow matches new gradient */
+        .input-field:focus,
+        .select-field:focus {
+            border-color: #4B0082;
+            /* Focus ring matches new gradient colors */
+            box-shadow: 0 0 0 3px rgba(75, 0, 130, 0.3);
+            /* Focus shadow matches new gradient */
             outline: none;
         }
 
@@ -145,89 +190,126 @@
             border: 1px solid #ccc;
             max-height: 200px;
             overflow-y: auto;
-            display: none; /* 預設隱藏 */
+            display: none;
+            /* 預設隱藏 */
             background-color: #fff;
-            z-index: 1000; /* 確保它在其他元素之上 */
-            position: absolute; /* 如果需要，確保它疊加在其他元素上 */
-            width: inherit; /* 或設置一個固定寬度 */
+            z-index: 1000;
+            /* 確保它在其他元素之上 */
+            position: absolute;
+            /* 如果需要，確保它疊加在其他元素上 */
+            width: inherit;
+            /* 或設置一個固定寬度 */
         }
+
         .timezone-suggestions div {
             padding: 8px;
             cursor: pointer;
             background-color: #f9f9f9;
             border-bottom: 1px solid #eee;
         }
+
         .timezone-suggestions div:hover {
             background-color: #e9e9e9;
         }
 
         /* Primary button styling */
         .btn-primary {
-            background-color: #4B0082; /* Button matches new primary color */
+            background-color: #4B0082;
+            /* Button matches new primary color */
             color: white;
-            padding: 1rem 1.75rem; /* Mobile-friendly padding */
-            border-radius: 12px; /* More rounded button */
+            padding: 1rem 1.75rem;
+            /* Mobile-friendly padding */
+            border-radius: 12px;
+            /* More rounded button */
             font-weight: 700;
             cursor: pointer;
-            font-size: 2rem; /* 顯著加大字體 (相當於 text-4xl) */
-            line-height: 2.5rem; /* 調整行高以適應大字體 */
+            font-size: 2rem;
+            /* 顯著加大字體 (相當於 text-4xl) */
+            line-height: 2.5rem;
+            /* 調整行高以適應大字體 */
 
             transition: background-color 0.2s ease-in-out, transform 0.1s ease-in-out, box-shadow 0.2s ease-in-out;
-            box-shadow: 0 6px 18px rgba(75, 0, 130, 0.5); /* Stronger button shadow */
-            border: none; /* Remove default button border */
+            box-shadow: 0 6px 18px rgba(75, 0, 130, 0.5);
+            /* Stronger button shadow */
+            border: none;
+            /* Remove default button border */
         }
+
         /* Button hover effect */
         .btn-primary:hover {
-            background-color: #FF69B4; /* Darker shade on hover */
-            transform: translateY(-3px); /* More pronounced lift on hover */
+            background-color: #FF69B4;
+            /* Darker shade on hover */
+            transform: translateY(-3px);
+            /* More pronounced lift on hover */
             box-shadow: 0 9px 25px rgba(75, 0, 130, 0.6);
         }
+
         /* Button active (click) effect */
         .btn-primary:active {
             transform: translateY(0);
             box-shadow: none;
         }
+
         /* Styling for the result output box */
         .result-box {
-            background-color: #e2e8f0; /* Light gray for output box */
-            border-radius: 10px; /* Slightly more rounded */
-            padding: 18px; /* Adjusted padding for new section layout */
+            background-color: #e2e8f0;
+            /* Light gray for output box */
+            border-radius: 10px;
+            /* Slightly more rounded */
+            padding: 18px;
+            /* Adjusted padding for new section layout */
             min-height: 200px;
             /* Font and whitespace styles moved to inner content elements */
             color: #2d3748;
-            margin-top: 28px; /* More margin from button */
-            box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.05); /* subtle inner shadow */
+            margin-top: 28px;
+            /* More margin from button */
+            box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.05);
+            /* subtle inner shadow */
         }
+
         /* Styling for error messages */
         .error-message {
-            color: #ef4444; /* Red for errors */
+            color: #ef4444;
+            /* Red for errors */
             font-weight: 600;
             margin-top: 10px;
             font-size: 2rem;
         }
+
         /* 優化：為特定輸入欄位錯誤顯示訊息 */
         .input-error-message {
             color: #ef4444;
-            font-size: 1rem; /* Default mobile size */
+            font-size: 1rem;
+            /* Default mobile size */
             margin-top: 4px;
-            display: none; /* 預設隱藏 */
+            display: none;
+            /* 預設隱藏 */
         }
+
         /* Styling for the loading spinner */
         .loading-spinner {
             border: 4px solid rgba(0, 0, 0, 0.1);
-            border-left-color: #4B0082; /* Spinner matches primary color */
+            border-left-color: #4B0082;
+            /* Spinner matches primary color */
             border-radius: 50%;
             width: 24px;
             height: 24px;
             animation: spin 1s linear infinite;
-            display: none; /* Hidden by default, shown via JS */
+            display: none;
+            /* Hidden by default, shown via JS */
             vertical-align: middle;
             margin-left: 10px;
         }
+
         /* Keyframe animation for the spinner */
         @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
         }
 
         /* --- 標籤樣式 --- */
@@ -235,109 +317,153 @@
             display: flex;
             justify-content: center;
             margin-bottom: 20px;
-            border-bottom: 2px solid #e2e8f0; /* Underline for tabs */
+            border-bottom: 2px solid #e2e8f0;
+            /* Underline for tabs */
         }
 
         .tab-button {
-            padding: 10px 15px; /* Default mobile padding */
+            padding: 10px 15px;
+            /* Default mobile padding */
             font-weight: 600;
             cursor: pointer;
-            border-radius: 8px 8px 0 0; /* Rounded top corners */
+            border-radius: 8px 8px 0 0;
+            /* Rounded top corners */
             transition: all 0.2s ease-in-out;
             color: #4a5568;
             /* color: #ffffff; */
             background-color: #d9dcdf;
             border: 1px solid #e2e8f0;
-            border-bottom: none; /* No bottom border for tab itself */
-            margin-right: 2px; /* Small gap between tabs */
-            font-size: 2rem; /* Default mobile size */
-            letter-spacing: 0.05em; /* 調整字距，您可以根據需要修改這個值 */
+            border-bottom: none;
+            /* No bottom border for tab itself */
+            margin-right: 2px;
+            /* Small gap between tabs */
+            font-size: 2rem;
+            /* Default mobile size */
+            letter-spacing: 0.05em;
+            /* 調整字距，您可以根據需要修改這個值 */
         }
 
         .tab-button.active {
             /* Active tab text color */
-            color: #4B0082; 
+            color: #4B0082;
             /* color: #ffffff; */
-            background-color: #ffffff; /* Active tab background */
-            border-color: #4B0082; /* Active tab border color */
-            border-bottom: 2px solid #ffffff; /* Cover the main underline */
-            transform: translateY(2px); /* Slight lift for active tab */
-            box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.05); /* Subtle shadow on active tab */
-            z-index: 1; /* Ensure active tab is on top */
+            background-color: #ffffff;
+            /* Active tab background */
+            border-color: #4B0082;
+            /* Active tab border color */
+            border-bottom: 2px solid #ffffff;
+            /* Cover the main underline */
+            transform: translateY(2px);
+            /* Slight lift for active tab */
+            box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.05);
+            /* Subtle shadow on active tab */
+            z-index: 1;
+            /* Ensure active tab is on top */
         }
+
         .tab-button:hover:not(.active) {
-            background-color: #e0efff;;
+            background-color: #e0efff;
+            ;
         }
 
         /* --- 單人/雙人命盤內容區塊樣式 --- */
         .chart-section {
-            background-color: #fefefe; /* 統一內容區塊背景色 */
+            background-color: #fefefe;
+            /* 統一內容區塊背景色 */
             border-radius: 12px;
             padding: 24px;
-            box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.03); /* 輕微內陰影 */
+            box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.03);
+            /* 輕微內陰影 */
             margin-bottom: 20px;
         }
 
         /* --- 合盤介面新增的響應式調整 --- */
         .synastry-inputs-wrapper {
-            display: flex; /* 使用 flexbox 讓兩個命盤區塊並排 */
-            flex-direction: column; /* 預設為垂直堆疊 (小螢幕) */
-            gap: 40px; /* 兩個命盤區塊之間的間距 */
-            margin-top: 24px; /* 與子選單的間距 */
+            display: flex;
+            /* 使用 flexbox 讓兩個命盤區塊並排 */
+            flex-direction: column;
+            /* 預設為垂直堆疊 (小螢幕) */
+            gap: 40px;
+            /* 兩個命盤區塊之間的間距 */
+            margin-top: 24px;
+            /* 與子選單的間距 */
             margin-bottom: 32px;
         }
 
         .synastry-input-section {
-            flex: 1; /* 每個命盤區塊佔用可用空間 */
-            padding: 24px; /* 命盤區塊內部的內邊距 */
-            border: 1px solid #e2e8f0; /* 輕微邊框區分兩個命盤 */
+            flex: 1;
+            /* 每個命盤區塊佔用可用空間 */
+            padding: 24px;
+            /* 命盤區塊內部的內邊距 */
+            border: 1px solid #e2e8f0;
+            /* 輕微邊框區分兩個命盤 */
             border-radius: 12px;
-            background-color: #f8fafc; /* 輕微的背景色區分 */
+            background-color: #f8fafc;
+            /* 輕微的背景色區分 */
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
         }
+
         /* 將日期時間和地點時區部分變成 grid 佈局 */
-        .date-time-grid, .location-timezone-grid {
+        .date-time-grid,
+        .location-timezone-grid {
             display: grid;
             /* Mobile-first: 預設為兩欄式佈局，確保在手機上完美對齊 */
             grid-template-columns: repeat(2, minmax(0, 1fr));
-            gap: 16px; /* 欄位間距 */
-            margin-bottom: 24px; /* 各行之間的間距 */
+            gap: 16px;
+            /* 欄位間距 */
+            margin-bottom: 24px;
+            /* 各行之間的間距 */
         }
+
         .location-timezone-grid .input-group.col-span-full {
-             grid-column: 1 / -1; /* 時區欄位跨滿整行 */
+            grid-column: 1 / -1;
+            /* 時區欄位跨滿整行 */
         }
+
         .timezone-input-group-container {
-            display: flex; /* Use flexbox to put select and custom input side-by-side */
-            gap: 8px; /* Small gap between select and custom input */
-            flex-wrap: wrap; /* Allow wrapping on smaller screens if they don't fit */
+            display: flex;
+            /* Use flexbox to put select and custom input side-by-side */
+            gap: 8px;
+            /* Small gap between select and custom input */
+            flex-wrap: wrap;
+            /* Allow wrapping on smaller screens if they don't fit */
         }
+
         .timezone-input-group-container .select-field,
         .timezone-input-group-container .input-field {
-            flex: 1; /* Allow them to grow and shrink */
-            min-width: 120px; /* Minimum width to prevent too much squishing */
+            flex: 1;
+            /* Allow them to grow and shrink */
+            min-width: 120px;
+            /* Minimum width to prevent too much squishing */
         }
 
 
         /* Responsive grid adjustments for compact layout on medium screens (md) and larger */
         @media (min-width: 768px) {
             .date-time-grid {
-                grid-template-columns: repeat(5, minmax(0, 1fr)); /* 確保日期時間為 5 列 */
+                grid-template-columns: repeat(5, minmax(0, 1fr));
+                /* 確保日期時間為 5 列 */
             }
 
             .location-timezone-grid {
-                grid-template-columns: repeat(3, minmax(0, 1fr)); /* 確保地點時區為 3 列 */
+                grid-template-columns: repeat(3, minmax(0, 1fr));
+                /* 確保地點時區為 3 列 */
             }
 
             .input-group {
-                margin-bottom: 0; /* Remove default margin-bottom as grid gap handles it */
+                margin-bottom: 0;
+                /* Remove default margin-bottom as grid gap handles it */
             }
 
             .synastry-input-section h2 {
-                margin-bottom: 20px; /* 為命盤區塊的 h2 增加更多空間 */
+                margin-bottom: 20px;
+                /* 為命盤區塊的 h2 增加更多空間 */
             }
+
             .date-time-grid h2,
             .location-timezone-grid h2 {
-                margin-bottom: 16px; /* 恢復內部分組的 h2 間距 */
+                margin-bottom: 16px;
+                /* 恢復內部分組的 h2 間距 */
             }
 
             /* 在大螢幕上讓兩個命盤區塊並排 */
@@ -349,24 +475,30 @@
         /* Chart Type Card Selection Styling (for sub-selection within Synastry tab) */
         .chart-type-selection-sub {
             display: flex;
-            flex-wrap: wrap; /* Allow cards to wrap on smaller screens */
-            gap: 1.5rem; /* Space between cards */
+            flex-wrap: wrap;
+            /* Allow cards to wrap on smaller screens */
+            gap: 1.5rem;
+            /* Space between cards */
             justify-content: center;
             margin-bottom: 1rem;
         }
 
         .chart-card-sub {
-            background-color: #f7fafc; /* Light background for cards */
+            background-color: #f7fafc;
+            /* Light background for cards */
             padding: 1.5rem 1rem;
             border-radius: 12px;
             border: 2px solid #e2e8f0;
             cursor: pointer;
             transition: all 0.3s ease;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
-            min-width: 160px; /* Minimum width for cards */
-            flex: 1; /* Allow cards to take up available space */
+            min-width: 160px;
+            /* Minimum width for cards */
+            flex: 1;
+            /* Allow cards to take up available space */
             text-align: center;
-            position: relative; /* For active indicator */
+            position: relative;
+            /* For active indicator */
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -374,26 +506,31 @@
         }
 
         .chart-card-sub:hover {
-            border-color: #8B008B; /* Dark Magenta on hover */
+            border-color: #8B008B;
+            /* Dark Magenta on hover */
             transform: translateY(-3px);
             box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
         }
 
         .chart-card-sub.active {
-            border-color: #4B0082; /* Active color */
-            background-color: #e6e6fa; /* Lavender for active background */
+            border-color: #4B0082;
+            /* Active color */
+            background-color: #e6e6fa;
+            /* Lavender for active background */
             box-shadow: 0 4px 15px rgba(75, 0, 130, 0.25);
         }
 
         .chart-card-sub h3 {
-            font-size: 2rem; /* Default mobile size */
+            font-size: 2rem;
+            /* Default mobile size */
             font-weight: 700;
             color: #2d3748;
             margin-bottom: 0.25rem;
         }
 
         .chart-card-sub p {
-            font-size: 1rem; /* Default mobile size */
+            font-size: 1rem;
+            /* Default mobile size */
             color: #6b7280;
         }
 
@@ -404,12 +541,14 @@
 
         /* --- Sectioned Result Styling --- */
         .result-section-item {
-            background-color: #f8fafc; /* Slightly off-white background for each section */
+            background-color: #f8fafc;
+            /* Slightly off-white background for each section */
             border: .5px solid #e2e8f0;
             border-radius: 8px;
             margin-bottom: 16px;
-            overflow: hidden; /* To contain the pre's background */
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            overflow: hidden;
+            /* To contain the pre's background */
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
         }
 
         .result-section-header {
@@ -417,7 +556,8 @@
             justify-content: space-between;
             align-items: center;
             padding: 12px 16px;
-            background-color: #edf2f7; /* Header background */
+            background-color: #edf2f7;
+            /* Header background */
             border-bottom: 1px solid #e2e8f0;
         }
 
@@ -425,14 +565,17 @@
             font-size: 2rem;
             font-weight: 700;
             color: #2d3748;
-            font-family: 'Inter', 'Noto Sans TC', sans-serif; /* Use UI font for header */
+            font-family: 'Inter', 'Noto Sans TC', sans-serif;
+            /* Use UI font for header */
         }
 
         .result-section-content {
             padding: 18px;
             white-space: pre-wrap;
-            font-family: 'Roboto Mono', 'Courier New', monospace; /* Monospaced font for code-like output */
-            font-size: 0.8rem; /* Slightly smaller result text for mobile */
+            font-family: 'Roboto Mono', 'Courier New', monospace;
+            /* Monospaced font for code-like output */
+            font-size: 0.8rem;
+            /* Slightly smaller result text for mobile */
             color: #2d3748;
             background-color: #fdfdff;
             line-height: 1.6;
@@ -451,85 +594,127 @@
             border: none;
             white-space: nowrap;
         }
-        .section-copy-btn:hover { background-color: #4b5563; }
-        .section-copy-btn.copied { background-color: #10b981; }
+
+        .section-copy-btn:hover {
+            background-color: #4b5563;
+        }
+
+        .section-copy-btn.copied {
+            background-color: #10b981;
+        }
 
         /* --- NEW: Special styling for interchart aspect titles --- */
 
         .interchart-header {
-            background: linear-gradient(to right, #f0e2ff, #d2a8ff); /* Light purple gradient */
+            background: linear-gradient(to right, #f0e2ff, #d2a8ff);
+            /* Light purple gradient */
         }
-        
+
         .interchart-header h3.interchart-aspect-title {
-            font-size: 2rem; /* Larger than the default section title */
-            color: #581c87; 
-            font-weight: 800; /* Bolder */
-                }
-        
+            font-size: 2rem;
+            /* Larger than the default section title */
+            color: #581c87;
+            font-weight: 800;
+            /* Bolder */
+        }
+
         /* NEW: Renamed and corrected style for Transit headers */
         .transit-header {
-            background: linear-gradient(to right, #ceffe6, #00db6d); /* Light Cyan/Teal gradient */
+            background: linear-gradient(to right, #ceffe6, #00db6d);
+            /* Light Cyan/Teal gradient */
         }
+
         .transit-header h3 {
             font-size: 1.3rem;
-            color: #164e63; /* Dark Cyan text for contrast */
-            font-weight: 800;}
+            color: #164e63;
+            /* Dark Cyan text for contrast */
+            font-weight: 800;
+        }
 
         .composite-chart-header {
-            background: linear-gradient(to right, #fef9c3, #fde047); /* Light Yellow gradient */
-       }
+            background: linear-gradient(to right, #fef9c3, #fde047);
+            /* Light Yellow gradient */
+        }
 
         /* --- NEW: Styling for single chart titles --- */
         .single-chart-header {
-            background: linear-gradient(to right, #dfecff, #2084ff); /* Light blue gradient */
+            background: linear-gradient(to right, #dfecff, #2084ff);
+            /* Light blue gradient */
         }
+
         .single-chart-header h3 {
             font-size: 2rem;
-            color: #1e40af; /* Darker blue text */
+            color: #1e40af;
+            /* Darker blue text */
             font-weight: 800;
         }
-        .single-chart-header-sub {
-            background: linear-gradient(to right, #ecf8ff, #b4e3ff); /* Light blue gradient */
 
-        }   
-        
+        .single-chart-header-sub {
+            background: linear-gradient(to right, #ecf8ff, #b4e3ff);
+            /* Light blue gradient */
+
+        }
+
         /* --- 響應式設計：針對桌面等較大螢幕的樣式 --- */
         @media (min-width: 768px) {
             .input-group label {
-                font-size: 1.125rem; /* Adjusted desktop font size (18px) */
+                font-size: 1.125rem;
+                /* Adjusted desktop font size (18px) */
                 line-height: 2.5rem;
             }
-            .input-field, .select-field { font-size: 1.5rem; /* Adjusted desktop font size (18px) */ }
+
+            .input-field,
+            .select-field {
+                font-size: 1.5rem;
+                /* Adjusted desktop font size (18px) */
+            }
+
             .result-box {
                 padding: 33px;
                 line-height: 2rem;
             }
+
             .input-error-message {
-                font-size: 1.5rem; /* Adjusted desktop result font size (16px) */
+                font-size: 1.5rem;
+                /* Adjusted desktop result font size (16px) */
             }
+
             .tab-button {
-                padding: 10px 15px; /* Larger padding on desktop */
-                font-size: 3rem; /* Larger on desktop */
+                padding: 10px 15px;
+                /* Larger padding on desktop */
+                font-size: 3rem;
+                /* Larger on desktop */
             }
+
             .tab-button br {
-                display: none; /* 將 <br> 隱藏，使其不再強制換行 */ 
+                display: none;
+                /* 將 <br> 隱藏，使其不再強制換行 */
             }
+
             .chart-card-sub h3 {
-                font-size: 2rem; /* Default mobile size */
+                font-size: 2rem;
+                /* Default mobile size */
             }
+
             .chart-card-sub p {
-                font-size: 1.2rem; /* Larger on desktop */
+                font-size: 1.2rem;
+                /* Larger on desktop */
             }
+
             .copy-btn {
-                font-size: 1.25rem; /* Larger on desktop */
+                font-size: 1.25rem;
+                /* Larger on desktop */
                 padding: 10px 20px;
             }
+
             .result-section-header h3 {
                 font-size: 1.5rem;
             }
+
             .result-section-content {
                 font-size: .8rem;
             }
+
             .section-copy-btn {
                 font-size: 1rem;
                 padding: 8px 16px;
@@ -539,39 +724,50 @@
                 line-height: 5;
                 color: green;
             }
+
             /* Apply the same specificity fix for the responsive style */
             .interchart-header h3.interchart-aspect-title {
-                font-size: 1.5rem; /* Even larger on desktop */
+                font-size: 1.5rem;
+                /* Even larger on desktop */
             }
+
             .transit-header h3 {
-                font-size: 1.5rem; /* Larger on desktop */
+                font-size: 1.5rem;
+                /* Larger on desktop */
             }
+
             .single-chart-header h3 {
                 font-size: 1.5rem;
             }
+
             .container {
-                padding: 2rem; /* Restore larger padding for desktop */
+                padding: 2rem;
+                /* Restore larger padding for desktop */
             }
+
             .btn-primary {
                 /* Restore larger button size for desktop */
                 padding: 1.25rem 2.5rem;
-                font-size: 1.875rem; /* text-3xl */
+                font-size: 1.875rem;
+                /* text-3xl */
             }
         }
-
     </style>
 </head>
+
 <body class="bg-single">
     <div class="container">
         <!-- Main Header -->
         <div class="header-bg">
             <h1 class="text-4xl md:text-5xl font-bold text-center mb-0" style="letter-spacing: 0.1em;">星盤文字資料生成</h1>
-       </div>
+        </div>
 
         <!-- Main Tab Buttons -->
         <div class="tab-buttons">
-            <button id="singleChartTab" class="tab-button active" data-tab-content="singleChartSection">個人星盤<br> or <br>占星卜卦盤(Horary)</button>
-            <button id="synastryTab" class="tab-button" data-tab-content="synastryChartSection">雙人合盤<br> or <br>行運盤</button>
+            <button id="singleChartTab" class="tab-button active" data-tab-content="singleChartSection">個人星盤<br> or
+                <br>占星卜卦盤(Horary)</button>
+            <button id="synastryTab" class="tab-button" data-tab-content="synastryChartSection">雙人合盤<br> or
+                <br>行運盤</button>
         </div><!-- Single Chart Section Content -->
         <div id="singleChartSection" class="chart-section">
             <h2 class="text-xl md:text-3xl font-semibold text-gray-700 mb-4">姓名</h2>
@@ -626,15 +822,16 @@
                     <label for="single_timezone">時區:</label>
                     <div class="timezone-input-group-container">
                         <select id="single_timezone" class="select-field timezone-select"></select>
-                        <input type="text" id="single_customTimezone" class="input-field" placeholder="手動輸入 (例如: Asia/Tokyo)">
+                        <input type="text" id="single_customTimezone" class="input-field"
+                            placeholder="手動輸入 (例如: Asia/Tokyo)">
                         <div id="singleTimezoneSuggestions" class="timezone-suggestions"></div>
                     </div>
                     <p class="text-sm text-gray-500 mt-2">
                         如果您的時區不在列表中，請手動輸入正確經緯度（ 十進制 ）以及 IANA 完整時區名稱，<br>
-                         ( 例如：台灣的 IANA 時區是 Asia/Taipei，中國是 Asia/Shanghai，日本是 Asia/Tokyo，韓國是 Asia/Seoul，<br>
-                         美國依不同地點分為 America/New_York等各個時區) 以取得正確星盤資訊，<br>
-                         若不知道出生地的 IANA 時區，可用 AI聊天如 ChatGPT，Gemini ai 等或 由Google 查詢。
-                        
+                        ( 例如：台灣的 IANA 時區是 Asia/Taipei，中國是 Asia/Shanghai，日本是 Asia/Tokyo，韓國是 Asia/Seoul，<br>
+                        美國依不同地點分為 America/New_York等各個時區) 以取得正確星盤資訊，<br>
+                        若不知道出生地的 IANA 時區，可用 AI聊天如 ChatGPT，Gemini ai 等或 由Google 查詢。
+
                     </p>
                     <p id="single_timezone-error" class="input-error-message" aria-live="polite"></p>
                 </div>
@@ -649,7 +846,7 @@
                     <h3>比較合盤</h3>
                     <p>兩人關係互動</p>
                 </div>
-                 <div class="chart-card-sub" data-chart-type="composite">
+                <div class="chart-card-sub" data-chart-type="composite">
                     <h3>中點盤</h3>
                     <p>關係本質與命運</p>
                 </div>
@@ -658,7 +855,8 @@
                     <p>當下星體影響</p>
                 </div>
             </div>
-            <input type="hidden" id="selectedSubChartType" value="comparison"> <!-- Hidden input to store selected sub-type -->
+            <input type="hidden" id="selectedSubChartType" value="comparison">
+            <!-- Hidden input to store selected sub-type -->
 
             <!-- Comparison Chart Inputs (Default active when Synastry tab is chosen) -->
             <div id="comparisonChartInputs" class="synastry-inputs-wrapper">
@@ -714,7 +912,8 @@
                             <label for="comp1_timezone">時區:</label>
                             <div class="timezone-input-group-container">
                                 <select id="comp1_timezone" class="select-field timezone-select"></select>
-                                <input type="text" id="comp1_customTimezone" class="input-field" placeholder="手動輸入 (例如: Asia/Tokyo)">
+                                <input type="text" id="comp1_customTimezone" class="input-field"
+                                    placeholder="手動輸入 (例如: Asia/Tokyo)">
                                 <div id="comp1TimezoneSuggestions" class="timezone-suggestions"></div>
                             </div>
                             <p id="comp1_timezone-error" class="input-error-message" aria-live="polite"></p>
@@ -774,7 +973,8 @@
                             <label for="comp2_timezone">時區:</label>
                             <div class="timezone-input-group-container">
                                 <select id="comp2_timezone" class="select-field timezone-select"></select>
-                                <input type="text" id="comp2_customTimezone" class="input-field" placeholder="手動輸入 (例如: Asia/Tokyo)">
+                                <input type="text" id="comp2_customTimezone" class="input-field"
+                                    placeholder="手動輸入 (例如: Asia/Tokyo)">
                                 <div id="comp2TimezoneSuggestions" class="timezone-suggestions"></div>
                             </div>
                             <p id="comp2_timezone-error" class="input-error-message" aria-live="polite"></p>
@@ -837,9 +1037,10 @@
                             <label for="natal_timezone">時區:</label>
                             <div class="timezone-input-group-container">
                                 <select id="natal_timezone" class="select-field timezone-select"></select>
-                                <input type="text" id="natal_customTimezone" class="input-field" placeholder="手動輸入 (例如: Asia/Tokyo)">
+                                <input type="text" id="natal_customTimezone" class="input-field"
+                                    placeholder="手動輸入 (例如: Asia/Tokyo)">
                                 <div id="natalTimezoneSuggestions" class="timezone-suggestions"></div>
-                        </div>
+                            </div>
                             <p id="natal_timezone-error" class="input-error-message" aria-live="polite"></p>
                         </div>
                     </div>
@@ -857,7 +1058,8 @@
                     <div class="date-time-grid">
                         <div class="input-group">
                             <label for="transit_year">西元年 (YYYY):</label>
-                            <input type="number" id="transit_year" class="input-field" value="2025" min="1900" max="2100">
+                            <input type="number" id="transit_year" class="input-field" value="2025" min="1900"
+                                max="2100">
                             <p id="transit_year-error" class="input-error-message" aria-live="polite"></p>
                         </div>
                         <div class="input-group">
@@ -897,7 +1099,8 @@
                             <label for="transit_timezone">時區:</label>
                             <div class="timezone-input-group-container">
                                 <select id="transit_timezone" class="select-field timezone-select"></select>
-                                <input type="text" id="transit_customTimezone" class="input-field" placeholder="手動輸入 (例如: Asia/Tokyo)">
+                                <input type="text" id="transit_customTimezone" class="input-field"
+                                    placeholder="手動輸入 (例如: Asia/Tokyo)">
                                 <div id="transitTimezoneSuggestions" class="timezone-suggestions"></div>
                             </div>
                             <p id="transit_timezone-error" class="input-error-message" aria-live="polite"></p>
@@ -912,10 +1115,12 @@
             <div class="flex justify-between items-center mb-3">
                 <h3 class="planetSelection-text text-2xl md:text-4xl font-bold text-gray-700">顯示選項<br>(小行星/虛點)</h3>
                 <div>
-                    <button id="toggleAllPlanetsBtn" class="text-lg md:text-2xl font-medium text-indigo-600 hover:text-indigo-800">全部取消</button>
+                    <button id="toggleAllPlanetsBtn"
+                        class="text-lg md:text-2xl font-medium text-indigo-600 hover:text-indigo-800">全部取消</button>
                 </div>
             </div>
-            <div id="optionalPlanetsContainer" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-x-6 gap-y-3">
+            <div id="optionalPlanetsContainer"
+                class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-x-6 gap-y-3">
                 <!-- Checkboxes will be populated here by JavaScript -->
             </div>
         </div>
@@ -929,7 +1134,8 @@
         <!-- Result Output Section -->
         <div class="result-section">
             <div class="flex justify-between items-center mb-3">
-                <h2 class="text-3xl md:text-5xl font-semibold text-gray-700 border-top: 10px" id="resultHeader">生成結果</h2>
+                <h2 class="text-3xl md:text-5xl font-semibold text-gray-700 border-top: 10px" id="resultHeader">生成結果
+                </h2>
                 <!-- The global copy button is removed, individual buttons will be generated -->
             </div>
             <div id="resultOutput" class="result-box" role="region" aria-live="polite" aria-atomic="true"></div>
@@ -942,86 +1148,86 @@
 
         let allTimezones = []; // 儲存從後端獲取的時區列表
 
-            // 1. 從後端獲取時區列表
-            async function fetchTimezones() {
-                try {
-                    // 假設你的後端 API 在 /api/timezones
-                    const response = await fetch('/api/timezones');
-                    if (!response.ok) {
-                        throw new Error(`HTTP error! status: ${response.status}`);
-                    }
-                    allTimezones = await response.json();
-                    console.log('時區列表載入成功！');
-                } catch (error) {
-                    console.error('載入時區列表失敗:', error);
+        // 1. 從後端獲取時區列表
+        async function fetchTimezones() {
+            try {
+                // 假設你的後端 API 在 /api/timezones
+                const response = await fetch('/api/timezones');
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
                 }
+                allTimezones = await response.json();
+                console.log('時區列表載入成功！');
+            } catch (error) {
+                console.error('載入時區列表失敗:', error);
+            }
+        }
+
+        // 2. 建立一個通用的自動完成函數
+        function setupAutocomplete(inputId, suggestionsContainerId) {
+            const inputField = document.getElementById(inputId);
+            const suggestionsContainer = document.getElementById(suggestionsContainerId);
+
+            if (!inputField || !suggestionsContainer) {
+                console.error(`找不到元素: Input ID: ${inputId}, Container ID: ${suggestionsContainerId}`);
+                return;
             }
 
-            // 2. 建立一個通用的自動完成函數
-            function setupAutocomplete(inputId, suggestionsContainerId) {
-                const inputField = document.getElementById(inputId);
-                const suggestionsContainer = document.getElementById(suggestionsContainerId);
+            inputField.addEventListener('input', function () {
+                const inputValue = this.value.toLowerCase();
+                suggestionsContainer.innerHTML = ''; // 清空之前的建議
 
-                if (!inputField || !suggestionsContainer) {
-                    console.error(`找不到元素: Input ID: ${inputId}, Container ID: ${suggestionsContainerId}`);
+                if (inputValue.length < 2) { // 輸入至少兩個字元才開始建議
+                    suggestionsContainer.style.display = 'none';
                     return;
                 }
 
-                inputField.addEventListener('input', function () {
-                    const inputValue = this.value.toLowerCase();
-                    suggestionsContainer.innerHTML = ''; // 清空之前的建議
+                const filteredSuggestions = allTimezones.filter(tz =>
+                    tz.toLowerCase().includes(inputValue)
+                ).slice(0, 10); // 只顯示前10個
 
-                    if (inputValue.length < 2) { // 輸入至少兩個字元才開始建議
-                        suggestionsContainer.style.display = 'none';
-                        return;
-                    }
-
-                    const filteredSuggestions = allTimezones.filter(tz =>
-                        tz.toLowerCase().includes(inputValue)
-                    ).slice(0, 10); // 只顯示前10個
-
-                    if (filteredSuggestions.length > 0) {
-                        filteredSuggestions.forEach(tz => {
-                            const div = document.createElement('div');
-                            div.textContent = tz;
-                            div.addEventListener('click', function () {
-                                inputField.value = this.textContent;
-                                suggestionsContainer.style.display = 'none';
-                            });
-                            suggestionsContainer.appendChild(div);
+                if (filteredSuggestions.length > 0) {
+                    filteredSuggestions.forEach(tz => {
+                        const div = document.createElement('div');
+                        div.textContent = tz;
+                        div.addEventListener('click', function () {
+                            inputField.value = this.textContent;
+                            suggestionsContainer.style.display = 'none';
                         });
-                        suggestionsContainer.style.display = 'block';
-                        // 將建議列表的位置設置在輸入框下方
-                        // 根據你的佈局可能需要調整，這裡只是簡單的定位
-                        const rect = inputField.getBoundingClientRect();
-                        suggestionsContainer.style.top = `${rect.bottom + window.scrollY}px`;
-                        suggestionsContainer.style.left = `${rect.left + window.scrollX}px`;
-                        suggestionsContainer.style.width = `${rect.width}px`;
-                        suggestionsContainer.style.position = 'absolute'; // 確保可以疊加
-                    } else {
-                        suggestionsContainer.style.display = 'none';
-                    }
-                });
-
-                // 點擊外面時隱藏建議列表
-                document.addEventListener('click', function (event) {
-                    if (!inputField.contains(event.target) && !suggestionsContainer.contains(event.target)) {
-                        suggestionsContainer.style.display = 'none';
-                    }
-                });
-            }
-
-            // 頁面載入完成後，先獲取時區列表，然後為每個輸入框設置自動完成
-            document.addEventListener('DOMContentLoaded', async () => {
-                await fetchTimezones(); // 等待時區列表載入完成
-
-                // 為你的五個輸入框分別設定自動完成
-                setupAutocomplete('single_customTimezone', 'singleTimezoneSuggestions');
-                setupAutocomplete('comp1_customTimezone', 'comp1TimezoneSuggestions');
-                setupAutocomplete('comp2_customTimezone', 'comp2TimezoneSuggestions');
-                setupAutocomplete('natal_customTimezone', 'natalTimezoneSuggestions');
-                setupAutocomplete('transit_customTimezone', 'transitTimezoneSuggestions');
+                        suggestionsContainer.appendChild(div);
+                    });
+                    suggestionsContainer.style.display = 'block';
+                    // 將建議列表的位置設置在輸入框下方
+                    // 根據你的佈局可能需要調整，這裡只是簡單的定位
+                    const rect = inputField.getBoundingClientRect();
+                    suggestionsContainer.style.top = `${rect.bottom + window.scrollY}px`;
+                    suggestionsContainer.style.left = `${rect.left + window.scrollX}px`;
+                    suggestionsContainer.style.width = `${rect.width}px`;
+                    suggestionsContainer.style.position = 'absolute'; // 確保可以疊加
+                } else {
+                    suggestionsContainer.style.display = 'none';
+                }
             });
+
+            // 點擊外面時隱藏建議列表
+            document.addEventListener('click', function (event) {
+                if (!inputField.contains(event.target) && !suggestionsContainer.contains(event.target)) {
+                    suggestionsContainer.style.display = 'none';
+                }
+            });
+        }
+
+        // 頁面載入完成後，先獲取時區列表，然後為每個輸入框設置自動完成
+        document.addEventListener('DOMContentLoaded', async () => {
+            await fetchTimezones(); // 等待時區列表載入完成
+
+            // 為你的五個輸入框分別設定自動完成
+            setupAutocomplete('single_customTimezone', 'singleTimezoneSuggestions');
+            setupAutocomplete('comp1_customTimezone', 'comp1TimezoneSuggestions');
+            setupAutocomplete('comp2_customTimezone', 'comp2TimezoneSuggestions');
+            setupAutocomplete('natal_customTimezone', 'natalTimezoneSuggestions');
+            setupAutocomplete('transit_customTimezone', 'transitTimezoneSuggestions');
+        });
         // Define the desired display order for planets and points (copied from backend for consistency)
         const DISPLAY_ORDER_NAMES = [
             "太陽", "月亮", "水星", "金星", "火星", "木星", "土星", "天王", "海王", "冥王",
@@ -1047,7 +1253,7 @@
                 const minutes = Math.abs(offsetHours % 1) * 60;
 
                 const offsetString = `UTC${sign}${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
-                
+
                 let displayAlias = timezoneName.replace(/_/g, ' ');
                 if (timezoneName === "Asia/Taipei") displayAlias = "台北";
                 else if (timezoneName === "Asia/Shanghai") displayAlias = "上海";
@@ -1084,7 +1290,7 @@
                     text: getTimezoneOffsetString(tz)
                 }));
                 // 根據使用者要求，將時區從 UTC+ 大到小排序 (descending)
-                optionsWithFormattedText.sort((a, b) => b.text.localeCompare(a.text)); 
+                optionsWithFormattedText.sort((a, b) => b.text.localeCompare(a.text));
 
                 optionsWithFormattedText.forEach(optionData => {
                     const option = document.createElement('option');
@@ -1116,7 +1322,7 @@
                         } else {
                             // If custom input is cleared, try to set to Asia/Taipei if it's in the list
                             if (commonTimezones.includes("Asia/Taipei")) {
-                                selectElement.value = "Asia/Taipei"; 
+                                selectElement.value = "Asia/Taipei";
                             } else {
                                 selectElement.value = ''; // Otherwise, keep it empty
                             }
@@ -1188,7 +1394,7 @@
             document.getElementById('transitChartInputs').classList.add('hidden');
 
             if (selectedType === 'comparison' || selectedType === 'composite') {
-                   document.getElementById('comparisonChartInputs').classList.remove('hidden');
+                document.getElementById('comparisonChartInputs').classList.remove('hidden');
             } else if (selectedType === 'transit') {
                 document.getElementById('transitChartInputs').classList.remove('hidden');
             }
@@ -1228,7 +1434,7 @@
             // --- 新增：全選/取消全選按鈕的邏輯 (優化版) ---
             const toggleBtn = document.getElementById('toggleAllPlanetsBtn');
             // Set initial state using a data attribute
-            toggleBtn.dataset.state = 'all-checked'; 
+            toggleBtn.dataset.state = 'all-checked';
 
             toggleBtn.addEventListener('click', () => {
                 const checkboxes = document.querySelectorAll('.optional-planet-checkbox');
@@ -1295,14 +1501,14 @@
                     }
                 });
             }
-            
+
             const calculateButton = document.getElementById('calculateBtn');
             if (calculateButton) {
                 calculateButton.addEventListener('click', calculateChart);
             } else {
                 console.error('Error: Calculate button not found!');
             }
-            
+
             // Add input event listeners to all input fields to clear error messages
             document.querySelectorAll('.input-field, .select-field').forEach(input => {
                 input.addEventListener('input', (event) => {
@@ -1345,7 +1551,7 @@
 
                     // 2. 當變更下拉選單時，除了通用監聽器會清除自身錯誤外，也要確保手動輸入框的邊框恢復正常
                     timezoneSelect.addEventListener('change', () => {
-                         customTimezoneInput.style.setProperty('--input-border-color', '#cbd5e0');
+                        customTimezoneInput.style.setProperty('--input-border-color', '#cbd5e0');
                     });
                 }
             });
@@ -1396,7 +1602,7 @@
                     return;
                 }
                 const value = inputElement.value;
-                const parsedValue = parseFloat(value); 
+                const parsedValue = parseFloat(value);
 
                 // Basic validation for numbers
                 if (value.trim() === '' || isNaN(parsedValue)) {
@@ -1433,7 +1639,7 @@
             // Timezone validation
             const timezoneSelect = document.getElementById(`${prefix}timezone`);
             const customTimezoneInput = document.getElementById(`${prefix}customTimezone`);
-            
+
             let timezoneValue = '';
             if (customTimezoneInput && customTimezoneInput.value.trim() !== '') {
                 timezoneValue = customTimezoneInput.value.trim(); // Prioritize custom input
@@ -1449,7 +1655,7 @@
                     if (customTimezoneInput) {
                         // 確保在顯示錯誤時，手動輸入框的樣式也被更新
                         customTimezoneInput.style.setProperty('--input-border-color', '#ef4444');
-                        }
+                    }
                 } else if (customTimezoneInput) { // Fallback if for some reason select isn't there
                     showInputError(customTimezoneInput.id, '請選擇或手動輸入時區。');
                 }
@@ -1465,7 +1671,7 @@
          */
         async function calculateChart() {
             console.log('Calculate button clicked. Starting chart calculation...');
-            
+
             clearAllInputErrors();
             const resultOutput = document.getElementById('resultOutput');
             const loadingSpinner = document.getElementById('loadingSpinner');
@@ -1506,7 +1712,7 @@
                     optional_planets: optionalPlanets // 將選項加入 payload
                 };
                 apiUrl = `${BASE_API_URL}/calculate_single_chart`;
-                
+
             } else if (activeMainTab === 'synastryChartSection') {
                 const selectedSubChartType = document.getElementById('selectedSubChartType').value;
                 if (selectedSubChartType === 'comparison') {
@@ -1538,7 +1744,7 @@
                         chart2_longitude: parseFloat(getInputValue('comp2_longitude')),
                         chart2_timezone: getInputValue('comp2_customTimezone') || getInputValue('comp2_timezone'),
                         optional_planets: optionalPlanets // 將選項加入 payload
-                   };
+                    };
                     apiUrl = `${BASE_API_URL}/calculate_comparison_chart`;
                 } else if (selectedSubChartType === 'composite') {
                     chart1Name = getInputValue('comp1_name') || "你";
@@ -1551,7 +1757,7 @@
                     }
                     // Hardcode composite method to 'reference_plane' as the UI for selection is removed.
                     const compositeMethod = 'reference_plane';
-                    
+
                     payload = {
                         chart1_year: parseInt(getInputValue('comp1_year')),
                         chart1_month: parseInt(getInputValue('comp1_month')),
@@ -1569,8 +1775,8 @@
                         chart2_latitude: parseFloat(getInputValue('comp2_latitude')),
                         chart2_longitude: parseFloat(getInputValue('comp2_longitude')),
                         chart2_timezone: getInputValue('comp2_customTimezone') || getInputValue('comp2_timezone'),
-                        optional_planets: optionalPlanets, 
-                        composite_method: compositeMethod 
+                        optional_planets: optionalPlanets,
+                        composite_method: compositeMethod
                     };
                     apiUrl = `${BASE_API_URL}/calculate_composite_chart`;
                 } else if (selectedSubChartType === 'transit') {
@@ -1612,23 +1818,23 @@
                 // --- 使用 Axios 發送請求 ---
                 const response = await axios.post(apiUrl, payload);
                 const chartData = response.data; // Axios 自動解析 JSON
-    
-                 // 修正：如果後端沒有回傳 chart_type，但當前是單盤請求，則手動設定為 'single'
+
+                // 修正：如果後端沒有回傳 chart_type，但當前是單盤請求，則手動設定為 'single'
                 if (!chartData.chart_type && activeMainTab === 'singleChartSection' && chartData.timestamps && chartData.planet_positions) {
                     chartData.chart_type = 'single';
-                    }
-                
+                }
+
                 if (chartData.error) {
                     resultOutput.textContent = `❌ 後端計算錯誤：${chartData.error}`;
                     resultOutput.classList.add('error-message');
-                     // Button remains hidden on error
-                    } else {
+                    // Button remains hidden on error
+                } else {
                     const formattedText = formatChartDataForDisplayFrontend(chartData, chart1Name, chart2Name);
                     // NEW: Render the text as sections instead of a single block
                     renderSectionsFromText(formattedText);
                     resultOutput.classList.remove('error-message');
                     // The global copy button is removed, so no need to show it.
-                    }
+                }
             } catch (error) { // --- Axios 的錯誤處理 ---
                 const resultOutput = document.getElementById('resultOutput');
                 resultOutput.classList.add('error-message');
@@ -1639,7 +1845,7 @@
                     // --- 新增：處理特定的無效時區錯誤 ---
                     if (error.response.status === 400 && errorData && errorData.error_type === 'invalid_timezone') {
                         resultOutput.textContent = '❌ 時區輸入錯誤，請修正上方標示的欄位。';
-                        
+
                         const errorSource = errorData.error_source; // 'chart1' or 'chart2'
                         let prefix = '';
 
@@ -1657,7 +1863,7 @@
 
                         const timezoneSelectId = `${prefix}timezone`;
                         const customTimezoneInputId = `${prefix}customTimezone`;
-                        
+
                         // 在對應的時區欄位顯示詳細錯誤訊息
                         showInputError(timezoneSelectId, errorData.error);
 
@@ -1680,7 +1886,8 @@
                     // 設置請求時發生錯誤
                     resultOutput.textContent = `❌ 請求錯誤：${error.message}`;
                     console.error('Axios Setup Error:', error.message);
-                }} finally {
+                }
+            } finally {
                 loadingSpinner.style.display = 'none';
             }
         }
@@ -1705,7 +1912,7 @@
 
                 const sectionTitle = document.createElement('h3');
                 sectionTitle.textContent = title;
-                
+
                 // Revised Logic for applying header styles
                 if (title.includes("行運") && (title.includes("之間的相位") || title.includes("的行星落入"))) {
                     sectionHeader.classList.add('transit-header');
@@ -1713,7 +1920,7 @@
                     sectionTitle.classList.add('interchart-aspect-title');
                     sectionHeader.classList.add('interchart-header');
                 } else if (title.includes("的星盤資訊") || (title.includes("的組合中點盤"))) {
-                   sectionHeader.classList.add('single-chart-header');
+                    sectionHeader.classList.add('single-chart-header');
                 } else if (title.includes("宮頭星座度數") || title.includes("天體位置") || title.includes("內主要相位")) {
                     sectionHeader.classList.add('single-chart-header-sub');
                 }
@@ -1775,7 +1982,7 @@
                 const currentSectionLines = []; // Use a local array for this section
 
                 currentSectionLines.push(`\n=== ${title} ===`);
-                
+
                 // 時間戳信息
                 if (chartInfo.timestamps) {
                     const ts = chartInfo.timestamps;
@@ -1842,13 +2049,13 @@
                             let displayName = name;
                             const retrogradeLabel = pInfo.retrograde_label || "";
                             if (pInfo.is_retrograde && retrogradeLabel) {
-                                displayName += 　retrogradeLabel;
+                                displayName += retrogradeLabel;
                             }
-                            
-                            let targetPadding = 8; 
+
+                            let targetPadding = 8;
                             const chineseCharCount = (displayName.match(/[\u4e00-\u9fff]/g) || []).length;
-                            const actualLength = displayName.length + chineseCharCount; 
-                            const paddingNeeded = Math.max(0, targetPadding - actualLength + (displayName.length - chineseCharCount)); 
+                            const actualLength = displayName.length + chineseCharCount;
+                            const paddingNeeded = Math.max(0, targetPadding - actualLength + (displayName.length - chineseCharCount));
                             const paddedName = displayName + ' '.repeat(paddingNeeded);
 
                             let line = `${paddedName}　${pInfo.zodiac_position_formatted}`;
@@ -1868,12 +2075,12 @@
                             //    fullPlanetPositionString += `${houseNum}宮(${hdegNum.toFixed(2)}°)`;
                             // }
                             // pInfo.full_position_display = fullPlanetPositionString;
-                        
+
                         } else {
                             console.warn(`WARN: Planet ${name} not found in planet_positions for ${title}`);
                         }
 
-                        });
+                    });
                     console.log(`DEBUG: Finished planet_positions block for ${title}. currentSectionLines length after: ${currentSectionLines.length}`); // <-- NEW LOG
                 } else {
                     currentSectionLines.push("沒有天體位置數據。");
@@ -1966,10 +2173,10 @@
 
                 // outputLines.push(DISPLAY_ORDER_NAMES);
             };
-           
+
             // Main logic based on chart type
             console.log('DEBUG: Received chartData.chart_type:', chartData.chart_type); // <-- NEW LOG HERE
-            
+
             if (Object.keys(chartData).length === 0) { // Check if it's an empty object
                 outputLines.push("錯誤：從後端接收到的星盤數據為空。");
                 console.error("ERROR: Received empty chartData object from backend.");
@@ -1978,7 +2185,7 @@
                 formatSingleChartSection(chartData, `${chart1Name}的星盤資訊`);
             } else if (chartData.chart_type === 'comparison') {
 
-                
+
                 outputLines.push(`\n=== ${chart2Name}與${chart1Name}之間的相位 ===`);
                 currentSectionLines.push("\n＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝");
                 currentSectionLines.push(`\n${chart2Name}的星體名稱　相位名稱　${chart1Name}的星體名稱　相位動態　容許度(度)`); // 新增這行標題
@@ -2012,7 +2219,7 @@
                         outputLines.push(aspectLine);
                     });
                 }
-                
+
                 outputLines.push(`\n=== ${chart1Name}與${chart2Name}之間的相位 ===`);
                 currentSectionLines.push("\n＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝");
                 currentSectionLines.push(`\n${chart1Name}的星體名稱　相位名稱　${chart2Name}的星體名稱　相位動態　容許度(度)`);
@@ -2043,170 +2250,173 @@
                         outputLines.push(aspectLine);
                     });
                 }
-                    // (B-1) 對方星體落本命宮位
-                    outputLines.push(`\n=== ${chart2Name}的行星在${chart1Name}宮位 ===`);
-                    if (!chartData.chart2_planets_in_chart1_houses || chartData.chart2_planets_in_chart1_houses.length === 0) {
-                        outputLines.push("目前沒有偵測到行星落入本命宮位。");
-                    } else {
-                        chartData.chart2_planets_in_chart1_houses.sort((a, b) =>
-                            DISPLAY_ORDER_NAMES.indexOf(a.planet_name) - DISPLAY_ORDER_NAMES.indexOf(b.planet_name)
-                        );
-                        chartData.chart2_planets_in_chart1_houses.forEach(overlay => {
-                            outputLines.push(
-                                `${chart2Name}的${overlay.planet_name}${overlay.retrograde_label || ''}${overlay.zodiac_position_formatted}在${chart1Name}的` +
-                                `${overlay.house_in_target_chart}宮(${overlay.degree_in_target_house.toFixed(2)}°)。`
-                            );
-                        });
-                    }
-                    // (C-1) 本命星體落對方宮位
-                    outputLines.push(`\n=== ${chart1Name}的行星在${chart2Name}宮位 ===`);
-                    if (!chartData.chart1_planets_in_chart2_houses || chartData.chart1_planets_in_chart2_houses.length === 0) {
-                        outputLines.push("目前沒有偵測到行星落入對方宮位。");
-                    } else {
-                        chartData.chart1_planets_in_chart2_houses.sort((a, b) => 
-                            DISPLAY_ORDER_NAMES.indexOf(a.planet_name) - DISPLAY_ORDER_NAMES.indexOf(b.planet_name)
-                        );
-                        chartData.chart1_planets_in_chart2_houses.forEach(overlay => {
-                            outputLines.push(
-                                `${chart1Name}的${overlay.planet_name}${overlay.retrograde_label || ''}${overlay.zodiac_position_formatted}在${chart2Name}的` +
-                                `${overlay.house_in_target_chart}宮(${overlay.degree_in_target_house.toFixed(2)}°)。`
-                            );
-                        });
-                    }
-                    formatSingleChartSection(chartData.chart1_data, `${chart1Name}的星盤資訊`);
-                    formatSingleChartSection(chartData.chart2_data, `${chart2Name}的星盤資訊`);
-                }
-
-                
-            } else if (chartData.chart_type === 'composite') {
-                // 對於組合中點盤，顯示中點盤本身，然後可選地顯示兩個原始本命盤以供參考。
-                formatSingleChartSection(chartData.composite_chart_data, `${chart1Name}與${chart2Name}的組合中點盤`);
-                
-                // 添加分隔符，然後顯示兩個本命盤
-                
-                formatSingleChartSection(chartData.natal_chart1_data, `${chart1Name}的本命星盤資訊`);
-                formatSingleChartSection(chartData.natal_chart2_data, `${chart2Name}的本命星盤資訊`);
-            
-            } else if (chartData.chart_type === 'transit') {
-                
-                //  行運星體與本命星體之間的相位 (B-2)
-                outputLines.push(`\n=== ${chart2Name}與${chart1Name}之間的相位 ===`);
-                if (!chartData.inter_aspects || chartData.inter_aspects.length === 0) {
-                    outputLines.push("目前沒有偵測到跨盤相位。");
-                } else {
-                    // For B-2 (Transit to Natal), we sort by transit planets (p2) first.
-                    const b2_aspects = [...chartData.inter_aspects]; // Create a copy to sort
-                   
-                    b2_aspects.sort((a, b) => {
-                        const p2IndexA = DISPLAY_ORDER_NAMES.indexOf(a.p2_name);
-                        const p2IndexB = DISPLAY_ORDER_NAMES.indexOf(b.p2_name);
-                        if (p2IndexA !== p2IndexB) return p2IndexA - p2IndexB;
-                        return DISPLAY_ORDER_NAMES.indexOf(a.p1_name) - DISPLAY_ORDER_NAMES.indexOf(b.p1_name);
-                    });
-
-                    b2_aspects.forEach(asp => {
-                        const p2OverlayInChart1 = chartData.transit_planets_in_natal_houses.find(o => o.planet_name === asp.p2_name);
-                        const p2HouseDisplay = p2OverlayInChart1 ? `在${chart1Name}的${p2OverlayInChart1.house_in_target_chart}宮(${p2OverlayInChart1.degree_in_target_house.toFixed(2)}°)` : '';
-                        
-                        // 修正：安全地處理 p1 的宮位資訊
-                        const p1House = typeof asp.p1_details.house === 'number' ? `${asp.p1_details.house}宮` : '';
-                        const p1Hdeg = typeof asp.p1_details.hdeg === 'number' ? `(${asp.p1_details.hdeg.toFixed(2)}°)` : '';
-
-                        let aspectLine = `${chart2Name}的${asp.p2_name}${asp.p2_details.retrograde_label || ''}${asp.p2_details.zodiac_position_formatted}在${chart1Name}的${p2HouseDisplay}，` +
-                                         `${asp.aspect_name}${chart1Name}的${asp.p1_name}${asp.p1_details.retrograde_label || ''}${asp.p1_details.zodiac_position_formatted}${p1House}${p1Hdeg}`;
-                                         
-                                         if (asp.orb !== undefined) {
-                                             if (asp.aspect_type) {
-                                                 aspectLine += `，${asp.aspect_type}${asp.orb.toFixed(2)}°。`;
-                                                } else {
-                                aspectLine += `，容許度${asp.orb.toFixed(2)}°。`;
-                            }
-                        }
-                        outputLines.push(aspectLine);
-                    });
-                }
-
-                // 行運星體落入本命的宮位
-                outputLines.push(`\n=== ${chart2Name}的行星落入${chart1Name}的宮位 ===`);
-                if (!chartData.transit_planets_in_natal_houses || chartData.transit_planets_in_natal_houses.length === 0) {
+                // (B-1) 對方星體落本命宮位
+                outputLines.push(`\n=== ${chart2Name}的行星在${chart1Name}宮位 ===`);
+                currentSectionLines.push("\n＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝");
+                currentSectionLines.push(`\n${chart2Name}的星體名稱　${chart1Name}的宮位`);
+                currentSectionLines.push("\n－－－－－－－－－－－－－－－－－－－－");
+                if (!chartData.chart2_planets_in_chart1_houses || chartData.chart2_planets_in_chart1_houses.length === 0) {
                     outputLines.push("目前沒有偵測到行星落入本命宮位。");
                 } else {
-                    chartData.transit_planets_in_natal_houses.sort((a, b) => 
+                    chartData.chart2_planets_in_chart1_houses.sort((a, b) =>
                         DISPLAY_ORDER_NAMES.indexOf(a.planet_name) - DISPLAY_ORDER_NAMES.indexOf(b.planet_name)
                     );
-                    chartData.transit_planets_in_natal_houses.forEach(overlay => {
+                    chartData.chart2_planets_in_chart1_houses.forEach(overlay => {
                         outputLines.push(
-                            `${chart2Name}的${overlay.planet_name}${overlay.retrograde_label || ''}${overlay.zodiac_position_formatted}在${chart1Name}的` +
-                            `${overlay.house_in_target_chart}宮(${overlay.degree_in_target_house.toFixed(2)}°)。`
+                            `${overlay.planet_name}` + `　${overlay.house_in_target_chart}`
                         );
                     });
                 }
+                // (C-1) 本命星體落對方宮位
+                outputLines.push(`\n=== ${chart1Name}的行星在${chart2Name}宮位 ===`);
+                currentSectionLines.push("\n＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝");
+                currentSectionLines.push(`\n${chart1Name}的星體名稱　${chart2Name}的宮位`);
+                currentSectionLines.push("\n－－－－－－－－－－－－－－－－－－－－");
+                if (!chartData.chart1_planets_in_chart2_houses || chartData.chart1_planets_in_chart2_houses.length === 0) {
+                    outputLines.push("目前沒有偵測到行星落入對方宮位。");
+                } else {
+                    chartData.chart1_planets_in_chart2_houses.sort((a, b) =>
+                        DISPLAY_ORDER_NAMES.indexOf(a.planet_name) - DISPLAY_ORDER_NAMES.indexOf(b.planet_name)
+                    );
+                    chartData.chart1_planets_in_chart2_houses.forEach(overlay => {
+                        outputLines.push(
+                            `${overlay.planet_name}` +　`${overlay.house_in_target_chart}宮`
+                        );
+                    });
+                }
+                formatSingleChartSection(chartData.chart1_data, `${chart1Name}的星盤資訊`);
+                formatSingleChartSection(chartData.chart2_data, `${chart2Name}的星盤資訊`);
+            
+            } else if (chartData.chart_type === 'composite') {
+            // 對於組合中點盤，顯示中點盤本身，然後可選地顯示兩個原始本命盤以供參考。
+            formatSingleChartSection(chartData.composite_chart_data, `${chart1Name}與${chart2Name}的組合中點盤`);
 
-                formatSingleChartSection(chartData.natal_chart_data, `${chart1Name}的星盤資訊 (本命盤)`);
-                formatSingleChartSection(chartData.transit_chart_data, `${chart2Name}的星盤資訊 (行運盤)`);
+            // 添加分隔符，然後顯示兩個本命盤
 
-                // outputLines.push(`\n=== ${chart1Name} 的行星在 ${chart2Name} 宮位 (本命星體落行運宮位) (C-1) ===`);
-                // if (!chartData.natal_planets_in_transit_houses || chartData.natal_planets_in_transit_houses.length === 0) {
-                //     outputLines.push("目前沒有偵測到本命星體落入行運宮位。");
-                // } else {
-                //     chartData.natal_planets_in_transit_houses.sort((a, b) => 
-                //         DISPLAY_ORDER_NAMES.indexOf(a.planet_name) - DISPLAY_ORDER_NAMES.indexOf(b.planet_name)
-                //     );
-                //     chartData.natal_planets_in_transit_houses.forEach(overlay => {
-                //         outputLines.push(
-                //             `${chart1Name}的${overlay.planet_name}${overlay.retrograde_label || ''}${overlay.zodiac_position_formatted}在${chart2Name}的` +
-                //             `${overlay.house_in_target_chart}宮(${overlay.degree_in_target_house.toFixed(2)}°)。`
-                //         );
-                //     });
-                // }
+            formatSingleChartSection(chartData.natal_chart1_data, `${chart1Name}的本命星盤資訊`);
+            formatSingleChartSection(chartData.natal_chart2_data, `${chart2Name}的本命星盤資訊`);
 
-                // outputLines.push(`\n=== ${chart1Name} 與 ${chart2Name} 之間的相位 (本命星體與行運星體相位) (C-2) ===`);
-                // if (!chartData.inter_aspects || chartData.inter_aspects.length === 0) {
-                //     outputLines.push("目前沒有偵測到跨盤相位。");
-                // } else {
-                //     // For C-2 (Natal to Transit), we sort by natal planets (p1) first.
-                //     const c2_aspects = [...chartData.inter_aspects]; // Create a copy to sort
-                //     c2_aspects.sort((a, b) => {
-                //         const p1IndexA = DISPLAY_ORDER_NAMES.indexOf(a.p1_name);
-                //         const p1IndexB = DISPLAY_ORDER_NAMES.indexOf(b.p1_name);
-                //         if (p1IndexA !== p1IndexB) return p1IndexA - p1IndexB;
-                //         return DISPLAY_ORDER_NAMES.indexOf(a.p2_name) - DISPLAY_ORDER_NAMES.indexOf(b.p2_name);
-                //     });
-                    
-                //     c2_aspects.forEach(asp => {
-                //         const p1OverlayInChart2 = chartData.natal_planets_in_transit_houses.find(o => o.planet_name === asp.p1_name);
-                //         const p1HouseInTarget = p1OverlayInChart2 ? `在${chart2Name}的${p1OverlayInChart2.house_in_target_chart}宮(${p1OverlayInChart2.degree_in_target_house.toFixed(2)}°)` : '';
+        } else if (chartData.chart_type === 'transit') {
 
-                //         // 修正：安全地處理 p2 的宮位資訊
-                //         const p2House = typeof asp.p2_details.house === 'number' ? `${asp.p2_details.house}宮` : '';
-                //         const p2Hdeg = typeof asp.p2_details.hdeg === 'number' ? `(${asp.p2_details.hdeg.toFixed(2)}°)` : '';
+            //  行運星體與本命星體之間的相位 (B-2)
+            outputLines.push(`\n=== ${chart2Name}與${chart1Name}之間的相位 ===`);
+            if (!chartData.inter_aspects || chartData.inter_aspects.length === 0) {
+                outputLines.push("目前沒有偵測到跨盤相位。");
+            } else {
+                // For B-2 (Transit to Natal), we sort by transit planets (p2) first.
+                const b2_aspects = [...chartData.inter_aspects]; // Create a copy to sort
 
-                //         let aspectLine = `${chart1Name}的${asp.p1_name}${asp.p1_details.retrograde_label || ''}${asp.p1_details.zodiac_position_formatted}${p1HouseInTarget}，` +
-                //                          `${asp.aspect_name}${chart2Name}的${asp.p2_name}${asp.p2_details.retrograde_label || ''}${asp.p2_details.zodiac_position_formatted}${p2House}${p2Hdeg}`;
+                b2_aspects.sort((a, b) => {
+                    const p2IndexA = DISPLAY_ORDER_NAMES.indexOf(a.p2_name);
+                    const p2IndexB = DISPLAY_ORDER_NAMES.indexOf(b.p2_name);
+                    if (p2IndexA !== p2IndexB) return p2IndexA - p2IndexB;
+                    return DISPLAY_ORDER_NAMES.indexOf(a.p1_name) - DISPLAY_ORDER_NAMES.indexOf(b.p1_name);
+                });
 
-                //         if (asp.orb !== undefined) {
-                //             if (asp.aspect_type) {
-                //                 aspectLine += `，${asp.aspect_type}${asp.orb.toFixed(2)}°。`;
-                //             } else {
-                //                 aspectLine += `，容許度${asp.orb.toFixed(2)}°。`;
-                //             }
-                //         }
-                //         outputLines.push(aspectLine);
-                //     });
-                // }
+                b2_aspects.forEach(asp => {
+                    const p2OverlayInChart1 = chartData.transit_planets_in_natal_houses.find(o => o.planet_name === asp.p2_name);
+                    const p2HouseDisplay = p2OverlayInChart1 ? `在${chart1Name}的${p2OverlayInChart1.house_in_target_chart}宮(${p2OverlayInChart1.degree_in_target_house.toFixed(2)}°)` : '';
 
-            } else { // <-- NEW ELSE BLOCK FOR UNKNOWN CHART TYPES
-                outputLines.push(`錯誤：未知的星盤類型 '${chartData.chart_type || "未指定"}'。請檢查後端輸出。`);
-                console.error(`ERROR: Unknown chart_type received: ${chartData.chart_type}. Full chartData:`, JSON.stringify(chartData, null, 2));
+                    // 修正：安全地處理 p1 的宮位資訊
+                    const p1House = typeof asp.p1_details.house === 'number' ? `${asp.p1_details.house}宮` : '';
+                    const p1Hdeg = typeof asp.p1_details.hdeg === 'number' ? `(${asp.p1_details.hdeg.toFixed(2)}°)` : '';
+
+                    let aspectLine = `${chart2Name}的${asp.p2_name}${asp.p2_details.retrograde_label || ''}${asp.p2_details.zodiac_position_formatted}在${chart1Name}的${p2HouseDisplay}，` +
+                        `${asp.aspect_name}${chart1Name}的${asp.p1_name}${asp.p1_details.retrograde_label || ''}${asp.p1_details.zodiac_position_formatted}${p1House}${p1Hdeg}`;
+
+                    if (asp.orb !== undefined) {
+                        if (asp.aspect_type) {
+                            aspectLine += `，${asp.aspect_type}${asp.orb.toFixed(2)}°。`;
+                        } else {
+                            aspectLine += `，容許度${asp.orb.toFixed(2)}°。`;
+                        }
+                    }
+                    outputLines.push(aspectLine);
+                });
             }
-            // 新增的偵錯日誌
-            console.log('DEBUG: Final outputLines array length:', outputLines.length);
-            console.log('DEBUG: First few lines of outputLines:', outputLines.slice(0, 5)); // Log first 5 lines
-            console.log('DEBUG: Last few lines of outputLines:', outputLines.slice(-5)); // Log last 5 lines
 
-            console.log('formatChartDataForDisplayFrontend function finished.');
-            return outputLines.join('\n'); 
+            // 行運星體落入本命的宮位
+            outputLines.push(`\n=== ${chart2Name}的行星落入${chart1Name}的宮位 ===`);
+            if (!chartData.transit_planets_in_natal_houses || chartData.transit_planets_in_natal_houses.length === 0) {
+                outputLines.push("目前沒有偵測到行星落入本命宮位。");
+            } else {
+                chartData.transit_planets_in_natal_houses.sort((a, b) =>
+                    DISPLAY_ORDER_NAMES.indexOf(a.planet_name) - DISPLAY_ORDER_NAMES.indexOf(b.planet_name)
+                );
+                chartData.transit_planets_in_natal_houses.forEach(overlay => {
+                    outputLines.push(
+                        `${chart2Name}的${overlay.planet_name}${overlay.retrograde_label || ''}${overlay.zodiac_position_formatted}在${chart1Name}的` +
+                        `${overlay.house_in_target_chart}宮(${overlay.degree_in_target_house.toFixed(2)}°)。`
+                    );
+                });
+            }
+
+            formatSingleChartSection(chartData.natal_chart_data, `${chart1Name}的星盤資訊 (本命盤)`);
+            formatSingleChartSection(chartData.transit_chart_data, `${chart2Name}的星盤資訊 (行運盤)`);
+
+            // outputLines.push(`\n=== ${chart1Name} 的行星在 ${chart2Name} 宮位 (本命星體落行運宮位) (C-1) ===`);
+            // if (!chartData.natal_planets_in_transit_houses || chartData.natal_planets_in_transit_houses.length === 0) {
+            //     outputLines.push("目前沒有偵測到本命星體落入行運宮位。");
+            // } else {
+            //     chartData.natal_planets_in_transit_houses.sort((a, b) => 
+            //         DISPLAY_ORDER_NAMES.indexOf(a.planet_name) - DISPLAY_ORDER_NAMES.indexOf(b.planet_name)
+            //     );
+            //     chartData.natal_planets_in_transit_houses.forEach(overlay => {
+            //         outputLines.push(
+            //             `${chart1Name}的${overlay.planet_name}${overlay.retrograde_label || ''}${overlay.zodiac_position_formatted}在${chart2Name}的` +
+            //             `${overlay.house_in_target_chart}宮(${overlay.degree_in_target_house.toFixed(2)}°)。`
+            //         );
+            //     });
+            // }
+
+            // outputLines.push(`\n=== ${chart1Name} 與 ${chart2Name} 之間的相位 (本命星體與行運星體相位) (C-2) ===`);
+            // if (!chartData.inter_aspects || chartData.inter_aspects.length === 0) {
+            //     outputLines.push("目前沒有偵測到跨盤相位。");
+            // } else {
+            //     // For C-2 (Natal to Transit), we sort by natal planets (p1) first.
+            //     const c2_aspects = [...chartData.inter_aspects]; // Create a copy to sort
+            //     c2_aspects.sort((a, b) => {
+            //         const p1IndexA = DISPLAY_ORDER_NAMES.indexOf(a.p1_name);
+            //         const p1IndexB = DISPLAY_ORDER_NAMES.indexOf(b.p1_name);
+            //         if (p1IndexA !== p1IndexB) return p1IndexA - p1IndexB;
+            //         return DISPLAY_ORDER_NAMES.indexOf(a.p2_name) - DISPLAY_ORDER_NAMES.indexOf(b.p2_name);
+            //     });
+
+            //     c2_aspects.forEach(asp => {
+            //         const p1OverlayInChart2 = chartData.natal_planets_in_transit_houses.find(o => o.planet_name === asp.p1_name);
+            //         const p1HouseInTarget = p1OverlayInChart2 ? `在${chart2Name}的${p1OverlayInChart2.house_in_target_chart}宮(${p1OverlayInChart2.degree_in_target_house.toFixed(2)}°)` : '';
+
+            //         // 修正：安全地處理 p2 的宮位資訊
+            //         const p2House = typeof asp.p2_details.house === 'number' ? `${asp.p2_details.house}宮` : '';
+            //         const p2Hdeg = typeof asp.p2_details.hdeg === 'number' ? `(${asp.p2_details.hdeg.toFixed(2)}°)` : '';
+
+            //         let aspectLine = `${chart1Name}的${asp.p1_name}${asp.p1_details.retrograde_label || ''}${asp.p1_details.zodiac_position_formatted}${p1HouseInTarget}，` +
+            //                          `${asp.aspect_name}${chart2Name}的${asp.p2_name}${asp.p2_details.retrograde_label || ''}${asp.p2_details.zodiac_position_formatted}${p2House}${p2Hdeg}`;
+
+            //         if (asp.orb !== undefined) {
+            //             if (asp.aspect_type) {
+            //                 aspectLine += `，${asp.aspect_type}${asp.orb.toFixed(2)}°。`;
+            //             } else {
+            //                 aspectLine += `，容許度${asp.orb.toFixed(2)}°。`;
+            //             }
+            //         }
+            //         outputLines.push(aspectLine);
+            //     });
+            // }
+
+        } else { // <-- NEW ELSE BLOCK FOR UNKNOWN CHART TYPES
+            outputLines.push(`錯誤：未知的星盤類型 '${chartData.chart_type || "未指定"}'。請檢查後端輸出。`);
+            console.error(`ERROR: Unknown chart_type received: ${chartData.chart_type}. Full chartData:`, JSON.stringify(chartData, null, 2));
+        }
+        // 新增的偵錯日誌
+        console.log('DEBUG: Final outputLines array length:', outputLines.length);
+        console.log('DEBUG: First few lines of outputLines:', outputLines.slice(0, 5)); // Log first 5 lines
+        console.log('DEBUG: Last few lines of outputLines:', outputLines.slice(-5)); // Log last 5 lines
+
+        console.log('formatChartDataForDisplayFrontend function finished.');
+        return outputLines.join('\n'); 
         }
     </script>
 </body>
+
 </html>
