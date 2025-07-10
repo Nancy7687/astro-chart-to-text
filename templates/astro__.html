@@ -2263,8 +2263,9 @@
                     );
                     chartData.chart2_planets_in_chart1_houses.forEach(overlay => {
                         outputLines.push(
-                            `${overlay.planet_name}` + `　${overlay.house_in_target_chart}`
-                        );
+                                `${chart2Name}的${overlay.planet_name}${overlay.retrograde_label || ''}${overlay.zodiac_position_formatted}在${chart1Name}的` +
+                                `${overlay.house_in_target_chart}宮(${overlay.degree_in_target_house.toFixed(2)}°)。`
+                            );
                     });
                 }
                 // (C-1) 本命星體落對方宮位
@@ -2280,8 +2281,9 @@
                     );
                     chartData.chart1_planets_in_chart2_houses.forEach(overlay => {
                         outputLines.push(
-                            `${overlay.planet_name}` +　`${overlay.house_in_target_chart}宮`
-                        );
+                                `${chart1Name}的${overlay.planet_name}${overlay.retrograde_label || ''}${overlay.zodiac_position_formatted}在${chart2Name}的` +
+                                `${overlay.house_in_target_chart}宮(${overlay.degree_in_target_house.toFixed(2)}°)。`
+                            );
                     });
                 }
                 formatSingleChartSection(chartData.chart1_data, `${chart1Name}的星盤資訊`);
