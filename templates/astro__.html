@@ -2154,7 +2154,7 @@
                         // 處理相位動態和容許度
                         if (aspItem.orb !== undefined) {
                             if (aspItem.aspect_type) { // 如果有 "入相" 或 "出相"
-                                aspectLine += `${aspItem.aspect_type}　${aspItem.orb.toFixed(2)}°`;
+                                aspectLine += `　${aspItem.aspect_type}　${aspItem.orb.toFixed(2)}°`;
                             } else { // 如果沒有相位動態，直接加上 "容許度"
                                 aspectLine += `　容許度${aspItem.orb.toFixed(2)}°`;
                             }
