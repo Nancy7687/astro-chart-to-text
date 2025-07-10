@@ -1819,7 +1819,7 @@
                 if (chartInfo.house_cusps && Array.isArray(chartInfo.house_cusps) && chartInfo.house_cusps.length > 0) {
                     console.log(`DEBUG: Entering house_cusps block for ${title}. currentSectionLines length before: ${currentSectionLines.length}`); // <-- NEW LOG
                     chartInfo.house_cusps.forEach(cusp => {
-                        currentSectionLines.push(`${String(cusp.house_number).padEnd(2, ' ')}宮頭: ${cusp.zodiac_position_formatted}`);
+                        currentSectionLines.push(`${String(cusp.house_number).padEnd(2, ' ')}宮頭:　${cusp.zodiac_position_formatted}`);
                     });
                     console.log(`DEBUG: Finished house_cusps block for ${title}. currentSectionLines length after: ${currentSectionLines.length}`); // <-- NEW LOG
                 } else {
@@ -1851,13 +1851,13 @@
                             const paddingNeeded = Math.max(0, targetPadding - actualLength + (displayName.length - chineseCharCount)); 
                             const paddedName = displayName + ' '.repeat(paddingNeeded);
 
-                            let line = `${paddedName}${pInfo.zodiac_position_formatted}`;
+                            let line = `${paddedName}　${pInfo.zodiac_position_formatted}`;
                             const houseNum = typeof pInfo.house === 'number' ? pInfo.house : null;
                             const hdegNum = typeof pInfo.hdeg === 'number' ? pInfo.hdeg : null;
 
                             // 修正：四軸點不顯示宮位資訊
                             if (!HOUSE_DEFINING_POINTS.includes(name) && houseNum !== null && hdegNum !== null) {
-                                line += `${houseNum}宮(${hdegNum.toFixed(2)}°)`;
+                                line += `${houseNum}宮　(${hdegNum.toFixed(2)}°)`;
                             }
                             currentSectionLines.push(line);
 

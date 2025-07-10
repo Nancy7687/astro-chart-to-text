@@ -131,7 +131,7 @@ def degree_format(deg: float) -> str:
 def zodiac_format(deg: float) -> str:
     sign_idx = int(deg // 30)
     deg_in_sign = deg % 30
-    return f"{ZODIAC_SIGNS[sign_idx]}({degree_format(deg_in_sign)})"
+    return f"{ZODIAC_SIGNS[sign_idx]}　({degree_format(deg_in_sign)})"
 
 def get_midpoint(deg1: float, deg2: float) -> float:
     rad1 = math.radians(deg1)
