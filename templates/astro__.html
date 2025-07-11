@@ -31,93 +31,89 @@
             /* 平滑的背景切換效果 */
         }
 
-        /* 為了方便的複製按鈕的新增更動style */
+        /* 【關鍵修改】輸出容器的樣式 */
         #resultOutput {
-            display: flex;
-            flex-direction: column;
-            gap: 2rem;
+            display: flex;              /* 啟用 Flexbox 佈局 */
+            flex-direction: column;     /* ▲ 核心指令：設定主軸為垂直方向 (由上到下) */
+            gap: 2rem;                  /* ▲ 增加每個大區塊之間的垂直間距，讓版面更舒適 */
         }
 
-        /* 「大餐盤」的樣式 */
+        /* 「大餐盤」(單一星盤) 的樣式 */
         .chart-wrapper {
-            border: 2px solid #007bff;
-            border-radius: 10px;
+            border: 1px solid #dee2e6;
+            border-radius: 12px;
             background-color: #fff;
             overflow: hidden;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
         }
-
         .chart-main-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 10px 15px;
+            padding: 12px 20px;
             background-color: #007bff;
             color: white;
         }
-
         .chart-main-header h2 {
             margin: 0;
-            font-size: 1.2em;
+            font-size: 1.25em;
         }
-
-        /* 「小三明治」的樣式 */
-        .sub-sections-container {
-            padding: 15px;
+        
+        /* 「小三明治」(子區塊) 的樣式 */
+        .sub-sections-container, .summary-section-container {
+            padding: 20px;
             display: flex;
             flex-direction: column;
-            gap: 1rem;
+            gap: 1.5rem;
         }
-
-        /* 【關鍵修改】將摘要資訊的樣式也統一 */
         .summary-section-container {
-            padding: 0 15px 15px 15px;
+             padding-top: 20px;
+             padding-bottom: 0;
         }
-
         .result-section-item {
-            border: 1px solid #ccc;
+            border: 1px solid #e9ecef;
             border-radius: 8px;
         }
-
         .result-section-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 8px 12px;
-            background-color: #e9ecef;
-            border-bottom: 1px solid #ccc;
+            padding: 10px 15px;
+            background-color: #f8f9fa;
+            border-bottom: 1px solid #e9ecef;
         }
-
         .result-section-header span {
             font-weight: bold;
+            color: #495057;
         }
-
         .result-section-content pre {
             margin: 0;
-            padding: 12px;
-            background-color: #fdfdfd;
+            padding: 15px;
+            background-color: #fff;
             white-space: pre-wrap;
             word-wrap: break-word;
             font-size: 14px;
-            line-height: 1.5;
+            line-height: 1.6;
+            color: #212529;
         }
-
+        
         /* 按鈕樣式 */
         button {
             border: none;
-            padding: 8px 12px;
-            border-radius: 5px;
+            padding: 8px 14px;
+            border-radius: 6px;
             cursor: pointer;
-            background-color: #fff;
-            color: #007bff;
             font-weight: bold;
-            transition: all 0.2s;
+            transition: all 0.2s ease-in-out;
         }
-
         button:hover {
-            opacity: 0.8;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
-
+        .section-copy-btn {
+             background-color: #6c757d;
+             color: white;
+        }
         .chart-main-header button {
             background-color: #28a745;
             color: white;
@@ -1962,7 +1958,7 @@
                     // 我們不需要接收任何回傳值，因為他已經把所有事都做完了。
                     displayChartData(chartData, chart1Name, chart2Name);
                 }
-                
+
             } catch (error) { // --- Axios 的錯誤處理 ---
                 const resultOutput = document.getElementById('resultOutput');
                 resultOutput.classList.add('error-message');
