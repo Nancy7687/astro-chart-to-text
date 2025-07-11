@@ -31,104 +31,35 @@
             /* 平滑的背景切換效果 */
         }
 
-        /* 輸出容器的樣式 */
+        /* 輸出容器 */
         #resultOutput {
             display: flex;
             flex-direction: column;
-            gap: 2rem;
+            gap: 1.5rem; /* 減少大區塊間距 */
         }
 
         /* 「大餐盤」(單一星盤) 的樣式 */
         .chart-wrapper {
-            border: 1px solid #dee2e6;
-            border-radius: 12px;
+            border: 1px solid #dcdfe6;
+            border-radius: 8px;
             background-color: #fff;
             overflow: hidden;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
         }
         .chart-main-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 12px 20px;
-            background-color: #007bff;
-            color: white;
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 8px 12px; /* 減少頭部內邊距 */
+            background-color: #4a90e2; color: white;
         }
         .chart-main-header h2 {
-            margin: 0;
-            font-size: 1.25em;
+            margin: 0; font-size: 1.1em;
         }
         
-        /* 【關鍵修改】這個容器包覆著「宮頭」、「星體」、「相位」這三個子區塊。*/
-        .sub-sections-container {
-            padding: 20px;
-            display: flex;              /* 啟用 Flexbox 佈局 */
-         flex-direction: row;        /* ▲ 核心指令：設定主軸為水平方向 (由左到右) */
-            flex-wrap: wrap;            /* ▲ 允許換行，在小螢幕上會自動變成垂直堆疊 */
-            gap: 1.5rem;                /* ▲ 設定子區塊之間的間距 */
-            align-items: stretch;       /* 讓所有子區塊在交叉軸上等高 */
-        }
-
-        .summary-section-container {
-             padding: 20px;
-             padding-top: 0;
-        }
-        /* 「小三明治」(子區塊) 的樣式 */
-        .result-section-item {
-            border: 1px solid #e9ecef;
-            border-radius: 8px;
-            flex: 1 1 300px; /* ▲ 讓每個子區塊都有彈性，基礎寬度為300px */
-            display: flex; /* 讓子區塊內部也使用flex佈局 */
-            flex-direction: column; /* 確保子區塊內部的 header 和 content 是垂直排列的 */
-        }
-        .result-section-header {
+        /* 「小三明治」(子區塊) 的容器 */
+        .sub-sections-container, .summary-section-container {
+            padding: 12px; /* 減少內邊距 */
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px 15px;
-            background-color: #f8f9fa;
-            border-bottom: 1px solid #e9ecef;
-        }
-        .result-section-header span {
-            font-weight: bold;
-            color: #495057;
-        }
-        .result-section-content {
-            flex-grow: 1; /* 讓內容區塊填滿剩餘空間 */
-        }
-        .result-section-content pre {
-            margin: 0;
-            padding: 15px;
-            background-color: #fff;
-            white-space: pre-wrap;
-            word-wrap: break-word;
-            font-family: 'Courier New', Courier, monospace; /* 使用等寬字體，方便對齊 */
-            font-size: 14px;
-            line-height: 1.6;
-            color: #212529;
-            height: 100%; /* 確保 pre 填滿其容器 */
-        }
-        
-        /* 按鈕樣式 */
-        button {
-            border: none;
-            padding: 8px 14px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: all 0.2s ease-in-out;
-        }
-        button:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        .section-copy-btn {
-             background-color: #6c757d;
-             color: white;
-        }
-        .chart-main-header button {
-            background-color: #28a745;
-            color: white;
+            flex-direction: column; /* 手機上預設垂直堆疊 */
+            gap: 1rem; /* 減少子區塊間距 */
         }
 
         /* 動態背景的動畫 */
@@ -538,8 +469,17 @@
         }
 
 
+        
+
         /* Responsive grid adjustments for compact layout on medium screens (md) and larger */
-        @media (min-width: 768px) {
+        /* 當螢幕寬度大於 992px 時 (桌面電腦)，子區塊變為橫排 */
+        @media (min-width: 992px) {
+            .sub-sections-container {
+                flex-direction: row;
+                flex-wrap: wrap;
+                align-items: stretch;
+            }
+
             .date-time-grid {
                 grid-template-columns: repeat(5, minmax(0, 1fr));
                 /* 確保日期時間為 5 列 */
@@ -571,6 +511,58 @@
                 flex-direction: row;
             }
         }
+
+        /* 單一子區塊的樣式 */
+        .result-section-item {
+            border: 1px solid #e4e6eb;
+            border-radius: 6px;
+            flex: 1 1 300px;
+            display: flex;
+            flex-direction: column;
+            background-color: #fff;
+        }
+        .result-section-header {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 6px 10px; /* 減少子標題內邊距 */
+            background-color: #f0f2f5;
+            border-bottom: 1px solid #e4e6eb;
+        }
+        .result-section-header span {
+            font-weight: bold; font-size: 0.9em; color: #606770;
+        }
+        .result-section-content pre {
+            margin: 0;
+            padding: 10px; /* 減少內容內邊距 */
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Courier, monospace;
+            font-size: 12px; /* 縮小等寬字體 */
+            line-height: 1.5; /* 調整行高 */
+            color: #1d2129;
+            flex-grow: 1;
+        }
+        
+        /* 按鈕樣式 */
+        button {
+            border: none;
+            padding: 6px 10px; /* 縮小按鈕 */
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 12px; /* 縮小按鈕字體 */
+            transition: all 0.2s ease-in-out;
+        }
+        button:hover { opacity: 0.85; }
+        .section-copy-btn {
+             background-color: #6c757d; color: white;
+        }
+        .chart-main-header button {
+            background-color: #42b72a; color: white;
+        }
+        #calculateBtn {
+            background-color: #1877f2; color: white; padding: 8px 16px; font-size: 14px;
+        }
+        
 
         /* Chart Type Card Selection Styling (for sub-selection within Synastry tab) */
         .chart-type-selection-sub {
