@@ -2018,12 +2018,11 @@
 
 
         // =============================================================
-        // 升級版的「複製按鈕」監聽器
+        // 【複製按鈕監聽器】：現在的邏輯更清晰
         // =============================================================
         const resultOutputContainer = document.getElementById('resultOutput');
         resultOutputContainer.addEventListener('click', (event) => {
             const button = event.target;
-
             const copyToClipboard = (text, btn) => {
                 const originalText = btn.textContent;
                 navigator.clipboard.writeText(text).then(() => {
@@ -2036,29 +2035,29 @@
                 });
             };
 
-            // 處理「獨立複製」按鈕 (此邏輯現在對所有小區塊都適用，包括基本資訊)
+            // 處理所有「小區塊」的複製按鈕 (邏輯不變)
             if (button.matches('.section-copy-btn')) {
-                const sectionItem = button.closest('.result-section-item');
-                const textToCopy = sectionItem.querySelector('pre').textContent;
-                copyToClipboard(textToCopy, button);
+                const contentElement = button.closest('.result-section-item').querySelector('pre');
+                if (contentElement) {
+                    copyToClipboard(contentElement.textContent, button);
+                }
             }
 
-            // 處理「複製此個人星盤」按鈕 (此邏輯不變，因為它本來就只複製 .sub-sections-container 裡的內容)
+            // 【關鍵修改】處理「複製此個人星盤」的總按鈕
             if (button.matches('.copy-chart-btn')) {
                 const chartWrapper = button.closest('.chart-wrapper');
-
-                // 我們只尋找包含「宮頭、星體、相位」的 .sub-sections-container
                 const subSectionsContainer = chartWrapper.querySelector('.sub-sections-container');
-
                 let fullText = [];
-                // 我們只遍歷這個容器裡面的子區塊，從而自然地排除了「基本資訊」區塊
+                
+                // 遍歷所有核心子區塊
                 subSectionsContainer.querySelectorAll('.result-section-item').forEach(item => {
-                    const header = item.querySelector('.result-section-header span').textContent;
-                    const content = item.querySelector('.result-section-content pre').textContent;
-                    fullText.push(`${header}\n${content}`);
+                    // 【關鍵】只取得 <pre> 標籤內的純文字內容，忽略標題
+                    const content = item.querySelector('pre').textContent;
+                    fullText.push(content);
                 });
-
-                const textToCopy = fullText.join('\n\n');
+                
+                // 用一個清晰的分隔線將所有內容組合起來
+                const textToCopy = fullText.join('\n\n====================\n\n');
                 copyToClipboard(textToCopy, button);
             }
         });
