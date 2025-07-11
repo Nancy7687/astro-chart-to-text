@@ -1953,7 +1953,7 @@
                     resultOutput.classList.add('error-message');
                     // Button remains hidden on error
                 } else {
-                    const formattedText = formatChartDataForDisplayFrontend(chartData, chart1Name, chart2Name);
+                    const formattedText = displayChartData(chartData, chart1Name, chart2Name);
                     // NEW: Render the text as sections instead of a single block
                     renderSectionsFromText(formattedText);
                     resultOutput.classList.remove('error-message');
@@ -2373,7 +2373,7 @@
 
     // =============================================================
     // 【總管函式】：現在變得非常乾淨，只負責「派工」和「顯示」
-    // 這取代了您舊的 formatChartDataForDisplayFrontend
+    // 這取代了您舊的 displayChartData
     // =============================================================
     function displayChartData(chartData, chart1Name = "我的", chart2Name = "他的") {
         const resultOutputContainer = document.getElementById('resultOutput');
@@ -2426,7 +2426,7 @@
     
 
 
-        <!-- function formatChartDataForDisplayFrontend(chartData, chart1Name = "我的", chart2Name = "他的") {
+        <!-- function displayChartData(chartData, chart1Name = "我的", chart2Name = "他的") {
             const outputLines = [];
             // Main logic based on chart type
             console.log('DEBUG: Received chartData.chart_type:', chartData.chart_type); // <-- NEW LOG HERE
@@ -2647,7 +2647,7 @@
             console.log('DEBUG: First few lines of outputLines:', outputLines.slice(0, 5)); // Log first 5 lines
             console.log('DEBUG: Last few lines of outputLines:', outputLines.slice(-5)); // Log last 5 lines
 
-            console.log('formatChartDataForDisplayFrontend function finished.');
+            console.log('displayChartData function finished.');
             outputLines.push(codeBlockDelimiter);
             return outputLines.join('\n');
             const renderedHtml = marked.parse(finalMarkdownString);
