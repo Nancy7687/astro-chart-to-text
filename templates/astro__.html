@@ -2066,6 +2066,9 @@
                             if (!HOUSE_DEFINING_POINTS.includes(name) && houseNum !== null && hdegNum !== null) {
                                 let formattedHdeg = formatDegreesMinutesSeconds(hdegNum);
                                 line += `　${houseNum}宮　${formattedHdeg}°`;
+                                
+                            }else {
+                                line += `-　-`;
                             }
                             currentSectionLines.push(line);
 
@@ -2339,7 +2342,7 @@
 
                     // 修正：安全地處理 p1 的宮位資訊
                     const p1House = typeof asp.p1_details.house === 'number' ? `${asp.p1_details.house}宮` : '';
-                    const p1Hdeg = typeof asp.p1_details.hdeg === 'number' ? `(${asp.p1_details.hdeg.toFixed(2)}°)` : '';
+                    const p1Hdeg = typeof asp.p1_details.hdeg === 'number' ? `${formatDegreesMinutesSeconds(asp.p1_details.hdeg)}` : '';
 
                     let aspectLine = `${chart2Name}的${asp.p2_name}${asp.p2_details.retrograde_label || ''}${asp.p2_details.zodiac_position_formatted}在${chart1Name}的${p2HouseDisplay}，` +
                         `${asp.aspect_name}${chart1Name}的${asp.p1_name}${asp.p1_details.retrograde_label || ''}${asp.p1_details.zodiac_position_formatted}${p1House}${p1Hdeg}`;
