@@ -102,26 +102,27 @@ BASE_PLANETS = [
 # Helper Functions (輔助函數)
 # ==============================================================================
 def dms_format(deg: float) -> str:
-    """將十進制度數轉換為度、分、秒的 60 進制格式 (含四捨五入與進位處理)"""
-    # 在占星盤計算中，度數通常是 0-360 範圍內的正數，這裡不需特別處理負號
-    d = int(deg)
-    minutes_decimal = (deg - d) * 60
-    m = int(minutes_decimal)
-    seconds_decimal = (minutes_decimal - m) * 60
-    s = round(seconds_decimal)
-
-    # 處理秒數四捨五入後的進位
-    if s >= 60:
-        m += 1
-        s = 0
+    """將十進制度數轉換為度、分的 60 進制格式 (含四捨五入與進位處理)"""
     
-    # 處理分鐘進位 (雖然在 0-30 度的範圍內不太可能發生，但保留邏輯完整性)
+    # 你之前遇到的 NoneType 錯誤，如果這個函數在其他地方也可能接收 None，建議保留這行
+    # 例如：
+    # if deg is None:
+    #     return "N/A" # 或者 "00°00'"
+
+    d = int(deg)  # 取整數度數
+    minutes_decimal = (deg - d) * 60  # 將小數部分轉換為分鐘（含小數）
+    m = round(minutes_decimal)  # **關鍵：在這裡對分鐘進行四捨五入**
+
+    # 處理分鐘的進位（如果四捨五入後分鐘達到 60）
     if m >= 60:
         d += 1
         m = 0
+    
+    # 不再計算和處理秒數
 
-    # 格式化為 XX°XX'XX"
-    return f"{str(d).zfill(2)}°{str(m).zfill(2)}'{str(s).zfill(2)}\""
+    # 格式化為 XX°YY' (只顯示度數和分鐘)
+    # 使用 zfill 確保兩位數格式（例如 5 變成 05）
+    return f"{str(d).zfill(2)}°{str(m).zfill(2)}'"
 
 def degree_format(deg: float) -> str:
     # OLD: return f"{deg:.2f}°"
