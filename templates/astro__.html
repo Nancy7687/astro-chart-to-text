@@ -753,6 +753,7 @@
             }
         }
     </style>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 </head>
 
 <body class="bg-single">
@@ -2497,7 +2498,8 @@
         console.log('DEBUG: Last few lines of outputLines:', outputLines.slice(-5)); // Log last 5 lines
 
         console.log('formatChartDataForDisplayFrontend function finished.');
-        return outputLines.join('\n'); 
+        return outputLines.join('\n');
+        const renderedHtml = marked.parse(finalMarkdownString); 
         }
     </script>
 </body>
