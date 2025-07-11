@@ -1921,7 +1921,7 @@
                     sectionHeader.classList.add('interchart-header');
                 } else if (title.includes("的星盤資訊") || (title.includes("的組合中點盤"))) {
                     sectionHeader.classList.add('single-chart-header');
-                } else if (title.includes("宮頭星座度數") || title.includes("天體位置") || title.includes("內主要相位")) {
+                } else if (title.includes("宮頭星座度數") || title.includes("星體位置") || title.includes("內主要相位")) {
                     sectionHeader.classList.add('single-chart-header-sub');
                 }
 
@@ -2026,7 +2026,7 @@
                 if (chartInfo.house_cusps && Array.isArray(chartInfo.house_cusps) && chartInfo.house_cusps.length > 0) {
                     console.log(`DEBUG: Entering house_cusps block for ${title}. currentSectionLines length before: ${currentSectionLines.length}`); // <-- NEW LOG
                     chartInfo.house_cusps.forEach(cusp => {
-                        currentSectionLines.push(`${String(cusp.house_number).padEnd(2, ' ')}宮頭:　${cusp.zodiac_position_formatted}`);
+                        currentSectionLines.push(`${String(cusp.house_number).padEnd(2, ' ')}宮頭:${cusp.zodiac_position_formatted}`);
                     });
                     console.log(`DEBUG: Finished house_cusps block for ${title}. currentSectionLines length after: ${currentSectionLines.length}`); // <-- NEW LOG
                 } else {
@@ -2037,7 +2037,7 @@
                 console.log(`DEBUG: currentSectionLines (house cusps) for ${title}:`, currentSectionLines.slice(-5));
 
 
-                currentSectionLines.push("\n--- 天體位置 ---");
+                currentSectionLines.push("\n--- 星體位置 ---");
                 currentSectionLines.push("\n＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝");
                 currentSectionLines.push("\n星體名稱　|　逆行狀態　|　星座　|　星座度數(度分)　|　宮位　|　宮位度數(度分)");
                 currentSectionLines.push("\n－－－－－－－－－－－－－－－－－－－－");
@@ -2065,10 +2065,10 @@
                             // 修正：四軸點不顯示宮位資訊
                             if (!HOUSE_DEFINING_POINTS.includes(name) && houseNum !== null && hdegNum !== null) {
                                 let formattedHdeg = formatDegreesMinutesSeconds(hdegNum);
-                                line += `　${houseNum}宮　${formattedHdeg}°`;
+                                line += `　${houseNum}宮　(${formattedHdeg})°`;
                                 
                             }else {
-                                line += `-　-`;
+                                line += `　-　-`;
                             }
                             currentSectionLines.push(line);
 
@@ -2087,7 +2087,7 @@
                     });
                     console.log(`DEBUG: Finished planet_positions block for ${title}. currentSectionLines length after: ${currentSectionLines.length}`); // <-- NEW LOG
                 } else {
-                    currentSectionLines.push("沒有天體位置數據。");
+                    currentSectionLines.push("沒有星體位置數據。");
                     console.warn(`WARN: planet_positions missing or empty for ${title}. Value:`, chartInfo.planet_positions);
                 }
                 console.log(`DEBUG: After planet positions for ${title}, currentSectionLines length: ${currentSectionLines.length}`);
@@ -2163,7 +2163,7 @@
                             if (aspItem.aspect_type) { // 如果有 "入相" 或 "出相"
                                 aspectLine += `　${aspItem.aspect_type}　${displayedOrb}`; // 使用已經格式化好的字串
                             } else { // 如果沒有相位動態，直接加上 "容許度"
-                                aspectLine += `-　容許度${displayedOrb}`; // 使用已經格式化好的字串
+                                aspectLine += `　-　容許度${displayedOrb}`; // 使用已經格式化好的字串
                             }
                         } else {
                             aspectLine += ``; // 如果沒有容許度，直接結束
@@ -2224,7 +2224,7 @@
                                 aspectLine += `　${asp.aspect_type}　${displayedOrb}`;
                             } else {
                                 // 如果沒有 aspect_type，就只顯示容許度
-                                aspectLine += `-　容許度　${displayedOrb}`;
+                                aspectLine += `　-　容許度　${displayedOrb}`;
                             }
                         }
                         outputLines.push(aspectLine);
@@ -2259,7 +2259,7 @@
                             if (asp.aspect_type) {
                                 aspectLine += `　${asp.aspect_type}　${displayedOrb}`; // 相位動態和容許度
                             } else {
-                                aspectLine += `-　容許度　${displayedOrb}`; // 如果沒有 aspect_type，就只顯示容許度
+                                aspectLine += `　-　容許度${displayedOrb}`; // 如果沒有 aspect_type，就只顯示容許度
                             }
                         }
                         outputLines.push(aspectLine);
@@ -2303,7 +2303,7 @@
 
                         outputLines.push(
                                 `${chart1Name}的${overlay.planet_name}${overlay.retrograde_label || ''}${overlay.zodiac_position_formatted}在${chart2Name}的` +
-                                `${overlay.house_in_target_chart}宮　${formattedDegreeInHouse}`
+                                `${overlay.house_in_target_chart}宮(${formattedDegreeInHouse})`
                             );
                     });
                 }
@@ -2354,7 +2354,7 @@
                         if (asp.aspect_type) {
                             aspectLine += `　${asp.aspect_type}${displayedOrb}`;
                         } else {
-                            aspectLine += `-　容許度${displayedOrb}`;
+                            aspectLine += `　-　容許度${displayedOrb}`;
                         }
                     }
                     outputLines.push(aspectLine);
@@ -2372,7 +2372,7 @@
                 chartData.transit_planets_in_natal_houses.forEach(overlay => {
                     outputLines.push(
                         `${chart2Name}的${overlay.planet_name}${overlay.retrograde_label || ''}${overlay.zodiac_position_formatted}在${chart1Name}的` +
-                        `${overlay.house_in_target_chart}宮　${formatDegreesMinutesSeconds(p2OverlayInChart1.degree_in_target_house)}°`
+                        `${overlay.house_in_target_chart}宮　(${formatDegreesMinutesSeconds(p2OverlayInChart1.degree_in_target_house)})`
                     );
                 });
             }
