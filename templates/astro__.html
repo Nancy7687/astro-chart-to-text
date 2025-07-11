@@ -2234,7 +2234,7 @@
                 outputLines.push(codeBlockDelimiter);
                 outputLines.push(`\n=== ${chart2Name}與${chart1Name}之間的相位 ===`);
                 outputLines.push("\n==============================");
-                outputLines.push(`\n${chart2Name}星體名稱 | 相位名稱 | ${chart1Name}星體名稱 | 相位動態 | 容許度(度分)`);
+                outputLines.push(`\n${chart2Name}的星體名稱 | 相位名稱 | ${chart1Name}的星體名稱 | 相位動態 | 容許度(度分)`);
                 outputLines.push("\n------------------------------");
                 if (!chartData.inter_aspects || chartData.inter_aspects.length === 0) {
                     outputLines.push("目前沒有偵測到跨盤相位。");
@@ -2267,14 +2267,12 @@
                             }
                         }
                         outputLines.push(aspectLine);
-                        outputLines.push(codeBlockDelimiter);
                     });
                 }
 
-                outputLines.push(codeBlockDelimiter);
                 outputLines.push(`\n=== ${chart1Name}與${chart2Name}之間的相位 ===`);
                 outputLines.push("\n==============================");
-                outputLines.push(`\n${chart1Name}星體名稱 | 相位名稱 | ${chart2Name}星體名稱 | 相位動態 | 容許度(度分)`);
+                outputLines.push(`\n${chart1Name}的星體名稱 | 相位名稱 | ${chart2Name}的星體名稱 | 相位動態 | 容許度(度分)`);
                 outputLines.push("\n------------------------------");
                 if (!chartData.inter_aspects || chartData.inter_aspects.length === 0) {
                     outputLines.push("目前沒有偵測到跨盤相位。");
@@ -2304,12 +2302,10 @@
                             }
                         }
                         outputLines.push(aspectLine);
-                        outputLines.push(codeBlockDelimiter);
 
                     });
                 }
                 // (B-1) 對方星體落本命宮位
-                outputLines.push(codeBlockDelimiter);
                 outputLines.push(`\n=== ${chart2Name}的星體在${chart1Name}宮位 ===`);
                 outputLines.push("\n==============================");
                 outputLines.push(`\n${chart2Name}的星體名稱 | ${chart2Name}的星體星座度數(度分) | ${chart2Name}星體落入${chart1Name}之宮位度數(度分)`); // 新增這行標題
@@ -2328,11 +2324,9 @@
                             `${overlay.planet_name} ${overlay.retrograde_label || ''}$ {overlay.zodiac_position_formatted}` +
                             ` ${overlay.house_in_target_chart}宮(${formattedDegreeInHouse})。` // <-- 這裡改用轉換後的變數
                         );
-                        outputLines.push(codeBlockDelimiter);
                     });
                 }
                 // (C-1) 本命星體落對方宮位
-                outputLines.push(codeBlockDelimiter);
                 outputLines.push(`\n=== ${chart1Name}的星體在${chart2Name}宮位 ===`);
                 outputLines.push("\n==============================");
                 outputLines.push(`\n${chart1Name}的星體名稱 ${chart1Name}的星體星座度數(度分) 落入${chart2Name}的宮位度數(度分)`);
@@ -2351,7 +2345,6 @@
                                 `${overlay.planet_name} ${overlay.retrograde_label || ''} ${overlay.zodiac_position_formatted}` +
                                 ` ${overlay.house_in_target_chart}宮(${formattedDegreeInHouse})`
                             );
-                        outputLines.push(codeBlockDelimiter);
                     });
                 }
                 formatSingleChartSection(chartData.chart1_data, `${chart1Name}的星盤資訊`);
@@ -2369,10 +2362,9 @@
         } else if (chartData.chart_type === 'transit') {
 
             //  行運星體與本命星體之間的相位 (B-2)
-            outputLines.push(codeBlockDelimiter);
             outputLines.push(`\n=== 行運與${chart1Name}之間的相位 ===`);
             outputLines.push("\n==============================");
-            outputLines.push(`\n行運的星體名稱 | 行運的星體星座度數(度分) | ${chart2Name}星體落入${chart1Name}之宮位度數(度分)`); // 新增這行標題
+            outputLines.push(`\n行運的星體名稱 | 行運的星體星座度數(度分) | ${chart2Name}的星體落入${chart1Name}的宮位度數(度分)`); // 新增這行標題
             outputLines.push("\n------------------------------");
             if (!chartData.inter_aspects || chartData.inter_aspects.length === 0) {
                 outputLines.push("目前沒有偵測到跨盤相位。");
@@ -2409,15 +2401,13 @@
                         }
                     }
                     outputLines.push(aspectLine);
-                    outputLines.push(codeBlockDelimiter);
                 });
             }
 
             // 行運星體落入本命的宮位
-            outputLines.push(codeBlockDelimiter);
             outputLines.push(`\n=== 行運的星體落入${chart1Name}的宮位 ===`);
             outputLines.push("\n==============================");
-            outputLines.push(`\n行運的星體名稱 | 行運的星體星座度數(度分) | 行運的星體落入${chart1Name}之宮位度數(度分)`); // 新增這行標題
+            outputLines.push(`\n行運的星體名稱 | 行運的星體星座度數(度分) | 行運的星體落入${chart1Name}的宮位度數(度分)`); // 新增這行標題
             outputLines.push("\n------------------------------");
             if (!chartData.transit_planets_in_natal_houses || chartData.transit_planets_in_natal_houses.length === 0) {
                 outputLines.push("目前沒有偵測到行星落入本命宮位。");
@@ -2430,7 +2420,7 @@
                         `${overlay.planet_name}${overlay.retrograde_label || ''} ${overlay.zodiac_position_formatted}` +
                         ` ${overlay.house_in_target_chart}宮(${formatDegreesMinutesSeconds(p2OverlayInChart1.degree_in_target_house)})`
                     );
-                    outputLines.push(codeBlockDelimiter);
+                    
 
                 });
             }
@@ -2498,6 +2488,7 @@
         console.log('DEBUG: Last few lines of outputLines:', outputLines.slice(-5)); // Log last 5 lines
 
         console.log('formatChartDataForDisplayFrontend function finished.');
+        outputLines.push(codeBlockDelimiter);
         return outputLines.join('\n');
         const renderedHtml = marked.parse(finalMarkdownString);
         document.getElementById('resultOutput').innerHTML = renderedHtml; 

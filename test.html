@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <title>最小測試</title>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <style>
+        body { font-size: 18px; }
+        #test-output { border: 2px solid red; padding: 1em; }
+        pre { background-color: #f0f0f0; padding: 1em; }
+    </style>
+</head>
+<body>
+
+    <h1>最小化測試頁面</h1>
+    <p>如果這個測試成功，您應該會在下面的紅色框框裡，看到一個有灰色背景的區塊，而不是直接看到三個反引號。</p>
+
+    <div id="test-output"></div>
+
+    <script>
+        // 1. 我們直接寫死一個包含 Markdown 語法的字串
+        const myMarkdownString = '```\n這是一個測試\nThis is a test\n```';
+
+        // 2. 用翻譯官把它翻譯成 HTML
+        const myHtml = marked.parse(myMarkdownString);
+
+        // 3. 找到目標位置，用 .innerHTML 把它放進去
+        document.getElementById('test-output').innerHTML = myHtml;
+    </script>
+
+</body>
+</html>
