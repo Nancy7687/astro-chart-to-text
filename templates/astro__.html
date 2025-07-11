@@ -2499,7 +2499,8 @@
 
         console.log('formatChartDataForDisplayFrontend function finished.');
         return outputLines.join('\n');
-        const renderedHtml = marked.parse(finalMarkdownString); 
+        const renderedHtml = marked.parse(finalMarkdownString);
+        document.getElementById('resultOutput').innerHTML = renderedHtml; 
         }
     </script>
 </body>
