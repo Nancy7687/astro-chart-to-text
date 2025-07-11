@@ -2076,9 +2076,9 @@
 
                 // 內餡0：「星盤基礎數據」
                 const summaryLines = []; // Use a local array for this section
-                aspectLines.push("\n==============================");
+                summaryLines.push("\n==============================");
                 summaryLines.push(`\n${title}`);
-                aspectLines.push("\n==============================");
+                summaryLines.push("\n==============================");
                 // 時間戳信息
                 if (chartInfo.timestamps) {
                     const ts = chartInfo.timestamps;
@@ -2118,7 +2118,7 @@
 
                 // 內餡一：宮頭
                 const cuspLines = [];
-                aspectLines.push("\n==============================");
+                cuspLines.push("\n==============================");
                 cuspLines.push("\n--- 宮頭星座度數 ---");
                 cuspLines.push("\n==============================");
                 cuspLines.push("\n宮頭 | 星座 | 星座度數(度分)");
@@ -2141,7 +2141,7 @@
 
                 // 內餡二：星體位置
                 const planetLines = [];
-                aspectLines.push("\n==============================");
+                planetLines.push("\n==============================");
                 planetLines.push("\n--- 星體位置 ---");
                 planetLines.push("\n==============================");
                 planetLines.push("\n星體名稱 | 逆行狀態 | 星座 | 星座度數(度分) | 宮位 | 宮位度數(度分)");
