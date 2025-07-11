@@ -1145,6 +1145,32 @@
     <script>
         console.log('Script Start Test! Version: Combined Tabs - Multi-Chart Support v2.5 - Critical Debugging');
 
+        // 請將此修改後的函數替換你 JavaScript 檔案中原有的 `formatDegreesMinutesSeconds` 函數
+            function formatDegreesMinutesSeconds(decimalDegrees) {
+                // 確保輸入是數字且非 NaN
+                if (typeof decimalDegrees !== 'number' || isNaN(decimalDegrees)) {
+                    return "N/A"; // 或者你希望的預設值，例如 "00°00'"
+                }
+
+                let d = Math.floor(decimalDegrees); // 取整數度數
+                let minutesDecimal = (decimalDegrees - d) * 60; // 將小數部分轉換為分鐘（含小數）
+                let m = Math.round(minutesDecimal); // **關鍵：在這裡對分鐘進行四捨五入**
+
+                // 處理分鐘的進位（如果四捨五入後分鐘達到 60）
+                if (m >= 60) {
+                    d += 1;
+                    m = 0;
+                }
+
+                // 格式化為 XX°YY' (只顯示度數和分鐘)
+                // 使用 padStart 確保兩位數格式（例如 5 變成 05）
+                return `${String(d).padStart(2, '0')}°${String(m).padStart(2, '0')}'`;
+            }
+
+        // 先定義一個變數來儲存分隔線
+            const codeBlockDelimiter = '```';
+
+
 
         let allTimezones = []; // 儲存從後端獲取的時區列表
 
@@ -2018,7 +2044,7 @@
                 console.log(`DEBUG: After basic info for ${title}, currentSectionLines length: ${currentSectionLines.length}`);
                 console.log(`DEBUG: currentSectionLines (basic info) for ${title}:`, currentSectionLines.slice(-5));
 
-
+                currentSectionLines.push(codeBlockDelimiter);
                 currentSectionLines.push("\n--- 宮頭星座度數 ---");
                 currentSectionLines.push("\n==============================");
                 currentSectionLines.push("\n宮頭 | 星座 | 星座度數(度分)");
@@ -2027,16 +2053,25 @@
                     console.log(`DEBUG: Entering house_cusps block for ${title}. currentSectionLines length before: ${currentSectionLines.length}`); // <-- NEW LOG
                     chartInfo.house_cusps.forEach(cusp => {
                         currentSectionLines.push(`${String(cusp.house_number).padEnd(2, ' ')}宮頭: ${cusp.zodiac_position_formatted}`);
+                        currentSectionLines.push(codeBlockDelimiter);
+                        // 4. 最後，當您要使用這個表格時，用換行符號把它們全部組合起來
+                        const finalTableString = currentSectionLines.join('\n');
+        
+                        // 收尾
+                        document.getElementById('resultOutput').innerText = finalTableString;
                     });
                     console.log(`DEBUG: Finished house_cusps block for ${title}. currentSectionLines length after: ${currentSectionLines.length}`); // <-- NEW LOG
                 } else {
                     currentSectionLines.push("沒有宮頭星座度數數據。");
                     console.warn(`WARN: house_cusps missing or empty for ${title}. Value:`, chartInfo.house_cusps);
                 }
+
                 console.log(`DEBUG: After house cusps for ${title}, currentSectionLines length: ${currentSectionLines.length}`);
                 console.log(`DEBUG: currentSectionLines (house cusps) for ${title}:`, currentSectionLines.slice(-5));
+                
 
 
+                currentSectionLines.push(codeBlockDelimiter);
                 currentSectionLines.push("\n--- 星體位置 ---");
                 currentSectionLines.push("\n==============================");
                 currentSectionLines.push("\n星體名稱 | 逆行狀態 | 星座 | 星座度數(度分) | 宮位 | 宮位度數(度分)");
@@ -2071,6 +2106,7 @@
                                 line += ` - -`;
                             }
                             currentSectionLines.push(line);
+                            currentSectionLines.push(codeBlockDelimiter);
 
                             // *** 在這裡計算並儲存 full_position_display，供相位部分使用 ***
                             // let fullPlanetPositionString = `${name}${pInfo.retrograde_label || ''}`;
@@ -2094,6 +2130,7 @@
                 console.log(`DEBUG: currentSectionLines (planet positions) for ${title}:`, currentSectionLines.slice(-5));
 
                 // --- 單盤內主要相位 (修正版) ---
+                currentSectionLines.push(codeBlockDelimiter);
                 currentSectionLines.push("\n--- 單盤內主要主要相位 ---");
                 currentSectionLines.push("\n==============================");
                 currentSectionLines.push("\n星體1名稱 | 相位名稱 | 星體2名稱 | 相位動態 | 容許度(度分)");
@@ -2177,6 +2214,7 @@
                 }
 
                 outputLines.push(...currentSectionLines); // Add all lines from this section to the main outputLines
+                currentSectionLines.push(codeBlockDelimiter);
 
                 // outputLines.push(DISPLAY_ORDER_NAMES);
             };
@@ -2192,7 +2230,7 @@
                 formatSingleChartSection(chartData, `${chart1Name}的星盤資訊`);
             } else if (chartData.chart_type === 'comparison') {
 
-
+                outputLines.push(codeBlockDelimiter);
                 outputLines.push(`\n=== ${chart2Name}與${chart1Name}之間的相位 ===`);
                 outputLines.push("\n==============================");
                 outputLines.push(`\n${chart2Name}星體名稱 | 相位名稱 | ${chart1Name}星體名稱 | 相位動態 | 容許度(度分)`);
@@ -2228,9 +2266,11 @@
                             }
                         }
                         outputLines.push(aspectLine);
+                        outputLines.push(codeBlockDelimiter);
                     });
                 }
 
+                outputLines.push(codeBlockDelimiter);
                 outputLines.push(`\n=== ${chart1Name}與${chart2Name}之間的相位 ===`);
                 outputLines.push("\n==============================");
                 outputLines.push(`\n${chart1Name}星體名稱 | 相位名稱 | ${chart2Name}星體名稱 | 相位動態 | 容許度(度分)`);
@@ -2263,9 +2303,12 @@
                             }
                         }
                         outputLines.push(aspectLine);
+                        outputLines.push(codeBlockDelimiter);
+
                     });
                 }
                 // (B-1) 對方星體落本命宮位
+                outputLines.push(codeBlockDelimiter);
                 outputLines.push(`\n=== ${chart2Name}的星體在${chart1Name}宮位 ===`);
                 outputLines.push("\n==============================");
                 outputLines.push(`\n${chart2Name}的星體名稱 | ${chart2Name}的星體星座度數(度分) | ${chart2Name}星體落入${chart1Name}之宮位度數(度分)`); // 新增這行標題
@@ -2283,10 +2326,12 @@
                         outputLines.push(
                             `${overlay.planet_name} ${overlay.retrograde_label || ''}$ {overlay.zodiac_position_formatted}` +
                             ` ${overlay.house_in_target_chart}宮(${formattedDegreeInHouse})。` // <-- 這裡改用轉換後的變數
-                    );
+                        );
+                        outputLines.push(codeBlockDelimiter);
                     });
                 }
                 // (C-1) 本命星體落對方宮位
+                outputLines.push(codeBlockDelimiter);
                 outputLines.push(`\n=== ${chart1Name}的星體在${chart2Name}宮位 ===`);
                 outputLines.push("\n==============================");
                 outputLines.push(`\n${chart1Name}的星體名稱 ${chart1Name}的星體星座度數(度分) 落入${chart2Name}的宮位度數(度分)`);
@@ -2305,6 +2350,7 @@
                                 `${overlay.planet_name} ${overlay.retrograde_label || ''} ${overlay.zodiac_position_formatted}` +
                                 ` ${overlay.house_in_target_chart}宮(${formattedDegreeInHouse})`
                             );
+                        outputLines.push(codeBlockDelimiter);
                     });
                 }
                 formatSingleChartSection(chartData.chart1_data, `${chart1Name}的星盤資訊`);
@@ -2322,6 +2368,7 @@
         } else if (chartData.chart_type === 'transit') {
 
             //  行運星體與本命星體之間的相位 (B-2)
+            outputLines.push(codeBlockDelimiter);
             outputLines.push(`\n=== 行運與${chart1Name}之間的相位 ===`);
             outputLines.push("\n==============================");
             outputLines.push(`\n行運的星體名稱 | 行運的星體星座度數(度分) | ${chart2Name}星體落入${chart1Name}之宮位度數(度分)`); // 新增這行標題
@@ -2361,10 +2408,12 @@
                         }
                     }
                     outputLines.push(aspectLine);
+                    outputLines.push(codeBlockDelimiter);
                 });
             }
 
             // 行運星體落入本命的宮位
+            outputLines.push(codeBlockDelimiter);
             outputLines.push(`\n=== 行運的星體落入${chart1Name}的宮位 ===`);
             outputLines.push("\n==============================");
             outputLines.push(`\n行運的星體名稱 | 行運的星體星座度數(度分) | 行運的星體落入${chart1Name}之宮位度數(度分)`); // 新增這行標題
@@ -2380,6 +2429,8 @@
                         `${overlay.planet_name}${overlay.retrograde_label || ''} ${overlay.zodiac_position_formatted}` +
                         ` ${overlay.house_in_target_chart}宮(${formatDegreesMinutesSeconds(p2OverlayInChart1.degree_in_target_house)})`
                     );
+                    outputLines.push(codeBlockDelimiter);
+
                 });
             }
 
@@ -2448,28 +2499,6 @@
         console.log('formatChartDataForDisplayFrontend function finished.');
         return outputLines.join('\n'); 
         }
-
-        // 請將此修改後的函數替換你 JavaScript 檔案中原有的 `formatDegreesMinutesSeconds` 函數
-            function formatDegreesMinutesSeconds(decimalDegrees) {
-                // 確保輸入是數字且非 NaN
-                if (typeof decimalDegrees !== 'number' || isNaN(decimalDegrees)) {
-                    return "N/A"; // 或者你希望的預設值，例如 "00°00'"
-                }
-
-                let d = Math.floor(decimalDegrees); // 取整數度數
-                let minutesDecimal = (decimalDegrees - d) * 60; // 將小數部分轉換為分鐘（含小數）
-                let m = Math.round(minutesDecimal); // **關鍵：在這裡對分鐘進行四捨五入**
-
-                // 處理分鐘的進位（如果四捨五入後分鐘達到 60）
-                if (m >= 60) {
-                    d += 1;
-                    m = 0;
-                }
-
-                // 格式化為 XX°YY' (只顯示度數和分鐘)
-                // 使用 padStart 確保兩位數格式（例如 5 變成 05）
-                return `${String(d).padStart(2, '0')}°${String(m).padStart(2, '0')}'`;
-            }
     </script>
 </body>
 
