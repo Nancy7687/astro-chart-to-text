@@ -31,11 +31,11 @@
             /* 平滑的背景切換效果 */
         }
 
-        /* 【關鍵修改】輸出容器的樣式 */
+        /* 輸出容器的樣式 */
         #resultOutput {
-            display: flex;              /* 啟用 Flexbox 佈局 */
-            flex-direction: column;     /* ▲ 核心指令：設定主軸為垂直方向 (由上到下) */
-            gap: 2rem;                  /* ▲ 增加每個大區塊之間的垂直間距，讓版面更舒適 */
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
         }
 
         /* 「大餐盤」(單一星盤) 的樣式 */
@@ -59,20 +59,25 @@
             font-size: 1.25em;
         }
         
-        /* 「小三明治」(子區塊) 的樣式 */
-        .sub-sections-container, .summary-section-container {
+        /* 【關鍵修改】子區塊容器的樣式 */
+        .sub-sections-container {
             padding: 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 1.5rem;
+            display: flex;              /* 啟用 Flexbox 佈局 */
+            flex-direction: row;        /* ▲ 核心指令：設定主軸為水平方向 (由左到右) */
+            flex-wrap: wrap;            /* ▲ 允許換行，在螢幕空間不足時會自動堆疊 */
+            gap: 1.5rem;                /* ▲ 設定子區塊之間的間距 */
         }
         .summary-section-container {
-             padding-top: 20px;
-             padding-bottom: 0;
+             padding: 20px;
+             padding-top: 0;
         }
+        /* 「小三明治」(子區塊) 的樣式 */
         .result-section-item {
             border: 1px solid #e9ecef;
             border-radius: 8px;
+            flex: 1 1 300px; /* ▲ 讓每個子區塊都有彈性，基礎寬度為300px */
+            display: flex; /* 讓子區塊內部也使用flex佈局 */
+            flex-direction: column; /* 確保子區塊內部的 header 和 content 是垂直排列的 */
         }
         .result-section-header {
             display: flex;
@@ -86,15 +91,20 @@
             font-weight: bold;
             color: #495057;
         }
+        .result-section-content {
+            flex-grow: 1; /* 讓內容區塊填滿剩餘空間 */
+        }
         .result-section-content pre {
             margin: 0;
             padding: 15px;
             background-color: #fff;
             white-space: pre-wrap;
             word-wrap: break-word;
+            font-family: 'Courier New', Courier, monospace; /* 使用等寬字體，方便對齊 */
             font-size: 14px;
             line-height: 1.6;
             color: #212529;
+            height: 100%; /* 確保 pre 填滿其容器 */
         }
         
         /* 按鈕樣式 */
@@ -117,10 +127,6 @@
         .chart-main-header button {
             background-color: #28a745;
             color: white;
-        }
-
-        .chart-main-header button:hover {
-            background-color: #218838;
         }
 
         /* 動態背景的動畫 */
@@ -2416,8 +2422,55 @@
     // 您只需要呼叫一次總管函式，所有事情就都完成了！
     // displayChartData(chartData, chart1Name, chart2Name);
     
-    // 為了讓這個範例能獨立運作，我們在這裡模擬一次呼叫
-    displayChartData({ chart_type: 'composite', composite_chart_data:{}, natal_chart1_data:{}, natal_chart2_data:{} }, "王小明", "陳大美");
+    // =============================================================
+        // 【關鍵修改】：將模擬呼叫替換成真實的事件監聽器
+        // =============================================================
+        document.getElementById('calculateBtn').addEventListener('click', () => {
+            const resultOutput = document.getElementById('resultOutput');
+            resultOutput.innerHTML = '<p>計算中，請稍候...</p>';
+
+            // 從表單讀取資料
+            const chart1Name = document.getElementById('name1').value;
+            const payload = {
+                chart_type: 'single', // 假設我們現在只計算單盤
+                year: document.getElementById('year1').value,
+                month: document.getElementById('month1').value,
+                day: document.getElementById('day1').value,
+                hour: document.getElementById('hour1').value,
+                minute: document.getElementById('minute1').value,
+                latitude: document.getElementById('lat1').value,
+                longitude: document.getElementById('lon1').value,
+                timezone: document.getElementById('tz1').value,
+                optional_planets: ["福點", "宿命"] // 您可以根據需要修改
+            };
+
+            // 發送 fetch 請求到您的後端 (請確認後端端點路徑)
+            fetch('/calculate_chart', { // 假設您的後端端點是 /calculate_chart
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            })
+            .then(response => {
+                if (!response.ok) {
+                    // 如果伺服器回傳錯誤 (例如 429, 500), 在這裡處理
+                    return response.json().then(err => { throw new Error(err.error || `伺服器錯誤 ${response.status}`); });
+                }
+                return response.json();
+            })
+            .then(chartData => {
+                // 成功拿到後端資料，呼叫總管函式來顯示
+                if (chartData.error) {
+                    resultOutput.innerHTML = `<p style="color:red;">❌ 後端計算錯誤：${chartData.error}</p>`;
+                } else {
+                    displayChartData(chartData, chart1Name);
+                }
+            })
+            .catch(error => {
+                // 處理網路錯誤或上面拋出的錯誤
+                console.error('計算失敗:', error);
+                resultOutput.innerHTML = `<p style="color:red;">❌ 計算失敗：${error.message}</p>`;
+            });
+        });
 
 
 
