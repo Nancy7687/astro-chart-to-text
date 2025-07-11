@@ -2286,13 +2286,17 @@
 
                 const aspectContentString = aspectLines.join('\n');
 
-                // --- 步驟二：將所有內餡，組裝成一個帶有「總複製按鈕」的大餐盤 HTML ---
-                const fullSectionHtml = `
+                // --- 【關鍵】修正後的 HTML 結構 ---
+            const fullSectionHtml = `
                 <div class="chart-wrapper">
                     <div class="chart-main-header">
                         <h2>${title}</h2>
+                        <!-- 這個按鈕現在只會複製下面的 sub-sections-container 內容 -->
+                        <button class="copy-chart-btn">複製此個人星盤</button>
                     </div>
-                    <div class="sub-sections-container">
+
+                    <!-- 1. 基礎數據區塊，它現在是獨立的 -->
+                    <div class="summary-section-container">
                         <div class="result-section-item">
                             <div class="result-section-header">
                                 <span>--- 星盤基礎數據 ---</span>
@@ -2302,11 +2306,10 @@
                                 <pre>${summaryContentString}</pre>
                             </div>
                         </div>
-
-                    <div class="chart-main-header sub-sections-container">
-                            <h2>${title}內容</h2>
-                            <button class="copy-chart-btn">複製此個人星盤</button>
-
+                    </div>
+                    
+                    <!-- 2. 核心表格區塊，被一個專屬的容器包起來 -->
+                    <div class="sub-sections-container">
                         <div class="result-section-item">
                             <div class="result-section-header">
                                 <span>--- 宮頭星座度數 ---</span>
@@ -2336,10 +2339,9 @@
                         </div>
                     </div>
                 </div>
-                </div>
             `;
-                return fullSectionHtml;
-            };
+            return fullSectionHtml;
+        }
 
     // =============================================================
     // 【專業工人二號】：負責打造一個「交互相位」的HTML報告
