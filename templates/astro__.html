@@ -760,6 +760,12 @@
             letter-spacing: 0.5px; /* 增加字元間距 */
         }
 
+        .main-title {
+            font-size: 2.25rem; /* 基礎字體大小 (等於 text-4xl) */
+            font-weight: 700;   /* 標準粗體 */
+            letter-spacing: 0.05em; /* 美觀的字元間距 */
+        }
+
         /* --- 響應式設計：針對桌面等較大螢幕的樣式 --- */
         @media (min-width: 768px) {
             .input-group label {
@@ -856,7 +862,12 @@
                 font-size: 1.875rem;
                 /* text-3xl */
             }
+
+            .main-title {
+                font-size: 3rem; /* 等於 text-5xl */
+            }
         }
+        
     </style>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 </head>
@@ -2030,50 +2041,7 @@
         }
 
 
-        // =============================================================
-        // 【複製按鈕監聽器】：現在的邏輯更清晰
-        // =============================================================
-        const resultOutputContainer = document.getElementById('resultOutput');
-        resultOutputContainer.addEventListener('click', (event) => {
-            const button = event.target;
-            const copyToClipboard = (text, btn) => {
-                const originalText = btn.textContent;
-                navigator.clipboard.writeText(text).then(() => {
-                    btn.textContent = '已複製！';
-                    setTimeout(() => { btn.textContent = originalText; }, 2000);
-                }).catch(err => {
-                    console.error('無法複製文字: ', err);
-                    btn.textContent = '複製失敗';
-                    setTimeout(() => { btn.textContent = originalText; }, 2000);
-                });
-            };
-
-            // 處理所有「小區塊」的複製按鈕 (邏輯不變)
-            if (button.matches('.section-copy-btn')) {
-                const contentElement = button.closest('.result-section-item').querySelector('pre');
-                if (contentElement) {
-                    copyToClipboard(contentElement.textContent, button);
-                }
-            }
-
-            // 【關鍵修改】處理「複製此個人星盤」的總按鈕
-            if (button.matches('.copy-chart-btn')) {
-                const chartWrapper = button.closest('.chart-wrapper');
-                const subSectionsContainer = chartWrapper.querySelector('.sub-sections-container');
-                let fullText = [];
-                
-                // 遍歷所有核心子區塊
-                subSectionsContainer.querySelectorAll('.result-section-item').forEach(item => {
-                    // 【關鍵】只取得 <pre> 標籤內的純文字內容，忽略標題
-                    const content = item.querySelector('pre').textContent;
-                    fullText.push(content);
-                });
-                
-                // 用一個清晰的分隔線將所有內容組合起來
-                const textToCopy = fullText.join('\n\n====================\n\n');
-                copyToClipboard(textToCopy, button);
-            }
-        });
+        
 
 
 
@@ -2093,7 +2061,6 @@
                     const ts = chartInfo.timestamps;
                     summaryLines.push(`本地時間: ${ts.local_time}`);
                     summaryLines.push(`UTC 時間: ${ts.utc_time}`);
-                    summaryLines.push(`計算儒略日 (UT): ${ts.julian_day_ut}`);
                     summaryLines.push(`Delta T (秒): ${ts.delta_t_seconds.toFixed(3)}`);
                     summaryLines.push(`計算儒略日 (TT): ${ts.julian_day_tt}`);
                 } else {
@@ -2114,7 +2081,7 @@
                 // 星曆檔案狀態
                 if (chartInfo.ephemeris_path_status) {
                     console.log(`DEBUG: Entering ephemeris_path_status block for ${title}. summaryLines length before: ${summaryLines.length}`); // <-- NEW LOG
-                    summaryLines.push(`星曆檔案狀態: ${chartInfo.ephemeris_path_status.status} - ${chartInfo.ephemeris_path_status.message}`);
+                    console.log(`星曆檔案狀態: ${chartInfo.ephemeris_path_status.status} - ${chartInfo.ephemeris_path_status.message}`);
                     console.log(`DEBUG: Finished ephemeris_path_status block for ${title}. summaryLines length after: ${summaryLines.length}`); // <-- NEW LOG
                 } else {
                     summaryLines.push("警告：星曆檔案狀態數據缺失。");
@@ -2303,7 +2270,7 @@
             const fullSectionHtml = `
                 <div class="chart-wrapper">
                     <div class="chart-main-header">
-                        <h1 class="text-3xl font-weight-black">${title}</h1>
+                        <h1 class="main-title">${title}</h1>
                         <!-- 這個按鈕現在只會複製下面的 sub-sections-container 內容 -->
                         <button class="copy-chart-btn">複製此個人星盤</button>
                         </div>
@@ -2423,7 +2390,52 @@
     }
 
 
+    // =============================================================
+        // 【總管函式】與【複製按鈕監聽器】
+        // =============================================================
+        function displayChartData(chartData, chart1Name) {
+            const resultOutputContainer = document.getElementById('resultOutput');
+            resultOutputContainer.innerHTML = buildSingleChartHTML(chartData, `${chart1Name}的星盤資訊`);
+        }
 
+        const resultOutputContainer = document.getElementById('resultOutput');
+        resultOutputContainer.addEventListener('click', (event) => {
+            const button = event.target;
+            const copyToClipboard = (text, btn) => {
+                const originalText = btn.textContent;
+                navigator.clipboard.writeText(text).then(() => {
+                    btn.textContent = '已複製！';
+                    setTimeout(() => { btn.textContent = originalText; }, 2000);
+                }).catch(err => { console.error('無法複製文字: ', err); btn.textContent = '複製失敗'; });
+            };
+
+            // 處理所有「小區塊」的獨立複製按鈕
+            if (button.matches('.section-copy-btn')) {
+                const contentElement = button.closest('.result-section-item').querySelector('pre');
+                if (contentElement) copyToClipboard(contentElement.textContent, button);
+            }
+
+            // 【關鍵】處理「複製此個人星盤」的總按鈕
+            if (button.matches('.copy-chart-btn')) {
+                const chartWrapper = button.closest('.chart-wrapper');
+                
+                // 1. 取得大標題
+                const mainTitle = chartWrapper.querySelector('.chart-main-header h2').textContent;
+                
+                // 2. 只尋找核心三表格的內容
+                const subSectionsContainer = chartWrapper.querySelector('.sub-sections-container');
+                let coreContent = [];
+                subSectionsContainer.querySelectorAll('.result-section-item').forEach(item => {
+                    const subHeader = item.querySelector('.result-section-header span').textContent;
+                    const content = item.querySelector('pre').textContent;
+                    coreContent.push(`${subHeader}\n${content}`);
+                });
+                
+                // 3. 將大標題和核心內容組合起來
+                const textToCopy = `${mainTitle}\n====================\n\n${coreContent.join('\n\n')}`;
+                copyToClipboard(textToCopy, button);
+            }
+        });
 
 
     // --- 最終呼叫的地方 ---
