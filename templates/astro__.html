@@ -1952,13 +1952,17 @@
                     resultOutput.textContent = `❌ 後端計算錯誤：${chartData.error}`;
                     resultOutput.classList.add('error-message');
                     // Button remains hidden on error
+                    // 【新的、高效的流程】
                 } else {
-                    const formattedText = displayChartData(chartData, chart1Name, chart2Name);
-                    // NEW: Render the text as sections instead of a single block
-                    renderSectionsFromText(formattedText);
+                    // 清理錯誤訊息的樣式
                     resultOutput.classList.remove('error-message');
-                    // The global copy button is removed, so no need to show it.
+
+                    // 直接呼叫我們的「總管函式」，請他開始工作。
+                    // 他會自己去派工、自己去把所有東西顯示到網頁上。
+                    // 我們不需要接收任何回傳值，因為他已經把所有事都做完了。
+                    displayChartData(chartData, chart1Name, chart2Name);
                 }
+                
             } catch (error) { // --- Axios 的錯誤處理 ---
                 const resultOutput = document.getElementById('resultOutput');
                 resultOutput.classList.add('error-message');
