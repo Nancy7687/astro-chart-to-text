@@ -45,15 +45,22 @@
             background-color: #fff;
             overflow: hidden;
         }
+
         .chart-main-header {
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 8px 12px; /* 減少頭部內邊距 */
-            background-color: #4a90e2; color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 48px 80px;
+            background-color: #007bff;
+            color: white;
         }
+
         .chart-main-header h2 {
-            margin: 0; font-size: 1.1em;
+            margin: 0;
+            font-size: 1.5em; /* 也可以順便再加大一點字體 */
+            flex-grow: 1; /* <-- 關鍵新增：讓標題佔滿可用空間 */
+            margin-right: 20px; /* <-- 新增：在標題和按鈕之間留出空隙 */
         }
-        
         /* 「小三明治」(子區塊) 的容器 */
         .sub-sections-container, .summary-section-container {
             padding: 12px; /* 減少內邊距 */
@@ -148,7 +155,7 @@
             /* 紫羅蘭到中等紫羅蘭紅的漸變 */
             border-radius: 12px;
             /* 圓角 */
-            padding: 20px 0;
+            padding: 40px 0;
             /* 內部上下邊距 */
             margin-bottom: 32px;
             /* 與下方內容的間距 */
@@ -468,7 +475,17 @@
             /* Minimum width to prevent too much squishing */
         }
 
-
+        /* 【新增】專門用來產生捲軸的樣式 */
+        .scrollable-content {
+            max-height: 300px; /* 設定一個最大高度，您可以調整這個值 */
+            overflow-y: auto;  /* 當內容超出最大高度時，顯示垂直捲軸 */
+        }
+        /* 美化捲軸樣式 (適用於 Webkit 核心瀏覽器如 Chrome, Safari) */
+        .scrollable-content::-webkit-scrollbar { width: 8px; }
+        .scrollable-content::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 10px; }
+        .scrollable-content::-webkit-scrollbar-thumb { background: #888; border-radius: 10px; }
+        .scrollable-content::-webkit-scrollbar-thumb:hover { background: #555; }
+        
         
 
         /* Responsive grid adjustments for compact layout on medium screens (md) and larger */
@@ -510,6 +527,17 @@
             .synastry-inputs-wrapper {
                 flex-direction: row;
             }
+
+            /* 捲軸樣式 */
+            .scrollable-content {
+                max-height: 300px; /* 設定一個最大高度 */
+                overflow-y: auto;  /* 當內容超出最大高度時，才顯示垂直捲軸 */
+            }
+            .scrollable-content::-webkit-scrollbar { width: 8px; }
+            .scrollable-content::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 10px; }
+            .scrollable-content::-webkit-scrollbar-thumb { background: #888; border-radius: 10px; }
+            .scrollable-content::-webkit-scrollbar-thumb:hover { background: #555; }
+        
         }
 
         /* 單一子區塊的樣式 */
@@ -876,7 +904,7 @@
     <div class="container">
         <!-- Main Header -->
         <div class="header-bg">
-            <h1 class="text-4xl md:text-5xl font-bold text-center mb-0" style="letter-spacing: 0.1em;">星盤文字資料生成</h1>
+            <h1 class="text-5xl md:text-5xl font-bold text-center mb-0" style="letter-spacing: 0.1em;">星盤文字資料生成</h1>
         </div>
 
         <!-- Main Tab Buttons -->
@@ -898,7 +926,7 @@
             <div class="date-time-grid">
                 <div class="input-group">
                     <label for="single_year">西元年 (YYYY):</label>
-                    <input type="number" id="single_year" class="input-field" value="1990" min="1900" max="2100">
+                    <input type="number" id="single_year" class="input-field" value="2000" min="1900" max="2100">
                     <p id="single_year-error" class="input-error-message" aria-live="polite"></p>
                 </div>
                 <div class="input-group">
@@ -927,12 +955,12 @@
             <div class="location-timezone-grid">
                 <div class="input-group">
                     <label for="single_latitude">緯度 (+N / -S):</label>
-                    <input type="number" id="single_latitude" class="input-field" value="25.09" step="0.01">
+                    <input type="number" id="single_latitude" class="input-field" value="25.00" step="0.01">
                     <p id="single_latitude-error" class="input-error-message" aria-live="polite"></p>
                 </div>
                 <div class="input-group">
                     <label for="single_longitude">經度 (+E / -W):</label>
-                    <input type="number" id="single_longitude" class="input-field" value="121.52" step="0.01">
+                    <input type="number" id="single_longitude" class="input-field" value="121.50" step="0.01">
                     <p id="single_longitude-error" class="input-error-message" aria-live="polite"></p>
                 </div>
                 <div class="input-group col-span-full">
@@ -1017,12 +1045,12 @@
                     <div class="location-timezone-grid">
                         <div class="input-group">
                             <label for="comp1_latitude">緯度 (+N / -S):</label>
-                            <input type="number" id="comp1_latitude" class="input-field" value="25.09" step="0.01">
+                            <input type="number" id="comp1_latitude" class="input-field" value="25.00" step="0.01">
                             <p id="comp1_latitude-error" class="input-error-message" aria-live="polite"></p>
                         </div>
                         <div class="input-group">
                             <label for="comp1_longitude">經度 (+E / -W):</label>
-                            <input type="number" id="comp1_longitude" class="input-field" value="121.52" step="0.01">
+                            <input type="number" id="comp1_longitude" class="input-field" value="121.50" step="0.01">
                             <p id="comp1_longitude-error" class="input-error-message" aria-live="polite"></p>
                         </div>
                         <div class="input-group col-span-full">
@@ -1033,6 +1061,13 @@
                                     placeholder="手動輸入 (例如: Asia/Tokyo)">
                                 <div id="comp1TimezoneSuggestions" class="timezone-suggestions"></div>
                             </div>
+                            <p class="text-sm text-gray-500 mt-2">
+                                如果您的時區不在列表中，請手動輸入正確經緯度（ 十進制 ）以及 IANA 完整時區名稱，<br>
+                                ( 例如：台灣的 IANA 時區是 Asia/Taipei，中國是 Asia/Shanghai，日本是 Asia/Tokyo，韓國是 Asia/Seoul，<br>
+                                美國依不同地點分為 America/New_York等各個時區) 以取得正確星盤資訊，<br>
+                                若不知道出生地的 IANA 時區，可用 AI聊天如 ChatGPT，Gemini ai 等或 由Google 查詢。
+                            
+                            </p>
                             <p id="comp1_timezone-error" class="input-error-message" aria-live="polite"></p>
                         </div>
                     </div>
@@ -1050,7 +1085,7 @@
                     <div class="date-time-grid">
                         <div class="input-group">
                             <label for="comp2_year">西元年 (YYYY):</label>
-                            <input type="number" id="comp2_year" class="input-field" value="1995" min="1900" max="2100">
+                            <input type="number" id="comp2_year" class="input-field" value="2000" min="1900" max="2100">
                             <p id="comp2_year-error" class="input-error-message" aria-live="polite"></p>
                         </div>
                         <div class="input-group">
@@ -1078,12 +1113,12 @@
                     <div class="location-timezone-grid">
                         <div class="input-group">
                             <label for="comp2_latitude">緯度 (+N / -S):</label>
-                            <input type="number" id="comp2_latitude" class="input-field" value="34.05" step="0.01">
+                            <input type="number" id="comp2_latitude" class="input-field" value="21.00" step="0.01">
                             <p id="comp2_latitude-error" class="input-error-message" aria-live="polite"></p>
                         </div>
                         <div class="input-group">
                             <label for="comp2_longitude">經度 (+E / -W):</label>
-                            <input type="number" id="comp2_longitude" class="input-field" value="-118.24" step="0.01">
+                            <input type="number" id="comp2_longitude" class="input-field" value="121.50" step="0.01">
                             <p id="comp2_longitude-error" class="input-error-message" aria-live="polite"></p>
                         </div>
                         <div class="input-group col-span-full">
@@ -1094,6 +1129,13 @@
                                     placeholder="手動輸入 (例如: Asia/Tokyo)">
                                 <div id="comp2TimezoneSuggestions" class="timezone-suggestions"></div>
                             </div>
+                            <p class="text-sm text-gray-500 mt-2">
+                                如果您的時區不在列表中，請手動輸入正確經緯度（ 十進制 ）以及 IANA 完整時區名稱，<br>
+                                ( 例如：台灣的 IANA 時區是 Asia/Taipei，中國是 Asia/Shanghai，日本是 Asia/Tokyo，韓國是 Asia/Seoul，<br>
+                                美國依不同地點分為 America/New_York等各個時區) 以取得正確星盤資訊，<br>
+                                若不知道出生地的 IANA 時區，可用 AI聊天如 ChatGPT，Gemini ai 等或 由Google 查詢。
+                            
+                            </p>
                             <p id="comp2_timezone-error" class="input-error-message" aria-live="polite"></p>
                         </div>
                     </div>
@@ -1158,6 +1200,13 @@
                                     placeholder="手動輸入 (例如: Asia/Tokyo)">
                                 <div id="natalTimezoneSuggestions" class="timezone-suggestions"></div>
                             </div>
+                            <p class="text-sm text-gray-500 mt-2">
+                                如果您的時區不在列表中，請手動輸入正確經緯度（ 十進制 ）以及 IANA 完整時區名稱，<br>
+                                ( 例如：台灣的 IANA 時區是 Asia/Taipei，中國是 Asia/Shanghai，日本是 Asia/Tokyo，韓國是 Asia/Seoul，<br>
+                                美國依不同地點分為 America/New_York等各個時區) 以取得正確星盤資訊，<br>
+                                若不知道出生地的 IANA 時區，可用 AI聊天如 ChatGPT，Gemini ai 等或 由Google 查詢。
+                            
+                            </p>
                             <p id="natal_timezone-error" class="input-error-message" aria-live="polite"></p>
                         </div>
                     </div>
@@ -1220,6 +1269,13 @@
                                     placeholder="手動輸入 (例如: Asia/Tokyo)">
                                 <div id="transitTimezoneSuggestions" class="timezone-suggestions"></div>
                             </div>
+                            <p class="text-sm text-gray-500 mt-2">
+                                如果您的時區不在列表中，請手動輸入正確經緯度（ 十進制 ）以及 IANA 完整時區名稱，<br>
+                                ( 例如：台灣的 IANA 時區是 Asia/Taipei，中國是 Asia/Shanghai，日本是 Asia/Tokyo，韓國是 Asia/Seoul，<br>
+                                美國依不同地點分為 America/New_York等各個時區) 以取得正確星盤資訊，<br>
+                                若不知道出生地的 IANA 時區，可用 AI聊天如 ChatGPT，Gemini ai 等或 由Google 查詢。
+                            
+                            </p>
                             <p id="transit_timezone-error" class="input-error-message" aria-live="polite"></p>
                         </div>
                     </div>
@@ -2313,7 +2369,7 @@
                                 <span>主要相位</span>
                                 <button class="section-copy-btn">複製</button>
                             </div>
-                            <div class="result-section-content">
+                            <div class="result-section-content scrollable-content">
                                 <pre>${aspectContentString}</pre>
                             </div>
                         </div>
