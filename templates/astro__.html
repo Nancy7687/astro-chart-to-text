@@ -2352,6 +2352,103 @@
     }
 
 
+    // // =============================================================
+    // // 【專業工人二號】：打造一個「交互相位」的HTML報告
+    // // =============================================================
+    // function buildInterAspectsHTML(aspects, title, name1, name2) {
+    //     const lines = [];
+    //     lines.push(`${name1}的星體 | 相位 | ${name2}的星體 | 動態 | 容許度`);
+    //     lines.push("--------------------------------------------------");
+
+    //     if (aspects && aspects.length > 0) {
+    //         // 這裡放入您原本的排序和 forEach 邏輯
+    //         aspects.forEach(asp => {
+    //             let aspectLine = `${asp.p1_name} ${asp.aspect_name} ${asp.p2_name}`;
+    //             if (asp.orb !== undefined) {
+    //                 let displayedOrb = formatDegreesMinutesSeconds(asp.orb);
+    //                 aspectLine += ` ${asp.aspect_type || '-'} ${displayedOrb}`;
+    //             }
+    //             lines.push(aspectLine);
+    //         });
+    //     } else {
+    //         lines.push("目前沒有偵測到跨盤相位。");
+    //     }
+
+    //     const contentString = lines.join('\n');
+    //     const sectionHtml = `
+    //         <div class="simple-section-wrapper">
+    //             <div class="simple-section-header"><h3>${title}</h3><button class="section-copy-btn">複製</button></div>
+    //             <div class="simple-section-content"><pre>${contentString}</pre></div>
+    //         </div>`;
+    //     return sectionHtml;
+    // }
+
+    // // =============================================================
+    // // 【專業工人三號】：打造一個「行星落宮」的HTML報告
+    // // =============================================================
+    // function buildOverlayHTML(overlayData, title, guestName, hostName) {
+    //     const lines = [];
+    //     lines.push(`${guestName}的星體 | 星座度數 | 落入${hostName}的宮位`);
+    //     lines.push("--------------------------------------------------");
+
+    //     if (overlayData && overlayData.length > 0) {
+    //         // 這裡放入您原本的排序和 forEach 邏輯
+    //         overlayData.forEach(overlay => {
+    //             const formattedDegreeInHouse = formatDegreesMinutesSeconds(overlay.degree_in_target_house);
+    //             lines.push(`${overlay.planet_name} | ${overlay.zodiac_position_formatted} | ${overlay.house_in_target_chart}宮(${formattedDegreeInHouse})`);
+    //         });
+    //     } else {
+    //         lines.push("目前沒有偵測到行星落入宮位。");
+    //     }
+        
+    //     const contentString = lines.join('\n');
+    //     const sectionHtml = `
+    //         <div class="simple-section-wrapper">
+    //             <div class="simple-section-header"><h3>${title}</h3><button class="section-copy-btn">複製</button></div>
+    //             <div class="simple-section-content"><pre>${contentString}</pre></div>
+    //         </div>`;
+    //     return sectionHtml;
+    // }
+
+    // // =============================================================
+    // // 【總管函式】：現在變得非常乾淨，只負責「派工」和「顯示」
+    // // =============================================================
+    // function displayChartData(chartData, chart1Name = "我的", chart2Name = "他的") {
+    //     const resultOutputContainer = document.getElementById('resultOutput');
+    //     resultOutputContainer.innerHTML = ''; // 清空舊內容
+
+    //     const finalHtmlPieces = [];
+
+    //     if (chartData.chart_type === 'single') {
+    //         finalHtmlPieces.push(buildSingleChartHTML(chartData, `${chart1Name}的星盤資訊`));
+
+    //     } else if (chartData.chart_type === 'composite') {
+    //         finalHtmlPieces.push(buildSingleChartHTML(chartData.composite_chart_data, `${chart1Name}與${chart2Name}的組合中點盤`));
+    //         finalHtmlPieces.push(buildSingleChartHTML(chartData.natal_chart1_data, `${chart1Name}的本命星盤資訊`));
+    //         finalHtmlPieces.push(buildSingleChartHTML(chartData.natal_chart2_data, `${chart2Name}的本命星盤資訊`));
+
+    //     } else if (chartData.chart_type === 'comparison') {
+    //         // 派工給交互相位專家
+    //         finalHtmlPieces.push(buildInterAspectsHTML(chartData.inter_aspects, `=== ${chart1Name}與${chart2Name}之間的相位 ===`, chart1Name, chart2Name));
+    //         // 派工給行星落宮專家 (A入B)
+    //         finalHtmlPieces.push(buildOverlayHTML(chartData.chart1_planets_in_chart2_houses, `=== ${chart1Name}的星體在${chart2Name}宮位 ===`, chart1Name, chart2Name));
+    //         // 再次派工給行星落宮專家 (B入A)
+    //         finalHtmlPieces.push(buildOverlayHTML(chartData.chart2_planets_in_chart1_houses, `=== ${chart2Name}的星體在${chart1Name}宮位 ===`, chart2Name, chart1Name));
+    //         // 最後附上兩張完整的本命盤報告
+    //         finalHtmlPieces.push(buildSingleChartHTML(chartData.chart1_data, `${chart1Name}的本命星盤資訊`));
+    //         finalHtmlPieces.push(buildSingleChartHTML(chartData.chart2_data, `${chart2Name}的本命星盤資訊`));
+
+    //     } else if (chartData.chart_type === 'transit') {
+    //         // 行運盤的派工邏輯...
+    //     } else {
+    //         resultOutputContainer.innerHTML = `<p>錯誤：未知的星盤類型 '${chartData.chart_type}'</p>`;
+    //         return;
+    //     }
+
+    //     resultOutputContainer.innerHTML = finalHtmlPieces.join('');
+    // }
+
+
     // =============================================================
     // 【總管函式】：現在變得非常乾淨，只負責「派工」和「顯示」
     // 這取代了您舊的 displayChartData
@@ -2390,52 +2487,66 @@
     }
 
 
-    // =============================================================
-        // 【總管函式】與【複製按鈕監聽器】
         // =============================================================
-        function displayChartData(chartData, chart1Name) {
-            const resultOutputContainer = document.getElementById('resultOutput');
-            resultOutputContainer.innerHTML = buildSingleChartHTML(chartData, `${chart1Name}的星盤資訊`);
+    // 【複製按鈕監聽器】：加入安全檢查，使其更健壯
+    // =============================================================
+    const resultOutputContainer = document.getElementById('resultOutput');
+    resultOutputContainer.addEventListener('click', (event) => {
+        const button = event.target;
+        const copyToClipboard = (text, btn) => {
+            if (!text) {
+                console.warn("沒有內容可複製。");
+                return;
+            }
+            const originalText = btn.textContent;
+            navigator.clipboard.writeText(text).then(() => {
+                btn.textContent = '已複製！';
+                setTimeout(() => { btn.textContent = originalText; }, 2000);
+            }).catch(err => {
+                console.error('無法複製文字: ', err);
+                btn.textContent = '複製失敗';
+                setTimeout(() => { btn.textContent = originalText; }, 2000);
+            });
+        };
+
+        // 處理所有「小區塊」的獨立複製按鈕
+        if (button.matches('.section-copy-btn')) {
+            const contentElement = button.closest('.result-section-item, .simple-section-wrapper')?.querySelector('pre');
+            if (contentElement) {
+                copyToClipboard(contentElement.textContent, button);
+            }
         }
 
-        const resultOutputContainer = document.getElementById('resultOutput');
-        resultOutputContainer.addEventListener('click', (event) => {
-            const button = event.target;
-            const copyToClipboard = (text, btn) => {
-                const originalText = btn.textContent;
-                navigator.clipboard.writeText(text).then(() => {
-                    btn.textContent = '已複製！';
-                    setTimeout(() => { btn.textContent = originalText; }, 2000);
-                }).catch(err => { console.error('無法複製文字: ', err); btn.textContent = '複製失敗'; });
-            };
+        // 處理「複製此星盤」的總按鈕
+        if (button.matches('.copy-chart-btn')) {
+            const chartWrapper = button.closest('.chart-wrapper');
+            if (!chartWrapper) return;
 
-            // 處理所有「小區塊」的獨立複製按鈕
-            if (button.matches('.section-copy-btn')) {
-                const contentElement = button.closest('.result-section-item').querySelector('pre');
-                if (contentElement) copyToClipboard(contentElement.textContent, button);
+            const mainTitleElement = chartWrapper.querySelector('.chart-main-header h2');
+            const mainTitle = mainTitleElement ? mainTitleElement.textContent : '星盤報告';
+            
+            const subSectionsContainer = chartWrapper.querySelector('.sub-sections-container');
+            if (!subSectionsContainer) {
+                console.error("複製錯誤：找不到 '.sub-sections-container'。");
+                // 如果只想複製標題，可以取消下面這行的註解
+                // copyToClipboard(mainTitle, button);
+                return;
             }
 
-            // 【關鍵】處理「複製此個人星盤」的總按鈕
-            if (button.matches('.copy-chart-btn')) {
-                const chartWrapper = button.closest('.chart-wrapper');
-                
-                // 1. 取得大標題
-                const mainTitle = chartWrapper.querySelector('.chart-main-header h2').textContent;
-                
-                // 2. 只尋找核心三表格的內容
-                const subSectionsContainer = chartWrapper.querySelector('.sub-sections-container');
-                let coreContent = [];
-                subSectionsContainer.querySelectorAll('.result-section-item').forEach(item => {
-                    const subHeader = item.querySelector('.result-section-header span').textContent;
-                    const content = item.querySelector('pre').textContent;
-                    coreContent.push(`${subHeader}\n${content}`);
-                });
-                
-                // 3. 將大標題和核心內容組合起來
-                const textToCopy = `${mainTitle}\n====================\n\n${coreContent.join('\n\n')}`;
-                copyToClipboard(textToCopy, button);
-            }
-        });
+            let coreContent = [];
+            subSectionsContainer.querySelectorAll('.result-section-item').forEach(item => {
+                const subHeaderElement = item.querySelector('.result-section-header span');
+                const contentElement = item.querySelector('pre');
+                if (subHeaderElement && contentElement) {
+                    coreContent.push(`${subHeaderElement.textContent}\n${contentElement.textContent}`);
+                }
+            });
+            
+            const textToCopy = `${mainTitle}\n====================\n\n${coreContent.join('\n\n')}`;
+            copyToClipboard(textToCopy, button);
+        }
+    });
+
 
 
     // --- 最終呼叫的地方 ---
