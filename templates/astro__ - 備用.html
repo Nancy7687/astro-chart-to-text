@@ -1242,24 +1242,7 @@
     <script>
         console.log('Script Start Test! Version: Combined Tabs - Multi-Chart Support v2.5 - Critical Debugging');
 
-        // =============================================================
-        // 【公司的共用工具箱】：放在所有函式的最外面
-        // =============================================================
-
-        const HOUSE_DEFINING_POINTS = ['上升', '下降', '天頂', '天底'];
-        // Define the desired display order for planets and points (copied from backend for consistency)
-        const DISPLAY_ORDER_NAMES = [
-            "太陽", "月亮", "水星", "金星", "火星", "木星", "土星", "天王", "海王", "冥王",
-            "凱龍", "穀神", "智神", "婚神", "灶神", "愛神", "莉莉絲", "靈神", "人龍",
-            "北交", "南交", "上升", "下降", "天頂", "天底", "宿命", "福點"
-        ];
-        const FOUR_ANGLES_AND_NODES = ['上升', '下降', '天頂', '天底', '宿命', '福點', '北交', '南交'];
-
-        // IMPORTANT: Define the base URL for your Flask backend API
-        // This MUST match the port your Flask app is running on (default is 5000)
-        const BASE_API_URL = '';
-
-        // 轉換成60進制的函式
+        // 請將此修改後的函數替換你 JavaScript 檔案中原有的 `formatDegreesMinutesSeconds` 函數
         function formatDegreesMinutesSeconds(decimalDegrees) {
             // 確保輸入是數字且非 NaN
             if (typeof decimalDegrees !== 'number' || isNaN(decimalDegrees)) {
@@ -1280,6 +1263,11 @@
             // 使用 padStart 確保兩位數格式（例如 5 變成 05）
             return `${String(d).padStart(2, '0')}°${String(m).padStart(2, '0')}'`;
         }
+
+        // 先定義一個變數來儲存分隔線
+        const codeBlockDelimiter = '```';
+
+
 
         let allTimezones = []; // 儲存從後端獲取的時區列表
 
@@ -1363,7 +1351,18 @@
             setupAutocomplete('natal_customTimezone', 'natalTimezoneSuggestions');
             setupAutocomplete('transit_customTimezone', 'transitTimezoneSuggestions');
         });
-        
+        // Define the desired display order for planets and points (copied from backend for consistency)
+        const DISPLAY_ORDER_NAMES = [
+            "太陽", "月亮", "水星", "金星", "火星", "木星", "土星", "天王", "海王", "冥王",
+            "凱龍", "穀神", "智神", "婚神", "灶神", "愛神", "莉莉絲", "靈神", "人龍",
+            "北交", "南交", "上升", "下降", "天頂", "天底", "宿命", "福點"
+        ];
+        const FOUR_ANGLES_AND_NODES = ['上升', '下降', '天頂', '天底', '宿命', '福點', '北交', '南交'];
+
+        // IMPORTANT: Define the base URL for your Flask backend API
+        // This MUST match the port your Flask app is running on (default is 5000)
+        const BASE_API_URL = '';
+
         // Helper function to get timezone offset string for display
         function getTimezoneOffsetString(timezoneName) {
             try {
@@ -2016,60 +2015,93 @@
             }
         }
 
+        /**
+         * NEW: Renders the formatted text into distinct sections with copy buttons.
+         * @param {string} fullText - The complete formatted string from the backend.
+         */
+        function renderSectionsFromText(fullText) {
+            const resultContainer = document.getElementById('resultOutput');
+            resultContainer.innerHTML = ''; // Clear previous results
 
-        // =============================================================
-        // 升級版的「複製按鈕」監聽器
-        // =============================================================
-        const resultOutputContainer = document.getElementById('resultOutput');
-        resultOutputContainer.addEventListener('click', (event) => {
-            const button = event.target;
+            const lines = fullText.split('\n');
+            let currentSection = null;
 
-            const copyToClipboard = (text, btn) => {
-                const originalText = btn.textContent;
-                navigator.clipboard.writeText(text).then(() => {
-                    btn.textContent = '已複製！';
-                    setTimeout(() => { btn.textContent = originalText; }, 2000);
-                }).catch(err => {
-                    console.error('無法複製文字: ', err);
-                    btn.textContent = '複製失敗';
-                    setTimeout(() => { btn.textContent = originalText; }, 2000);
-                });
+            const createNewSection = (title) => {
+                const sectionItem = document.createElement('div');
+                sectionItem.className = 'result-section-item';
+
+                const sectionHeader = document.createElement('div');
+                sectionHeader.className = 'result-section-header';
+
+                const sectionTitle = document.createElement('h3');
+                sectionTitle.textContent = title;
+
+                // Revised Logic for applying header styles
+                if (title.includes("行運") && (title.includes("之間的相位") || title.includes("的行星落入"))) {
+                    sectionHeader.classList.add('transit-header');
+                } else if (title.includes("之間的相位") || title.includes("的行星落入")) {
+                    sectionTitle.classList.add('interchart-aspect-title');
+                    sectionHeader.classList.add('interchart-header');
+                } else if (title.includes("的星盤資訊") || (title.includes("的組合中點盤"))) {
+                    sectionHeader.classList.add('single-chart-header');
+                } else if (title.includes("宮頭星座度數") || title.includes("星體位置") || title.includes("內主要相位")) {
+                    sectionHeader.classList.add('single-chart-header-sub');
+                }
+
+                const copyBtn = document.createElement('button');
+                copyBtn.className = 'section-copy-btn';
+                copyBtn.textContent = '複製';
+
+                const sectionContent = document.createElement('pre');
+                sectionContent.className = 'result-section-content';
+
+                sectionHeader.appendChild(sectionTitle);
+                sectionHeader.appendChild(copyBtn);
+                sectionItem.appendChild(sectionHeader);
+                sectionItem.appendChild(sectionContent);
+
+                return {
+                    element: sectionItem,
+                    contentElement: sectionContent,
+                    contentLines: []
+                };
             };
 
-            // 處理「獨立複製」按鈕 (此邏輯現在對所有小區塊都適用，包括基本資訊)
-            if (button.matches('.section-copy-btn')) {
-                const sectionItem = button.closest('.result-section-item');
-                const textToCopy = sectionItem.querySelector('pre').textContent;
-                copyToClipboard(textToCopy, button);
+            lines.forEach(line => {
+                const trimmedLine = line.trim();
+                const headerMatch = trimmedLine.match(/^(?:===|---)\s*(.*?)\s*(?:===|---)?$/);
+
+                if (headerMatch && headerMatch[1]) {
+                    if (currentSection) {
+                        currentSection.contentElement.textContent = currentSection.contentLines.join('\n').trim();
+                        resultContainer.appendChild(currentSection.element);
+                    }
+                    currentSection = createNewSection(headerMatch[1].trim());
+                } else if (currentSection && line.trim() !== '') { // Avoid adding empty lines between sections
+                    currentSection.contentLines.push(line);
+                }
+            });
+
+            if (currentSection) {
+                currentSection.contentElement.textContent = currentSection.contentLines.join('\n').trim();
+                resultContainer.appendChild(currentSection.element);
             }
+        }
 
-            // 處理「複製此個人星盤」按鈕 (此邏輯不變，因為它本來就只複製 .sub-sections-container 裡的內容)
-            if (button.matches('.copy-chart-btn')) {
-                const chartWrapper = button.closest('.chart-wrapper');
+        /**
+         * Formats the astrological chart data received from the backend (Python)
+         * into a human-readable string for display in the HTML.
+         * @param {object} chartData - The JSON object containing chart calculation results.
+         * @param {string} chart1Name - Name of Chart 1 (e.g., "我的", "本命").
+         * @param {string} chart2Name - Name of Chart 2 (e.g., "他的", "行運").
+         * @returns {string} - The formatted string representation of the chart data.
+         */
+        function formatChartDataForDisplayFrontend(chartData, chart1Name = "我的", chart2Name = "他的") {
+            const outputLines = [];
+            const HOUSE_DEFINING_POINTS = ['上升', '下降', '天頂', '天底'];
 
-                // 我們只尋找包含「宮頭、星體、相位」的 .sub-sections-container
-                const subSectionsContainer = chartWrapper.querySelector('.sub-sections-container');
-
-                let fullText = [];
-                // 我們只遍歷這個容器裡面的子區塊，從而自然地排除了「基本資訊」區塊
-                subSectionsContainer.querySelectorAll('.result-section-item').forEach(item => {
-                    const header = item.querySelector('.result-section-header span').textContent;
-                    const content = item.querySelector('.result-section-content pre').textContent;
-                    fullText.push(`${header}\n${content}`);
-                });
-
-                const textToCopy = fullText.join('\n\n');
-                copyToClipboard(textToCopy, button);
-            }
-        });
-
-
-
-
-        // =============================================================
-        // 【專業工人一號】：單命盤的部分
-        // =============================================================
-            const buildSingleChartHTML = (chartInfo, title) => {
+            // Helper to format a single chart's data (Part A)
+            const formatSingleChartSection = (chartInfo, title) => {
 
                 // 內餡0：「星盤基礎數據」
                 const summaryLines = []; // Use a local array for this section
@@ -2111,7 +2143,7 @@
                 console.log(`DEBUG: After basic info for ${title}, summaryLines length: ${summaryLines.length}`);
                 console.log(`DEBUG: summaryLines (basic info) for ${title}:`, summaryLines.slice(-5));
 
-                const summaryContentString = summaryLines.join('\n');
+                const summaryContentString = summary.join('\n');
 
                 // 內餡一：宮頭
                 const cuspLines = [];
@@ -2342,94 +2374,10 @@
                 return fullSectionHtml;
             };
 
-    // =============================================================
-    // 【專業工人二號】：負責打造一個「交互相位」的HTML報告
-    // =============================================================
-    function buildInterAspectsHTML(aspects, title) {
-        // 準備內餡
-        const aspectLines = [];
-        aspectLines.push("星體1 | 相位 | 星體2 | 動態 | 容許度");
-        aspectLines.push("---------------------------------------");
-        if (aspects && aspects.length > 0) {
-            // ... 在這裡放入您遍歷 aspects 並 aspectLines.push(...) 的邏輯 ...
-        } else {
-            aspectLines.push("沒有偵測到相關相位。");
-        }
-        const contentString = aspectLines.join('\n');
-
-        // 包裝成 HTML
-        const sectionHtml = `
-        <div class="result-section-item">
-            <div class="result-section-header">
-                <span>${title}</span>
-                <button class="section-copy-btn">複製</button>
-            </div>
-            <div class="result-section-content"><pre>${contentString}</pre></div>
-        </div>
-    `;
-        return sectionHtml;
-    }
-
-
-    // =============================================================
-    // 【總管函式】：現在變得非常乾淨，只負責「派工」和「顯示」
-    // 這取代了您舊的 formatChartDataForDisplayFrontend
-    // =============================================================
-    function displayChartData(chartData, chart1Name = "我的", chart2Name = "他的") {
-        const resultOutputContainer = document.getElementById('resultOutput');
-        resultOutputContainer.innerHTML = ''; // 清空舊內容
-
-        // 準備一個陣列，用來收集所有工人做好的 HTML 成品
-        const finalHtmlPieces = [];
-
-        // 總管開始看訂單 (`chart_type`)，然後派工
-        if (chartData.chart_type === 'single') {
-            finalHtmlPieces.push(buildSingleChartHTML(chartData, `${chart1Name}的星盤資訊`));
-
-        } else if (chartData.chart_type === 'composite') {
-            finalHtmlPieces.push(buildSingleChartHTML(chartData.composite_chart_data, `${chart1Name}與${chart2Name}的組合中點盤`));
-            finalHtmlPieces.push(buildSingleChartHTML(chartData.natal_chart1_data, `${chart1Name}的本命星盤資訊`));
-            finalHtmlPieces.push(buildSingleChartHTML(chartData.natal_chart2_data, `${chart2Name}的本命星盤資訊`));
-
-        } else if (chartData.chart_type === 'comparison') {
-            finalHtmlPieces.push(buildInterAspectsHTML(chartData.inter_aspects, `=== ${chart1Name}與${chart2Name}之間的相位 ===`));
-            // ... 如果還有其他比較盤的區塊，也可以在這裡呼叫對應的工人函式 ...
-            finalHtmlPieces.push(buildSingleChartHTML(chartData.chart1_data, `${chart1Name}的星盤資訊`));
-            finalHtmlPieces.push(buildSingleChartHTML(chartData.chart2_data, `${chart2Name}的星盤資訊`));
-
-        } else if (chartData.chart_type === 'transit') {
-            // ... 呼叫對應的工人函式來處理行運盤的各個區塊 ...
-        } else {
-            resultOutputContainer.innerHTML = `<p>錯誤：未知的星盤類型 '${chartData.chart_type}'</p>`;
-            return; // 出錯了就直接結束
-        }
-
-        // 總管把所有工人交來的成品，一次性地全部放到展示區
-        resultOutputContainer.innerHTML = finalHtmlPieces.join('');
-    }
-
-
-
-
-
-    // --- 最終呼叫的地方 ---
-    // 在您 fetch(...).then(chartData => { ... }) 的成功區塊裡，
-    // 您只需要呼叫一次總管函式，所有事情就都完成了！
-    // displayChartData(chartData, chart1Name, chart2Name);
-    
-    // 為了讓這個範例能獨立運作，我們在這裡模擬一次呼叫
-    displayChartData({ chart_type: 'composite', composite_chart_data:{}, natal_chart1_data:{}, natal_chart2_data:{} }, "王小明", "陳大美");
-
-
-
-</script>
-    
-
-
-        <!-- function formatChartDataForDisplayFrontend(chartData, chart1Name = "我的", chart2Name = "他的") {
-            const outputLines = [];
             // Main logic based on chart type
             console.log('DEBUG: Received chartData.chart_type:', chartData.chart_type); // <-- NEW LOG HERE
+
+            outputLines.push(codeBlockDelimiter);
             if (Object.keys(chartData).length === 0) { // Check if it's an empty object
                 outputLines.push("錯誤：從後端接收到的星盤數據為空。");
                 console.error("ERROR: Received empty chartData object from backend.");
@@ -2636,7 +2584,53 @@
 
                 // outputLines.push(`\n=== ${chart1Name} 的行星在 ${chart2Name} 宮位 (本命星體落行運宮位) (C-1) ===`);
                 // if (!chartData.natal_planets_in_transit_houses || chartData.natal_planets_in_transit_houses.length === 0) {
-                
+                //     outputLines.push("目前沒有偵測到本命星體落入行運宮位。");
+                // } else {
+                //     chartData.natal_planets_in_transit_houses.sort((a, b) => 
+                //         DISPLAY_ORDER_NAMES.indexOf(a.planet_name) - DISPLAY_ORDER_NAMES.indexOf(b.planet_name)
+                //     );
+                //     chartData.natal_planets_in_transit_houses.forEach(overlay => {
+                //         outputLines.push(
+                //             `${chart1Name}的${overlay.planet_name}${overlay.retrograde_label || ''}${overlay.zodiac_position_formatted}在${chart2Name}的` +
+                //             `${overlay.house_in_target_chart}宮(${overlay.degree_in_target_house.toFixed(2)}°)。`
+                //         );
+                //     });
+                // }
+
+                // outputLines.push(`\n=== ${chart1Name} 與 ${chart2Name} 之間的相位 (本命星體與行運星體相位) (C-2) ===`);
+                // if (!chartData.inter_aspects || chartData.inter_aspects.length === 0) {
+                //     outputLines.push("目前沒有偵測到跨盤相位。");
+                // } else {
+                //     // For C-2 (Natal to Transit), we sort by natal planets (p1) first.
+                //     const c2_aspects = [...chartData.inter_aspects]; // Create a copy to sort
+                //     c2_aspects.sort((a, b) => {
+                //         const p1IndexA = DISPLAY_ORDER_NAMES.indexOf(a.p1_name);
+                //         const p1IndexB = DISPLAY_ORDER_NAMES.indexOf(b.p1_name);
+                //         if (p1IndexA !== p1IndexB) return p1IndexA - p1IndexB;
+                //         return DISPLAY_ORDER_NAMES.indexOf(a.p2_name) - DISPLAY_ORDER_NAMES.indexOf(b.p2_name);
+                //     });
+
+                //     c2_aspects.forEach(asp => {
+                //         const p1OverlayInChart2 = chartData.natal_planets_in_transit_houses.find(o => o.planet_name === asp.p1_name);
+                //         const p1HouseInTarget = p1OverlayInChart2 ? `在${chart2Name}的${p1OverlayInChart2.house_in_target_chart}宮(${p1OverlayInChart2.degree_in_target_house.toFixed(2)}°)` : '';
+
+                //         // 修正：安全地處理 p2 的宮位資訊
+                //         const p2House = typeof asp.p2_details.house === 'number' ? `${asp.p2_details.house}宮` : '';
+                //         const p2Hdeg = typeof asp.p2_details.hdeg === 'number' ? `(${asp.p2_details.hdeg.toFixed(2)}°)` : '';
+
+                //         let aspectLine = `${chart1Name}的${asp.p1_name}${asp.p1_details.retrograde_label || ''}${asp.p1_details.zodiac_position_formatted}${p1HouseInTarget}，` +
+                //                          `${asp.aspect_name}${chart2Name}的${asp.p2_name}${asp.p2_details.retrograde_label || ''}${asp.p2_details.zodiac_position_formatted}${p2House}${p2Hdeg}`;
+
+                //         if (asp.orb !== undefined) {
+                //             if (asp.aspect_type) {
+                //                 aspectLine += `，${asp.aspect_type}${asp.orb.toFixed(2)}°。`;
+                //             } else {
+                //                 aspectLine += `，容許度${asp.orb.toFixed(2)}°。`;
+                //             }
+                //         }
+                //         outputLines.push(aspectLine);
+                //     });
+                // }
 
             } else { // <-- NEW ELSE BLOCK FOR UNKNOWN CHART TYPES
                 outputLines.push(`錯誤：未知的星盤類型 '${chartData.chart_type || "未指定"}'。請檢查後端輸出。`);
@@ -2666,10 +2660,54 @@
             resultOutputContainer.innerHTML += natal1Html;
         }
 
-        
+        // =============================================================
+        // 升級版的「複製按鈕」監聽器
+        // =============================================================
+        const resultOutputContainer = document.getElementById('resultOutput');
+        resultOutputContainer.addEventListener('click', (event) => {
+            const button = event.target;
+
+            const copyToClipboard = (text, btn) => {
+                const originalText = btn.textContent;
+                navigator.clipboard.writeText(text).then(() => {
+                    btn.textContent = '已複製！';
+                    setTimeout(() => { btn.textContent = originalText; }, 2000);
+                }).catch(err => {
+                    console.error('無法複製文字: ', err);
+                    btn.textContent = '複製失敗';
+                    setTimeout(() => { btn.textContent = originalText; }, 2000);
+                });
+            };
+
+            // 處理「獨立複製」按鈕 (此邏輯現在對所有小區塊都適用，包括基本資訊)
+            if (button.matches('.section-copy-btn')) {
+                const sectionItem = button.closest('.result-section-item');
+                const textToCopy = sectionItem.querySelector('pre').textContent;
+                copyToClipboard(textToCopy, button);
+            }
+
+            // 處理「複製此個人星盤」按鈕 (此邏輯不變，因為它本來就只複製 .sub-sections-container 裡的內容)
+            if (button.matches('.copy-chart-btn')) {
+                const chartWrapper = button.closest('.chart-wrapper');
+
+                // 我們只尋找包含「宮頭、星體、相位」的 .sub-sections-container
+                const subSectionsContainer = chartWrapper.querySelector('.sub-sections-container');
+
+                let fullText = [];
+                // 我們只遍歷這個容器裡面的子區塊，從而自然地排除了「基本資訊」區塊
+                subSectionsContainer.querySelectorAll('.result-section-item').forEach(item => {
+                    const header = item.querySelector('.result-section-header span').textContent;
+                    const content = item.querySelector('.result-section-content pre').textContent;
+                    fullText.push(`${header}\n${content}`);
+                });
+
+                const textToCopy = fullText.join('\n\n');
+                copyToClipboard(textToCopy, button);
+            }
+        });
 
         // 執行顯示
-        displayAllCharts(); -->
+        displayAllCharts();
     </script>
 </body>
 
