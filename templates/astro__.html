@@ -559,8 +559,12 @@
         .chart-main-header button {
             background-color: #42b72a; color: white;
         }
+        /* 【關鍵修改】放大「計算星盤」按鈕 */
         #calculateBtn {
-            background-color: #1877f2; color: white; padding: 8px 16px; font-size: 14px;
+            background-color: #007bff;
+            color: white;
+            padding: 20px 40px; /* 8px*2.5, 16px*2.5 */
+            font-size: 35px;    /* 14px*2.5 */
         }
         
 
@@ -2072,9 +2076,9 @@
 
                 // 內餡0：「星盤基礎數據」
                 const summaryLines = []; // Use a local array for this section
-
-                summaryLines.push(`\n=== ${title} ===`);
-
+                aspectLines.push("\n==============================");
+                summaryLines.push(`\n${title}`);
+                aspectLines.push("\n==============================");
                 // 時間戳信息
                 if (chartInfo.timestamps) {
                     const ts = chartInfo.timestamps;
@@ -2114,7 +2118,7 @@
 
                 // 內餡一：宮頭
                 const cuspLines = [];
-
+                aspectLines.push("\n==============================");
                 cuspLines.push("\n--- 宮頭星座度數 ---");
                 cuspLines.push("\n==============================");
                 cuspLines.push("\n宮頭 | 星座 | 星座度數(度分)");
@@ -2137,7 +2141,7 @@
 
                 // 內餡二：星體位置
                 const planetLines = [];
-
+                aspectLines.push("\n==============================");
                 planetLines.push("\n--- 星體位置 ---");
                 planetLines.push("\n==============================");
                 planetLines.push("\n星體名稱 | 逆行狀態 | 星座 | 星座度數(度分) | 宮位 | 宮位度數(度分)");
@@ -2201,6 +2205,7 @@
                 const aspectLines = [];
 
                 // --- 單盤內主要相位 (修正版) ---
+                aspectLines.push("\n==============================");
                 aspectLines.push("\n--- 單盤內主要主要相位 ---");
                 aspectLines.push("\n==============================");
                 aspectLines.push("\n星體1名稱 | 相位名稱 | 星體2名稱 | 相位動態 | 容許度(度分)");
@@ -2289,7 +2294,7 @@
             const fullSectionHtml = `
                 <div class="chart-wrapper">
                     <div class="chart-main-header">
-                        <h1>${title}</h1>
+                        <h1 class="text-3xl md:text-5xl ...">${title}</h1>
                         <!-- 這個按鈕現在只會複製下面的 sub-sections-container 內容 -->
                         <button class="copy-chart-btn">複製此個人星盤</button>
                         </div>
@@ -2320,7 +2325,7 @@
                         </div>
                         <div class="result-section-item">
                             <div class="result-section-header">
-                                <span>--- 星體位置 ---</span>
+                                <span>--- 宮頭星座度數 ---</span>
                                 <button class="section-copy-btn">複製</button>
                             </div>
                             <div class="result-section-content">
