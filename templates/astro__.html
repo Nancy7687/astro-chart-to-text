@@ -59,14 +59,16 @@
             font-size: 1.25em;
         }
         
-        /* 【關鍵修改】子區塊容器的樣式 */
+        /* 【關鍵修改】這個容器包覆著「宮頭」、「星體」、「相位」這三個子區塊。*/
         .sub-sections-container {
             padding: 20px;
             display: flex;              /* 啟用 Flexbox 佈局 */
-            flex-direction: row;        /* ▲ 核心指令：設定主軸為水平方向 (由左到右) */
-            flex-wrap: wrap;            /* ▲ 允許換行，在螢幕空間不足時會自動堆疊 */
+         flex-direction: row;        /* ▲ 核心指令：設定主軸為水平方向 (由左到右) */
+            flex-wrap: wrap;            /* ▲ 允許換行，在小螢幕上會自動變成垂直堆疊 */
             gap: 1.5rem;                /* ▲ 設定子區塊之間的間距 */
+            align-items: stretch;       /* 讓所有子區塊在交叉軸上等高 */
         }
+
         .summary-section-container {
              padding: 20px;
              padding-top: 0;
