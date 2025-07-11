@@ -2121,18 +2121,17 @@
                 cuspLines.push("\n宮頭 | 星座 | 星座度數(度分)");
                 cuspLines.push("\n------------------------------");
                 if (chartInfo.house_cusps && Array.isArray(chartInfo.house_cusps) && chartInfo.house_cusps.length > 0) {
-                    console.log(`DEBUG: Entering house_cusps block for ${title}. summaryLines length before: ${summaryLines.length}`); // <-- NEW LOG
                     chartInfo.house_cusps.forEach(cusp => {
                         cuspLines.push(`${String(cusp.house_number).padEnd(2, ' ')}宮頭: ${cusp.zodiac_position_formatted}`);
-                        // 4. 最後，當您要使用這個表格時，用換行符號把它們全部組合起來
-                        const cuspContentString = cuspLines.join('\n');
+                        // ✅ 修正：把 .join() 從迴圈中移除，讓迴圈只專心做一件事：填充陣列
                     });
-
-                    console.log(`DEBUG: Finished house_cusps block for ${title}. cuspLines length after: ${summaryLines.length}`); // <-- NEW LOG
                 } else {
                     cuspLines.push("沒有宮頭星座度數數據。");
-                    console.warn(`WARN: house_cusps missing or empty for ${title}. Value:`, chartInfo.house_cusps);
                 }
+
+                // --- 步驟二：在所有內容都填充完畢後，才將陣列轉換成最終字串 ---
+                // ✅ 修正：在這裡定義 cuspContentString，它現在是在函式主體的作用域中
+                const cuspContentString = cuspLines.join('\n');
 
                 console.log(`DEBUG: After house cusps for ${title}, cuspLines length: ${cuspLines.length}`);
                 console.log(`DEBUG: cuspLines (house cusps) for ${title}:`, cuspLines.slice(-5));
