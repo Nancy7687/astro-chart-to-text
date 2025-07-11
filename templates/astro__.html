@@ -2064,7 +2064,8 @@
 
                             // 修正：四軸點不顯示宮位資訊
                             if (!HOUSE_DEFINING_POINTS.includes(name) && houseNum !== null && hdegNum !== null) {
-                                line += `　${houseNum}宮　(${hdegNum.toFixed(2)}°)`;
+                                let formattedHdeg = formatDegreesMinutesSeconds(hdegNum);
+                                line += `　${houseNum}宮　${formattedHdeg}°`;
                             }
                             currentSectionLines.push(line);
 
@@ -2273,10 +2274,13 @@
                         DISPLAY_ORDER_NAMES.indexOf(a.planet_name) - DISPLAY_ORDER_NAMES.indexOf(b.planet_name)
                     );
                     chartData.chart2_planets_in_chart1_houses.forEach(overlay => {
+                        // 在這裡，將 overlay.degree_in_target_house 傳入 formatDegreesMinutesSeconds 函數
+                        const formattedDegreeInHouse = formatDegreesMinutesSeconds(overlay.degree_in_target_house);
+
                         outputLines.push(
-                                `${chart2Name}的${overlay.planet_name}${overlay.retrograde_label || ''}${overlay.zodiac_position_formatted}在${chart1Name}的` +
-                                `${overlay.house_in_target_chart}宮(${overlay.degree_in_target_house.toFixed(2)}°)。`
-                            );
+                            `${chart2Name}的${overlay.planet_name}${overlay.retrograde_label || ''}${overlay.zodiac_position_formatted}在${chart1Name}的` +
+                            `${overlay.house_in_target_chart}宮(${formattedDegreeInHouse})。` // <-- 這裡改用轉換後的變數
+                    );
                     });
                 }
                 // (C-1) 本命星體落對方宮位
@@ -2291,9 +2295,12 @@
                         DISPLAY_ORDER_NAMES.indexOf(a.planet_name) - DISPLAY_ORDER_NAMES.indexOf(b.planet_name)
                     );
                     chartData.chart1_planets_in_chart2_houses.forEach(overlay => {
+                        // 在這裡，將 overlay.degree_in_target_house 傳入 formatDegreesMinutesSeconds 函數
+                        const formattedDegreeInHouse = formatDegreesMinutesSeconds(overlay.degree_in_target_house);
+
                         outputLines.push(
                                 `${chart1Name}的${overlay.planet_name}${overlay.retrograde_label || ''}${overlay.zodiac_position_formatted}在${chart2Name}的` +
-                                `${overlay.house_in_target_chart}宮(${overlay.degree_in_target_house.toFixed(2)}°)。`
+                                `${overlay.house_in_target_chart}宮　${formattedDegreeInHouse}`
                             );
                     });
                 }
@@ -2328,7 +2335,7 @@
 
                 b2_aspects.forEach(asp => {
                     const p2OverlayInChart1 = chartData.transit_planets_in_natal_houses.find(o => o.planet_name === asp.p2_name);
-                    const p2HouseDisplay = p2OverlayInChart1 ? `在${chart1Name}的${p2OverlayInChart1.house_in_target_chart}宮(${p2OverlayInChart1.degree_in_target_house.toFixed(2)}°)` : '';
+                    const p2HouseDisplay = p2OverlayInChart1 ? `在${chart1Name}的${p2OverlayInChart1.house_in_target_chart}宮　${formatDegreesMinutesSeconds(p2OverlayInChart1.degree_in_target_house)}°` : '';
 
                     // 修正：安全地處理 p1 的宮位資訊
                     const p1House = typeof asp.p1_details.house === 'number' ? `${asp.p1_details.house}宮` : '';
@@ -2362,7 +2369,7 @@
                 chartData.transit_planets_in_natal_houses.forEach(overlay => {
                     outputLines.push(
                         `${chart2Name}的${overlay.planet_name}${overlay.retrograde_label || ''}${overlay.zodiac_position_formatted}在${chart1Name}的` +
-                        `${overlay.house_in_target_chart}宮(${overlay.degree_in_target_house.toFixed(2)}°)。`
+                        `${overlay.house_in_target_chart}宮　${formatDegreesMinutesSeconds(p2OverlayInChart1.degree_in_target_house)}°`
                     );
                 });
             }
@@ -2433,32 +2440,26 @@
         return outputLines.join('\n'); 
         }
 
-        // 將此函數添加到你的 JavaScript 文件中
+        // 請將此修改後的函數替換你 JavaScript 檔案中原有的 `formatDegreesMinutesSeconds` 函數
             function formatDegreesMinutesSeconds(decimalDegrees) {
                 // 確保輸入是數字且非 NaN
                 if (typeof decimalDegrees !== 'number' || isNaN(decimalDegrees)) {
-                    // 如果你確信所有要格式化的都會是有效數字，這個檢查可以簡化或移除
-                    return "N/A"; // 或者返回一個空字串，或你認為合適的預設錯誤值
+                    return "N/A"; // 或者你希望的預設值，例如 "00°00'"
                 }
 
-                let d = Math.floor(decimalDegrees);
-                let minutesDecimal = (decimalDegrees - d) * 60;
-                let m = Math.floor(minutesDecimal);
-                let secondsDecimal = (minutesDecimal - m) * 60;
-                let s = Math.round(secondsDecimal);
+                let d = Math.floor(decimalDegrees); // 取整數度數
+                let minutesDecimal = (decimalDegrees - d) * 60; // 將小數部分轉換為分鐘（含小數）
+                let m = Math.round(minutesDecimal); // **關鍵：在這裡對分鐘進行四捨五入**
 
-                // 處理進位
-                if (s >= 60) {
-                    m += 1;
-                    s = 0;
-                }
+                // 處理分鐘的進位（如果四捨五入後分鐘達到 60）
                 if (m >= 60) {
                     d += 1;
                     m = 0;
                 }
 
-                // 使用 padStart 確保兩位數格式 (例如 5 變成 05)
-                return `${String(d).padStart(2, '0')}°${String(m).padStart(2, '0')}'${String(s).padStart(2, '0')}"`;
+                // 格式化為 XX°YY' (只顯示度數和分鐘)
+                // 使用 padStart 確保兩位數格式（例如 5 變成 05）
+                return `${String(d).padStart(2, '0')}°${String(m).padStart(2, '0')}'`;
             }
     </script>
 </body>
