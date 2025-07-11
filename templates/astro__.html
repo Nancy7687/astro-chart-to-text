@@ -2153,10 +2153,13 @@
 
                         // 處理相位動態和容許度
                         if (aspItem.orb !== undefined) {
+                            // 在這裡呼叫轉換函數，將十進制數值轉換為六十進制字串
+                            let displayedOrb = formatDegreesMinutesSeconds(aspItem.orb);
+
                             if (aspItem.aspect_type) { // 如果有 "入相" 或 "出相"
-                                aspectLine += `　${aspItem.aspect_type}　${aspItem.orb.toFixed(2)}°`;
+                                aspectLine += `　${aspItem.aspect_type}　${displayedOrb}`; // 使用已經格式化好的字串
                             } else { // 如果沒有相位動態，直接加上 "容許度"
-                                aspectLine += `　容許度${aspItem.orb.toFixed(2)}°`;
+                                aspectLine += `-　容許度${displayedOrb}`; // 使用已經格式化好的字串
                             }
                         } else {
                             aspectLine += ``; // 如果沒有容許度，直接結束
@@ -2208,12 +2211,16 @@
                         // --- END: 修改完成 ---
 
                         if (asp.orb !== undefined) {
+
+                            // 在這裡呼叫轉換函數，將十進制數值轉換為六十進制字串
+                            let displayedOrb = formatDegreesMinutesSeconds(asp.orb); 
+
                             if (asp.aspect_type) {
                                 // 相位動態和容許度
-                                aspectLine += `　${asp.aspect_type}　${asp.orb.toFixed(2)}°`;
+                                aspectLine += `　${asp.aspect_type}　${displayedOrb}`;
                             } else {
                                 // 如果沒有 aspect_type，就只顯示容許度
-                                aspectLine += `　容許度　${asp.orb.toFixed(2)}°`;
+                                aspectLine += `-　容許度　${displayedOrb}`;
                             }
                         }
                         outputLines.push(aspectLine);
@@ -2241,10 +2248,14 @@
                         // --- END: 修改完成 ---
 
                         if (asp.orb !== undefined) {
+
+                            // 在這裡呼叫轉換函數，將十進制數值轉換為六十進制字串
+                            let displayedOrb = formatDegreesMinutesSeconds(asp.orb);
+
                             if (asp.aspect_type) {
-                                aspectLine += `　${asp.aspect_type}　${asp.orb.toFixed(2)}°`; // 相位動態和容許度
+                                aspectLine += `　${asp.aspect_type}　${displayedOrb}`; // 相位動態和容許度
                             } else {
-                                aspectLine += `　容許度　${asp.orb.toFixed(2)}°`; // 如果沒有 aspect_type，就只顯示容許度
+                                aspectLine += `-　容許度　${displayedOrb}`; // 如果沒有 aspect_type，就只顯示容許度
                             }
                         }
                         outputLines.push(aspectLine);
@@ -2327,10 +2338,13 @@
                         `${asp.aspect_name}${chart1Name}的${asp.p1_name}${asp.p1_details.retrograde_label || ''}${asp.p1_details.zodiac_position_formatted}${p1House}${p1Hdeg}`;
 
                     if (asp.orb !== undefined) {
+
+                        // 在這裡呼叫轉換函數，將十進制數值轉換為六十進制字串
+                        let displayedOrb = formatDegreesMinutesSeconds(asp.orb); 
                         if (asp.aspect_type) {
-                            aspectLine += `，${asp.aspect_type}${asp.orb.toFixed(2)}°。`;
+                            aspectLine += `　${asp.aspect_type}${displayedOrb}`;
                         } else {
-                            aspectLine += `，容許度${asp.orb.toFixed(2)}°。`;
+                            aspectLine += `-　容許度${displayedOrb}`;
                         }
                     }
                     outputLines.push(aspectLine);
@@ -2418,6 +2432,34 @@
         console.log('formatChartDataForDisplayFrontend function finished.');
         return outputLines.join('\n'); 
         }
+
+        // 將此函數添加到你的 JavaScript 文件中
+            function formatDegreesMinutesSeconds(decimalDegrees) {
+                // 確保輸入是數字且非 NaN
+                if (typeof decimalDegrees !== 'number' || isNaN(decimalDegrees)) {
+                    // 如果你確信所有要格式化的都會是有效數字，這個檢查可以簡化或移除
+                    return "N/A"; // 或者返回一個空字串，或你認為合適的預設錯誤值
+                }
+
+                let d = Math.floor(decimalDegrees);
+                let minutesDecimal = (decimalDegrees - d) * 60;
+                let m = Math.floor(minutesDecimal);
+                let secondsDecimal = (minutesDecimal - m) * 60;
+                let s = Math.round(secondsDecimal);
+
+                // 處理進位
+                if (s >= 60) {
+                    m += 1;
+                    s = 0;
+                }
+                if (m >= 60) {
+                    d += 1;
+                    m = 0;
+                }
+
+                // 使用 padStart 確保兩位數格式 (例如 5 變成 05)
+                return `${String(d).padStart(2, '0')}°${String(m).padStart(2, '0')}'${String(s).padStart(2, '0')}"`;
+            }
     </script>
 </body>
 
