@@ -1275,14 +1275,14 @@
         <!-- Planet Selection Checkboxes -->
         <div id="planetSelection" class="mb-6 p-4 border border-gray-200 rounded-lg bg-gray-50">
             <div class="flex justify-between items-center mb-3">
-                <h3 class="planetSelection-text text-2xl md:text-4xl font-bold text-gray-700">顯示選項<br>(小行星/虛點)</h3>
+                <h3 class="planetSelection-text text-2xl md:text-4xl font-bold text-gray-700　leading-relaxed">顯示選項<br>(小行星/虛點)</h3>
                 <div>
                     <button id="toggleAllPlanetsBtn"
                         class="text-lg md:text-2xl font-medium text-indigo-600 hover:text-indigo-800">全部取消</button>
                 </div>
             </div>
             <div id="optionalPlanetsContainer"
-                class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-x-6 gap-y-3">
+                class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-x-6 gap-y-3 leading-relaxed">
                 <!-- Checkboxes will be populated here by JavaScript -->
             </div>
         </div>
@@ -1597,8 +1597,10 @@
 
             // --- 動態生成小行星/虛點的核取方塊 (優化分組) ---
             const optionalPlanetsConfig = {
+                '十大行星－人格基石與生命動力（建議全選）': ["太陽", "月亮", "水星", "金星", "火星", "木星", "土星", "天王星", "海王星", "冥王星"],
+                '四軸－生命舞台與定位座標（建議全選）': ["上升", "下降", "天頂", "天底"],
+                '命運與潛意識': ["北交", "南交", "宿命", "福點", "莉莉絲"],
                 '療癒與潛能': ["凱龍", "穀神", "智神", "婚神", "灶神"],
-                '命運與潛意識': ["莉莉絲", "宿命", "福點"],
                 '深度心理': ["愛神", "靈神", "人龍"]
             };
             const optionalPlanetsContainer = document.getElementById('optionalPlanetsContainer');
