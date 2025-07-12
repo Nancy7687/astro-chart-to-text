@@ -261,7 +261,7 @@
             /* More rounded button */
             font-weight: 700;
             cursor: pointer;
-            font-size: 2rem;
+            font-size: 5rem;
             /* 顯著加大字體 (相當於 text-4xl) */
             line-height: 2.5rem;
             /* 調整行高以適應大字體 */
@@ -477,7 +477,7 @@
 
         /* 【新增】專門用來產生捲軸的樣式 */
         .scrollable-content {
-            max-height: 300px; /* 設定一個最大高度，您可以調整這個值 */
+            max-height: 900px; /* 設定一個最大高度，您可以調整這個值 */
             overflow-y: auto;  /* 當內容超出最大高度時，顯示垂直捲軸 */
         }
         /* 美化捲軸樣式 (適用於 Webkit 核心瀏覽器如 Chrome, Safari) */
@@ -792,6 +792,12 @@
             font-size: 2.25rem; /* 基礎字體大小 (等於 text-4xl) */
             font-weight: 700;   /* 標準粗體 */
             letter-spacing: 0.05em; /* 美觀的字元間距 */
+        }
+
+
+        .copy-chart-btn {
+            letter-spacing: 0.05em; /* 美觀的字元間距 */
+            padding: 5px 10px;
         }
 
         /* --- 響應式設計：針對桌面等較大螢幕的樣式 --- */
@@ -2328,7 +2334,7 @@
                     <div class="chart-main-header">
                         <h1 class="main-title">${title}</h1>
                         <!-- 這個按鈕現在只會複製下面的 sub-sections-container 內容 -->
-                        <button class="copy-chart-btn">複製此個人星盤</button>
+                        <button class="copy-chart-btn text-2xl md:text-3xl">複製此個人星盤</button>
                         </div>
                         
                         <!-- 1. 基礎數據區塊，它現在是獨立的 -->
@@ -2338,7 +2344,7 @@
                                 <span>星盤基礎數據</span>
                                 <button class="section-copy-btn">複製 (選擇性)</button>
                             </div>
-                            <div class="result-section-content">
+                            <div class="result-section-content scrollable-content">
                                 <pre>${summaryContentString}</pre>
                             </div>
                         </div>
@@ -2351,7 +2357,7 @@
                                 <span>宮頭星座度數</span>
                                 <button class="section-copy-btn">複製</button>
                             </div>
-                            <div class="result-section-content">
+                            <div class="result-section-content scrollable-content">
                                 <pre>${cuspContentString}</pre>
                             </div>
                         </div>
@@ -2360,7 +2366,7 @@
                                 <span>星體位置</span>
                                 <button class="section-copy-btn">複製</button>
                             </div>
-                            <div class="result-section-content">
+                            <div class="result-section-content scrollable-content">
                                 <pre>${planetContentString}</pre>
                             </div>
                         </div>
