@@ -2151,7 +2151,7 @@
                 // 內餡一：宮頭
                 const cuspLines = [];
                 cuspLines.push("\n==============================");
-                cuspLines.push("\n--- 宮頭星座度數 ---");
+                cuspLines.push("\n宮頭星座度數");
                 cuspLines.push("\n==============================");
                 cuspLines.push("\n宮頭 | 星座 | 星座度數(度分)");
                 cuspLines.push("\n------------------------------");
@@ -2174,7 +2174,7 @@
                 // 內餡二：星體位置
                 const planetLines = [];
                 planetLines.push("\n==============================");
-                planetLines.push("\n--- 星體位置 ---");
+                planetLines.push("\n星體位置");
                 planetLines.push("\n==============================");
                 planetLines.push("\n星體名稱 | 逆行狀態 | 星座 | 星座度數(度分) | 宮位 | 宮位度數(度分)");
                 planetLines.push("\n------------------------------");
@@ -2238,7 +2238,7 @@
 
                 // --- 單盤內主要相位 (修正版) ---
                 aspectLines.push("\n==============================");
-                aspectLines.push("\n--- 單盤內主要主要相位 ---");
+                aspectLines.push("\n單盤內主要主要相位");
                 aspectLines.push("\n==============================");
                 aspectLines.push("\n星體1名稱 | 相位名稱 | 星體2名稱 | 相位動態 | 容許度(度分)");
                 aspectLines.push("\n------------------------------");
@@ -2413,7 +2413,7 @@
     // =============================================================
     function buildInterAspectsHTML(aspects, title, name1, name2) {
         const lines = [];
-        lines.push(`${name1}的星體 | 相位 | ${name2}的星體 | 動態 | 容許度`);
+        lines.push(`${name1}的星體 | 相位 | ${name2}的星體 | 相位動態 | 容許度(度分)`);
         lines.push("--------------------------------------------------");
 
         if (aspects && aspects.length > 0) {
@@ -2444,14 +2444,14 @@
     // =============================================================
     function buildOverlayHTML(overlayData, title, guestName, hostName) {
         const lines = [];
-        lines.push(`${guestName}的星體 | 星座度數 | 落入${hostName}的宮位`);
+        lines.push(`${guestName}的星體星座度數(度分) | 落入${hostName}的宮位度數(度分)`);
         lines.push("--------------------------------------------------");
 
         if (overlayData && overlayData.length > 0) {
             // 這裡放入您原本的排序和 forEach 邏輯
             overlayData.forEach(overlay => {
                 const formattedDegreeInHouse = formatDegreesMinutesSeconds(overlay.degree_in_target_house);
-                lines.push(`${overlay.planet_name} | ${overlay.zodiac_position_formatted} | ${overlay.house_in_target_chart}宮(${formattedDegreeInHouse})`);
+                lines.push(`${overlay.planet_name}${overlay.zodiac_position_formatted} | ${overlay.house_in_target_chart}宮(${formattedDegreeInHouse})`);
             });
         } else {
             lines.push("目前沒有偵測到行星落入宮位。");
