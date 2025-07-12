@@ -529,15 +529,13 @@
             }
 
             /* 捲軸樣式 */
-            .scrollable-content {
-                max-height: 300px; /* 設定一個最大高度 */
-                overflow-y: auto;  /* 當內容超出最大高度時，才顯示垂直捲軸 */
-            }
-            .scrollable-content::-webkit-scrollbar { width: 8px; }
-            .scrollable-content::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 10px; }
-            .scrollable-content::-webkit-scrollbar-thumb { background: #888; border-radius: 10px; }
-            .scrollable-content::-webkit-scrollbar-thumb:hover { background: #555; }
-        
+            /* 【關鍵修改】捲軸樣式採用「手機優先」的響應式設計 */
+        .scrollable-content {
+            /* 在手機上，預設一個合適的捲軸高度 */
+            max-height: 300px; 
+            overflow-y: auto;
+        }
+          
         }
 
         /* 單一子區塊的樣式 */
@@ -900,6 +898,16 @@
             .main-title {
                 font-size: 3rem; /* 等於 text-5xl */
             }
+            
+            .scrollable-content {
+                max-height: 900px; /* 300px 的三倍 */
+            }
+        
+            .scrollable-content::-webkit-scrollbar { width: 8px; }
+            .scrollable-content::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 10px; }
+            .scrollable-content::-webkit-scrollbar-thumb { background: #888; border-radius: 10px; }
+            .scrollable-content::-webkit-scrollbar-thumb:hover { background: #555; }
+        
         }
         
     </style>
@@ -2116,7 +2124,7 @@
                 // 內餡0：「星盤基礎數據」
                 const summaryLines = []; // Use a local array for this section
                 summaryLines.push("\n==============================");
-                summaryLines.push(`\n${title}`);
+                summaryLines.push(`\n星盤基礎數據`);
                 summaryLines.push("\n==============================");
                 // 時間戳信息
                 if (chartInfo.timestamps) {
@@ -2159,11 +2167,11 @@
                 cuspLines.push("\n==============================");
                 cuspLines.push("\n宮頭星座度數");
                 cuspLines.push("\n==============================");
-                cuspLines.push("\n宮頭 | 星座 | 星座度數(度分)");
+                cuspLines.push("\n宮頭 | 星座度數(度分)");
                 cuspLines.push("\n------------------------------");
                 if (chartInfo.house_cusps && Array.isArray(chartInfo.house_cusps) && chartInfo.house_cusps.length > 0) {
                     chartInfo.house_cusps.forEach(cusp => {
-                        cuspLines.push(`${String(cusp.house_number).padEnd(2, ' ')}宮頭: ${cusp.zodiac_position_formatted}`);
+                        cuspLines.push(`${String(cusp.house_number).padEnd(2, ' ')}宮頭: | ${cusp.zodiac_position_formatted}`);
                         // ✅ 修正：把 .join() 從迴圈中移除，讓迴圈只專心做一件事：填充陣列
                     });
                 } else {
@@ -2182,7 +2190,7 @@
                 planetLines.push("\n==============================");
                 planetLines.push("\n星體位置");
                 planetLines.push("\n==============================");
-                planetLines.push("\n星體名稱 | 逆行狀態 | 星座 | 星座度數(度分) | 宮位 | 宮位度數(度分)");
+                planetLines.push("\n星體名稱 | 逆行狀態 | 星座度數(度分) | 宮位度數(度分)");
                 planetLines.push("\n------------------------------");
 
                 if (chartInfo.planet_positions && typeof chartInfo.planet_positions === 'object' && Object.keys(chartInfo.planet_positions).length > 0) {
@@ -2202,14 +2210,14 @@
                             const paddingNeeded = Math.max(0, targetPadding - actualLength + (displayName.length - chineseCharCount));
                             const paddedName = displayName + ' '.repeat(paddingNeeded);
 
-                            let line = `${paddedName} ${pInfo.zodiac_position_formatted}`;
+                            let line = `${paddedName} | ${pInfo.zodiac_position_formatted}`;
                             const houseNum = typeof pInfo.house === 'number' ? pInfo.house : null;
                             const hdegNum = typeof pInfo.hdeg === 'number' ? pInfo.hdeg : null;
 
                             // 修正：四軸點不顯示宮位資訊
                             if (!HOUSE_DEFINING_POINTS.includes(name) && houseNum !== null && hdegNum !== null) {
                                 let formattedHdeg = formatDegreesMinutesSeconds(hdegNum);
-                                line += ` ${houseNum}宮(${formattedHdeg})`;
+                                line += ` | ${houseNum}宮(${formattedHdeg})`;
 
                             } else {
                                 line += ` - -`;
@@ -2303,7 +2311,7 @@
 
                         // 組裝輸出字串，只包含你需要的資訊
                         // let aspectLine = `${p1_name}${p1Retrograde} ${aspItem.aspect_name} ${p2_name}${p2Retrograde}`;
-                        let aspectLine = `${p1_name} ${aspItem.aspect_name} ${p2_name}`;
+                        let aspectLine = `${p1_name} | ${aspItem.aspect_name} | ${p2_name}`;
 
                         // 處理相位動態和容許度
                         if (aspItem.orb !== undefined) {
@@ -2311,9 +2319,9 @@
                             let displayedOrb = formatDegreesMinutesSeconds(aspItem.orb);
 
                             if (aspItem.aspect_type) { // 如果有 "入相" 或 "出相"
-                                aspectLine += ` ${aspItem.aspect_type} ${displayedOrb}`; // 使用已經格式化好的字串
+                                aspectLine += ` | ${aspItem.aspect_type} | ${displayedOrb}`; // 使用已經格式化好的字串
                             } else { // 如果沒有相位動態，直接加上 "容許度"
-                                aspectLine += ` - 容許度${displayedOrb}`; // 使用已經格式化好的字串
+                                aspectLine += ` | - | 容許度${displayedOrb}`; // 使用已經格式化好的字串
                             }
                         } else {
                             aspectLine += ``; // 如果沒有容許度，直接結束
@@ -2574,11 +2582,11 @@
             // 處理「複製此個人星盤」的總按鈕
             if (button.matches('.copy-chart-btn')) {
                 const chartWrapper = button.closest('.chart-wrapper');
-                if (!chartWrapper) return;
 
-                // 1. 取得大標題
-                const mainTitleElement = chartWrapper.querySelector('.chart-main-header h2');
-                const mainTitle = mainTitleElement ? mainTitleElement.textContent : '星盤報告';
+                // 1. 【新的作法】從輸入框動態取得名字來建立大標題
+                const nameInput = document.getElementById('single_name');
+                const chartName = nameInput ? nameInput.value.trim() : '您'; // 讀取輸入值，如果找不到或為空，預設為 '您'
+                const mainTitle = `${chartName}的星盤資訊`; // 組成最終要複製的標題
 
                 // 2. 只尋找核心三表格的內容
                 const subSectionsContainer = chartWrapper.querySelector('.sub-sections-container');
@@ -2591,8 +2599,8 @@
                     });
                 }
 
-                // 3. 將大標題和核心內容組合起來
-                const textToCopy = `${mainTitle}\n====================\n\n${coreContent.join('\n\n---\n\n')}`;
+                // 3. 將大標題和核心內容組合起來 (新的、修正後的格式)
+                const textToCopy = `====================\n${mainTitle}\n====================\n\n${coreContent.join('\n\n')}`;
                 copyToClipboard(textToCopy, button);
             }
         });
