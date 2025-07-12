@@ -2611,54 +2611,69 @@
     // 您只需要呼叫一次總管函式，所有事情就都完成了！
     // displayChartData(chartData, chart1Name, chart2Name);
     
-    // =============================================================
-        // 【關鍵修改】：將模擬呼叫替換成真實的事件監聽器
+        // =============================================================
+        // 【更健壯的真實事件監聽器】
         // =============================================================
         document.getElementById('calculateBtn').addEventListener('click', () => {
             const resultOutput = document.getElementById('resultOutput');
-            resultOutput.innerHTML = '<p>計算中，請稍候...</p>';
 
-            // 從表單讀取資料
-            const chart1Name = document.getElementById('name1').value;
-            const payload = {
-                chart_type: 'single', // 假設我們現在只計算單盤
-                year: document.getElementById('year1').value,
-                month: document.getElementById('month1').value,
-                day: document.getElementById('day1').value,
-                hour: document.getElementById('hour1').value,
-                minute: document.getElementById('minute1').value,
-                latitude: document.getElementById('lat1').value,
-                longitude: document.getElementById('lon1').value,
-                timezone: document.getElementById('tz1').value,
-                optional_planets: ["福點", "宿命"] // 您可以根據需要修改
+            // 這是一個輔助函式，用來安全地取得輸入框的值
+            const getInputValueById = (id) => {
+                const element = document.getElementById(id);
+                if (!element) {
+                    // 如果找不到元素，就拋出一個清晰的錯誤，告訴我們是哪個 id 出了問題
+                    throw new Error(`找不到 ID 為 "${id}" 的輸入框元素。請仔細檢查您的 HTML 檔案中的 id 是否拼寫正確。`);
+                }
+                return element.value;
             };
 
-            // 發送 fetch 請求到您的後端 (請確認後端端點路徑)
-            fetch('/calculate_chart', { // 假設您的後端端點是 /calculate_chart
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
-            })
-            .then(response => {
-                if (!response.ok) {
-                    // 如果伺服器回傳錯誤 (例如 429, 500), 在這裡處理
-                    return response.json().then(err => { throw new Error(err.error || `伺服器錯誤 ${response.status}`); });
-                }
-                return response.json();
-            })
-            .then(chartData => {
-                // 成功拿到後端資料，呼叫總管函式來顯示
-                if (chartData.error) {
-                    resultOutput.innerHTML = `<p style="color:red;">❌ 後端計算錯誤：${chartData.error}</p>`;
-                } else {
-                    displayChartData(chartData, chart1Name);
-                }
-            })
-            .catch(error => {
-                // 處理網路錯誤或上面拋出的錯誤
-                console.error('計算失敗:', error);
-                resultOutput.innerHTML = `<p style="color:red;">❌ 計算失敗：${error.message}</p>`;
-            });
+            try {
+                resultOutput.innerHTML = '<p>計算中，請稍候...</p>';
+
+                // 使用我們新的安全函式來讀取資料
+                const chart1Name = getInputValueById('name1');
+                const payload = {
+                    chart_type: 'single',
+                    year: getInputValueById('year1'),
+                    month: getInputValueById('month1'),
+                    day: getInputValueById('day1'),
+                    hour: getInputValueById('hour1'),
+                    minute: getInputValueById('minute1'),
+                    latitude: getInputValueById('lat1'),
+                    longitude: getInputValueById('lon1'),
+                    timezone: getInputValueById('tz1'),
+                    optional_planets: ["福點", "宿命"] // 您可以根據需要修改
+                };
+
+                // 發送 fetch 請求到您的後端 (請確認後端端點路徑)
+                fetch('/calculate_chart', { // 假設您的後端端點是 /calculate_chart
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                })
+                    .then(response => {
+                        if (!response.ok) {
+                            return response.json().then(err => { throw new Error(err.error || `伺服器錯誤 ${response.status}`); });
+                        }
+                        return response.json();
+                    })
+                    .then(chartData => {
+                        if (chartData.error) {
+                            resultOutput.innerHTML = `<p style="color:red;">❌ 後端計算錯誤：${chartData.error}</p>`;
+                        } else {
+                            displayChartData(chartData, chart1Name);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('計算失敗:', error);
+                        resultOutput.innerHTML = `<p style="color:red;">❌ 計算失敗：${error.message}</p>`;
+                    });
+
+            } catch (error) {
+                // 如果在準備資料時（例如找不到元素）出錯，就在這裡顯示錯誤訊息
+                console.error('準備資料時出錯:', error);
+                resultOutput.innerHTML = `<p style="color:red;">❌ 準備資料時出錯：${error.message}</p>`;
+            }
         });
 
 
