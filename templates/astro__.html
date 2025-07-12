@@ -467,6 +467,12 @@
         .scrollable-content::-webkit-scrollbar-thumb { background: #888; border-radius: 10px; }
         .scrollable-content::-webkit-scrollbar-thumb:hover { background: #555; }
         
+        /* 讓 simple-section-wrapper 在 flex 容器中表現良好 */
+        .simple-section-wrapper {
+            flex: 1 1 350px;
+            display: flex;
+            flex-direction: column;
+        }
         
 
         /* Responsive grid adjustments for compact layout on medium screens (md) and larger */
@@ -2455,18 +2461,53 @@
             finalHtmlPieces.push(buildSingleChartHTML(chartData.natal_chart2_data, `${chart2Name}的本命星盤資訊`));
 
         } else if (chartData.chart_type === 'comparison') {
-            // 派工給交互相位專家
-            finalHtmlPieces.push(buildInterAspectsHTML(chartData.inter_aspects, `=== ${chart1Name}與${chart2Name}之間的相位 ===`, chart1Name, chart2Name));
-            // 派工給行星落宮專家 (A入B)
-            finalHtmlPieces.push(buildOverlayHTML(chartData.chart1_planets_in_chart2_houses, `=== ${chart1Name}的星體在${chart2Name}宮位 ===`, chart1Name, chart2Name));
-            // 再次派工給行星落宮專家 (B入A)
-            finalHtmlPieces.push(buildOverlayHTML(chartData.chart2_planets_in_chart1_houses, `=== ${chart2Name}的星體在${chart1Name}宮位 ===`, chart2Name, chart1Name));
-            // 最後附上兩張完整的本命盤報告
-            finalHtmlPieces.push(buildSingleChartHTML(chartData.chart1_data, `${chart1Name}的本命星盤資訊`));
-            finalHtmlPieces.push(buildSingleChartHTML(chartData.chart2_data, `${chart2Name}的本命星盤資訊`));
+            // 【關鍵修改】全新的比較盤輸出邏輯
+            let comparisonPieces = [];
+            
+            // 1. 先準備兩個完整的本命盤報告
+            const natal1Html = buildSingleChartHTML(chartData.chart1_data, `${chart1Name}的本命星盤資訊`);
+            const natal2Html = buildSingleChartHTML(chartData.chart2_data, `${chart2Name}的本命星盤資訊`);
+            
+            // 2. 準備所有互動報告
+            const interAspectsHtml = buildInterAspectsHTML(chartData.inter_aspects, chart1Name, chart2Name);
+            const overlayAB_Html = buildOverlayHTML(chartData.chart1_planets_in_chart2_houses, chart1Name, chart2Name);
+            const overlayBA_Html = buildOverlayHTML(chartData.chart2_planets_in_chart1_houses, chart2Name, chart1Name);
 
+            // 3. 組裝成最終的、帶有總複製按鈕的巨大 HTML 結構
+            finalHtml = `
+                <div class="comparison-wrapper">
+                    <div class="comparison-main-header">
+                        <h2>${chart1Name} 與 ${chart2Name} 的比較盤分析</h2>
+                        <button class="copy-comparison-btn">複製完整報告</button>
+                    </div>
+                    ${natal1Html}
+                    ${natal2Html}
+                    <div class="interaction-sections-container">
+                        ${interAspectsHtml}
+                        ${overlayAB_Html}
+                        ${overlayBA_Html}
+                    </div>
+                </div>
+            `;
         } else if (chartData.chart_type === 'transit') {
-            // 行運盤的派工邏輯...
+            // 【關鍵新增】行運盤的輸出邏輯
+            const transitOverlayHtml = buildOverlayHTML(chartData.transit_planets_in_natal_houses, chart2Name, chart1Name);
+            const transitAspectsHtml = buildInterAspectsHTML(chartData.inter_aspects, chart1Name, chart2Name);
+            const natalChartHtml = buildSingleChartHTML(chartData.natal_chart_data, `${chart1Name}的本命星盤 (參考)`);
+
+            finalHtml = `
+                <div class="report-wrapper">
+                    <div class="report-main-header transit">
+                        <h2>${chart1Name} 的行運盤分析 (行運時間: ${chart2Name})</h2>
+                        <button class="copy-report-btn">複製完整報告</button>
+                    </div>
+                    <div class="interaction-sections-container">
+                        ${transitOverlayHtml}
+                        ${transitAspectsHtml}
+                    </div>
+                    ${natalChartHtml}
+                </div>
+            `;
         } else {
             resultOutputContainer.innerHTML = `<p>錯誤：未知的星盤類型 '${chartData.chart_type}'</p>`;
             return;
