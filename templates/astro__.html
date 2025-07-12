@@ -2363,64 +2363,52 @@
         }
 
     // =============================================================
-    // 【專業工人二號】：負責打造一個「交互相位」的HTML報告
-    // =============================================================
-    function buildInterAspectsHTML(aspects, title) {
-        // 準備內餡
-        const aspectLines = [];
-        aspectLines.push("星體1 | 相位 | 星體2 | 動態 | 容許度");
-        aspectLines.push("---------------------------------------");
-        if (aspects && aspects.length > 0) {
-            // ... 在這裡放入您遍歷 aspects 並 aspectLines.push(...) 的邏輯 ...
-        } else {
-            aspectLines.push("沒有偵測到相關相位。");
-        }
-        const contentString = aspectLines.join('\n');
+        // 【專業工人二號】：打造一個帶有「智慧排序」的「交互相位」HTML報告
+        // =============================================================
+        function buildInterAspectsHTML(aspects, title, name1, name2) {
+            const lines = [];
+            lines.push(`${name1}的星體`.padEnd(10) + ` | 相位` + ` | ${name2}的星體`.padEnd(10) + ` | 動態 | 容許度`);
+            lines.push("-".repeat(50));
 
-        // 包裝成 HTML
-        const sectionHtml = `
-        <div class="result-section-item">
-            <div class="result-section-header">
-                <span>${title}</span>
-                <button class="section-copy-btn">複製</button>
-            </div>
-            <div class="result-section-content"><pre>${contentString}</pre></div>
-        </div>
-    `;
-        return sectionHtml;
-    }
+            if (aspects && aspects.length > 0) {
+                // 1. 建立一個可供排序的副本
+                const sortedAspects = [...aspects];
 
+                // 2. 智慧排序：先按盤A的星體順序，再按盤B的星體順序
+                sortedAspects.sort((a, b) => {
+                    const p1IndexA = DISPLAY_ORDER_NAMES.indexOf(a.p1_name);
+                    const p1IndexB = DISPLAY_ORDER_NAMES.indexOf(b.p1_name);
+                    if (p1IndexA !== p1IndexB) {
+                        return p1IndexA - p1IndexB;
+                    }
+                    const p2IndexA = DISPLAY_ORDER_NAMES.indexOf(a.p2_name);
+                    const p2IndexB = DISPLAY_ORDER_NAMES.indexOf(b.p2_name);
+                    return p2IndexA - p2IndexB;
+                });
 
-    // =============================================================
-    // 【專業工人二號】：打造一個「交互相位」的HTML報告
-    // =============================================================
-    function buildInterAspectsHTML(aspects, title, name1, name2) {
-        const lines = [];
-        lines.push(`${name1}的星體 | 相位 | ${name2}的星體 | 相位動態 | 容許度(度分)`);
-        lines.push("--------------------------------------------------");
+                // 3. 遍歷排序後的結果並產生輸出
+                sortedAspects.forEach(asp => {
+                    let p1_display = asp.p1_name.padEnd(6, '　');
+                    let aspect_display = asp.aspect_name.padEnd(4, '　');
+                    let p2_display = asp.p2_name.padEnd(6, '　');
+                    let type_display = (asp.aspect_type || '-').padEnd(2, ' ');
+                    let orb_display = formatDegreesMinutesSeconds(asp.orb);
 
-        if (aspects && aspects.length > 0) {
-            // 這裡放入您原本的排序和 forEach 邏輯
-            aspects.forEach(asp => {
-                let aspectLine = `${asp.p1_name} ${asp.aspect_name} ${asp.p2_name}`;
-                if (asp.orb !== undefined) {
-                    let displayedOrb = formatDegreesMinutesSeconds(asp.orb);
-                    aspectLine += ` ${asp.aspect_type || '-'} ${displayedOrb}`;
-                }
-                lines.push(aspectLine);
-            });
-        } else {
-            lines.push("目前沒有偵測到跨盤相位。");
-        }
+                    let aspectLine = `${p1_display} | ${aspect_display} | ${p2_display} | ${type_display} | ${orb_display}`;
+                    lines.push(aspectLine);
+                });
+            } else {
+                lines.push("目前沒有偵測到跨盤相位。");
+            }
 
-        const contentString = lines.join('\n');
-        const sectionHtml = `
+            const contentString = lines.join('\n');
+            const sectionHtml = `
             <div class="simple-section-wrapper">
                 <div class="simple-section-header"><h3>${title}</h3><button class="section-copy-btn">複製</button></div>
                 <div class="simple-section-content"><pre>${contentString}</pre></div>
             </div>`;
-        return sectionHtml;
-    }
+            return sectionHtml;
+        }
 
     // =============================================================
     // 【專業工人三號】：打造一個「行星落宮」的HTML報告
@@ -2569,7 +2557,7 @@
                 }
 
                 // 3. 將大標題和核心內容組合起來 (新的、修正後的格式)
-                const textToCopy = `====================\n${mainTitle}\n====================\n\n${coreContent.join('\n\n')}`;
+                const textToCopy = `====================\n${mainTitle}\n${coreContent.join('\n\n')}`;
                 copyToClipboard(textToCopy, button);
             }
         });
