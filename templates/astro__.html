@@ -2479,166 +2479,166 @@
     // =============================================================
     // 【全新的事件處理中心】
     // =============================================================
-    document.addEventListener('DOMContentLoaded', () => {
-        const tabs = document.querySelectorAll('.tab-link');
-        const tabContents = document.querySelectorAll('.tab-content');
-        let activeTab = 'single'; // 預設啟用的頁籤
+    // document.addEventListener('DOMContentLoaded', () => {
+    //     const tabs = document.querySelectorAll('.tab-link');
+    //     const tabContents = document.querySelectorAll('.tab-content');
+    //     let activeTab = 'single'; // 預設啟用的頁籤
 
-        // 頁籤切換邏輯
-        tabs.forEach(tab => {
-            tab.addEventListener('click', () => {
-                tabs.forEach(t => t.classList.remove('active'));
-                tab.classList.add('active');
-                activeTab = tab.dataset.tab;
+    //     // 頁籤切換邏輯
+    //     tabs.forEach(tab => {
+    //         tab.addEventListener('click', () => {
+    //             tabs.forEach(t => t.classList.remove('active'));
+    //             tab.classList.add('active');
+    //             activeTab = tab.dataset.tab;
 
-                tabContents.forEach(content => content.classList.remove('active'));
+    //             tabContents.forEach(content => content.classList.remove('active'));
                 
-                if (activeTab === 'single') {
-                    document.getElementById(`tab-single`).classList.add('active');
-                } else {
-                    document.getElementById(`tab-multi`).classList.add('active');
-                }
-            });
-        });
+    //             if (activeTab === 'single') {
+    //                 document.getElementById(`tab-single`).classList.add('active');
+    //             } else {
+    //                 document.getElementById(`tab-multi`).classList.add('active');
+    //             }
+    //         });
+    //     });
 
-        // --- 動態生成小行星/虛點的核取方塊 (優化分組) ---
-            const optionalPlanetsConfig = {
-                '十大行星（建議全選）': ["太陽", "月亮", "水星", "金星", "火星", "木星", "土星", "天王星", "海王星", "冥王星"],
-                '四軸（建議全選）': ["上升", "下降", "天頂", "天底"],
-                '命運與潛意識': ["北交", "南交", "宿命", "福點", "莉莉絲"],
-                '療癒與潛能': ["凱龍", "穀神", "智神", "婚神", "灶神"],
-                '深度心理': ["愛神", "靈神", "人龍"]
-            };
-            const optionalPlanetsContainer = document.getElementById('optionalPlanetsContainer');
+    //     // --- 動態生成小行星/虛點的核取方塊 (優化分組) ---
+    //         const optionalPlanetsConfig = {
+    //             '十大行星（建議全選）': ["太陽", "月亮", "水星", "金星", "火星", "木星", "土星", "天王星", "海王星", "冥王星"],
+    //             '四軸（建議全選）': ["上升", "下降", "天頂", "天底"],
+    //             '命運與潛意識': ["北交", "南交", "宿命", "福點", "莉莉絲"],
+    //             '療癒與潛能': ["凱龍", "穀神", "智神", "婚神", "灶神"],
+    //             '深度心理': ["愛神", "靈神", "人龍"]
+    //         };
+    //         const optionalPlanetsContainer = document.getElementById('optionalPlanetsContainer');
 
-            for (const groupName in optionalPlanetsConfig) {
-                const groupTitle = document.createElement('div');
-                groupTitle.className = 'leading-relaxed col-span-full planetSelection-text font-semibold text-xl md:text-3xl text-fuchsia-900 mt-2';
-                groupTitle.textContent = groupName;
-                optionalPlanetsContainer.appendChild(groupTitle);
+    //         for (const groupName in optionalPlanetsConfig) {
+    //             const groupTitle = document.createElement('div');
+    //             groupTitle.className = 'leading-relaxed col-span-full planetSelection-text font-semibold text-xl md:text-3xl text-fuchsia-900 mt-2';
+    //             groupTitle.textContent = groupName;
+    //             optionalPlanetsContainer.appendChild(groupTitle);
 
-                optionalPlanetsConfig[groupName].forEach(planet => {
-                    const checkboxWrapper = document.createElement('div');
-                    checkboxWrapper.className = 'flex items-center';
-                    checkboxWrapper.innerHTML = `
-                        <input id="chk-${planet}" type="checkbox" value="${planet}" class="optional-planet-checkbox h-6 w-6 md:h-8 md:w-8 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500" checked>
-                        <label for="chk-${planet}" class="planetSelection-text ml-2 block text-lg md:text-3xl text-gray-900">${planet}</label>
-                    `;
-                    optionalPlanetsContainer.appendChild(checkboxWrapper);
-                });
-            }
+    //             optionalPlanetsConfig[groupName].forEach(planet => {
+    //                 const checkboxWrapper = document.createElement('div');
+    //                 checkboxWrapper.className = 'flex items-center';
+    //                 checkboxWrapper.innerHTML = `
+    //                     <input id="chk-${planet}" type="checkbox" value="${planet}" class="optional-planet-checkbox h-6 w-6 md:h-8 md:w-8 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500" checked>
+    //                     <label for="chk-${planet}" class="planetSelection-text ml-2 block text-lg md:text-3xl text-gray-900">${planet}</label>
+    //                 `;
+    //                 optionalPlanetsContainer.appendChild(checkboxWrapper);
+    //             });
+    //         }
 
-            // --- 新增：全選/取消全選按鈕的邏輯 (優化版) ---
-            const toggleBtn = document.getElementById('toggleAllPlanetsBtn');
-            // Set initial state using a data attribute
-            toggleBtn.dataset.state = 'all-checked';
+    //         // --- 新增：全選/取消全選按鈕的邏輯 (優化版) ---
+    //         const toggleBtn = document.getElementById('toggleAllPlanetsBtn');
+    //         // Set initial state using a data attribute
+    //         toggleBtn.dataset.state = 'all-checked';
 
-            toggleBtn.addEventListener('click', () => {
-                const checkboxes = document.querySelectorAll('.optional-planet-checkbox');
-                const currentState = toggleBtn.dataset.state;
+    //         toggleBtn.addEventListener('click', () => {
+    //             const checkboxes = document.querySelectorAll('.optional-planet-checkbox');
+    //             const currentState = toggleBtn.dataset.state;
 
-                if (currentState === 'all-checked') {
-                    checkboxes.forEach(cb => { cb.checked = false; });
-                    toggleBtn.textContent = '全部選取';
-                    toggleBtn.dataset.state = 'all-unchecked';
-                } else {
-                    checkboxes.forEach(cb => { cb.checked = true; });
-                    toggleBtn.textContent = '全部取消';
-                    toggleBtn.dataset.state = 'all-checked';
-                }
-            });
+    //             if (currentState === 'all-checked') {
+    //                 checkboxes.forEach(cb => { cb.checked = false; });
+    //                 toggleBtn.textContent = '全部選取';
+    //                 toggleBtn.dataset.state = 'all-unchecked';
+    //             } else {
+    //                 checkboxes.forEach(cb => { cb.checked = true; });
+    //                 toggleBtn.textContent = '全部取消';
+    //                 toggleBtn.dataset.state = 'all-checked';
+    //             }
+    //         });
 
-        // =============================================================
-        // 【升級版的事件監聽器】：取代您原本的程式碼
-        // =============================================================
-        document.getElementById('calculateBtn').addEventListener('click', () => {
-            const resultOutput = document.getElementById('resultOutput');
-            const getInputValueById = (id) => {
-                const element = document.getElementById(id);
-                if (!element) throw new Error(`找不到 ID 為 "${id}" 的輸入框。`);
-                return element.value;
-            };
+    //     // =============================================================
+    //     // 【升級版的事件監聽器】：取代您原本的程式碼
+    //     // =============================================================
+    //     document.getElementById('calculateBtn').addEventListener('click', () => {
+    //         const resultOutput = document.getElementById('resultOutput');
+    //         const getInputValueById = (id) => {
+    //             const element = document.getElementById(id);
+    //             if (!element) throw new Error(`找不到 ID 為 "${id}" 的輸入框。`);
+    //             return element.value;
+    //         };
 
-            try {
-                resultOutput.innerHTML = '<p>計算中，請稍候...</p>';
+    //         try {
+    //             resultOutput.innerHTML = '<p>計算中，請稍候...</p>';
 
-                let payload = {};
-                let endpoint = '';
-                let chart1Name = '', chart2Name = '';
+    //             let payload = {};
+    //             let endpoint = '';
+    //             let chart1Name = '', chart2Name = '';
 
-                // 【關鍵】根據當前啟用的頁籤，準備不同的資料和API路徑
-                if (activeTab === 'single') {
-                    endpoint = '/calculate_single_chart';
-                    chart1Name = getInputValueById('single_name');
-                    payload = {
-                        year: getInputValueById('single_year'),
-                        month: getInputValueById('single_month'),
-                        day: getInputValueById('single_day'),
-                        hour: getInputValueById('single_hour'),
-                        minute: getInputValueById('single_minute'),
-                        latitude: getInputValueById('single_latitude'),
-                        longitude: getInputValueById('single_longitude'),
-                        timezone: getInputValueById('single_timezone'),
-                    };
-                } else {
-                    // 處理所有需要兩份資料的盤型
-                    chart1Name = getInputValueById('c1_name');
-                    chart2Name = getInputValueById('c2_name');
-                    payload = {
-                        // 將兩份資料包裝成後端需要的格式
-                        chart1_year: getInputValueById('c1_year'),
-                        chart1_month: getInputValueById('c1_month'),
-                        // ... 收集 chart1 的所有資料 ...
+    //             // 【關鍵】根據當前啟用的頁籤，準備不同的資料和API路徑
+    //             if (activeTab === 'single') {
+    //                 endpoint = '/calculate_single_chart';
+    //                 chart1Name = getInputValueById('single_name');
+    //                 payload = {
+    //                     year: getInputValueById('single_year'),
+    //                     month: getInputValueById('single_month'),
+    //                     day: getInputValueById('single_day'),
+    //                     hour: getInputValueById('single_hour'),
+    //                     minute: getInputValueById('single_minute'),
+    //                     latitude: getInputValueById('single_latitude'),
+    //                     longitude: getInputValueById('single_longitude'),
+    //                     timezone: getInputValueById('single_timezone'),
+    //                 };
+    //             } else {
+    //                 // 處理所有需要兩份資料的盤型
+    //                 chart1Name = getInputValueById('c1_name');
+    //                 chart2Name = getInputValueById('c2_name');
+    //                 payload = {
+    //                     // 將兩份資料包裝成後端需要的格式
+    //                     chart1_year: getInputValueById('c1_year'),
+    //                     chart1_month: getInputValueById('c1_month'),
+    //                     // ... 收集 chart1 的所有資料 ...
                         
-                        chart2_year: getInputValueById('c2_year'),
-                        chart2_month: getInputValueById('c2_month'),
-                        // ... 收集 chart2 的所有資料 ...
-                    };
+    //                     chart2_year: getInputValueById('c2_year'),
+    //                     chart2_month: getInputValueById('c2_month'),
+    //                     // ... 收集 chart2 的所有資料 ...
+    //                 };
 
-                    if (activeTab === 'comparison') endpoint = '/calculate_comparison_chart';
-                    if (activeTab === 'composite') endpoint = '/calculate_composite_chart';
-                    if (activeTab === 'transit') endpoint = '/calculate_transit_chart';
-                }
+    //                 if (activeTab === 'comparison') endpoint = '/calculate_comparison_chart';
+    //                 if (activeTab === 'composite') endpoint = '/calculate_composite_chart';
+    //                 if (activeTab === 'transit') endpoint = '/calculate_transit_chart';
+    //             }
 
-                // 收集所有勾選的星體 (這部分是共用的)
-                const selectedPlanets = Array.from(document.querySelectorAll('.planet-checkbox:checked')).map(cb => cb.value);
-                payload.optional_planets = selectedPlanets;
+    //             // 收集所有勾選的星體 (這部分是共用的)
+    //             const selectedPlanets = Array.from(document.querySelectorAll('.planet-checkbox:checked')).map(cb => cb.value);
+    //             payload.optional_planets = selectedPlanets;
                 
 
-                // 檢查 endpoint 是否已設定，避免無效請求
-                if (!endpoint) {
-                    throw new Error("未知的計算類型，無法確定後端 API 路徑。");
-                }
+    //             // 檢查 endpoint 是否已設定，避免無效請求
+    //             if (!endpoint) {
+    //                 throw new Error("未知的計算類型，無法確定後端 API 路徑。");
+    //             }
 
-                // 發送 fetch 請求
-                fetch(endpoint, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                })
-                .then(response => {
-                    if (!response.ok) return response.json().then(err => { throw new Error(err.error || `伺服器錯誤 ${response.status}`); });
-                    return response.json();
-                })
-                .then(chartData => {
-                    if (chartData.error) {
-                        resultOutput.innerHTML = `<p style="color:red;">❌ 後端計算錯誤：${chartData.error}</p>`;
-                    } else {
-                        // 成功拿到資料後，交給總管函式去顯示
-                        displayChartData(chartData, chart1Name, chart2Name);
-                    }
-                })
-                .catch(error => {
-                    console.error('計算失敗:', error);
-                    resultOutput.innerHTML = `<p style="color:red;">❌ 計算失敗：${error.message}</p>`;
-                });
+    //             // 發送 fetch 請求
+    //             fetch(endpoint, {
+    //                 method: 'POST',
+    //                 headers: { 'Content-Type': 'application/json' },
+    //                 body: JSON.stringify(payload)
+    //             })
+    //             .then(response => {
+    //                 if (!response.ok) return response.json().then(err => { throw new Error(err.error || `伺服器錯誤 ${response.status}`); });
+    //                 return response.json();
+    //             })
+    //             .then(chartData => {
+    //                 if (chartData.error) {
+    //                     resultOutput.innerHTML = `<p style="color:red;">❌ 後端計算錯誤：${chartData.error}</p>`;
+    //                 } else {
+    //                     // 成功拿到資料後，交給總管函式去顯示
+    //                     displayChartData(chartData, chart1Name, chart2Name);
+    //                 }
+    //             })
+    //             .catch(error => {
+    //                 console.error('計算失敗:', error);
+    //                 resultOutput.innerHTML = `<p style="color:red;">❌ 計算失敗：${error.message}</p>`;
+    //             });
 
-            } catch (error) {
-                console.error('準備資料時出錯:', error);
-                resultOutput.innerHTML = `<p style="color:red;">❌ 準備資料時出錯：${error.message}</p>`;
-            }
-        });
-    });
+    //         } catch (error) {
+    //             console.error('準備資料時出錯:', error);
+    //             resultOutput.innerHTML = `<p style="color:red;">❌ 準備資料時出錯：${error.message}</p>`;
+    //         }
+    //     });
+    // });
 
 </script>
     
