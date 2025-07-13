@@ -2048,10 +2048,10 @@
 
 
 
-        // =============================================================
+        / =============================================================
             // 【專業工人一號】：單命盤的部分 (已加入安全檢查)
             // =============================================================
-            const buildSingleChartHTML = (chartInfo, title) => {
+            function buildSingleChartHTML(chartInfo, title) {
                 // 如果沒有資料，就回傳一個錯誤訊息的HTML
                 if (!chartInfo) {
                     return `<div class="chart-wrapper"><div class="chart-main-header"><h2>${title}</h2></div><div style="padding:15px;">錯誤：缺少星盤資料。</div></div>`;
@@ -2090,9 +2090,26 @@
                 planetLines.push("星體名稱 | 逆行狀態 | 星座度數(度分) | 宮位度數(度分)");
                 planetLines.push("--------------------------------------------------");
                 if (chartInfo.planet_positions && typeof chartInfo.planet_positions === 'object') {
+                    const displayedPlanets = new Set();
+                    // 1. 先按照我們想要的順序，顯示核心星體
                     DISPLAY_ORDER_NAMES.forEach(name => {
                         const pInfo = chartInfo.planet_positions[name];
-                        if (pInfo) { // 只處理存在的星體
+                        if (pInfo) {
+                            const retrogradeLabel = pInfo.is_retrograde ? '逆行' : '';
+                            let line = `${name.padEnd(4, '　')} | ${retrogradeLabel.padEnd(4, ' ')} | ${pInfo.zodiac_position_formatted.padEnd(14, ' ')}`;
+                            if (!HOUSE_DEFINING_POINTS.includes(name) && pInfo.house !== null && pInfo.hdeg !== null) {
+                                line += ` | ${pInfo.house}宮(${formatDegreesMinutesSeconds(pInfo.hdeg)})`;
+                            } else {
+                                line += ` | -`;
+                            }
+                            planetLines.push(line);
+                            displayedPlanets.add(name);
+                        }
+                    });
+                    // 2. 接著，顯示所有後端有回傳、但不在我們預設順序中的星體
+                    for (const name in chartInfo.planet_positions) {
+                        if (!displayedPlanets.has(name)) {
+                            const pInfo = chartInfo.planet_positions[name];
                             const retrogradeLabel = pInfo.is_retrograde ? '逆行' : '';
                             let line = `${name.padEnd(4, '　')} | ${retrogradeLabel.padEnd(4, ' ')} | ${pInfo.zodiac_position_formatted.padEnd(14, ' ')}`;
                             if (!HOUSE_DEFINING_POINTS.includes(name) && pInfo.house !== null && pInfo.hdeg !== null) {
@@ -2102,7 +2119,7 @@
                             }
                             planetLines.push(line);
                         }
-                    });
+                    }
                 } else {
                     planetLines.push("沒有星體位置數據。");
                 }
@@ -2119,7 +2136,6 @@
                         chartInfo.planet_positions[asp.p1_name] && chartInfo.planet_positions[asp.p2_name]
                     );
 
-                    // 如果過濾後仍然有相位，才進行排序和顯示
                     if (validAspects.length > 0) {
                         const processedAspects = new Set();
                         const uniqueAspects = [];
@@ -2222,111 +2238,138 @@
             };
 
     // =============================================================
-    // 【專業工人二號】：打造一個「交互相位」的HTML報告
-    // =============================================================
-    function buildInterAspectsHTML(aspects, title, name1, name2) {
-        const lines = [];
-        lines.push(`${name1}的星體`.padEnd(10) + ` | 相位` + ` | ${name2}的星體`.padEnd(10) + ` | 動態 | 容許度`);
-        lines.push("-".repeat(50));
+        // 【專業工人二號】：打造一個帶有「智慧排序」的「交互相位」HTML報告
+        // =============================================================
+        function buildInterAspectsHTML(aspects, name1, name2) {
+            const title = `${name1}與${name2}的交互相位`;
+            const lines = [];
+            lines.push(`${name1}的星體`.padEnd(10) + ` | 相位` + ` | ${name2}的星體`.padEnd(10) + ` | 動態 | 容許度`);
+            lines.push("-".repeat(50));
 
-        if (aspects && aspects.length > 0) {
-            const sortedAspects = [...aspects];
-            sortedAspects.sort((a, b) => { /* ... 您的排序邏輯 ... */ return 0; });
-            sortedAspects.forEach(asp => {
-                let aspectLine = `${asp.p1_name} | ${asp.aspect_name} | ${asp.p2_name}`;
-                if (asp.orb !== undefined) {
-                    let displayedOrb = formatDegreesMinutesSeconds(asp.orb);
-                    aspectLine += ` | ${asp.aspect_type || '-'} | ${displayedOrb}`;
-                }
-                lines.push(aspectLine);
-            });
-        } else {
-            lines.push("目前沒有偵測到跨盤相位。");
-        }
-        const contentString = lines.join('\n');
-        return `
+            if (aspects && aspects.length > 0) {
+                const sortedAspects = [...aspects];
+                // 智慧排序：先按盤A的星體順序，再按盤B的星體順序
+                sortedAspects.sort((a, b) => {
+                    const p1IndexA = DISPLAY_ORDER_NAMES.indexOf(a.p1_name);
+                    const p1IndexB = DISPLAY_ORDER_NAMES.indexOf(b.p1_name);
+                    if (p1IndexA !== p1IndexB) return p1IndexA - p1IndexB;
+
+                    const p2IndexA = DISPLAY_ORDER_NAMES.indexOf(a.p2_name);
+                    const p2IndexB = DISPLAY_ORDER_NAMES.indexOf(b.p2_name);
+                    return p2IndexA - p2IndexB;
+                });
+
+                sortedAspects.forEach(asp => {
+                    let aspectLine = `${asp.p1_name.padEnd(6, '　')} | ${asp.aspect_name.padEnd(4, '　')} | ${asp.p2_name.padEnd(6, '　')}`;
+                    if (asp.orb !== undefined) {
+                        let displayedOrb = formatDegreesMinutesSeconds(asp.orb);
+                        aspectLine += ` | ${(asp.aspect_type || '-').padEnd(2, ' ')} | ${displayedOrb}`;
+                    }
+                    lines.push(aspectLine);
+                });
+            } else {
+                lines.push("目前沒有偵測到跨盤相位。");
+            }
+            const contentString = lines.join('\n');
+            return `
             <div class="simple-section-wrapper">
                 <div class="simple-section-header"><h3>${title}</h3><button class="section-copy-btn">複製</button></div>
                 <div class="simple-section-content"><pre>${contentString}</pre></div>
             </div>`;
-    }
-
-    // =============================================================
-    // 【專業工人三號】：打造一個「行星落宮」的HTML報告
-    // =============================================================
-    function buildOverlayHTML(overlayData, title, guestName, hostName) {
-        const lines = [];
-        lines.push(`${guestName}的星體 | 星座度數 | 落入${hostName}的宮位`);
-        lines.push("--------------------------------------------------");
-
-        if (overlayData && overlayData.length > 0) {
-            overlayData.sort((a, b) => DISPLAY_ORDER_NAMES.indexOf(a.planet_name) - DISPLAY_ORDER_NAMES.indexOf(b.planet_name));
-            overlayData.forEach(overlay => {
-                const formattedDegreeInHouse = formatDegreesMinutesSeconds(overlay.degree_in_target_house);
-                lines.push(`${overlay.planet_name} | ${overlay.zodiac_position_formatted} | ${overlay.house_in_target_chart}宮(${formattedDegreeInHouse})`);
-            });
-        } else {
-            lines.push("目前沒有偵測到行星落入宮位。");
         }
-        const contentString = lines.join('\n');
-        return `
+
+        // =============================================================
+        // 【專業工人三號】：打造一個「行星落宮」的HTML報告
+        // =============================================================
+        function buildOverlayHTML(overlayData, guestName, hostName) {
+            const title = `${guestName}的星體落入${hostName}的宮位`;
+            const lines = [];
+            lines.push(`${guestName}的星體`.padEnd(10) + ` | 星座度數` + ` | 落入${hostName}的宮位`);
+            lines.push("-".repeat(50));
+
+            if (overlayData && overlayData.length > 0) {
+                overlayData.sort((a, b) => DISPLAY_ORDER_NAMES.indexOf(a.planet_name) - DISPLAY_ORDER_NAMES.indexOf(b.planet_name));
+                overlayData.forEach(overlay => {
+                    const formattedDegreeInHouse = formatDegreesMinutesSeconds(overlay.degree_in_target_house);
+                    lines.push(`${overlay.planet_name.padEnd(6, '　')} | ${overlay.zodiac_position_formatted.padEnd(10)} | ${overlay.house_in_target_chart}宮(${formattedDegreeInHouse})`);
+                });
+            } else {
+                lines.push("目前沒有偵測到行星落入宮位。");
+            }
+            const contentString = lines.join('\n');
+            return `
             <div class="simple-section-wrapper">
                 <div class="simple-section-header"><h3>${title}</h3><button class="section-copy-btn">複製</button></div>
                 <div class="simple-section-content"><pre>${contentString}</pre></div>
             </div>`;
-    }
+        }
 
-    // =============================================================
-    // 【總管函式】：【關鍵修正】使用全新的、正確的派工邏輯
-    // =============================================================
-    function displayChartData(chartData, chart1Name = "我的", chart2Name = "他的") {
-        const resultOutputContainer = document.getElementById('resultOutput');
-        resultOutputContainer.innerHTML = ''; // 清空舊內容
+        // =============================================================
+        // 【總管函式】：現在變得非常乾淨，只負責「派工」和「顯示」
+        // =============================================================
+        function displayChartData(chartData, chart1Name = "我的", chart2Name = "他的") {
+            const resultOutputContainer = document.getElementById('resultOutput');
+            resultOutputContainer.innerHTML = ''; // 清空舊內容
 
-        let finalHtml = ''; // 我們將所有HTML片段組合成一個大字串
+            let finalHtml = '';
 
-        if (chartData.chart_type === 'single') {
-            finalHtml = buildSingleChartHTML(chartData, `${chart1Name}的星盤資訊`);
+            if (chartData.chart_type === 'single') {
+                finalHtml = buildSingleChartHTML(chartData, `${chart1Name}的星盤資訊`);
 
-        } else if (chartData.chart_type === 'composite') {
-            const compositeHtml = buildSingleChartHTML(chartData.composite_chart_data, `${chart1Name}與${chart2Name}的組合中點盤`);
-            const natal1Html = buildSingleChartHTML(chartData.natal_chart1_data, `${chart1Name}的本命星盤資訊`);
-            const natal2Html = buildSingleChartHTML(chartData.natal_chart2_data, `${chart2Name}的本命星盤資訊`);
-            // 直接拼接所有HTML字串
-            finalHtml = compositeHtml + natal1Html + natal2Html;
+            } else if (chartData.chart_type === 'composite') {
+                const compositeHtml = buildSingleChartHTML(chartData.composite_chart_data, `${chart1Name}與${chart2Name}的組合中點盤`);
+                const natal1Html = buildSingleChartHTML(chartData.natal_chart1_data, `${chart1Name}的本命星盤資訊`);
+                const natal2Html = buildSingleChartHTML(chartData.natal_chart2_data, `${chart2Name}的本命星盤資訊`);
+                finalHtml = compositeHtml + natal1Html + natal2Html;
 
-        } else if (chartData.chart_type === 'comparison') {
-            const natal1Html = buildSingleChartHTML(chartData.chart1_data, `${chart1Name}的本命星盤資訊`);
-            const natal2Html = buildSingleChartHTML(chartData.chart2_data, `${chart2Name}的本命星盤資訊`);
-            const interAspectsHtml = buildInterAspectsHTML(chartData.inter_aspects, "交互相位", chart1Name, chart2Name);
-            const overlayAB_Html = buildOverlayHTML(chartData.chart1_planets_in_chart2_houses, "A落入B宮位", chart1Name, chart2Name);
-            const overlayBA_Html = buildOverlayHTML(chartData.chart2_planets_in_chart1_houses, "B落入A宮位", chart2Name, chart1Name);
+            } else if (chartData.chart_type === 'comparison') {
+                // 【關鍵修改】全新的比較盤輸出邏輯
+                const natal1Html = buildSingleChartHTML(chartData.chart1_data, `${chart1Name}的本命星盤資訊`);
+                const natal2Html = buildSingleChartHTML(chartData.chart2_data, `${chart2Name}的本命星盤資訊`);
+                const interAspectsHtml = buildInterAspectsHTML(chartData.inter_aspects, chart1Name, chart2Name);
+                const overlayAB_Html = buildOverlayHTML(chartData.chart1_planets_in_chart2_houses, chart1Name, chart2Name);
+                const overlayBA_Html = buildOverlayHTML(chartData.chart2_planets_in_chart1_houses, chart2Name, chart1Name);
 
-            finalHtml = `
+                finalHtml = `
                 <div class="report-wrapper">
-                    <div class="report-main-header comparison"><h2>${chart1Name} 與 ${chart2Name} 的比較盤分析</h2><button class="copy-report-btn">複製報告</button></div>
+                    <div class="report-main-header comparison">
+                        <h2>${chart1Name} 與 ${chart2Name} 的比較盤分析</h2>
+                        <button class="copy-report-btn">複製完整報告</button>
+                    </div>
                     ${natal1Html}
                     ${natal2Html}
-                    <div class="interaction-sections-container">${interAspectsHtml}${overlayAB_Html}${overlayBA_Html}</div>
-                </div>`;
+                    <div class="interaction-sections-container">
+                        ${interAspectsHtml}
+                        ${overlayAB_Html}
+                        ${overlayBA_Html}
+                    </div>
+                </div>
+            `;
+            } else if (chartData.chart_type === 'transit') {
+                // 行運盤的輸出邏輯
+                const transitOverlayHtml = buildOverlayHTML(chartData.transit_planets_in_natal_houses, "行運", chart1Name);
+                const transitAspectsHtml = buildInterAspectsHTML(chartData.inter_aspects, chart1Name, "行運");
+                const natalChartHtml = buildSingleChartHTML(chartData.natal_chart_data, `${chart1Name}的本命星盤 (參考)`);
 
-        } else if (chartData.chart_type === 'transit') {
-            const transitOverlayHtml = buildOverlayHTML(chartData.transit_planets_in_natal_houses, "行運星體落入本命宮位", "行運", chart1Name);
-            const transitAspectsHtml = buildInterAspectsHTML(chartData.inter_aspects, "行運與本命相位", chart1Name, "行運");
-            const natalChartHtml = buildSingleChartHTML(chartData.natal_chart_data, `${chart1Name}的本命星盤 (參考)`);
-
-            finalHtml = `
+                finalHtml = `
                 <div class="report-wrapper">
-                    <div class="report-main-header transit"><h2>${chart1Name} 的行運盤分析</h2><button class="copy-report-btn">複製報告</button></div>
-                    <div class="interaction-sections-container">${transitOverlayHtml}${transitAspectsHtml}</div>
+                    <div class="report-main-header transit">
+                        <h2>${chart1Name} 的行運盤分析 (行運時間: ${chart2Name})</h2>
+                        <button class="copy-report-btn">複製完整報告</button>
+                    </div>
+                    <div class="interaction-sections-container">
+                        ${transitOverlayHtml}
+                        ${transitAspectsHtml}
+                    </div>
                     ${natalChartHtml}
-                </div>`;
-        } else {
-            finalHtml = `<p>錯誤：未知的星盤類型 '${chartData.chart_type}'</p>`;
+                </div>
+            `;
+            } else {
+                finalHtml = `<p>錯誤：未知的星盤類型 '${chartData.chart_type}'</p>`;
+            }
+
+            resultOutputContainer.innerHTML = finalHtml;
         }
-        
-        resultOutputContainer.innerHTML = finalHtml;
-    }
 
 
     // // =============================================================
