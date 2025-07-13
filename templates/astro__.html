@@ -1590,118 +1590,118 @@
         }
 
 
-        document.addEventListener('DOMContentLoaded', () => {
-            console.log('DOMContentLoaded fired. Version: Combined Tabs - Multi-Chart Support v2.5 - Critical Debugging');
-            populateTimezoneSelects();
-            setupCustomTimezoneListeners();
+        // document.addEventListener('DOMContentLoaded', () => {
+        //     console.log('DOMContentLoaded fired. Version: Combined Tabs - Multi-Chart Support v2.5 - Critical Debugging');
+        //     populateTimezoneSelects();
+        //     setupCustomTimezoneListeners();
 
             
 
-            // Set initial main tab and sub-tab visibility
-            updateMainTabVisibility('singleChartTab'); // Default to single chart tab
-            updateSubChartVisibility('comparison'); // Default sub-chart in synastry to comparison
+        //     // Set initial main tab and sub-tab visibility
+        //     updateMainTabVisibility('singleChartTab'); // Default to single chart tab
+        //     updateSubChartVisibility('comparison'); // Default sub-chart in synastry to comparison
 
-            // Event listeners for main tab buttons
-            document.getElementById('singleChartTab').addEventListener('click', (event) => {
-                updateMainTabVisibility(event.target.id);
-            });
-            document.getElementById('synastryTab').addEventListener('click', (event) => {
-                updateMainTabVisibility(event.target.id);
-            });
+        //     // Event listeners for main tab buttons
+        //     document.getElementById('singleChartTab').addEventListener('click', (event) => {
+        //         updateMainTabVisibility(event.target.id);
+        //     });
+        //     document.getElementById('synastryTab').addEventListener('click', (event) => {
+        //         updateMainTabVisibility(event.target.id);
+        //     });
 
-            // Event listeners for sub-chart type cards within synastry tab
-            document.querySelectorAll('.chart-card-sub').forEach(card => {
-                card.addEventListener('click', () => {
-                    const selectedType = card.dataset.chartType;
-                    updateSubChartVisibility(selectedType);
-                });
-            });
+        //     // Event listeners for sub-chart type cards within synastry tab
+        //     document.querySelectorAll('.chart-card-sub').forEach(card => {
+        //         card.addEventListener('click', () => {
+        //             const selectedType = card.dataset.chartType;
+        //             updateSubChartVisibility(selectedType);
+        //         });
+        //     });
 
-            // --- NEW: Event delegation for section copy buttons ---
-            const resultOutputContainer = document.getElementById('resultOutput');
-            if (resultOutputContainer) {
-                resultOutputContainer.addEventListener('click', (event) => {
-                    if (event.target.classList.contains('section-copy-btn')) {
-                        const copyButton = event.target;
-                        const sectionContent = copyButton.closest('.result-section-item').querySelector('.result-section-content');
-                        const textToCopy = sectionContent.textContent;
+        //     // --- NEW: Event delegation for section copy buttons ---
+        //     const resultOutputContainer = document.getElementById('resultOutput');
+        //     if (resultOutputContainer) {
+        //         resultOutputContainer.addEventListener('click', (event) => {
+        //             if (event.target.classList.contains('section-copy-btn')) {
+        //                 const copyButton = event.target;
+        //                 const sectionContent = copyButton.closest('.result-section-item').querySelector('.result-section-content');
+        //                 const textToCopy = sectionContent.textContent;
 
-                        if (textToCopy && navigator.clipboard) {
-                            navigator.clipboard.writeText(textToCopy).then(() => {
-                                // Success feedback
-                                copyButton.textContent = '已複製！';
-                                copyButton.classList.add('copied');
-                                setTimeout(() => {
-                                    copyButton.textContent = '複製';
-                                    copyButton.classList.remove('copied');
-                                }, 2000); // Revert after 2 seconds
-                            }).catch(err => {
-                                console.error('無法複製文字: ', err);
-                                // Error feedback
-                                copyButton.textContent = '複製失敗';
-                                setTimeout(() => {
-                                    copyButton.textContent = '複製';
-                                }, 2000);
-                            });
-                        }
-                    }
-                });
-            }
+        //                 if (textToCopy && navigator.clipboard) {
+        //                     navigator.clipboard.writeText(textToCopy).then(() => {
+        //                         // Success feedback
+        //                         copyButton.textContent = '已複製！';
+        //                         copyButton.classList.add('copied');
+        //                         setTimeout(() => {
+        //                             copyButton.textContent = '複製';
+        //                             copyButton.classList.remove('copied');
+        //                         }, 2000); // Revert after 2 seconds
+        //                     }).catch(err => {
+        //                         console.error('無法複製文字: ', err);
+        //                         // Error feedback
+        //                         copyButton.textContent = '複製失敗';
+        //                         setTimeout(() => {
+        //                             copyButton.textContent = '複製';
+        //                         }, 2000);
+        //                     });
+        //                 }
+        //             }
+        //         });
+        //     }
 
-            const calculateButton = document.getElementById('calculateBtn');
-            if (calculateButton) {
-                calculateButton.addEventListener('click', calculateChart);
-            } else {
-                console.error('Error: Calculate button not found!');
-            }
+        //     const calculateButton = document.getElementById('calculateBtn');
+        //     if (calculateButton) {
+        //         calculateButton.addEventListener('click', calculateChart);
+        //     } else {
+        //         console.error('Error: Calculate button not found!');
+        //     }
 
-            // Add input event listeners to all input fields to clear error messages
-            document.querySelectorAll('.input-field, .select-field').forEach(input => {
-                input.addEventListener('input', (event) => {
-                    const errorElement = document.getElementById(`${event.target.id}-error`);
-                    if (errorElement) {
-                        errorElement.textContent = '';
-                        errorElement.style.display = 'none';
-                        event.target.style.setProperty('--input-border-color', '#cbd5e0');
-                    }
-                });
-                input.addEventListener('change', (event) => { // For select fields
-                    const errorElement = document.getElementById(`${event.target.id}-error`);
-                    if (errorElement) {
-                        errorElement.textContent = '';
-                        errorElement.style.display = 'none';
-                        event.target.style.setProperty('--input-border-color', '#cbd5e0');
-                    }
-                });
-            });
+        //     // Add input event listeners to all input fields to clear error messages
+        //     document.querySelectorAll('.input-field, .select-field').forEach(input => {
+        //         input.addEventListener('input', (event) => {
+        //             const errorElement = document.getElementById(`${event.target.id}-error`);
+        //             if (errorElement) {
+        //                 errorElement.textContent = '';
+        //                 errorElement.style.display = 'none';
+        //                 event.target.style.setProperty('--input-border-color', '#cbd5e0');
+        //             }
+        //         });
+        //         input.addEventListener('change', (event) => { // For select fields
+        //             const errorElement = document.getElementById(`${event.target.id}-error`);
+        //             if (errorElement) {
+        //                 errorElement.textContent = '';
+        //                 errorElement.style.display = 'none';
+        //                 event.target.style.setProperty('--input-border-color', '#cbd5e0');
+        //             }
+        //         });
+        //     });
 
-            // --- 修正：為手動時區輸入框添加專門的錯誤清除邏輯 ---
-            const prefixes = ['single_', 'comp1_', 'comp2_', 'natal_', 'transit_'];
-            prefixes.forEach(prefix => {
-                const timezoneSelect = document.getElementById(`${prefix}timezone`);
-                const customTimezoneInput = document.getElementById(`${prefix}customTimezone`);
+        //     // --- 修正：為手動時區輸入框添加專門的錯誤清除邏輯 ---
+        //     const prefixes = ['single_', 'comp1_', 'comp2_', 'natal_', 'transit_'];
+        //     prefixes.forEach(prefix => {
+        //         const timezoneSelect = document.getElementById(`${prefix}timezone`);
+        //         const customTimezoneInput = document.getElementById(`${prefix}customTimezone`);
 
-                if (timezoneSelect && customTimezoneInput) {
-                    // 1. 當在手動輸入框中輸入時，清除下拉選單上的錯誤提示和兩個輸入框的邊框
-                    customTimezoneInput.addEventListener('input', () => {
-                        // 錯誤訊息是與下拉選單的 ID 關聯的
-                        const errorElement = document.getElementById(`${timezoneSelect.id}-error`);
-                        if (errorElement) {
-                            errorElement.textContent = '';
-                            errorElement.style.display = 'none';
-                        }
-                        // 重設兩個輸入框的邊框顏色
-                        timezoneSelect.style.setProperty('--input-border-color', '#cbd5e0');
-                        customTimezoneInput.style.setProperty('--input-border-color', '#cbd5e0');
-                    });
+        //         if (timezoneSelect && customTimezoneInput) {
+        //             // 1. 當在手動輸入框中輸入時，清除下拉選單上的錯誤提示和兩個輸入框的邊框
+        //             customTimezoneInput.addEventListener('input', () => {
+        //                 // 錯誤訊息是與下拉選單的 ID 關聯的
+        //                 const errorElement = document.getElementById(`${timezoneSelect.id}-error`);
+        //                 if (errorElement) {
+        //                     errorElement.textContent = '';
+        //                     errorElement.style.display = 'none';
+        //                 }
+        //                 // 重設兩個輸入框的邊框顏色
+        //                 timezoneSelect.style.setProperty('--input-border-color', '#cbd5e0');
+        //                 customTimezoneInput.style.setProperty('--input-border-color', '#cbd5e0');
+        //             });
 
-                    // 2. 當變更下拉選單時，除了通用監聽器會清除自身錯誤外，也要確保手動輸入框的邊框恢復正常
-                    timezoneSelect.addEventListener('change', () => {
-                        customTimezoneInput.style.setProperty('--input-border-color', '#cbd5e0');
-                    });
-                }
-            });
-        });
+        //             // 2. 當變更下拉選單時，除了通用監聽器會清除自身錯誤外，也要確保手動輸入框的邊框恢復正常
+        //             timezoneSelect.addEventListener('change', () => {
+        //                 customTimezoneInput.style.setProperty('--input-border-color', '#cbd5e0');
+        //             });
+        //         }
+        //     });
+        // });
 
         /**
          * Displays an error message for a specific input field.
