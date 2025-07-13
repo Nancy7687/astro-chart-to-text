@@ -2603,6 +2603,7 @@
                 // 收集所有勾選的星體 (這部分是共用的)
                 const selectedPlanets = Array.from(document.querySelectorAll('.planet-checkbox:checked')).map(cb => cb.value);
                 payload.optional_planets = selectedPlanets;
+                
 
                 // 檢查 endpoint 是否已設定，避免無效請求
                 if (!endpoint) {
