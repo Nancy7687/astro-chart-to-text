@@ -2049,281 +2049,177 @@
 
 
         // =============================================================
-        // 【專業工人一號】：單命盤的部分
-        // =============================================================
+            // 【專業工人一號】：單命盤的部分 (已加入安全檢查)
+            // =============================================================
             const buildSingleChartHTML = (chartInfo, title) => {
+                // 如果沒有資料，就回傳一個錯誤訊息的HTML
+                if (!chartInfo) {
+                    return `<div class="chart-wrapper"><div class="chart-main-header"><h2>${title}</h2></div><div style="padding:15px;">錯誤：缺少星盤資料。</div></div>`;
+                }
 
-                // 內餡0：「星盤基礎數據」
-                const summaryLines = []; // Use a local array for this section
-                summaryLines.push("==============================");
-                summaryLines.push(`星盤基礎數據`);
-                summaryLines.push("==============================");
-                // 時間戳信息
+                // --- 步驟一：分別準備好每個子區塊的「純文字內餡」 ---
+
+                // 內餡一：「星盤基礎數據」
+                const summaryLines = [];
                 if (chartInfo.timestamps) {
-                    const ts = chartInfo.timestamps;
-                    summaryLines.push(`本地時間: ${ts.local_time}`);
-                    summaryLines.push(`UTC 時間: ${ts.utc_time}`);
-                    summaryLines.push(`Delta T (秒): ${ts.delta_t_seconds.toFixed(3)}`);
-                    summaryLines.push(`計算儒略日 (TT): ${ts.julian_day_tt}`);
-                } else {
-                    summaryLines.push("警告：時間戳數據缺失。");
-                    console.warn(`WARN: Timestamps missing for ${title}.`);
+                    summaryLines.push(`本地時間: ${chartInfo.timestamps.local_time}`);
+                    summaryLines.push(`UTC 時間: ${chartInfo.timestamps.utc_time}`);
+                    summaryLines.push(`Delta T (秒): ${chartInfo.timestamps.delta_t_seconds.toFixed(3)}`);
+                    summaryLines.push(`計算儒略日 (TT): ${chartInfo.timestamps.julian_day_tt}`);
                 }
-
-                // 出生資訊
                 if (chartInfo.birth_info) {
-                    console.log(`DEBUG: Entering birth_info block for ${title}. summaryLines length before: ${summaryLines.length}`); // <-- NEW LOG
                     summaryLines.push(`緯度 ${chartInfo.birth_info.latitude}, 經度 ${chartInfo.birth_info.longitude}`);
-                    console.log(`DEBUG: Finished birth_info block for ${title}. summaryLines length after: ${summaryLines.length}`); // <-- NEW LOG
-                } else {
-                    summaryLines.push("警告：出生資訊數據缺失。");
-                    console.warn(`WARN: Birth info missing for ${title}.`);
                 }
-
-                // 星曆檔案狀態
-                if (chartInfo.ephemeris_path_status) {
-                    console.log(`DEBUG: Entering ephemeris_path_status block for ${title}. summaryLines length before: ${summaryLines.length}`); // <-- NEW LOG
-                    console.log(`星曆檔案狀態: ${chartInfo.ephemeris_path_status.status} - ${chartInfo.ephemeris_path_status.message}`);
-                    console.log(`DEBUG: Finished ephemeris_path_status block for ${title}. summaryLines length after: ${summaryLines.length}`); // <-- NEW LOG
-                } else {
-                    summaryLines.push("警告：星曆檔案狀態數據缺失。");
-                    console.warn(`WARN: Ephemeris path status missing for ${title}.`);
-                }
-                console.log(`DEBUG: After basic info for ${title}, summaryLines length: ${summaryLines.length}`);
-                console.log(`DEBUG: summaryLines (basic info) for ${title}:`, summaryLines.slice(-5));
-
                 const summaryContentString = summaryLines.join('\n');
 
-                // 內餡一：宮頭
+                // 內餡二：「宮頭」
                 const cuspLines = [];
-                cuspLines.push("==============================");
-                cuspLines.push("宮頭星座度數");
-                cuspLines.push("==============================");
                 cuspLines.push("宮頭 | 星座度數(度分)");
                 cuspLines.push("------------------------------");
                 if (chartInfo.house_cusps && Array.isArray(chartInfo.house_cusps) && chartInfo.house_cusps.length > 0) {
                     chartInfo.house_cusps.forEach(cusp => {
                         cuspLines.push(`${String(cusp.house_number).padEnd(2, ' ')}宮頭: | ${cusp.zodiac_position_formatted}`);
-                        // ✅ 修正：把 .join() 從迴圈中移除，讓迴圈只專心做一件事：填充陣列
                     });
                 } else {
                     cuspLines.push("沒有宮頭星座度數數據。");
                 }
-
-                // --- 步驟二：在所有內容都填充完畢後，才將陣列轉換成最終字串 ---
-                // ✅ 修正：在這裡定義 cuspContentString，它現在是在函式主體的作用域中
                 const cuspContentString = cuspLines.join('\n');
 
-                console.log(`DEBUG: After house cusps for ${title}, cuspLines length: ${cuspLines.length}`);
-                console.log(`DEBUG: cuspLines (house cusps) for ${title}:`, cuspLines.slice(-5));
-
-                // 內餡二：星體位置
+                // 內餡三：「星體位置」
                 const planetLines = [];
-                planetLines.push("==============================");
-                planetLines.push("星體位置");
-                planetLines.push("==============================");
                 planetLines.push("星體名稱 | 逆行狀態 | 星座度數(度分) | 宮位度數(度分)");
-                planetLines.push("------------------------------");
-
-                if (chartInfo.planet_positions && typeof chartInfo.planet_positions === 'object' && Object.keys(chartInfo.planet_positions).length > 0) {
-                    console.log(`DEBUG: Entering planet_positions block for ${title}. planetLines length before: ${planetLines.length}`); // <-- NEW LOG
+                planetLines.push("--------------------------------------------------");
+                if (chartInfo.planet_positions && typeof chartInfo.planet_positions === 'object') {
                     DISPLAY_ORDER_NAMES.forEach(name => {
                         const pInfo = chartInfo.planet_positions[name];
-                        if (pInfo) {
-                            let displayName = name;
-                            const retrogradeLabel = pInfo.retrograde_label || "";
-                            if (pInfo.is_retrograde && retrogradeLabel) {
-                                displayName += ' ' + retrogradeLabel;
-                            }
-
-                            let targetPadding = 8;
-                            const chineseCharCount = (displayName.match(/[\u4e00-\u9fff]/g) || []).length;
-                            const actualLength = displayName.length + chineseCharCount;
-                            const paddingNeeded = Math.max(0, targetPadding - actualLength + (displayName.length - chineseCharCount));
-                            const paddedName = displayName + ' '.repeat(paddingNeeded);
-
-                            let line = `${paddedName} | ${pInfo.zodiac_position_formatted}`;
-                            const houseNum = typeof pInfo.house === 'number' ? pInfo.house : null;
-                            const hdegNum = typeof pInfo.hdeg === 'number' ? pInfo.hdeg : null;
-
-                            // 修正：四軸點不顯示宮位資訊
-                            if (!HOUSE_DEFINING_POINTS.includes(name) && houseNum !== null && hdegNum !== null) {
-                                let formattedHdeg = formatDegreesMinutesSeconds(hdegNum);
-                                line += ` | ${houseNum}宮(${formattedHdeg})`;
-
+                        if (pInfo) { // 只處理存在的星體
+                            const retrogradeLabel = pInfo.is_retrograde ? '逆行' : '';
+                            let line = `${name.padEnd(4, '　')} | ${retrogradeLabel.padEnd(4, ' ')} | ${pInfo.zodiac_position_formatted.padEnd(14, ' ')}`;
+                            if (!HOUSE_DEFINING_POINTS.includes(name) && pInfo.house !== null && pInfo.hdeg !== null) {
+                                line += ` | ${pInfo.house}宮(${formatDegreesMinutesSeconds(pInfo.hdeg)})`;
                             } else {
-                                line += ` - -`;
+                                line += ` | -`;
                             }
                             planetLines.push(line);
-
-                            // *** 在這裡計算並儲存 full_position_display，供相位部分使用 ***
-                            // let fullPlanetPositionString = `${name}${pInfo.retrograde_label || ''}`;
-                            // fullPlanetPositionString += `${pInfo.zodiac_position_formatted || ''}`;
-                            // if (!HOUSE_DEFINING_POINTS.includes(name) && houseNum !== null && hdegNum !== null) {
-                            //    fullPlanetPositionString += `${houseNum}宮(${hdegNum.toFixed(2)}°)`;
-                            // }
-                            // pInfo.full_position_display = fullPlanetPositionString;
-
-                        } else {
-                            console.warn(`WARN: Planet ${name} not found in planet_positions for ${title}`);
                         }
-
                     });
-                    console.log(`DEBUG: Finished planet_positions block for ${title}. planetLines length after: ${planetLines.length}`); // <-- NEW LOG
                 } else {
                     planetLines.push("沒有星體位置數據。");
-                    console.warn(`WARN: planet_positions missing or empty for ${title}. Value:`, chartInfo.planet_positions);
                 }
-                console.log(`DEBUG: After planet positions for ${title}, planetLines length: ${planetLines.length}`);
-                console.log(`DEBUG: planetLines (planet positions) for ${title}:`, planetLines.slice(-5));
-
                 const planetContentString = planetLines.join('\n');
 
-                // 內餡三：相位
+                // 內餡四：「相位」
                 const aspectLines = [];
-
-                // --- 單盤內主要相位 (修正版) ---
-                aspectLines.push("==============================");
-                aspectLines.push("單盤內主要主要相位");
-                aspectLines.push("==============================");
                 aspectLines.push("星體1名稱 | 相位名稱 | 星體2名稱 | 相位動態 | 容許度(度分)");
-                aspectLines.push("------------------------------");
-                if (chartInfo.aspects && Array.isArray(chartInfo.aspects) && chartInfo.aspects.length > 0) {
+                aspectLines.push("--------------------------------------------------");
+                if (chartInfo.aspects && Array.isArray(chartInfo.aspects) && chartInfo.aspects.length > 0 && chartInfo.planet_positions) {
 
-                    // 用於儲存已經處理過的相位組合，避免重複 (例如 太陽-月亮 和 月亮-太陽)
-                    const processedAspects = new Set();
-                    const uniqueAspects = [];
+                    // 【關鍵修正】在這裡加入安全檢查
+                    const validAspects = chartInfo.aspects.filter(asp =>
+                        chartInfo.planet_positions[asp.p1_name] && chartInfo.planet_positions[asp.p2_name]
+                    );
 
-                    // 1. 扁平化並過濾重複相位
-                    chartInfo.aspects.forEach(asp => {
-                        // 透過排序行星名稱來建立一個唯一的鍵，確保 "A-B" 和 "B-A" 是同一個鍵
-                        const aspectKey = [asp.p1_name, asp.p2_name].sort().join('-');
-
-                        if (!processedAspects.has(aspectKey)) {
-                            uniqueAspects.push(asp);
-                            processedAspects.add(aspectKey);
-                        }
-                    });
-
-                    // 2. 智慧排序：
-                    //    - 主要排序依據：相位組合中，在 DISPLAY_ORDER_NAMES 裡排在最前面的那個星體。
-                    //    - 次要排序依據：相位組合中，排在第二個的那個星體。
-                    //    - 如此可確保輸出結果是分組的，例如先列出所有太陽的相位，再列出所有月亮的相位。
-                    uniqueAspects.sort((a, b) => {
-                        const a_p1_index = DISPLAY_ORDER_NAMES.indexOf(a.p1_name);
-                        const a_p2_index = DISPLAY_ORDER_NAMES.indexOf(a.p2_name);
-                        const b_p1_index = DISPLAY_ORDER_NAMES.indexOf(b.p1_name);
-                        const b_p2_index = DISPLAY_ORDER_NAMES.indexOf(b.p2_name);
-
-                        // 找出每個相位組合中，排序最靠前的星體 (primary planet)
-                        const primary_a_index = Math.min(a_p1_index, a_p2_index);
-                        const primary_b_index = Math.min(b_p1_index, b_p2_index);
-
-                        // 如果主要星體不同，就根據主要星體排序
-                        if (primary_a_index !== primary_b_index) {
-                            return primary_a_index - primary_b_index;
-                        }
-
-                        // 如果主要星體相同 (例如 太陽-月亮 vs 太陽-火星)，則根據次要星體排序
-                        const secondary_a_index = Math.max(a_p1_index, a_p2_index);
-                        const secondary_b_index = Math.max(b_p1_index, b_p2_index);
-                        return secondary_a_index - secondary_b_index;
-                    });
-
-                    // 3. 遍歷處理過的相位並產生輸出
-                    uniqueAspects.forEach(aspItem => {
-                        // 根據 DISPLAY_ORDER_NAMES 的順序，決定哪個星體在前，哪個在後，以保持輸出的美觀一致
-                        const p1_is_first = DISPLAY_ORDER_NAMES.indexOf(aspItem.p1_name) < DISPLAY_ORDER_NAMES.indexOf(aspItem.p2_name);
-                        const p1_name = p1_is_first ? aspItem.p1_name : aspItem.p2_name;
-                        const p2_name = p1_is_first ? aspItem.p2_name : aspItem.p1_name;
-
-                        // 取得逆行狀態，如果沒有則預設為空字串
-                        // const p1Retrograde = chartInfo.planet_positions[p1_name]?.is_retrograde ? '(R)' : '';
-                        // const p2Retrograde = chartInfo.planet_positions[p2_name]?.is_retrograde ? '(R)' : '';
-
-                        // 組裝輸出字串，只包含你需要的資訊
-                        // let aspectLine = `${p1_name}${p1Retrograde} ${aspItem.aspect_name} ${p2_name}${p2Retrograde}`;
-                        let aspectLine = `${p1_name} | ${aspItem.aspect_name} | ${p2_name}`;
-
-                        // 處理相位動態和容許度
-                        if (aspItem.orb !== undefined) {
-                            // 在這裡呼叫轉換函數，將十進制數值轉換為六十進制字串
-                            let displayedOrb = formatDegreesMinutesSeconds(aspItem.orb);
-
-                            if (aspItem.aspect_type) { // 如果有 "入相" 或 "出相"
-                                aspectLine += ` | ${aspItem.aspect_type} | ${displayedOrb}`; // 使用已經格式化好的字串
-                            } else { // 如果沒有相位動態，直接加上 "容許度"
-                                aspectLine += ` | - | 容許度${displayedOrb}`; // 使用已經格式化好的字串
+                    // 如果過濾後仍然有相位，才進行排序和顯示
+                    if (validAspects.length > 0) {
+                        const processedAspects = new Set();
+                        const uniqueAspects = [];
+                        validAspects.forEach(asp => {
+                            const aspectKey = [asp.p1_name, asp.p2_name].sort().join('-');
+                            if (!processedAspects.has(aspectKey)) {
+                                uniqueAspects.push(asp);
+                                processedAspects.add(aspectKey);
                             }
-                        } else {
-                            aspectLine += ``; // 如果沒有容許度，直接結束
-                        }
-                        aspectLines.push(aspectLine);
-                    });
+                        });
 
+                        uniqueAspects.sort((a, b) => {
+                            const a_p1_index = DISPLAY_ORDER_NAMES.indexOf(a.p1_name);
+                            const a_p2_index = DISPLAY_ORDER_NAMES.indexOf(a.p2_name);
+                            const b_p1_index = DISPLAY_ORDER_NAMES.indexOf(b.p1_name);
+                            const b_p2_index = DISPLAY_ORDER_NAMES.indexOf(b.p2_name);
+                            const primary_a_index = Math.min(a_p1_index, a_p2_index);
+                            const primary_b_index = Math.min(b_p1_index, b_p2_index);
+                            if (primary_a_index !== primary_b_index) {
+                                return primary_a_index - primary_b_index;
+                            }
+                            const secondary_a_index = Math.max(a_p1_index, a_p2_index);
+                            const secondary_b_index = Math.max(b_p1_index, b_p2_index);
+                            return secondary_a_index - secondary_b_index;
+                        });
+
+                        uniqueAspects.forEach(aspItem => {
+                            const p1_is_first = DISPLAY_ORDER_NAMES.indexOf(aspItem.p1_name) < DISPLAY_ORDER_NAMES.indexOf(aspItem.p2_name);
+                            const p1_name = p1_is_first ? aspItem.p1_name : aspItem.p2_name;
+                            const p2_name = p1_is_first ? aspItem.p2_name : aspItem.p1_name;
+                            let aspectLine = `${p1_name} | ${aspItem.aspect_name} | ${p2_name}`;
+                            if (aspItem.orb !== undefined) {
+                                let displayedOrb = formatDegreesMinutesSeconds(aspItem.orb);
+                                if (aspItem.aspect_type) {
+                                    aspectLine += ` | ${aspItem.aspect_type} | ${displayedOrb}`;
+                                } else {
+                                    aspectLine += ` | - | 容許度${displayedOrb}`;
+                                }
+                            }
+                            aspectLines.push(aspectLine);
+                        });
+                    } else {
+                        aspectLines.push("沒有可顯示的有效相位。");
+                    }
                 } else {
                     aspectLines.push("此星盤中沒有偵測到主要相位。");
-                    console.warn(`WARN: aspects missing or empty for ${title}. Value:`, chartInfo.aspects);
                 }
-
                 const aspectContentString = aspectLines.join('\n');
 
-                // --- 【關鍵】修正後的 HTML 結構 ---
-            const fullSectionHtml = `
-                <div class="chart-wrapper">
-                    <div class="chart-main-header">
-                        <h1 class="main-title">${title}</h1>
-                        <!-- 這個按鈕現在只會複製下面的 sub-sections-container 內容 -->
-                        <button class="copy-chart-btn text-2xl md:text-3xl">複製此個人星盤</button>
-                        </div>
-                        
-                        <!-- 1. 基礎數據區塊，它現在是獨立的 -->
-                    <div class="summary-section-container">
-                        <div class="result-section-item">
-                            <div class="result-section-header">
-                                <span>星盤基礎數據</span>
-                                <button class="section-copy-btn">複製 (選擇性)</button>
-                            </div>
-                            <div class="result-section-content scrollable-content">
-                                <pre>${summaryContentString}</pre>
-                            </div>
-                        </div>
+                // --- 步驟二：將所有內餡，組裝成一個帶有多層次複製按鈕的 HTML ---
+                const fullSectionHtml = `
+        <div class="chart-wrapper">
+            <div class="chart-main-header">
+                <h1 class="main-title">${title}</h1>
+                <button class="copy-chart-btn text-2xl md:text-3xl">複製此個人星盤</button>
+            </div>
+            <div class="summary-section-container">
+                <div class="result-section-item">
+                    <div class="result-section-header">
+                        <span>星盤基礎數據</span>
+                        <button class="section-copy-btn">複製 (選擇性)</button>
                     </div>
-                    
-                    <!-- 2. 核心表格區塊，被一個專屬的容器包起來 -->
-                    <div class="sub-sections-container">
-                        <div class="result-section-item">
-                            <div class="result-section-header">
-                                <span>宮頭星座度數</span>
-                                <button class="section-copy-btn">複製</button>
-                            </div>
-                            <div class="result-section-content scrollable-content">
-                                <pre>${cuspContentString}</pre>
-                            </div>
-                        </div>
-                        <div class="result-section-item">
-                            <div class="result-section-header">
-                                <span>星體位置</span>
-                                <button class="section-copy-btn">複製</button>
-                            </div>
-                            <div class="result-section-content scrollable-content">
-                                <pre>${planetContentString}</pre>
-                            </div>
-                        </div>
-                        <div class="result-section-item">
-                            <div class="result-section-header">
-                                <span>主要相位</span>
-                                <button class="section-copy-btn">複製</button>
-                            </div>
-                            <div class="result-section-content scrollable-content">
-                                <pre>${aspectContentString}</pre>
-                            </div>
-                        </div>
+                    <div class="result-section-content scrollable-content">
+                        <pre>${summaryContentString}</pre>
                     </div>
                 </div>
-            `;
-            return fullSectionHtml;
-        }
+            </div>
+            <div class="sub-sections-container">
+                <div class="result-section-item">
+                    <div class="result-section-header">
+                        <span>宮頭星座度數</span>
+                        <button class="section-copy-btn">複製</button>
+                    </div>
+                    <div class="result-section-content scrollable-content">
+                        <pre>${cuspContentString}</pre>
+                    </div>
+                </div>
+                <div class="result-section-item">
+                    <div class="result-section-header">
+                        <span>星體位置</span>
+                        <button class="section-copy-btn">複製</button>
+                    </div>
+                    <div class="result-section-content scrollable-content">
+                        <pre>${planetContentString}</pre>
+                    </div>
+                </div>
+                <div class="result-section-item">
+                    <div class="result-section-header">
+                        <span>主要相位</span>
+                        <button class="section-copy-btn">複製</button>
+                    </div>
+                    <div class="result-section-content scrollable-content">
+                        <pre>${aspectContentString}</pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+                return fullSectionHtml;
+            };
 
     // =============================================================
         // 【專業工人二號】：打造一個帶有「智慧排序」的「交互相位」HTML報告
