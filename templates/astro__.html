@@ -2311,6 +2311,18 @@
             const resultOutputContainer = document.getElementById('resultOutput');
             resultOutputContainer.innerHTML = ''; // 清空舊內容
 
+            // --- 【新增的偵錯日誌】 ---
+            // 這段程式碼會幫助我們檢查後端回傳的資料是否完整
+            console.log("--- 資料檢查開始 ---");
+            console.log("收到的完整 chartData:", chartData);
+            if (chartData.chart_type === 'composite') {
+                console.log("組合盤的星體列表:", Object.keys(chartData.composite_chart_data?.planet_positions || {}));
+                console.log("本命盤一的星體列表:", Object.keys(chartData.natal_chart1_data?.planet_positions || {}));
+                console.log("本命盤二的星體列表:", Object.keys(chartData.natal_chart2_data?.planet_positions || {}));
+            }
+            console.log("--- 資料檢查結束 ---");
+            // --- 偵錯日誌結束 ---
+
             let finalHtml = '';
 
             if (chartData.chart_type === 'single') {
