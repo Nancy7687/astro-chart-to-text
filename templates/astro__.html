@@ -805,10 +805,11 @@
                 optionalPlanetsConfig[groupName].forEach(planet => {
                     const wrapper = document.createElement('div');
                     wrapper.className = 'flex items-center';
+                    // ▼▼▼▼▼ 【確認點】確保 class 名稱是 'optional-planet-checkbox' ▼▼▼▼▼
                     wrapper.innerHTML = `
-                        <input id="chk-${planet}" type="checkbox" value="${planet}" class="optional-planet-checkbox h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500" checked>
-                        <label for="chk-${planet}" class="ml-2 block text-base text-gray-900">${planet}</label>
-                    `;
+                <input id="chk-${planet}" type="checkbox" value="${planet}" class="optional-planet-checkbox h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500" checked>
+                <label for="chk-${planet}" class="ml-2 block text-base text-gray-900">${planet}</label>
+            `;
                     container.appendChild(wrapper);
                 });
             }
@@ -992,7 +993,7 @@
                         hour: parseInt(getInputValue('single_hour')), minute: parseInt(getInputValue('single_minute')),
                         latitude: parseFloat(getInputValue('single_latitude')), longitude: parseFloat(getInputValue('single_longitude')),
                         timezone: getInputValue('single_customTimezone') || getInputValue('single_timezone'),
-                        optional_planets: optionalPlanets
+                        optional_planets: optionalPlanets // 將正確收集的列表放入 payload
                     };
                     apiUrl = `${BASE_API_URL}/calculate_single_chart`;
                 }
@@ -1012,7 +1013,7 @@
                             transit_hour: parseInt(getInputValue('transit_hour')), transit_minute: parseInt(getInputValue('transit_minute')),
                             transit_latitude: parseFloat(getInputValue('transit_latitude')), transit_longitude: parseFloat(getInputValue('transit_longitude')),
                             transit_timezone: getInputValue('transit_customTimezone') || getInputValue('transit_timezone'),
-                            optional_planets: optionalPlanets
+                            optional_planets: optionalPlanets // 將正確收集的列表放入 payload
                         };
                         apiUrl = `${BASE_API_URL}/calculate_transit_chart`;
                     }
@@ -1030,7 +1031,7 @@
                             chart2_hour: parseInt(getInputValue('comp2_hour')), chart2_minute: parseInt(getInputValue('comp2_minute')),
                             chart2_latitude: parseFloat(getInputValue('comp2_latitude')), chart2_longitude: parseFloat(getInputValue('comp2_longitude')),
                             chart2_timezone: getInputValue('comp2_customTimezone') || getInputValue('comp2_timezone'),
-                            optional_planets: optionalPlanets
+                            optional_planets: optionalPlanets // 將正確收集的列表放入 payload
                         };
                         if (subChartType === 'composite') {
                             payload.composite_method = 'reference_plane'; // Hardcoded as per UI
@@ -1090,11 +1091,12 @@
                     break;
                 case 'comparison':
                     container.innerHTML = 
+                        buildOverlayHTML(data.chart1_planets_in_chart2_houses, name1, name2, 'A落入B宮') +
+                        buildOverlayHTML(data.chart2_planets_in_chart1_houses, name2, name1, 'B落入A宮')+
                         buildSingleChartHTML(data.chart1_data, `${name1}的本命盤`, 'comparison-chart') +
                         buildSingleChartHTML(data.chart2_data, `${name2}的本命盤`, 'comparison-chart') +
-                        buildInterAspectsHTML(data.inter_aspects, name1, name2) +
-                        buildOverlayHTML(data.chart1_planets_in_chart2_houses, name1, name2, 'A落入B宮') +
-                        buildOverlayHTML(data.chart2_planets_in_chart1_houses, name2, name1, 'B落入A宮');
+                        buildInterAspectsHTML(data.inter_aspects, name1, name2) 
+                        ;
                     break;
                 case 'composite':
                      container.innerHTML = 
