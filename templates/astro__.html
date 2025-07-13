@@ -2326,9 +2326,9 @@
                 // 【關鍵修改】全新的比較盤輸出邏輯
                 const natal1Html = buildSingleChartHTML(chartData.chart1_data, `${chart1Name}的本命星盤資訊`);
                 const natal2Html = buildSingleChartHTML(chartData.chart2_data, `${chart2Name}的本命星盤資訊`);
-                const interAspectsHtml = buildInterAspectsHTML(chartData.inter_aspects, chart1Name, chart2Name);
-                const overlayAB_Html = buildOverlayHTML(chartData.chart1_planets_in_chart2_houses, chart1Name, chart2Name);
-                const overlayBA_Html = buildOverlayHTML(chartData.chart2_planets_in_chart1_houses, chart2Name, chart1Name);
+                const interAspectsHtml = buildInterAspectsHTML(chartData.inter_aspects, "交互相位", chart1Name, chart2Name);
+                const overlayAB_Html = buildOverlayHTML(chartData.chart1_planets_in_chart2_houses, "A落入B宮位", chart1Name, chart2Name);
+                const overlayBA_Html = buildOverlayHTML(chartData.chart2_planets_in_chart1_houses, "B落入A宮位", chart2Name, chart1Name);
 
                 finalHtml = `
                 <div class="report-wrapper">
@@ -2343,12 +2343,11 @@
                         ${overlayAB_Html}
                         ${overlayBA_Html}
                     </div>
-                </div>
-            `;
+                </div>`;
             } else if (chartData.chart_type === 'transit') {
-                // 行運盤的輸出邏輯
-                const transitOverlayHtml = buildOverlayHTML(chartData.transit_planets_in_natal_houses, "行運", chart1Name);
-                const transitAspectsHtml = buildInterAspectsHTML(chartData.inter_aspects, chart1Name, "行運");
+                // 【關鍵修改】全新的行運盤輸出邏輯
+                const transitOverlayHtml = buildOverlayHTML(chartData.transit_planets_in_natal_houses, "行運星體落入本命宮位", "行運", chart1Name);
+                const transitAspectsHtml = buildInterAspectsHTML(chartData.inter_aspects, "行運與本命相位", chart1Name, "行運");
                 const natalChartHtml = buildSingleChartHTML(chartData.natal_chart_data, `${chart1Name}的本命星盤 (參考)`);
 
                 finalHtml = `
@@ -2362,8 +2361,7 @@
                         ${transitAspectsHtml}
                     </div>
                     ${natalChartHtml}
-                </div>
-            `;
+                </div>`;
             } else {
                 finalHtml = `<p>錯誤：未知的星盤類型 '${chartData.chart_type}'</p>`;
             }
