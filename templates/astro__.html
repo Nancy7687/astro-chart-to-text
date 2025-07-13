@@ -1275,7 +1275,7 @@
         <!-- Planet Selection Checkboxes -->
         <div id="planetSelection" class="mb-6 p-4 border border-gray-200 rounded-lg bg-gray-50">
             <div class="flex justify-between items-center mb-3">
-                <h3 class="planetSelection-text text-2xl md:text-4xl font-bold text-gray-700　leading-relaxed">顯示選項<br>(小行星/虛點)</h3>
+                <h3 class="planetSelection-text text-2xl md:text-4xl font-bold text-gray-700　leading-5">顯示選項<br>(小行星/虛點)</h3>
                 <div>
                     <button id="toggleAllPlanetsBtn"
                         class="text-lg md:text-2xl font-medium text-indigo-600 hover:text-indigo-800">全部取消</button>
@@ -1597,8 +1597,8 @@
 
             // --- 動態生成小行星/虛點的核取方塊 (優化分組) ---
             const optionalPlanetsConfig = {
-                '十大行星－人格基石與生命動力（建議全選）': ["太陽", "月亮", "水星", "金星", "火星", "木星", "土星", "天王星", "海王星", "冥王星"],
-                '四軸－生命舞台與定位座標（建議全選）': ["上升", "下降", "天頂", "天底"],
+                '十大行星（建議全選）': ["太陽", "月亮", "水星", "金星", "火星", "木星", "土星", "天王星", "海王星", "冥王星"],
+                '四軸（建議全選）': ["上升", "下降", "天頂", "天底"],
                 '命運與潛意識': ["北交", "南交", "宿命", "福點", "莉莉絲"],
                 '療癒與潛能': ["凱龍", "穀神", "智神", "婚神", "灶神"],
                 '深度心理': ["愛神", "靈神", "人龍"]
@@ -2633,18 +2633,23 @@
                 resultOutput.innerHTML = '<p>計算中，請稍候...</p>';
 
                 // 使用我們新的安全函式來讀取資料
-                const chart1Name = getInputValueById('name1');
+                const chart1Name = getInputValueById('single_name');
+                // 1. 找到頁面上所有 class 為 'planet-checkbox' 且「被勾選」的元素
+                const allCheckedCheckboxes = document.querySelectorAll('.planet-checkbox:checked');
+
+                // 2. 將這些元素的值，轉換成一個乾淨的陣列 (例如 ["太陽", "月亮", "凱龍", ...])
+                const selectedPlanets = Array.from(allCheckedCheckboxes).map(cb => cb.value);
                 const payload = {
                     chart_type: 'single',
-                    year: getInputValueById('year1'),
-                    month: getInputValueById('month1'),
-                    day: getInputValueById('day1'),
-                    hour: getInputValueById('hour1'),
-                    minute: getInputValueById('minute1'),
-                    latitude: getInputValueById('lat1'),
-                    longitude: getInputValueById('lon1'),
-                    timezone: getInputValueById('tz1'),
-                    optional_planets: ["福點", "宿命"] // 您可以根據需要修改
+                    year: getInputValueById('single_year'),
+                    month: getInputValueById('single_month'),
+                    day: getInputValueById('single_day'),
+                    hour: getInputValueById('single_hour'),
+                    minute: getInputValueById('single_minute'),
+                    latitude: getInputValueById('single_lat'),
+                    longitude: getInputValueById('single_lon'),
+                    timezone: getInputValueById('single_timezone'),
+                    optional_planets: selectedPlanets // <-- 使用我們剛剛收集到的陣列
                 };
 
                 // 發送 fetch 請求到您的後端 (請確認後端端點路徑)
