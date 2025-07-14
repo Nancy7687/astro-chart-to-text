@@ -1224,7 +1224,7 @@
                     break;
                 case 'transit':
                     const transitInteractionHtml = `<div class="sub-sections-container">${buildOverlayHTML(data.transit_planets_in_natal_houses, "行運", name1, '行運星體落入本命宮位')}${buildInterAspectsHTML(data.inter_aspects, "行運", name1, true)}</div>`;
-                    finalHtml = createReportWrapper(`${name1}的行運盤報告`, buildSingleChartHTML(data.natal_chart_data, `${name1}的本命盤`) + buildSingleChartHTML(data.transit_chart_data, `${name2}的行運盤`) + transitInteractionHtml);
+                    finalHtml = createReportWrapper(`${name1}的行運盤報告`, buildSingleChartHTML(data.natal_chart_data, `${name1}的本命盤`) + buildSingleChartHTML(data.transit_chart_data, `行運盤`) + transitInteractionHtml);
                     break;
                 default:
                     finalHtml = `<div class="error-message">錯誤: 未知的星盤類型 '${data.chart_type}'</div>`;
@@ -1278,18 +1278,21 @@
         }
         
         // 建立單個結果區塊的HTML (可重用)
-        function createResultSection(title, content, isSimple = false) {
-            const wrapperClass = isSimple ? 'simple-section-wrapper' : '';
+        function createResultSection(title, content, isSummary = false, headerStyleClass = 'single-chart-header-style') {
+            // 【修改說明】
+            // 1. 函式簽名改變：增加了 headerStyleClass 參數，並給了它一個預設值。
+            // 2. 動態加入 Class：在下方的 <div> 中，我們將 headerStyleClass 變數加入到 class 列表中。
+            // 3. 複製按鈕邏輯：我們也恢復了 isSummary 參數的判斷，確保「基礎數據」區塊不會顯示複製按鈕。
             return `
-                <div class="result-section-item ${wrapperClass}">
-                    <div class="result-section-header">
-                        <span>${title}</span>
-                        <button class="section-copy-btn">複製</button>
-                    </div>
-                    <div class="result-section-content scrollable-content">
-                        <pre>${content}</pre>
-                    </div>
-                </div>`;
+        <div class="result-section-item">
+            <div class="result-section-header ${headerStyleClass}">
+                <span>${title}</span>
+                ${isSummary ? '' : '<button class="section-copy-btn">複製</button>'}
+            </div>
+            <div class="result-section-content scrollable-content">
+                <pre>${content}</pre>
+            </div>
+        </div>`;
         }
         
         // 設定複製按鈕的監聽器
