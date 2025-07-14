@@ -183,10 +183,6 @@ def compute_four_angles(jd_tt: float, lat: float, lon: float):
         raise Exception(f"計算四軸時發生錯誤，請檢查經緯度及時間設定，或星曆檔案: {e}")
 
 # ==============================================================================
-# --- 請將您 app.py 中的此函式，用下面完整的已修正版本取代 ---
-# ==============================================================================
-
-# ==============================================================================
 # --- 請用此版本【完整取代】您 app.py 中的舊函式 ---
 # ==============================================================================
 
@@ -300,7 +296,7 @@ def calculate_astrology_chart(year, month, day, hour, minute, latitude, longitud
     except Exception as e:
         app.logger.error(f"計算命盤時發生錯誤: {e}", exc_info=True)
         return {"error": str(e)}
-    
+        
 def compute_part_of_fortune(sun_lon: float, moon_lon: float, asc_lon: float, is_day: bool) -> float:
     return (asc_lon + moon_lon - sun_lon) % 360 if is_day else (asc_lon + sun_lon - moon_lon) % 360
 
