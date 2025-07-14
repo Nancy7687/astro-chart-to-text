@@ -1147,11 +1147,11 @@
                 case 'comparison':
                     const natal1Html = buildSingleChartHTML(data.chart1_data, `${name1}的本命盤`);
                     const natal2Html = buildSingleChartHTML(data.chart2_data, `${name2}的本命盤`);
-                    const interactionHtml = `<div class="sub-sections-container">${buildOverlayHTML(data.chart1_planets_in_chart2_houses, name1, name2, 'A落入B宮')}${buildOverlayHTML(data.chart2_planets_in_chart1_houses, name2, name1, 'B落入A宮')}${buildInterAspectsHTML(data.inter_aspects, name1, name2)}</div>`;
+                    const interactionHtml = `<div class="sub-sections-container">${buildOverlayHTML(data.chart1_planets_in_chart2_houses, name1, name2, `${name1}的星體落入${name2}的星盤位置`)}${buildOverlayHTML(data.chart2_planets_in_chart1_houses, name2, name1, `${name2}的星體落入${name1}的星盤位置`)}${buildInterAspectsHTML(data.inter_aspects, name1, name2)}</div>`;
                     finalHtml = createReportWrapper(`${name1}與${name2}的比較盤報告`, natal1Html + natal2Html + interactionHtml);
                     break;
                 case 'composite':
-                    finalHtml = createReportWrapper('組合中點盤報告', buildSingleChartHTML(data.composite_chart_data, `${name1}與${name2}的組合盤`) + buildSingleChartHTML(data.natal_chart1_data, `${name1}的本命盤 (參考)`) + buildSingleChartHTML(data.natal_chart2_data, `${name2}的本命盤 (參考)`));
+                    finalHtml = createReportWrapper('組合中點盤報告', buildSingleChartHTML(data.composite_chart_data, `${name1}與${name2}的組合盤`) + buildSingleChartHTML(data.natal_chart1_data, `${name1}的本命盤`) + buildSingleChartHTML(data.natal_chart2_data, `${name2}的本命盤`));
                     break;
                 case 'transit':
                     const transitInteractionHtml = `<div class="sub-sections-container">${buildOverlayHTML(data.transit_planets_in_natal_houses, "行運", name1, '行運星體落入本命宮位')}${buildInterAspectsHTML(data.inter_aspects, "行運", name1, true)}</div>`;
@@ -1164,7 +1164,7 @@
             setupCopyListeners();
         }
         // 生成單一星盤的完整HTML
-        function buildSingleChartHTML(chartInfo, title, typeClass) {
+        function buildSingleChartHTML(chartInfo, title, headerStyleClass = 'single-chart-header-style') {
             if (!chartInfo) return `<div class="error-message">${title} 資料缺失。</div>`;
 
             const { timestamps, birth_info, house_cusps, planet_positions, aspects } = chartInfo;
@@ -1174,43 +1174,45 @@
                 `UTC 時間: ${timestamps.utc_time}`,
                 `緯度: ${birth_info.latitude}, 經度: ${birth_info.longitude}`,
             ].join('\n') : "基礎數據缺失";
-            
+
             const cuspContent = (house_cusps?.length > 0) ? ["宮頭 | 星座度數(度分)", "--------------------"].concat(
                 house_cusps.map(c => `${String(c.house_number).padEnd(2, ' ')}宮 | ${c.zodiac_position_formatted}`)
             ).join('\n') : "宮頭數據缺失";
 
-            const planetContent = (planet_positions) ? ["星體 | R | 星座度數(度分) | 宮位度數(度分)", "---------------------------------------"].concat(
+            // 【修改】移除所有 .padEnd()，並縮短分隔線
+            const planetContent = (planet_positions) ? ["星體 | R | 星座度數(度分) | 宮位(度分)", "--------------------------------"].concat(
                 DISPLAY_ORDER_NAMES
                     .filter(name => planet_positions[name])
                     .map(name => {
                         const p = planet_positions[name];
                         const houseInfo = !HOUSE_DEFINING_POINTS.includes(name) && p.house != null
                             ? `${p.house}宮(${formatDegreesMinutesSeconds(p.hdeg)})` : '-';
-                        return `${name.padEnd(4, '　')} | ${(p.is_retrograde ? 'R' : ' ').padEnd(1)} | ${p.zodiac_position_formatted.padEnd(14, ' ')} | ${houseInfo}`;
+                        // 只用 " | " 來分隔，不再填充空格
+                        return `${name} | ${p.is_retrograde ? 'R' : ' '} | ${p.zodiac_position_formatted} | ${houseInfo}`;
                     })
             ).join('\n') : "星體數據缺失";
 
-            const aspectContent = (aspects?.length > 0) ? ["星體1 | 相位 | 星體2 | 動態 | 容許度", "------------------------------------------"].concat(
-                 aspects.map(a => `${a.p1_name.padEnd(4,'　')} | ${a.aspect_name.padEnd(4,' ')} | ${a.p2_name.padEnd(4,'　')} | ${(a.aspect_type || '-').padEnd(4)} | ${formatDegreesMinutesSeconds(a.orb)}`)
+            // 【修改】移除所有 .padEnd()，並縮短分隔線
+            const aspectContent = (aspects?.length > 0) ? ["星體1 | 相位 | 星體2 | 動態 | 容許度", "------------------------------------"].concat(
+                aspects.map(a => `${a.p1_name} | ${a.aspect_name} | ${a.p2_name} | ${a.aspect_type || '-'} | ${formatDegreesMinutesSeconds(a.orb)}`)
             ).join('\n') : "沒有相位";
 
             return `
-                <div class="chart-wrapper">
-                    <div class="chart-main-header ${typeClass}-header-main">
-                        <h2 class="main-title">${title}</h2>
-                        <button class="copy-chart-btn">複製此盤</button>
-                    </div>
-                    <div class="summary-section-container">
-                        ${createResultSection('星盤基礎數據', summaryContent)}
-                    </div>
-                    <div class="sub-sections-container">
-                        ${createResultSection('宮頭', cuspContent)}
-                        ${createResultSection('星體位置', planetContent)}
-                        ${createResultSection('主要相位', aspectContent)}
-                    </div>
-                </div>`;
+        <div class="chart-wrapper">
+            <div class="chart-main-header">
+                <h2 class="main-title">${title}</h2>
+                <button class="copy-chart-btn">複製此盤(不含基礎數據)</button>
+            </div>
+            <div class="summary-section-container">
+                ${createResultSection('星盤基礎數據', summaryContent, true, headerStyleClass)}
+            </div>
+            <div class="sub-sections-container">
+                ${createResultSection('宮頭', cuspContent, false, headerStyleClass)}
+                ${createResultSection('星體位置', planetContent, false, headerStyleClass)}
+                ${createResultSection('主要相位', aspectContent, false, headerStyleClass)}
+            </div>
+        </div>`;
         }
-        
         // 生成交互相位的HTML
         // 請用此版本完整取代舊的 buildInterAspectsHTML 函式
         function buildInterAspectsHTML(aspects, name1, name2, isTransit = false) {
