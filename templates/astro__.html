@@ -380,7 +380,17 @@
             color: white;
             white-space: nowrap;
         }
-        button.section-copy-btn:hover, button.copy-chart-btn:hover { opacity: 0.85; }
+        
+        /* button.section-copy-btn:hover, button.copy-chart-btn:hover { opacity: 0.85; } */
+        /* 為不同按鈕設定各自的 hover 效果 */
+        button.section-copy-btn:hover {
+            background-color: #5a6268; /* 灰色加深 */
+        }
+
+        .report-main-header .copy-report-btn:hover,
+        .chart-main-header .copy-chart-btn:hover {
+            filter: brightness(90%); /* 讓按鈕顏色稍微變暗，比透明度更有質感 */
+        }
 
         .chart-main-header .copy-chart-btn {
             background-color: #42b72a; 
@@ -452,6 +462,50 @@
             font-weight: 700;
             letter-spacing: 0.05em;
             color: #1e40af;
+        }
+
+        /* --- 請將以下樣式加入到 <style> 標籤內 --- */
+
+        /* 用於比較盤/行運盤/組合盤的總外框 */
+        .report-wrapper {
+            border: 1px solid #b39ddb; /* 淡紫色邊框 */
+            border-radius: 12px;
+            background-color: #f3e5f5; /* 非常淺的紫色背景 */
+            overflow: hidden;
+            margin-bottom: 1.5rem; /* 與下一個報告的間距 */
+        }
+
+        /* 報告的總標題列 */
+        .report-main-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 1.5rem;
+            color: white;
+            background: linear-gradient(to right, #6A0DAD, #C71585); /* 主要的紫色漸層 */
+        }
+
+        .report-main-header h2 {
+            font-size: 1.5em;
+            font-weight: bold;
+        }
+
+        /* 讓總複製按鈕更顯眼 */
+        .report-main-header .copy-report-btn {
+            background-color: #4CAF50; /* 綠色 */
+            font-size: 1rem;
+            padding: 8px 16px;
+        }
+        .report-main-header .copy-report-btn:hover {
+            background-color: #45a049;
+        }
+
+        /* 確保單一星盤的複製按鈕樣式也被覆蓋 */
+        .chart-main-header .copy-chart-btn {
+            background-color: #008CBA; /* 藍色 */
+        }
+        .chart-main-header .copy-chart-btn:hover {
+            background-color: #007B9A;
         }
         
         @media (min-width: 768px) {
@@ -1080,45 +1134,35 @@
         // =============================================================
 
         // 主顯示函式
+        // 請用此版本完整取代舊的 displayChartData 函式
         function displayChartData(data, name1, name2) {
             const container = document.getElementById('resultOutput');
-            container.innerHTML = ''; // Clear previous results
-            console.log("Received data for display:", data);
-            
-            switch(data.chart_type) {
+            container.innerHTML = '';
+            let finalHtml = '';
+
+            switch (data.chart_type) {
                 case 'single':
-                    container.innerHTML = buildSingleChartHTML(data, `${name1}的星盤資訊`, 'single-chart');
+                    finalHtml = buildSingleChartHTML(data, `${name1}的星盤資訊`);
                     break;
                 case 'comparison':
-                    container.innerHTML = 
-                        buildOverlayHTML(data.chart1_planets_in_chart2_houses, name1, name2, 'A落入B宮') +
-                        buildOverlayHTML(data.chart2_planets_in_chart1_houses, name2, name1, 'B落入A宮')+
-                        buildSingleChartHTML(data.chart1_data, `${name1}的本命盤`, 'comparison-chart') +
-                        buildSingleChartHTML(data.chart2_data, `${name2}的本命盤`, 'comparison-chart') +
-                        buildInterAspectsHTML(data.inter_aspects, name1, name2) 
-                        ;
+                    const natal1Html = buildSingleChartHTML(data.chart1_data, `${name1}的本命盤`);
+                    const natal2Html = buildSingleChartHTML(data.chart2_data, `${name2}的本命盤`);
+                    const interactionHtml = `<div class="sub-sections-container">${buildOverlayHTML(data.chart1_planets_in_chart2_houses, name1, name2, 'A落入B宮')}${buildOverlayHTML(data.chart2_planets_in_chart1_houses, name2, name1, 'B落入A宮')}${buildInterAspectsHTML(data.inter_aspects, name1, name2)}</div>`;
+                    finalHtml = createReportWrapper(`${name1}與${name2}的比較盤報告`, natal1Html + natal2Html + interactionHtml);
                     break;
                 case 'composite':
-                     container.innerHTML = 
-                        buildSingleChartHTML(data.composite_chart_data, `${name1}與${name2}的組合盤`, 'composite-chart') +
-                        buildSingleChartHTML(data.natal_chart1_data, `${name1}的本命盤 (參考)`, 'composite-chart') +
-                        buildSingleChartHTML(data.natal_chart2_data, `${name2}的本命盤 (參考)`, 'composite-chart');
+                    finalHtml = createReportWrapper('組合中點盤報告', buildSingleChartHTML(data.composite_chart_data, `${name1}與${name2}的組合盤`) + buildSingleChartHTML(data.natal_chart1_data, `${name1}的本命盤 (參考)`) + buildSingleChartHTML(data.natal_chart2_data, `${name2}的本命盤 (參考)`));
                     break;
                 case 'transit':
-                     container.innerHTML = 
-                        buildSingleChartHTML(data.natal_chart_data, `${name1}的本命盤`, 'transit-chart') +
-                        buildSingleChartHTML(data.transit_chart_data, `${name2}的行運盤`, 'transit-chart') +
-                        buildInterAspectsHTML(data.inter_aspects, "行運", name1, true) + // isTransit = true
-                        buildOverlayHTML(data.transit_planets_in_natal_houses, "行運", name1, '行運星體落入本命宮位');
+                    const transitInteractionHtml = `<div class="sub-sections-container">${buildOverlayHTML(data.transit_planets_in_natal_houses, "行運", name1, '行運星體落入本命宮位')}${buildInterAspectsHTML(data.inter_aspects, "行運", name1, true)}</div>`;
+                    finalHtml = createReportWrapper(`${name1}的行運盤報告`, buildSingleChartHTML(data.natal_chart_data, `${name1}的本命盤`) + buildSingleChartHTML(data.transit_chart_data, `${name2}的行運盤`) + transitInteractionHtml);
                     break;
                 default:
-                    container.innerHTML = `<div class="error-message">錯誤: 未知的星盤類型 '${data.chart_type}'</div>`;
+                    finalHtml = `<div class="error-message">錯誤: 未知的星盤類型 '${data.chart_type}'</div>`;
             }
-
-            // Re-attach copy listeners after content is rendered
+            container.innerHTML = finalHtml;
             setupCopyListeners();
         }
-
         // 生成單一星盤的完整HTML
         function buildSingleChartHTML(chartInfo, title, typeClass) {
             if (!chartInfo) return `<div class="error-message">${title} 資料缺失。</div>`;
@@ -1168,31 +1212,18 @@
         }
         
         // 生成交互相位的HTML
+        // 請用此版本完整取代舊的 buildInterAspectsHTML 函式
         function buildInterAspectsHTML(aspects, name1, name2, isTransit = false) {
-             const title = isTransit ? `${name1}與${name2}的相位` : `${name1}與${name2}的交互相位`;
-             const header = isTransit 
-                ? `${name1}星體 | 相位 | ${name2}星體 | 動態 | 容許度`
-                : `${name1}星體 | 相位 | ${name2}星體 | 動態 | 容許度`;
-
-             const content = (aspects?.length > 0) ? [header, "------------------------------------------"].concat(
-                aspects
-                    .sort((a,b) => DISPLAY_ORDER_NAMES.indexOf(a.p1_name) - DISPLAY_ORDER_NAMES.indexOf(b.p1_name) || DISPLAY_ORDER_NAMES.indexOf(a.p2_name) - DISPLAY_ORDER_NAMES.indexOf(b.p2_name))
-                    .map(a => `${a.p1_name.padEnd(4,'　')} | ${a.aspect_name.padEnd(4,' ')} | ${a.p2_name.padEnd(4,'　')} | ${(a.aspect_type || '-').padEnd(4)} | ${formatDegreesMinutesSeconds(a.orb)}`)
-             ).join('\n') : "沒有相位";
-
-             return createResultSection(title, content, true); // isSimple = true
+            const title = isTransit ? `${name1}與${name2}相位` : `交互相位`;
+            const content = (aspects?.length) ? ["-".repeat(50)].concat(aspects.sort((a, b) => DISPLAY_ORDER_NAMES.indexOf(a.p1_name) - DISPLAY_ORDER_NAMES.indexOf(b.p1_name) || DISPLAY_ORDER_NAMES.indexOf(a.p2_name) - DISPLAY_ORDER_NAMES.indexOf(b.p2_name)).map(a => `${a.p1_name.padEnd(4, '　')} | ${a.aspect_name.padEnd(4, ' ')} | ${a.p2_name.padEnd(4, '　')} | ${(a.aspect_type || '-').padEnd(4)} | ${formatDegreesMinutesSeconds(a.orb)}`)).join('\n') : "沒有相位";
+            return createResultSection(title, content);
         }
 
         // 生成行星落宮的HTML
+        // 請用此版本完整取代舊的 buildOverlayHTML 函式
         function buildOverlayHTML(overlayData, guestName, hostName, title) {
-             const header = `${guestName}星體 | 星座度數 | 落入${hostName}宮位`;
-             const content = (overlayData?.length > 0) ? [header, "---------------------------------------"].concat(
-                 overlayData
-                    .sort((a,b) => DISPLAY_ORDER_NAMES.indexOf(a.planet_name) - DISPLAY_ORDER_NAMES.indexOf(b.planet_name))
-                    .map(o => `${o.planet_name.padEnd(4, '　')} | ${o.zodiac_position_formatted.padEnd(10)} | ${o.house_in_target_chart}宮(${formatDegreesMinutesSeconds(o.degree_in_target_house)})`)
-             ).join('\n') : "資料缺失";
-
-             return createResultSection(title, content, true); // isSimple = true
+            const content = (overlayData?.length) ? ["-".repeat(50)].concat(overlayData.sort((a, b) => DISPLAY_ORDER_NAMES.indexOf(a.planet_name) - DISPLAY_ORDER_NAMES.indexOf(b.planet_name)).map(o => `${o.planet_name.padEnd(4, '　')} | ${o.zodiac_position_formatted.padEnd(10)} | ${o.house_in_target_chart}宮(${formatDegreesMinutesSeconds(o.degree_in_target_house)})`)).join('\n') : "資料缺失";
+            return createResultSection(title, content);
         }
         
         // 建立單個結果區塊的HTML (可重用)
@@ -1211,25 +1242,58 @@
         }
         
         // 設定複製按鈕的監聽器
+        // 請用此版本完整取代舊的 setupCopyListeners 函式
         function setupCopyListeners() {
-            document.querySelectorAll('.section-copy-btn').forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    const pre = e.currentTarget.closest('.result-section-item').querySelector('pre');
-                    if (pre) copyToClipboard(pre.textContent, e.currentTarget);
-                });
-            });
-
-            document.querySelectorAll('.copy-chart-btn').forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    const chartWrapper = e.currentTarget.closest('.chart-wrapper');
-                    const title = chartWrapper.querySelector('.main-title').textContent;
-                    const sections = Array.from(chartWrapper.querySelectorAll('pre')).map(pre => pre.textContent);
-                    const fullText = `${title}\n====================\n\n${sections.join('\n\n')}`;
-                    copyToClipboard(fullText, e.currentTarget);
-                });
+            document.getElementById('resultOutput').addEventListener('click', function (e) {
+                const target = e.target;
+                // 處理單一區塊複製
+                if (target.classList.contains('section-copy-btn')) {
+                    const pre = target.closest('.result-section-item').querySelector('pre');
+                    if (pre) copyToClipboard(pre.textContent, target);
+                }
+                // 處理單一星盤複製 (不含基礎數據)
+                else if (target.classList.contains('copy-chart-btn')) {
+                    const chartWrapper = target.closest('.chart-wrapper');
+                    const title = chartWrapper.querySelector('.chart-main-header h2').textContent;
+                    let textToCopy = `${title}\n====================\n\n`;
+                    chartWrapper.querySelectorAll('.sub-sections-container .result-section-item').forEach(block => {
+                        textToCopy += `${block.querySelector('.result-section-header span').textContent}\n${"-".repeat(20)}\n${block.querySelector('pre').textContent}\n\n`;
+                    });
+                    copyToClipboard(textToCopy.trim(), target);
+                }
+                // 處理報告總複製
+                else if (target.classList.contains('copy-report-btn')) {
+                    const reportWrapper = target.closest('.report-wrapper');
+                    let fullText = `${reportWrapper.querySelector('.report-main-header h2').textContent}\n====================\n\n`;
+                    // 遍歷報告內所有的內容區塊
+                    reportWrapper.querySelectorAll('.chart-wrapper, .sub-sections-container > .result-section-item').forEach(section => {
+                        if (section.classList.contains('chart-wrapper')) {
+                            // 如果是單一星盤，複製其標題和非隱私內容
+                            fullText += `--- ${section.querySelector('.chart-main-header h2').textContent} ---\n`;
+                            section.querySelectorAll('.sub-sections-container .result-section-item').forEach(block => {
+                                fullText += `${block.querySelector('.result-section-header span').textContent}\n${"-".repeat(20)}\n${block.querySelector('pre').textContent}\n\n`;
+                            });
+                        } else if (section.closest('.sub-sections-container')) {
+                            // 如果是互動區塊
+                            fullText += `--- ${section.querySelector('.result-section-header span').textContent} ---\n${section.querySelector('pre').textContent}\n\n`;
+                        }
+                    });
+                    copyToClipboard(fullText.trim(), target);
+                }
             });
         }
-        
+
+        // 這是一個全新的函式，請將它新增到 script 中
+        function createReportWrapper(title, content) {
+            return `<div class="report-wrapper">
+                <div class="report-main-header">
+                    <h2>${title}</h2>
+                    <button class="copy-report-btn">複製完整報告</button>
+                </div>
+                ${content}
+            </div>`;
+        }
+
         // 複製到剪貼簿的輔助函式
         function copyToClipboard(text, btn) {
             navigator.clipboard.writeText(text).then(() => {
