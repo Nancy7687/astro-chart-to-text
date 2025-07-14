@@ -586,76 +586,79 @@ def calculate_composite_chart_api():
     if not data:
         return jsonify({"error": "請求中未提供 JSON 數據"}), 400
     try:
-        # 【核心修正 1】: 建立一個內部專用的計算列表
-        # 取得使用者真正想看的星體
+        # --- 【核心修正 1】: 強化內部計算列表的依賴處理 ---
         user_requested_planets = data.get('optional_planets', [])
-        
-        # 建立一個為了計算基礎盤而必須有的星體列表
-        # 使用 set 來處理，可以自動避免重複
         planets_for_base_charts = set(user_requested_planets)
         
-        # 強制性地加入組合盤計算所必需的「上升」和「天頂」
+        # 強制加入組合盤計算所必需的「上升」和「天頂」
         planets_for_base_charts.update({"上升", "天頂"})
         
+        # 【新增】如果使用者想看組合盤的「福點」，則基礎盤必須先計算「太陽」和「月亮」
+        if "福點" in user_requested_planets:
+            planets_for_base_charts.update({"太陽", "月亮"})
+            
+        # 【新增】如果使用者想看組合盤的「宿命點」，則基礎盤必須先計算「宿命點」
+        if "宿命" in user_requested_planets:
+            planets_for_base_charts.add("宿命")
+
         app.logger.info(f"組合盤計算 - 使用者請求: {user_requested_planets}")
         app.logger.info(f"組合盤計算 - 內部基礎盤計算使用: {list(planets_for_base_charts)}")
 
-        # 【核心修正 2】: 使用新的列表來計算兩個基礎盤
-        # 確保 c1_raw 和 c2_raw 中一定會包含 '上升' 和 '天頂' 的資料
+        # --- 使用修正後的列表來計算兩個基礎盤 ---
         c1_raw = calculate_astrology_chart(
             int(data['chart1_year']), int(data['chart1_month']), int(data['chart1_day']),
             int(data['chart1_hour']), int(data['chart1_minute']),
             float(data['chart1_latitude']), float(data['chart1_longitude']),
-            data['chart1_timezone'], list(planets_for_base_charts)) # <-- 使用修正後的列表
+            data['chart1_timezone'], list(planets_for_base_charts))
         if "error" in c1_raw:
-            c1_raw["error_source"] = "chart1"
-            return jsonify(c1_raw), 400
+            c1_raw["error_source"] = "chart1"; return jsonify(c1_raw), 400
 
         c2_raw = calculate_astrology_chart(
             int(data['chart2_year']), int(data['chart2_month']), int(data['chart2_day']),
             int(data['chart2_hour']), int(data['chart2_minute']),
             float(data['chart2_latitude']), float(data['chart2_longitude']),
-            data['chart2_timezone'], list(planets_for_base_charts)) # <-- 使用修正後的列表
+            data['chart2_timezone'], list(planets_for_base_charts))
         if "error" in c2_raw:
-            c2_raw["error_source"] = "chart2"
-            return jsonify(c2_raw), 400
+            c2_raw["error_source"] = "chart2"; return jsonify(c2_raw), 400
         
-        # --- 後續的中點計算邏輯 (大部分不變) ---
-        
+        # --- 中點計算邏輯 ---
         composite_positions_raw = {}
-        # 【核心修正 3】: 這裡遍歷使用者原始請求的列表，確保最終結果符合使用者預期
+        # 這裡遍歷使用者原始請求的列表
         for name in user_requested_planets:
-            # 確保星體存在於兩個基礎盤中，並且是 PLANET_IDS 定義的一部分
             if name in c1_raw['planet_positions'] and name in c2_raw['planet_positions'] and name in PLANET_IDS:
                 lon1 = c1_raw['planet_positions'][name]['lon']
                 lon2 = c2_raw['planet_positions'][name]['lon']
                 composite_positions_raw[name] = {'lon': get_midpoint(lon1, lon2), 'speed': 0}
         
-        # 中點盤的四軸計算現在是安全的，因為 c1_raw 和 c2_raw 中必有 '上升' 和 '天頂'
+        # 四軸計算
         mc1 = c1_raw['planet_positions']['天頂']['lon']
         mc2 = c2_raw['planet_positions']['天頂']['lon']
         composite_mc_deg = get_midpoint(mc1, mc2)
-
         asc1 = c1_raw['planet_positions']['上升']['lon']
         asc2 = c2_raw['planet_positions']['上升']['lon']
         composite_asc_deg = get_midpoint(asc1, asc2)
 
         # 將組合盤的四軸加入（如果使用者有勾選它們）
-        if '上升' in user_requested_planets:
-            composite_positions_raw['上升'] = {'lon': composite_asc_deg, 'speed': 0}
-        if '下降' in user_requested_planets:
-            composite_positions_raw['下降'] = {'lon': (composite_asc_deg + 180) % 360, 'speed': 0}
-        if '天頂' in user_requested_planets:
-            composite_positions_raw['天頂'] = {'lon': composite_mc_deg, 'speed': 0}
-        if '天底' in user_requested_planets:
-            composite_positions_raw['天底'] = {'lon': (composite_mc_deg + 180) % 360, 'speed': 0}
+        if '上升' in user_requested_planets: composite_positions_raw['上升'] = {'lon': composite_asc_deg, 'speed': 0}
+        if '下降' in user_requested_planets: composite_positions_raw['下降'] = {'lon': (composite_asc_deg + 180) % 360, 'speed': 0}
+        if '天頂' in user_requested_planets: composite_positions_raw['天頂'] = {'lon': composite_mc_deg, 'speed': 0}
+        if '天底' in user_requested_planets: composite_positions_raw['天底'] = {'lon': (composite_mc_deg + 180) % 360, 'speed': 0}
         
-        # ... (後續的宿命、福點、宮位等計算邏輯不變) ...
-        # ... (此處省略，保持您原始程式碼的邏輯即可) ...
+        # 【核心修正 2】: 新增宿命點和福點的中點計算邏輯
+        # 計算宿命點中點
+        if "宿命" in user_requested_planets and '宿命' in c1_raw['planet_positions'] and '宿命' in c2_raw['planet_positions']:
+            vertex1 = c1_raw['planet_positions']['宿命']['lon']
+            vertex2 = c2_raw['planet_positions']['宿命']['lon']
+            composite_positions_raw['宿命'] = {'lon': get_midpoint(vertex1, vertex2), 'speed': 0}
 
-        # 組合盤的最終格式化與回傳
+        # 計算福點中點
+        if "福點" in user_requested_planets and '福點' in c1_raw['planet_positions'] and '福點' in c2_raw['planet_positions']:
+            pof1 = c1_raw['planet_positions']['福點']['lon']
+            pof2 = c2_raw['planet_positions']['福點']['lon']
+            composite_positions_raw['福點'] = {'lon': get_midpoint(pof1, pof2), 'speed': 0}
+
+        # --- 最終格式化與回傳 (不變) ---
         composite_cusps_dict = {i: get_midpoint(c1_raw['house_cusps'][i], c2_raw['house_cusps'][i]) for i in range(1, 13)}
-        
         final_composite_positions = {}
         for name, info in composite_positions_raw.items():
             house_num, hdeg = find_house(info['lon'], composite_cusps_dict)
@@ -676,9 +679,12 @@ def calculate_composite_chart_api():
             "natal_chart1_data": format_chart_data_for_display(c1_raw),
             "natal_chart2_data": format_chart_data_for_display(c2_raw),
         })
+    except KeyError as e:
+        app.logger.error(f"組合盤計算中缺少必要的鍵: {e}", exc_info=True)
+        return jsonify({"error": f"組合盤計算中缺少必要的鍵，可能是因為基礎盤未勾選 '上升' 或 '天頂': {e}"}), 500
     except Exception as e:
         app.logger.error(f"組合盤後端發生未知錯誤: {e}", exc_info=True)
-        return jsonify({"error": f"組合盤伺服器內部錯誤: {e}"}), 500   
+        return jsonify({"error": f"組合盤伺服器內部錯誤: {e}"}), 500
 # ==============================================================================
 # --- NEW: API Endpoint for AI/Gemini Integration ---
 # ==============================================================================
