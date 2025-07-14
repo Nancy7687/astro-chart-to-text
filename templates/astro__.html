@@ -507,7 +507,76 @@
         .chart-main-header .copy-chart-btn:hover {
             background-color: #007B9A;
         }
-        
+
+        /* 單盤標題樣式 */
+        .single-chart-header-style {
+            background: linear-gradient(135deg, #e3f2fd, #bbdefb); /* 淡藍 -> 稍深藍 */
+            border-bottom: 1px solid #90caf9;
+        }
+
+        .single-chart-header-style h2 { /* 確保文字顏色與背景搭配 */
+            color: #0d47a1; 
+            text-shadow: 1px 1px 1px #ffffff;
+        }
+
+        /* 用於組合盤的大標題 */
+        .composite-chart-header-style {
+            background: linear-gradient(135deg, #fffde7, #fff59d); /* 淡黃 -> 金黃 */
+            border-bottom: 1px solid #fbc02d;
+        }
+        .composite-chart-header-style h2 {
+            color: #f57f17;
+            text-shadow: 1px 1px 1px #ffffff;
+        }
+
+        /* --- 以下是各個子區塊標題的專屬樣式 --- */
+
+        /* 用於「星盤基礎數據」標題 */
+        .summary-header-style {
+            background-color: #f5f5f5; /* 淺灰色 */
+            border-bottom: 1px solid #e0e0e0;
+        }
+        .summary-header-style span {
+            color: #424242; 
+        }
+
+        /* 用於「宮頭」標題 */
+        .cusp-header-style {
+            background-color: #e1f5fe; /* 更淺的藍色 */
+            border-bottom: 1px solid #b3e5fc;
+        }
+        .cusp-header-style span {
+            color: #01579b;
+        }
+
+        /* 用於「星體位置」標題 */
+        .planet-header-style {
+            background-color: #e8f5e9; /* 淺綠色 */
+            border-bottom: 1px solid #c8e6c9;
+        }
+        .planet-header-style span {
+        color: #1b5e20;
+        }
+
+        /* 用於「主要相位」標題 */
+        .aspect-header-style {
+            background-color: #f3e5f5; /* 淺紫色 */
+            border-bottom: 1px solid #e1bee7;
+        }
+        .aspect-header-style span {
+            color: #4a148c;
+        }
+
+        /* 用於比較盤/行運盤的互動區塊標題 */
+        .interaction-header-style {
+            background: linear-gradient(135deg, #f3e5f5, #e1bee7);
+            border-bottom: 1px solid #ce93d8;
+        }
+        .interaction-header-style span {
+            color: #4a148c; 
+            text-shadow: 1px 1px 1px #ffffff;
+        }
+
         @media (min-width: 768px) {
              .tab-button {
                 font-size: 1.5rem;
@@ -1169,47 +1238,26 @@
 
             const { timestamps, birth_info, house_cusps, planet_positions, aspects } = chartInfo;
 
-            const summaryContent = (timestamps && birth_info) ? [
-                `本地時間: ${timestamps.local_time}`,
-                `UTC 時間: ${timestamps.utc_time}`,
-                `緯度: ${birth_info.latitude}, 經度: ${birth_info.longitude}`,
-            ].join('\n') : "基礎數據缺失";
+            // --- 內容生成部分 (保持不變) ---
+            const summaryContent = (timestamps && birth_info) ? [`本地時間: ${timestamps.local_time}`, `UTC 時間: ${timestamps.utc_time}`, `緯度: ${birth_info.latitude}, 經度: ${birth_info.longitude}`].join('\n') : "基礎數據缺失";
+            const cuspContent = (house_cusps?.length > 0) ? ["宮頭 | 星座度數(度分)"].concat(house_cusps.map(c => `${c.house_number}宮 | ${c.zodiac_position_formatted}`)).join('\n') : "宮頭數據缺失";
+            const planetContent = (planet_positions) ? ["星體 | 順逆 | 星座度數(度分) | 宮位(度分)"].concat(DISPLAY_ORDER_NAMES.filter(name => planet_positions[name]).map(name => { const p = planet_positions[name]; const houseInfo = !HOUSE_DEFINING_POINTS.includes(name) && p.house != null ? `${p.house}宮(${formatDegreesMinutesSeconds(p.hdeg)})` : '-'; return `${name} | ${p.is_retrograde ? '逆行' : ''} | ${p.zodiac_position_formatted} | ${houseInfo}`; })).join('\n') : "星體數據缺失";
+            const aspectContent = (aspects?.length) > 0 ? ["星體1 | 相位 | 星體2 | 動態 | 容許度"].concat(aspects.map(a => `${a.p1_name} | ${a.aspect_name} | ${a.p2_name} | ${a.aspect_type || '-'} | ${formatDegreesMinutesSeconds(a.orb)}`)).join('\n') : "沒有相位";
 
-            // 【修改】移除 padEnd 和分隔線
-            const cuspContent = (house_cusps?.length > 0) ? ["宮頭 | 星座度數(度分)"].concat(
-                house_cusps.map(c => `${c.house_number}宮 | ${c.zodiac_position_formatted}`)
-            ).join('\n') : "宮頭數據缺失";
-
-            // 【修改】移除所有 .padEnd() 和分隔線，順行時改為空字串以節省 token
-            const planetContent = (planet_positions) ? ["星體 | 順逆 | 星座度數(度分) | 宮位(度分)"].concat(
-                DISPLAY_ORDER_NAMES
-                    .filter(name => planet_positions[name])
-                    .map(name => {
-                        const p = planet_positions[name];
-                        const houseInfo = !HOUSE_DEFINING_POINTS.includes(name) && p.house != null
-                            ? `${p.house}宮(${formatDegreesMinutesSeconds(p.hdeg)})` : '-';
-                        return `${name} | ${p.is_retrograde ? '逆行' : ''} | ${p.zodiac_position_formatted} | ${houseInfo}`;
-                    })
-            ).join('\n') : "星體數據缺失";
-
-            // 【修改】移除所有 .padEnd() 和分隔線
-            const aspectContent = (aspects?.length) > 0 ? ["星體1 | 相位 | 星體2 | 動態 | 容許度"].concat(
-                aspects.map(a => `${a.p1_name} | ${a.aspect_name} | ${a.p2_name} | ${a.aspect_type || '-'} | ${formatDegreesMinutesSeconds(a.orb)}`)
-            ).join('\n') : "沒有相位";
-
+            // --- HTML 返回部分 (套用樣式) ---
             return `
         <div class="chart-wrapper">
-            <div class="chart-main-header">
+            <div class="chart-main-header ${headerStyleClass}">
                 <h2 class="main-title">${title}</h2>
                 <button class="copy-chart-btn">複製此盤(不含基礎數據)</button>
             </div>
             <div class="summary-section-container">
-                ${createResultSection('星盤基礎數據', summaryContent, true, headerStyleClass)}
+                ${createResultSection('星盤基礎數據', summaryContent, true, 'summary-header-style')}
             </div>
             <div class="sub-sections-container">
-                ${createResultSection('宮頭', cuspContent, false, headerStyleClass)}
-                ${createResultSection('星體位置', planetContent, false, headerStyleClass)}
-                ${createResultSection('主要相位', aspectContent, false, headerStyleClass)}
+                ${createResultSection('宮頭', cuspContent, false, 'cusp-header-style')}
+                ${createResultSection('星體位置', planetContent, false, 'planet-header-style')}
+                ${createResultSection('主要相位', aspectContent, false, 'aspect-header-style')}
             </div>
         </div>`;
         }
