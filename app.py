@@ -186,14 +186,19 @@ def compute_four_angles(jd_tt: float, lat: float, lon: float):
 # --- 請將您 app.py 中的此函式，用下面完整的已修正版本取代 ---
 # ==============================================================================
 
+# ==============================================================================
+# --- 請用此版本【完整取代】您 app.py 中的舊函式 ---
+# ==============================================================================
+
 def calculate_astrology_chart(year, month, day, hour, minute, latitude, longitude, timezone_str, optional_planets=None, generate_image=False):
     """
-    核心計算函式。此版本已修正，將完全根據前端傳入的 optional_planets 列表來決定計算哪些星體。
+    核心計算函式。此版本已加入「智慧依賴處理」邏輯，
+    例如當使用者勾選福點時，會自動在內部計算其依賴的太陽、月亮和上升。
     """
     try:
         swe.set_ephe_path(EPHE_PATH_CONFIG)
         
-        # --- 時間與儒略日計算 (這部分不變) ---
+        # --- 1. 時間與儒略日計算 (此部分邏輯不變) ---
         if timezone_str == "Asia/Chongqing":
             utc_offset = datetime.timedelta(hours=8)
             fixed_tz = datetime.timezone(utc_offset, name="UTC+08:00 (Astrological Correction for Chengdu)")
@@ -212,119 +217,90 @@ def calculate_astrology_chart(year, month, day, hour, minute, latitude, longitud
         jd_ut = swe.julday(utc_dt.year, utc_dt.month, utc_dt.day, utc_dt.hour + utc_dt.minute / 60 + utc_dt.second / 3600)
         delta_t_seconds = swe.deltat(jd_ut)
         jd_tt = jd_ut + delta_t_seconds / (24 * 3600)
-        
-        # --- 修正點 1: 決定要計算哪些星體 ---
-        # 說明：
-        # 舊的邏輯會強制加入一個基礎列表 (BASE_PLANETS)，導致前端無法取消勾選。
-        # 新的邏輯將完全信任前端傳來的 optional_planets 列表。
-        
-        # ▼▼▼▼▼ 【舊的程式碼】 ▼▼▼▼▼
-        # if optional_planets is None:
-        #     optional_planets = []
-        # planets_to_compute_positions = list(BASE_PLANETS) 
-        # for p in optional_planets:
-        #     if p in PLANET_IDS and p not in planets_to_compute_positions:
-        #         planets_to_compute_positions.append(p)
-        # ▲▲▲▲▲ 【舊的程式碼】 ▲▲▲▲▲
-        
-        # ▼▼▼▼▼ 【新的、修正後的程式碼】 ▼▼▼▼▼
-        if optional_planets is None:
-            optional_planets = []
-        
-        # 直接使用前端傳來的列表，但過濾掉如四軸等非 PLANET_IDS 的點 (四軸稍後單獨處理)
-        planets_to_compute_positions = [p for p in optional_planets if p in PLANET_IDS]
-        # ▲▲▲▲▲ 【新的、修正後的程式碼】 ▲▲▲▲▲
 
-        # --- 計算星體位置 (這部分不變) ---
-        positions_raw, speeds_raw = compute_positions(jd_ut, planets_to_compute_positions)
+        # --- 2. 【核心修改】智慧依賴處理 ---
+        # user_requested_planets 是使用者真正想看到的「菜單」
+        user_requested_planets = set(optional_planets if optional_planets is not None else [])
         
-        # --- 計算四軸與宮位 (這部分不變) ---
-        # 注意：我們仍然需要計算四軸和宮位，因為它們是星盤結構的基礎，
-        # 但稍後我們會根據 optional_planets 決定是否要將它們加入最終的輸出結果。
+        # planets_to_calculate 是廚師為了做菜需要準備的「備料單」
+        planets_to_calculate = user_requested_planets.copy()
+        
+        # 如果菜單上有「福點」，備料單就必須加入「太陽、月亮、上升」
+        if "福點" in user_requested_planets:
+            planets_to_calculate.update({"太陽", "月亮", "上升"})
+        
+        # 如果菜單上有任何宮位相關的點，備料單就必須加入「上升」
+        if any(p in user_requested_planets for p in ["上升", "下降", "天頂", "天底", "宿命"]):
+            planets_to_calculate.add("上升")
+        
+        app.logger.info(f"使用者請求: {user_requested_planets}")
+        app.logger.info(f"內部實際計算: {planets_to_calculate}")
+        
+        # --- 3. 使用「備料單」進行計算 ---
+        planets_for_swisseph = [p for p in planets_to_calculate if p in PLANET_IDS]
+        positions_raw, speeds_raw = compute_positions(jd_ut, planets_for_swisseph)
+        
+        # 無論如何都計算四軸和宮位，因為它們是基礎結構
         angles_data = compute_four_angles(jd_tt, latitude, longitude)
         
-        # --- 修正點 2: 根據使用者勾選，決定是否加入四軸 ---
-        # 說明：
-        # 舊的邏輯總是將四軸加入 positions_raw。
-        # 新的邏輯會先檢查它們是否在 optional_planets 列表中。
-
-        # ▼▼▼▼▼ 【舊的程式碼】 ▼▼▼▼▼
-        # positions_raw['上升'] = angles_data['上升']
-        # positions_raw['下降'] = angles_data['下降']
-        # positions_raw['天頂'] = angles_data['天頂']
-        # positions_raw['天底'] = angles_data['天底']
-        # ▲▲▲▲▲ 【舊的程式碼】 ▲▲▲▲▲
+        # 4. 將所有計算出的點統一格式，存入一個內部字典，以防 'float' object is not subscriptable 錯誤
+        internal_points = {}
+        for name, lon in positions_raw.items():
+            internal_points[name] = {'lon': lon, 'speed': speeds_raw.get(name, 0.0)}
+        for name in ["上升", "下降", "天頂", "天底", "宿命"]:
+            if angles_data.get(name) is not None:
+                internal_points[name] = {'lon': angles_data[name], 'speed': 0.0}
         
-        # ▼▼▼▼▼ 【新的、修正後的程式碼】 ▼▼▼▼▼
-        if '上升' in optional_planets:
-            positions_raw['上升'] = angles_data['上升']
-        if '下降' in optional_planets:
-            positions_raw['下降'] = angles_data['下降']
-        if '天頂' in optional_planets:
-            positions_raw['天頂'] = angles_data['天頂']
-        if '天底' in optional_planets:
-            positions_raw['天底'] = angles_data['天底']
-        # ▲▲▲▲▲ 【新的、修正後的程式碼】 ▲▲▲▲▲
+        # 只有當所有備料都齊全時，才製作「福點」這道菜
+        if "福點" in planets_to_calculate and all(k in internal_points for k in ["太陽", "月亮", "上升"]):
+            sun_lon = internal_points["太陽"]["lon"]
+            moon_lon = internal_points["月亮"]["lon"]
+            asc_lon = internal_points["上升"]["lon"]
+            is_day_chart = (sun_lon - asc_lon + 360) % 360 >= 180
+            pof_lon = compute_part_of_fortune(sun_lon, moon_lon, asc_lon, is_day_chart)
+            internal_points["福點"] = {'lon': pof_lon, 'speed': 0.0}
+        else:
+            is_day_chart = False # 預設值
 
-        # --- 處理宿命點、福點等依賴性計算 (加入依賴檢查) ---
-        if "宿命" in optional_planets:
-            positions_raw["宿命"] = angles_data["宿命"]
-
-        # 為了計算福點和日夜間盤，我們需要太陽和上升點的位置
-        # 但使用者可能沒有勾選它們。所以我們需要安全地獲取這些值。
-        sun_deg = positions_raw.get('太陽') 
-        asc_deg = positions_raw.get('上升')
-
-        is_day_chart = False
-        if sun_deg is not None and asc_deg is not None:
-            sun_from_asc = (sun_deg - asc_deg + 360) % 360
-            is_day_chart = (sun_from_asc >= 180)
-
-        # 修正點 3: 計算福點前，檢查其依賴的星體是否已被計算
-        if "福點" in optional_planets:
-            moon_deg = positions_raw.get('月亮')
-            # 只有當太陽、月亮、上升都被勾選時，才計算福點
-            if all(deg is not None for deg in [sun_deg, moon_deg, asc_deg]):
-                positions_raw["福點"] = compute_part_of_fortune(sun_deg, moon_deg, asc_deg, is_day_chart)
-            else:
-                app.logger.warning("使用者要求計算福點，但未勾選其必要星體 (太陽、月亮、上升)，已跳過。")
-
-        # 為所有已計算的點設定預設速度
-        for name in positions_raw.keys():
-            speeds_raw.setdefault(name, 0.0)
-
-        # --- 彙整所有點的詳細資訊 (這部分不變) ---
-        all_points_detailed_info = {}
-        for name, deg in positions_raw.items():
-            speed = speeds_raw.get(name, 0.0)
-            is_retrograde = bool(name in PLANETS_THAT_CAN_RETROGRADE and speed < 0)
-            
-            # 使用宮位數據
-            house_num, hdeg_in_house = find_house(deg, angles_data['cusps'])
-
-            all_points_detailed_info[name] = {
-                'lon': deg, 'speed': speed, 'house': house_num, 'hdeg': hdeg_in_house,
-                'is_retrograde': is_retrograde, 'retrograde_label': "逆行" if is_retrograde else "",
-                'zodiac_position_formatted': zodiac_format(deg)
-            }
+        # 5. 【核心修改】過濾最終輸出結果
+        # 準備上菜，只上客戶點的菜
+        final_planet_positions = {}
+        # 這裡我們遍歷的是客戶的「原始菜單」，而不是廚師的「備料單」
+        for name in user_requested_planets:
+            if name in internal_points:
+                info = internal_points[name]
+                house_num, hdeg = find_house(info['lon'], angles_data['cusps'])
+                final_planet_positions[name] = {
+                    'lon': info['lon'], 'speed': info.get('speed', 0.0), 'house': house_num, 'hdeg': hdeg,
+                    'is_retrograde': bool(name in PLANETS_THAT_CAN_RETROGRADE and info.get('speed', 0.0) < 0),
+                    'retrograde_label': "逆行" if (name in PLANETS_THAT_CAN_RETROGRADE and info.get('speed', 0.0) < 0) else "",
+                    'zodiac_position_formatted': zodiac_format(info['lon'])
+                }
         
-        # --- 最終回傳 (這部分不變) ---
+        # 同樣，相位也只顯示客戶點的星體之間的相位
+        all_aspects = list_aspects(internal_points)
+        final_aspects = [asp for asp in all_aspects if asp['p1_name'] in user_requested_planets and asp['p2_name'] in user_requested_planets]
+
+        # 6. 回傳結果 (使用與您原始碼完全相同的完整結構)
         return {
             "local_time": local_dt.strftime("%Y-%m-%d %H:%M:%S %Z%z"),
             "utc_time": utc_dt.strftime("%Y-%m-%d %H:%M:%S %Z%z"),
-            "julian_day_ut": jd_ut, "delta_t_seconds": delta_t_seconds, "julian_day_tt": jd_tt,
-            "latitude": latitude, "longitude": longitude,
+            "julian_day_ut": jd_ut, 
+            "delta_t_seconds": delta_t_seconds, 
+            "julian_day_tt": jd_tt,
+            "latitude": latitude, 
+            "longitude": longitude,
             "ephemeris_path_status": {"status": "OK", "message": f"星曆檔案路徑已從 {EPHE_PATH_CONFIG} 載入。"},
             "debug_info": {"is_day_chart": is_day_chart},
             "house_cusps": angles_data['cusps'],
-            "planet_positions": all_points_detailed_info,
-            "aspects": list_aspects(all_points_detailed_info),
+            "planet_positions": final_planet_positions,  # 使用已過濾的、只包含使用者所選星體的結果
+            "aspects": final_aspects,  # 使用已過濾的、只包含使用者所選星體之間相位的結果
             "chart_image_b64": "placeholder_for_base64_image_string" if generate_image else None,
         }
     except Exception as e:
         app.logger.error(f"計算命盤時發生錯誤: {e}", exc_info=True)
         return {"error": str(e)}
-
+    
 def compute_part_of_fortune(sun_lon: float, moon_lon: float, asc_lon: float, is_day: bool) -> float:
     return (asc_lon + moon_lon - sun_lon) % 360 if is_day else (asc_lon + sun_lon - moon_lon) % 360
 
