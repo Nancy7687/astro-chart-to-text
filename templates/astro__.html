@@ -661,20 +661,19 @@
             box-shadow: 0 2px 5px rgba(0,0,0,0.05);
             /* 新增：為包含浮動元素的容器建立新的 BFC (Block Formatting Context) */
             /* overflow: auto; 或 display: flow-root; 可以達到此目的 */
-            overflow: auto; /* 確保父容器能包含浮動子元素的高度 */
+            overflow: auto; /* 關鍵：確保父容器包含浮動子元素的高度 */
         }
 
         .json-output-wrapper h3 {
             color: #333;
             margin-top: 0;
-            margin-bottom: 15px;
+            margin-bottom: 0; /* 調整：移除底部間距以更好對齊按鈕 */
             font-size: 1.2em;
-            border-bottom: 1px solid #eee;
             padding-bottom: 8px;
-            /* 新增：讓標題可以與浮動的按鈕在同一行 */
-            float: left; /* 讓標題也浮動起來 */
-            max-width: calc(100% - 150px); /* 限制標題寬度，為按鈕留出空間 */
-            box-sizing: border-box; /* 確保 padding 不會增加總寬度 */
+            float: left; /* 關鍵：讓標題浮動到左邊 */
+            max-width: calc(100% - 160px); /* 調整：為按鈕留出空間 */
+            box-sizing: border-box;
+            line-height: 1.2; /* 調整：優化垂直對齊 */
         }
 
         .json-output-area {
@@ -690,7 +689,7 @@
             background-color: #fff;
             color: #000;
             line-height: 1.4;
-            clear: both; /* 確保 textarea 不會浮動到按鈕旁邊，而是在其下方 */
+            clear: both; /* 關鍵：確保 textarea 在浮動元素下方開始 */
         }
 
         /* 新增：JSON 複製按鈕的專屬樣式 */
@@ -702,8 +701,8 @@
             border-radius: 5px;
             cursor: pointer;
             font-size: 0.9em;
-            margin-top: 0; /* 重設 margin-top，讓它與標題對齊 */
-            margin-left: 15px; /* 與標題之間的一些間距 */
+            margin-top: 0; /* 調整：與標題頂部對齊 */
+            margin-left: 15px; /* 調整：與標題之間間距 */
             float: right; /* 關鍵：讓按鈕浮動到右邊 */
             transition: background-color 0.2s ease;
         }
@@ -995,7 +994,7 @@
         // 確保 copyToClipboard 和 setupCopyListeners 在整個應用中只被定義一次
         // ===========================================
 
-        /** * 複製指定元素的內容到剪貼簿。
+        /*** 複製指定元素的內容到剪貼簿。
         * @param {HTMLElement} targetElement 要複製內容的 DOM 元素。
         * @param {HTMLElement} btnElement 觸發複製的按鈕元素。
         */
@@ -1013,7 +1012,8 @@
             if (targetElement.tagName === 'TEXTAREA' || targetElement.tagName === 'INPUT') {
                 textToCopy = targetElement.value;
             } else {
-                textToCopy = targetElement.textContent;
+                // 對於一般內容，使用 innerText 以獲得更純淨的文本結果，避免複製隱藏元素或過多空白
+                textToCopy = targetElement.innerText;
             }
 
             if (navigator.clipboard && navigator.clipboard.writeText) {
@@ -1037,7 +1037,7 @@
             }
         }
 
-        // 降級複製方案
+        // 降級複製方案 (用於不支援 navigator.clipboard 的瀏覽器)
         function fallbackCopyToClipboardSimple(element, button) {
             let range = document.createRange();
             range.selectNodeContents(element);
@@ -1065,31 +1065,29 @@
             selection.removeAllRanges();
         }
 
-        // 處理複製按鈕點擊的事件函數 (這裡已修正 JSON 按鈕的目標查找)
+        // 處理複製按鈕點擊的事件函數 (已精確匹配你的 HTML 結構)
         function handleCopyButtonClickSimplified(event) {
             const button = event.currentTarget;
             let targetElement = null;
 
             if (button.classList.contains('copy-json-btn')) {
-                // ***修正點：現在正確查找父容器中的 textarea.json-output-area***
+                // 對於 JSON 按鈕，查找其父容器 `.json-output-wrapper` 中的 `textarea.json-output-area`
                 targetElement = button.closest('.json-output-wrapper')?.querySelector('textarea.json-output-area');
             } else if (button.classList.contains('copy-chart-btn')) {
-                // 對於圖表複製按鈕，向上查找最近的圖表內容容器
-                // 你可能需要根據你的實際 HTML 結構調整這裡的 Class
-                targetElement = button.closest('.chart-content') || button.closest('.report-chart-section');
+                // 對於「複製此盤」按鈕，查找其最近的父級 `.chart-wrapper`
+                targetElement = button.closest('.chart-wrapper');
             } else if (button.classList.contains('section-copy-btn')) {
-                // 對於章節複製按鈕，向上查找最近的章節內容容器
-                // 同樣需要根據你的實際 HTML 結構調整這裡的 Class
-                targetElement = button.closest('.section-content') || button.closest('.report-section-body');
+                // 對於「複製章節」按鈕，查找其最近的父級 `.result-section-item`
+                targetElement = button.closest('.result-section-item');
             } else if (button.classList.contains('copy-report-btn')) {
-                // 對於完整報告複製按鈕，查找最外層的報告內容容器
-                targetElement = button.closest('.main-report-content') || document.querySelector('.main-report-content');
+                // 對於「複製完整報告」按鈕，查找其最近的父級 `.report-wrapper`
+                targetElement = button.closest('.report-wrapper');
             }
 
             if (targetElement) {
                 copyContent(targetElement, button);
             } else {
-                console.error(`無法找到複製按鈕的目標內容。按鈕 Class: ${button.className}`, button);
+                console.error(`無法找到複製按鈕的目標內容。按鈕 Class: ${button.className}。請檢查 HTML 結構。`, button);
                 if (button) {
                     button.textContent = '複製失敗';
                     setTimeout(() => button.textContent = '複製', 2000);
@@ -1617,8 +1615,10 @@
 
             switch (data.chart_type) {
                 case 'single':
+                    // 呼叫 buildSingleChartHTML，其內部應生成你提供的 .chart-wrapper 結構
                     reportHtmlContent = buildSingleChartHTML(data, `${name1}的星盤資訊`);
                     break;
+
                 case 'comparison':
                     const natal1Html = buildSingleChartHTML(data.chart1_data, `${name1}的本命盤`);
                     const natal2Html = buildSingleChartHTML(data.chart2_data, `${name2}的本命盤`);
@@ -1642,8 +1642,10 @@
                     reportHtmlContent = `<div class="error-message">錯誤: 未知的星盤類型 '${data.chart_type}'</div>`;
             }
 
+            // 完整的組合 HTML 內容，包含你提供的所有結構
             const combinedHtml = `
-        <div class="main-report-content report-full-content"> ${reportHtmlContent}
+        <div class="main-report-content report-full-content">
+            ${reportHtmlContent}
         </div>
         <hr class="json-separator-line">
         <div class="json-output-wrapper">
@@ -1651,12 +1653,12 @@
                 <h3>原始數據 (AI好理解的JSON 格式)</h3>
                 <button class="copy-json-btn">複製 給AI好理解的 JSON 數據</button>
             </div>
-            <textarea class="json-output-area" rows="20" cols="80" readonly></textarea> </div>
+            <textarea class="json-output-area" rows="20" cols="80" readonly></textarea>
+        </div>
     `;
 
-            container.innerHTML = combinedHtml;
+            container.innerHTML = combinedHtml; // 將所有內容一次性注入
 
-            // 填充數據到特定的 HTML 元素 (現在通過 Class 查找)
             const jsonOutputAreaElement = container.querySelector('.json-output-area');
             if (jsonOutputAreaElement) {
                 jsonOutputAreaElement.value = rawJsonString;
@@ -1664,10 +1666,9 @@
                 console.error("找不到 Class 為 'json-output-area' 的元素。");
             }
 
-            // 在 DOM 更新後，呼叫這個新的事件綁定函數
+            // 在 DOM 更新後，呼叫事件綁定函數
             setupCopyListenersSimplified();
         }
-
         
         // 生成單一星盤的完整HTML
         function buildSingleChartHTML(chartInfo, title, headerStyleClass = 'single-chart-header-style') {
