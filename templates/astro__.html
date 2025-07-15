@@ -660,19 +660,62 @@
             margin-top: 20px;
         }
 
-        /* textarea 樣式 */
-        #jsonOutputArea {
-            width: 100%;
-            min-height: 300px;
-            resize: vertical;
-            font-family: 'Consolas', 'Monaco', monospace;
-            font-size: 0.9em;
-            padding: 10px;
-            border: 1px solid #bbb;
-            border-radius: 4px;
-            box-sizing: border-box;
-            background-color: #fff;
+        .json-output-wrapper h3 {
             color: #333;
+            margin-top: 0;
+            margin-bottom: 15px;
+            font-size: 1.2em;
+            border-bottom: 1px solid #eee; /* 標題下劃線 */
+            padding-bottom: 8px;
+        }
+
+        #jsonOutputArea {
+            width: 100%; /* 填滿父容器 */
+            min-height: 350px; /* 最小高度 */
+            resize: vertical; /* 允許用戶垂直調整大小 */
+            font-family: 'Consolas', 'Monaco', monospace; /* 等寬字體，便於閱讀 JSON */
+            font-size: 0.85em;
+            padding: 15px;
+            border: 1px solid #bbb;
+            border-radius: 5px;
+            box-sizing: border-box; /* 確保 padding 和 border 不會增加總寬度 */
+            background-color: #fff;
+            color: #000; /* 深色文字 */
+            line-height: 1.4;
+        }
+
+        /* 新增：JSON 複製按鈕的專屬樣式 */
+        .copy-json-btn {
+            background-color: #6c757d; /* 灰色背景，與其他按鈕區分 */
+            color: white;
+            padding: 8px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9em;
+            margin-top: 15px; /* 與 textarea 保持間距 */
+            float: right; /* 讓按鈕靠右 */
+            transition: background-color 0.2s ease;
+            clear: right; /* 確保按鈕在其右側沒有其他浮動元素 */
+        }
+
+        .copy-json-btn:hover {
+            background-color: #5a6268; /* 懸停效果 */
+        }
+
+        /* 清除浮動，確保 .json-output-wrapper 的高度正確包含浮動元素 */
+        .json-output-wrapper::after {
+            content: "";
+            display: table;
+            clear: both;    
+        }
+
+        /* 新增的橫線樣式 */
+        .json-separator-line {
+            border: 0;
+            height: 1px;
+            background-image: linear-gradient(to right, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.25), rgba(0, 0, 0, 0));
+            margin: 40px 0; /* 調整與上下內容的間距 */
         }
 
         
@@ -937,6 +980,102 @@
 <script>
     document.addEventListener('DOMContentLoaded', () => {
         console.log('Script Start Test! Version: Refactored v3.0');
+
+        // ===========================================
+        // 全域定義的輔助函數 (放在 <script> 標籤的頂部或適當的區塊內)
+        // 確保 copyToClipboard 和 setupCopyListeners 在整個應用中只被定義一次
+        // ===========================================
+
+        window.copyToClipboard = function (buttonElement, targetId) {
+            const targetElement = document.getElementById(targetId);
+
+            if (!targetElement) {
+                console.error(`找不到 ID 為 '${targetId}' 的元素進行複製。`);
+                return;
+            }
+
+            let textToCopy;
+            // 根據元素類型獲取內容
+            if (targetElement.tagName === 'TEXTAREA' || targetElement.tagName === 'INPUT') {
+                textToCopy = targetElement.value;
+            } else {
+                // 對於 div, pre 等元素，獲取其文本內容
+                textToCopy = targetElement.textContent;
+            }
+
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(textToCopy)
+                    .then(() => {
+                        const originalText = buttonElement.textContent;
+                        buttonElement.textContent = '已複製!';
+                        // 你可以考慮為所有複製按鈕添加一個通用的 '.copied' class
+                        // buttonElement.classList.add('copied'); 
+                        setTimeout(() => {
+                            buttonElement.textContent = originalText;
+                            // buttonElement.classList.remove('copied');
+                        }, 2000);
+                    })
+                    .catch(err => {
+                        console.error('複製到剪貼簿失敗，嘗試降級方案:', err);
+                        fallbackCopyToClipboard(targetElement, buttonElement);
+                    });
+            } else {
+                console.warn('瀏覽器不支持 navigator.clipboard，使用降級複製方案。');
+                fallbackCopyToClipboard(targetElement, buttonElement);
+            }
+        };
+
+        // 降級複製方案 (用於不支援 navigator.clipboard 的瀏覽器)
+        function fallbackCopyToClipboard(element, button) {
+            let range = document.createRange();
+            range.selectNodeContents(element);
+            let selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+
+            try {
+                document.execCommand('copy');
+                if (button) {
+                    const originalText = button.textContent;
+                    button.textContent = '已複製!';
+                    // button.classList.add('copied');
+                    setTimeout(() => {
+                        button.textContent = originalText;
+                        // button.classList.remove('copied');
+                    }, 2000);
+                }
+            } catch (err) {
+                console.error('fallback 複製失敗: ', err);
+                alert('複製失敗，您的瀏覽器可能不支援自動複製功能。請手動複製。');
+            }
+            selection.removeAllRanges();
+        }
+
+        // 處理複製按鈕點擊的事件函數
+        function handleCopyButtonClick(event) {
+            const button = event.currentTarget;
+            const targetId = button.dataset.targetId; // 從按鈕的 data-target-id 屬性獲取目標 ID
+            if (targetId) {
+                window.copyToClipboard(button, targetId); // 調用統一的複製函數
+            } else {
+                console.warn("複製按鈕缺少 data-target-id 屬性，無法確定複製目標。", button);
+            }
+        }
+
+        // 設置複製按鈕事件監聽器的函數
+        // 每次 displayChartData 重新繪製後，都需要調用這個函數重新綁定事件
+        function setupCopyListeners() {
+            // 這裡使用querySelectorAll選取所有你擁有的複製按鈕類別
+            const copyButtons = document.querySelectorAll(
+                '.copy-chart-btn, .section-copy-btn, .copy-report-btn, .copy-json-btn'
+            );
+            copyButtons.forEach(button => {
+                // 先移除可能存在的舊監聽器，避免重複綁定
+                button.removeEventListener('click', handleCopyButtonClick);
+                // 再添加新的監聽器
+                button.addEventListener('click', handleCopyButtonClick);
+            });
+        }
 
         // =============================================================
         // 全域設定與常數
@@ -1418,17 +1557,25 @@
                 loadingSpinner.style.display = 'none';
             }
         }
+       
         // =============================================================
         // 結果顯示與 HTML 生成
         // =============================================================
 
         // 主顯示函式
-        // 請用此版本完整取代舊的 displayChartData 函式
+        // 請用此版本完整取代 astro__.html 裡面舊的 displayChartData 函式
         function displayChartData(data, name1, name2) {
             const container = document.getElementById('resultOutput');
+            // 如果找不到容器，直接返回，避免後續錯誤
+            if (!container) {
+                console.error("找不到 ID 為 'resultOutput' 的容器。請檢查 HTML 結構。");
+                return;
+            }
+
             container.innerHTML = ''; // 清空容器
-            let finalHtml = '';
-            let rawJsonString = ''; // 用於儲存 JSON 字串
+
+            let reportHtmlContent = ''; // 儲存星盤報告部分的 HTML
+            let rawJsonString = '';     // 用於儲存 JSON 字串
 
             try {
                 rawJsonString = JSON.stringify(data, null, 2); // 將整個 data 物件轉換為格式化的 JSON 字串
@@ -1437,65 +1584,63 @@
                 rawJsonString = "Error: Could not convert data to JSON string.";
             }
 
+            // 這部分完全保留你原來的邏輯，確保星盤報告內容和樣式不變
             switch (data.chart_type) {
                 case 'single':
-                    finalHtml = buildSingleChartHTML(data, `${name1}的星盤資訊`);
+                    reportHtmlContent = buildSingleChartHTML(data, `${name1}的星盤資訊`);
                     break;
                 case 'comparison':
                     const natal1Html = buildSingleChartHTML(data.chart1_data, `${name1}的本命盤`);
                     const natal2Html = buildSingleChartHTML(data.chart2_data, `${name2}的本命盤`);
                     const interactionHtml = `<div class="sub-sections-container">${buildOverlayHTML(data.chart1_planets_in_chart2_houses, name1, name2, `${name1}星體落入${name2}宮位`)}${buildOverlayHTML(data.chart2_planets_in_chart1_houses, name2, name1, `${name2}星體落入${name1}宮位`)}${buildInterAspectsHTML(data.inter_aspects, name1, name2)}</div>`;
-                    finalHtml = createReportWrapper(`${name1}與${name2}的比較盤報告`, natal1Html + natal2Html + interactionHtml);
+                    reportHtmlContent = createReportWrapper(`${name1}與${name2}的比較盤報告`, natal1Html + natal2Html + interactionHtml);
                     break;
                 case 'composite':
                     const compositeHtml = buildSingleChartHTML(data.composite_chart_data, `${name1}與${name2}的組合中點盤`, 'composite-chart-header-style');
                     const ref1Html = buildSingleChartHTML(data.natal_chart1_data, `${name1}的本命盤`);
                     const ref2Html = buildSingleChartHTML(data.natal_chart2_data, `${name2}的本命盤`);
-                    finalHtml = createReportWrapper('組合中點盤報告', compositeHtml + ref1Html + ref2Html);
+                    reportHtmlContent = createReportWrapper('組合中點盤報告', compositeHtml + ref1Html + ref2Html);
                     break;
                 case 'transit':
                     const transitInteractionHtml = `<div class="sub-sections-container">${buildOverlayHTML(data.transit_planets_in_natal_houses, "行運", name1, '行運星體落入本命宮位')}${buildInterAspectsHTML(data.inter_aspects, name1, "行運", true)}</div>`;
                     const transitNatalHtml = buildSingleChartHTML(data.natal_chart_data, `${name1}的本命盤`);
                     const transitDateTime = data.transit_chart_data.timestamps.local_time;
                     const transitChartHtml = buildSingleChartHTML(data.transit_chart_data, `${transitDateTime} 行運天象盤`);
-                    finalHtml = createReportWrapper(`${name1}的行運盤報告`, transitInteractionHtml + transitNatalHtml + transitChartHtml);
+                    reportHtmlContent = createReportWrapper(`${name1}的行運盤報告`, transitInteractionHtml + transitNatalHtml + transitChartHtml);
                     break;
                 default:
-                    finalHtml = `<div class="error-message">錯誤: 未知的星盤類型 '${data.chart_type}'</div>`;
+                    reportHtmlContent = `<div class="error-message">錯誤: 未知的星盤類型 '${data.chart_type}'</div>`;
             }
 
-            // 將 JSON 輸出部分添加到最終 HTML 中
-            finalHtml += `<div class="json-output-wrapper output-section"> 
-                                <h3>原始數據 (AI好理解的JSON 格式)</h3>
-                                <textarea id="jsonOutputArea" rows="20" cols="80" readonly></textarea> 
-                                <button class="copy-button" data-target-id="jsonOutputArea">複製 給AI好理解的 JSON 數據</button>
-                            </div>`;
+            // 將現有的報告 HTML 和新的 JSON 輸出部分組合
+            // 注意：這裡修正了 <hr> 標籤與 <div> 之間沒有空格的問題
+            const combinedHtml = `
+        <div class="main-report-content">
+            ${reportHtmlContent}
+        </div>
+        <hr class="json-separator-line"> <div class="json-output-wrapper"> 
+            <h3>原始數據 (AI好理解的JSON 格式)</h3>
+            <textarea id="jsonOutputArea" rows="20" cols="80" readonly></textarea> 
+            <button class="copy-json-btn" data-target-id="jsonOutputArea">複製 給AI好理解的 JSON 數據</button>
+        </div>
+    `;
 
-            container.innerHTML = finalHtml;
-            setupCopyListeners(); // 確保已有的複製監聽器也設置好
+            // 1. 將所有 HTML 結構一次性注入 DOM
+            container.innerHTML = combinedHtml;
 
-            // 新增一個 copyToClipboard 函數來處理複製 JSON 數據
-            if (typeof window.copyToClipboard === 'undefined') { // 避免重複定義
-                window.copyToClipboard = function (buttonElement, targetId) {
-                    const preElement = document.querySelector(`.${targetId}`); // 假設 pre 元素有 'json-data-pre' 類名
-                    if (preElement) {
-                        const textToCopy = preElement.textContent;
-                        navigator.clipboard.writeText(textToCopy).then(() => {
-                            const originalText = buttonElement.textContent;
-                            buttonElement.textContent = '已複製!';
-                            setTimeout(() => {
-                                buttonElement.textContent = originalText;
-                            }, 2000);
-                        }).catch(err => {
-                            console.error('複製失敗: ', err);
-                        });
-                    } else {
-                        console.error('找不到要複製的元素:', targetId);
-                    }
-                };
+            // 2. 填充數據到特定的 HTML 元素 (必須在元素被注入 DOM 後才能執行)
+            const jsonOutputAreaElement = document.getElementById('jsonOutputArea');
+            if (jsonOutputAreaElement) {
+                jsonOutputAreaElement.value = rawJsonString;
+            } else {
+                console.error("找不到 ID 為 'jsonOutputArea' 的元素。請檢查 HTML 結構。");
             }
+
+            // 3. 重新設置所有複製按鈕的事件監聽器 (必須在所有按鈕被創建後執行)
+            // setupCopyListeners 會自動找到所有 .copy-chart-btn, .section-copy-btn, .copy-report-btn, .copy-json-btn 並綁定事件
+            setupCopyListeners();
         }
-
+        
         // 生成單一星盤的完整HTML
         function buildSingleChartHTML(chartInfo, title, headerStyleClass = 'single-chart-header-style') {
             if (!chartInfo) return `<div class="error-message">${title} 資料缺失。</div>`;
@@ -1678,21 +1823,7 @@
             </div>`;
         }
 
-        // 複製到剪貼簿的輔助函式
-        function copyToClipboard(text, btn) {
-            navigator.clipboard.writeText(text).then(() => {
-                const originalText = btn.textContent;
-                btn.textContent = '已複製!';
-                btn.classList.add('copied');
-                setTimeout(() => {
-                    btn.textContent = originalText;
-                    btn.classList.remove('copied');
-                }, 2000);
-            }).catch(err => {
-                console.error('複製失敗:', err);
-                btn.textContent = '失敗';
-            });
-        }
+        
         
         // 執行初始化
         initializeApp();
