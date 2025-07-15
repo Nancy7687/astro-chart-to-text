@@ -534,17 +534,17 @@
 
         /* 用於「星盤基礎數據」標題 */
         .summary-header-style {
-            background: linear-gradient(135deg, #fafafa, #e0e0e0); /* 白色 -> 淺灰 */
-            border-bottom: 1px solid #e0e0e0;
+            background: linear-gradient(135deg, #e0e0e0, #bdbdbd); /* 淺灰 -> 中灰 */
+            border-bottom: 1px solid #bdbdbd;
         }
         .summary-header-style span {
-            color: #424242; 
+            color: #212121; 
         }
 
         /* 用於「宮頭」標題 */
         .cusp-header-style {
-            background: linear-gradient(135deg, #e1f5fe, #b3e5fc); /* 淺天藍 -> 稍深天藍 */
-            border-bottom: 1px solid #b3e5fc;
+            background: linear-gradient(135deg, #b3e5fc, #81d4fa); /* 淺天藍 -> 天藍 */
+            border-bottom: 1px solid #81d4fa;
         }
         .cusp-header-style span {
             color: #01579b;
@@ -552,8 +552,8 @@
 
         /* 用於「星體位置」標題 */
         .planet-header-style {
-            background: linear-gradient(135deg, #e8f5e9, #c8e6c9); /* 淺綠 -> 稍深綠 */
-            border-bottom: 1px solid #c8e6c9;
+            background: linear-gradient(135deg, #c8e6c9, #a5d6a7); /* 淺綠 -> 草綠 */
+            border-bottom: 1px solid #a5d6a7;
         }
         .planet-header-style span {
             color: #1b5e20;
@@ -561,8 +561,8 @@
 
         /* 用於「主要相位」標題 */
         .aspect-header-style {
-            background: linear-gradient(135deg, #f3e5f5, #e1bee7); /* 淺紫 -> 稍深紫 */
-            border-bottom: 1px solid #e1bee7;
+            background: linear-gradient(135deg, #e1bee7, #ce93d8); /* 淺紫 -> 稍深紫 */
+            border-bottom: 1px solid #ce93d8;
         }
         .aspect-header-style span {
             color: #4a148c;
@@ -706,8 +706,8 @@
 
             <div id="comparisonChartInputs" class="synastry-inputs-wrapper">
                 <div class="synastry-input-section">
-                    <h3 class="text-xl font-bold text-gray-800 mb-4 text-center">命盤A (內圈)</h3>
-                    <div class="input-group"><label for="comp1_name">姓名:</label><input type="text" id="comp1_name" class="input-field" value="你"><p id="comp1_name-error" class="input-error-message" aria-live="polite"></p></div>
+                    <h3 class="text-xl font-bold text-gray-800 mb-4 text-center">命盤A</h3>
+                    <div class="input-group"><label for="comp1_name">姓名:</label><input type="text" id="comp1_name" class="input-field" value="您"><p id="comp1_name-error" class="input-error-message" aria-live="polite"></p></div>
                     <h4 class="text-lg font-semibold text-gray-700 mt-4 mb-2">出生日期與時間</h4>
                     <div class="date-time-grid">
                         <div class="input-group"><label for="comp1_year">西元年:</label><input type="number" id="comp1_year" class="input-field" value="1999" min="1900" max="2100"><p id="comp1_year-error" class="input-error-message" aria-live="polite"></p></div>
@@ -724,7 +724,7 @@
                     </div>
                 </div>
                 <div class="synastry-input-section">
-                    <h3 class="text-xl font-bold text-gray-800 mb-4 text-center">命盤B (外圈)</h3>
+                    <h3 class="text-xl font-bold text-gray-800 mb-4 text-center">命盤B</h3>
                     <div class="input-group"><label for="comp2_name">姓名:</label><input type="text" id="comp2_name" class="input-field" value="對方"><p id="comp2_name-error" class="input-error-message" aria-live="polite"></p></div>
                     <h4 class="text-lg font-semibold text-gray-700 mt-4 mb-2">出生日期與時間</h4>
                     <div class="date-time-grid">
@@ -745,8 +745,8 @@
 
             <div id="transitChartInputs" class="synastry-inputs-wrapper hidden">
                 <div class="synastry-input-section">
-                    <h3 class="text-xl font-bold text-gray-800 mb-4 text-center">本命盤資訊 (內圈)</h3>
-                    <div class="input-group"><label for="natal_name">姓名:</label><input type="text" id="natal_name" class="input-field" value="本命"><p id="natal_name-error" class="input-error-message" aria-live="polite"></p></div>
+                    <h3 class="text-xl font-bold text-gray-800 mb-4 text-center">本命盤資訊</h3>
+                    <div class="input-group"><label for="natal_name">姓名:</label><input type="text" id="natal_name" class="input-field" value="您"><p id="natal_name-error" class="input-error-message" aria-live="polite"></p></div>
                     <h4 class="text-lg font-semibold text-gray-700 mt-4 mb-2">出生日期與時間</h4>
                     <div class="date-time-grid">
                         <div class="input-group"><label for="natal_year">西元年:</label><input type="number" id="natal_year" class="input-field" value="1999" min="1900" max="2100"><p id="natal_year-error" class="input-error-message" aria-live="polite"></p></div>
@@ -763,7 +763,7 @@
                     </div>
                 </div>
                 <div class="synastry-input-section">
-                    <h3 class="text-xl font-bold text-gray-800 mb-4 text-center">行運盤資訊 (外圈)</h3>
+                    <h3 class="text-xl font-bold text-gray-800 mb-4 text-center">行運盤資訊</h3>
                     <div class="input-group"><label for="transit_name">名稱:</label><input type="text" id="transit_name" class="input-field" value="行運"><p id="transit_name-error" class="input-error-message" aria-live="polite"></p></div>
                     <h4 class="text-lg font-semibold text-gray-700 mt-4 mb-2">日期與時間</h4>
                     <div class="date-time-grid">
@@ -1142,7 +1142,7 @@
                         apiUrl = `${BASE_API_URL}/calculate_transit_chart`;
                     }
                 } else { // comparison or composite
-                    chart1Name = getInputValue('comp1_name') || "你";
+                    chart1Name = getInputValue('comp1_name') || "您";
                     chart2Name = getInputValue('comp2_name') || "對方";
                     isValid = validateInputs('comp1_') && validateInputs('comp2_');
                     if (isValid) {
@@ -1217,7 +1217,7 @@
                 case 'comparison':
                     const natal1Html = buildSingleChartHTML(data.chart1_data, `${name1}的本命盤`);
                     const natal2Html = buildSingleChartHTML(data.chart2_data, `${name2}的本命盤`);
-                    const interactionHtml = `<div class="sub-sections-container">${buildOverlayHTML(data.chart1_planets_in_chart2_houses, name1, name2, `${name1}的星體落入${name2}的星盤位置`)}${buildOverlayHTML(data.chart2_planets_in_chart1_houses, name2, name1, `${name2}的星體落入${name1}的星盤位置`)}${buildInterAspectsHTML(data.inter_aspects, name1, name2)}</div>`;
+                    const interactionHtml = `<div class="sub-sections-container">{/* 【修改】採用更專業精準的標題 */}${buildOverlayHTML(data.chart1_planets_in_chart2_houses, name1, name2, `${name1}的行星落入${name2}的宮位`)}${buildOverlayHTML(data.chart2_planets_in_chart1_houses, name2, name1, `${name2}的行星落入${name1}的宮位`)}${buildInterAspectsHTML(data.inter_aspects, name1, name2)}</div>`;
                     finalHtml = createReportWrapper(`${name1}與${name2}的比較盤報告`, natal1Html + natal2Html + interactionHtml);
                     break;
                 case 'composite':
