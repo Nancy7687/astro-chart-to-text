@@ -612,6 +612,44 @@
             display: block;   /* 讓它佔據一行 */
         }
 
+
+
+        /* 在您的 styles.css 或其他 CSS 文件中 */
+        .json-output-section {
+            background-color: #f8f8f8;
+            padding: 20px;
+            border-radius: 8px;
+            font-family: monospace;
+            margin-top: 30px; /* 與上方內容間距 */
+            margin-bottom: 20px;
+        }
+        .json-output-section h3 {
+            margin-top: 0;
+            color: #333;
+        }
+        .json-output-section pre {
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            max-height: 400px; /* 限制高度，超出滾動 */
+            overflow-y: auto;
+            background-color: #eee;
+            padding: 15px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+        .json-output-section button {
+            padding: 10px 15px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        .json-output-section button:hover {
+            background-color: #0056b3; /* 添加 hover 效果 */
+        }
+
         
         @media (min-width: 768px) {
             .tab-button {
@@ -1213,9 +1251,22 @@
             clearAllInputErrors();
             const resultOutput = document.getElementById('resultOutput');
             const loadingSpinner = document.getElementById('loadingSpinner');
+            // 獲取 JSON 和表格化文字的顯示區域以及切換按鈕容器
+            const jsonOutputArea = document.getElementById('jsonDisplayArea');
+            const textOutputArea = document.getElementById('tableTextDisplayArea');
+            const outputToggleButtons = document.getElementById('outputToggleButtons');
+
+
             resultOutput.innerHTML = '';
             resultOutput.classList.remove('error-message');
-            
+
+            // --> START OF MODIFICATION IN calculateChart FUNCTION <--
+            // 初始化隱藏顯示區域和切換按鈕，清空之前結果
+            if (jsonOutputArea) jsonOutputArea.style.display = 'none';
+            if (textOutputArea) textOutputArea.innerHTML = ''; // 清空之前結果
+            if (outputToggleButtons) outputToggleButtons.style.display = 'none';
+            // --> END OF MODIFICATION IN calculateChart FUNCTION <--
+
             const getInputValue = (id) => document.getElementById(id)?.value || '';
             let payload = {};
             let apiUrl = '';
@@ -1285,7 +1336,7 @@
                     }
                 }
             }
-            
+
             if (!isValid) {
                 resultOutput.textContent = "❌ 請更正上方標示的錯誤後再試。";
                 resultOutput.classList.add('error-message');
@@ -1295,17 +1346,29 @@
             loadingSpinner.style.display = 'inline-block';
 
             try {
-                const response = await axios.post(apiUrl, payload);
+                // 發送 Axios POST 請求
+                const response = await axios.post(apiUrl, payload, {
+                    headers: {
+                        'X-API-Key': YOUR_API_KEY // 確保你的 API Key 被正確傳送
+                    }
+                });
+
+                // 成功響應：將數據傳遞給 displayChartData 函數進行統一處理
                 displayChartData(response.data, chart1Name, chart2Name);
+
             } catch (error) {
+                // 錯誤處理邏輯 (你現有的)
                 resultOutput.classList.add('error-message');
                 if (error.response) {
                     const errorData = error.response.data;
                     if (error.response.status === 400 && errorData?.error_type === 'invalid_timezone') {
                         resultOutput.textContent = '❌ 時區輸入錯誤，請修正上方標示的欄位。';
-                        const prefix = (errorData.error_source === 'chart1') ? 'comp1_' : 'comp2_'; // Simplified assumption
+                        const prefix = (errorData.error_source === 'chart1') ? 'comp1_' : 'comp2_';
                         showInputError(`${prefix}timezone`, errorData.error);
-                    } else {
+                    } else if (error.response.status === 401 || error.response.status === 403) { // 新增 API Key 相關錯誤處理
+                        resultOutput.textContent = '❌ 認證失敗：API Key 無效或缺失。';
+                    }
+                    else {
                         resultOutput.textContent = `❌ 伺服器錯誤 ${error.response.status}: ${errorData?.error || '未知錯誤'}`;
                     }
                 } else if (error.request) {
@@ -1313,11 +1376,17 @@
                 } else {
                     resultOutput.textContent = `❌ 請求錯誤：${error.message}`;
                 }
+                // --> START OF MODIFICATION IN calculateChart FUNCTION (Error part) <--
+                // 錯誤時隱藏結果區域和切換按鈕
+                if (outputToggleButtons) outputToggleButtons.style.display = 'none';
+                if (jsonOutputArea) jsonOutputArea.style.display = 'none';
+                if (textOutputArea) textOutputArea.style.display = 'none';
+                // --> END OF MODIFICATION IN calculateChart FUNCTION (Error part) <--
+
             } finally {
                 loadingSpinner.style.display = 'none';
             }
         }
-        
         // =============================================================
         // 結果顯示與 HTML 生成
         // =============================================================
@@ -1326,8 +1395,16 @@
         // 請用此版本完整取代舊的 displayChartData 函式
         function displayChartData(data, name1, name2) {
             const container = document.getElementById('resultOutput');
-            container.innerHTML = '';
+            container.innerHTML = ''; // 清空容器
             let finalHtml = '';
+            let rawJsonString = ''; // 用於儲存 JSON 字串
+
+            try {
+                rawJsonString = JSON.stringify(data, null, 2); // 將整個 data 物件轉換為格式化的 JSON 字串
+            } catch (e) {
+                console.error("Error converting data to JSON string:", e);
+                rawJsonString = "Error: Could not convert data to JSON string.";
+            }
 
             switch (data.chart_type) {
                 case 'single':
@@ -1340,9 +1417,7 @@
                     finalHtml = createReportWrapper(`${name1}與${name2}的比較盤報告`, natal1Html + natal2Html + interactionHtml);
                     break;
                 case 'composite':
-                    // 【修改】為組合盤主體傳入專屬的 'composite-chart-header-style'
                     const compositeHtml = buildSingleChartHTML(data.composite_chart_data, `${name1}與${name2}的組合中點盤`, 'composite-chart-header-style');
-                    // 參考盤不傳遞參數，自動使用預設的單盤樣式
                     const ref1Html = buildSingleChartHTML(data.natal_chart1_data, `${name1}的本命盤`);
                     const ref2Html = buildSingleChartHTML(data.natal_chart2_data, `${name2}的本命盤`);
                     finalHtml = createReportWrapper('組合中點盤報告', compositeHtml + ref1Html + ref2Html);
@@ -1351,17 +1426,46 @@
                     const transitInteractionHtml = `<div class="sub-sections-container">${buildOverlayHTML(data.transit_planets_in_natal_houses, "行運", name1, '行運星體落入本命宮位')}${buildInterAspectsHTML(data.inter_aspects, name1, "行運", true)}</div>`;
                     const transitNatalHtml = buildSingleChartHTML(data.natal_chart_data, `${name1}的本命盤`);
                     const transitDateTime = data.transit_chart_data.timestamps.local_time;
-                    // const timePart = transitDateTime.split(' ')[1].substring(0, 5); // 提取 HH:MM
                     const transitChartHtml = buildSingleChartHTML(data.transit_chart_data, `${transitDateTime} 行運天象盤`);
-                    // 【修改點】將 buildInterAspectsHTML 的前兩個參數對調
                     finalHtml = createReportWrapper(`${name1}的行運盤報告`, transitInteractionHtml + transitNatalHtml + transitChartHtml);
                     break;
                 default:
                     finalHtml = `<div class="error-message">錯誤: 未知的星盤類型 '${data.chart_type}'</div>`;
             }
+
+            // 將 JSON 輸出部分添加到最終 HTML 中
+            finalHtml += `<hr>
+                            <div class="json-output-section">
+                                <h3>原始數據 (JSON 格式)</h3>
+                                <pre class="json-data-pre"></pre>
+                                <button onclick="copyToClipboard(this, 'json-data-pre')">複製 JSON 數據</button>
+                            </div>`;
+
             container.innerHTML = finalHtml;
-            setupCopyListeners();
+            setupCopyListeners(); // 確保已有的複製監聽器也設置好
+
+            // 新增一個 copyToClipboard 函數來處理複製 JSON 數據
+            if (typeof window.copyToClipboard === 'undefined') { // 避免重複定義
+                window.copyToClipboard = function (buttonElement, targetId) {
+                    const preElement = document.querySelector(`.${targetId}`); // 假設 pre 元素有 'json-data-pre' 類名
+                    if (preElement) {
+                        const textToCopy = preElement.textContent;
+                        navigator.clipboard.writeText(textToCopy).then(() => {
+                            const originalText = buttonElement.textContent;
+                            buttonElement.textContent = '已複製!';
+                            setTimeout(() => {
+                                buttonElement.textContent = originalText;
+                            }, 2000);
+                        }).catch(err => {
+                            console.error('複製失敗: ', err);
+                        });
+                    } else {
+                        console.error('找不到要複製的元素:', targetId);
+                    }
+                };
+            }
         }
+
         // 生成單一星盤的完整HTML
         function buildSingleChartHTML(chartInfo, title, headerStyleClass = 'single-chart-header-style') {
             if (!chartInfo) return `<div class="error-message">${title} 資料缺失。</div>`;
