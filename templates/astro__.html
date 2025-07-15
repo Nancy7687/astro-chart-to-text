@@ -571,7 +571,7 @@
         }
 
 
-        /* 用於「全部取消/選取」和「此類取消/選取」的通用按鈕樣式 */
+        /* 用於「全部取消/選取」和「此類別取消/選取」的通用按鈕樣式 */
         .planet-toggle-btn {
             background-color: rgb(248, 239, 255); /* 淺灰色背景 */
             border: 1px solid indigo; /* 淺灰色邊框 */
@@ -817,7 +817,8 @@
                 </div>
                 <div class="synastry-input-section">
                     <h3 class="text-xl font-bold text-gray-800 mb-4 text-center">行運盤資訊</h3>
-                    <div class="input-group"><label for="transit_name ">行運</label><input type="text" id="transit_name" class="input-group hidden" value="行運"><p id="transit_name-error" class="input-error-message" aria-live="polite"></p></div>
+                    <h3 class="text-xl font-bold text-gray-800 mb-4 text-left">行運</h3>
+                    <div class="input-group"><label for="transit_name "></label><input type="text" id="transit_name" class="input-group hidden" value="行運"><p id="transit_name-error" class="input-error-message" aria-live="polite"></p></div>
                     <h4 class="text-lg font-semibold text-gray-700 mt-4 mb-2">日期與時間</h4>
                     <div class="date-time-grid">
                         <div class="input-group"><label for="transit_year">西元年:</label><input type="number" id="transit_year" class="input-field" value="2025" min="1900" max="2100"><p id="transit_year-error" class="input-error-message" aria-live="polite"></p></div>
@@ -1007,7 +1008,7 @@
                 // 建立分類切換按鈕
                 const groupToggleButton = document.createElement('button');
                 groupToggleButton.className = 'planet-toggle-btn group-toggle-btn'; // 通用按鈕樣式 + 分類按鈕的專屬 class
-                groupToggleButton.textContent = '此類取消';
+                groupToggleButton.textContent = '此類別取消';
                 groupToggleButton.dataset.state = 'all-checked';
                 groupToggleButton.dataset.groupKey = groupName; // 用 data-* 屬性記住它屬於哪個分類
 
@@ -1042,7 +1043,7 @@
 
                     // 同步更新所有分類按鈕的狀態和文字
                     document.querySelectorAll('.group-toggle-btn').forEach(btn => {
-                        btn.textContent = isChecked ? '此類選取' : '此類取消';
+                        btn.textContent = isChecked ? '此類別選取' : '此類別取消';
                         btn.dataset.state = isChecked ? 'all-unchecked' : 'all-checked';
                     });
                 }
@@ -1053,7 +1054,7 @@
                     const checkboxesInGroup = document.querySelectorAll(`.optional-planet-checkbox[data-group="${groupKey}"]`);
                     const isChecked = target.dataset.state === 'all-checked';
                     checkboxesInGroup.forEach(cb => { cb.checked = !isChecked; });
-                    target.textContent = isChecked ? '此類選取' : '此類取消';
+                    target.textContent = isChecked ? '此類別選取' : '此類別取消';
                     target.dataset.state = isChecked ? 'all-unchecked' : 'all-checked';
                 }
             });
@@ -1395,7 +1396,7 @@
             const planetContent = (planet_positions) ? [
                 "==== 星體位置 ====",
                 "星體 | 順逆 | 星座度數(度分) | 宮位(度分)",
-                "------------------------------------", // 加回橫線分隔線
+                "-----------------------------", // 加回橫線分隔線
                 ...DISPLAY_ORDER_NAMES
                     .filter(name => planet_positions[name])
                     .map(name => {
@@ -1410,7 +1411,7 @@
             const aspectContent = (aspects?.length) > 0 ? [
                 "==== 主要相位 ====",
                 "星體1 | 相位 | 星體2 | 動態 | 容許度",
-                "------------------------------------", // 加回橫線分隔線
+                "----------------------", // 加回橫線分隔線
                 ...aspects.map(a => `${a.p1_name} | ${a.aspect_name} | ${a.p2_name} | ${a.aspect_type || '-'} | ${formatDegreesMinutesSeconds(a.orb)}`),
                 "================"
             ].join('\n') : "沒有相位";
@@ -1457,7 +1458,7 @@
             const content = (overlayData?.length) ? [
                 `==== ${title} ====`,
                 "星體 | 星座度數(度分) | 落入宮位(度分)",
-                "------------------------------------",
+                "-----------------------------",
                 ...overlayData.sort((a, b) => DISPLAY_ORDER_NAMES.indexOf(a.planet_name) - DISPLAY_ORDER_NAMES.indexOf(b.planet_name))
                     .map(o => `${o.planet_name} | ${o.zodiac_position_formatted} | ${o.house_in_target_chart}宮(${formatDegreesMinutesSeconds(o.degree_in_target_house)})`),
                 "===================="
