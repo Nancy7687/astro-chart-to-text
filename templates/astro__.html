@@ -493,7 +493,7 @@
         /* 讓總複製按鈕更顯眼 */
         .report-main-header .copy-report-btn {
             background-color: #4CAF50; /* 綠色 */
-            font-size: 1rem;
+            font-size: 1.5rem;
             padding: 8px 16px;
         }
         .report-main-header .copy-report-btn:hover {
@@ -541,7 +541,7 @@
             color: #212121; 
         }
 
-        /* 用於「宮頭」標題 */
+        /* 用於「宮頭」「星體位置」「主要相位」標題 */
         .cusp-header-style, .planet-header-style, .aspect-header-style {
             background: linear-gradient(135deg, #e1f6ff, #81d4fa); /* 淺天藍 -> 天藍 */
             border-bottom: 1px solid #81d4fa;
@@ -663,6 +663,9 @@
                     </div>
                     <p class="text-sm text-gray-500 mt-2">
                         若時區不在列表，請手動輸入 IANA 名稱 (如 Asia/Taipei)。
+                        若時區不在列表，請手動輸入出生地的經緯度及「洲名/城市」格式的 IANA 時區<br>
+                        （如台灣：Asia/Taipei，中國：Asia/Shanghai，日本：Asia/Tokyo，美國紐約：America/New_York，美國洛杉磯：America/Los_Angeles，<br>
+                        可詢問AI Chat 如 Chat GPT 或 Gemini ai等或由Google搜尋「[您出生城市名] IANA 時區」），以取得正確星盤資訊。
                     </p>
                     <p id="single_timezone-error" class="input-error-message" aria-live="polite"></p>
                 </div>
@@ -1211,7 +1214,7 @@
                     const transitNatalHtml = buildSingleChartHTML(data.natal_chart_data, `${name1}的本命盤`);
                     const transitChartHtml = buildSingleChartHTML(data.transit_chart_data, `${name2}的行運盤`);
                     // 【修改點】將 buildInterAspectsHTML 的前兩個參數對調
-                    finalHtml = createReportWrapper(`${name1}的行運盤報告`, transitNatalHtml + transitChartHtml + transitInteractionHtml);
+                    finalHtml = createReportWrapper(`${name1}的行運盤報告`, transitInteractionHtml + transitNatalHtml + transitChartHtml);
                     break;
                 default:
                     finalHtml = `<div class="error-message">錯誤: 未知的星盤類型 '${data.chart_type}'</div>`;
@@ -1292,14 +1295,34 @@
         // 請用此版本完整取代舊的 buildInterAspectsHTML 函式
         function buildInterAspectsHTML(aspects, name1, name2, isTransit = false) {
             const title = isTransit ? `${name1}與${name2}相位` : `交互相位`;
-            const content = (aspects?.length) ? ["-".repeat(50)].concat(aspects.sort((a, b) => DISPLAY_ORDER_NAMES.indexOf(a.p1_name) - DISPLAY_ORDER_NAMES.indexOf(b.p1_name) || DISPLAY_ORDER_NAMES.indexOf(a.p2_name) - DISPLAY_ORDER_NAMES.indexOf(b.p2_name)).map(a => `${a.p1_name.padEnd(4, '　')} | ${a.aspect_name.padEnd(4, ' ')} | ${a.p2_name.padEnd(4, '　')} | ${(a.aspect_type || '-').padEnd(4)} | ${formatDegreesMinutesSeconds(a.orb)}`)).join('\n') : "沒有相位";
-            return createResultSection(title, content);
+
+            // 【修改】為內容加入子標題和分隔線
+            const content = (aspects?.length) ? [
+                `==== ${title} ====`,
+                "星體1 | 相位 | 星體2 | 動態 | 容許度",
+                "------------------------------------",
+                ...aspects.sort((a, b) => DISPLAY_ORDER_NAMES.indexOf(a.p1_name) - DISPLAY_ORDER_NAMES.indexOf(b.p1_name) || DISPLAY_ORDER_NAMES.indexOf(a.p2_name) - DISPLAY_ORDER_NAMES.indexOf(b.p2_name)).map(a => `${a.p1_name} | ${a.aspect_name} | ${a.p2_name} | ${a.aspect_type || '-'} | ${formatDegreesMinutesSeconds(a.orb)}`),
+                "===================="
+            ].join('\n') : "沒有相位";
+
+            // 這裡的 title 參數現在只用於網頁顯示，複製出來的內容自帶標題
+            return createResultSection(title, content, false, 'interaction-header-style');
         }
 
         // 生成行星落宮的HTML
         // 請用此版本完整取代舊的 buildOverlayHTML 函式
         function buildOverlayHTML(overlayData, guestName, hostName, title) {
-            const content = (overlayData?.length) ? ["-".repeat(50)].concat(overlayData.sort((a, b) => DISPLAY_ORDER_NAMES.indexOf(a.planet_name) - DISPLAY_ORDER_NAMES.indexOf(b.planet_name)).map(o => `${o.planet_name.padEnd(4, '　')} | ${o.zodiac_position_formatted.padEnd(10)} | ${o.house_in_target_chart}宮(${formatDegreesMinutesSeconds(o.degree_in_target_house)})`)).join('\n') : "資料缺失";
+            // 【修改】為內容加入子標題和分隔線，並移除 padEnd()
+            const content = (overlayData?.length) ? [
+                `==== ${title} ====`,
+                "星體 | 星座度數(度分) | 落入宮位(度分)",
+                "------------------------------------",
+                ...overlayData.sort((a, b) => DISPLAY_ORDER_NAMES.indexOf(a.planet_name) - DISPLAY_ORDER_NAMES.indexOf(b.planet_name))
+                    .map(o => `${o.planet_name} | ${o.zodiac_position_formatted} | ${o.house_in_target_chart}宮(${formatDegreesMinutesSeconds(o.degree_in_target_house)})`),
+                "===================="
+            ].join('\n') : "資料缺失";
+
+            // 這裡的 title 參數現在主要用於網頁UI顯示，複製出來的內容已自帶標題
             return createResultSection(title, content, false, 'interaction-header-style');
         }
         
