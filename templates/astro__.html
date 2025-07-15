@@ -822,7 +822,7 @@
                 <div class="synastry-input-section">
                     <h3 class="text-xl font-bold text-gray-800 mb-4 text-center">行運盤資訊</h3>
                     <br>
-                    <h3 class="text-xl font-bold text-gray-800 mb-4 text-left">行運</h3>
+                    <h3 class="text-2xl font-bold text-gray-800 mb-4 text-left">行運</h3>
                     <div class="input-group"><label for="transit_name "></label><input type="text" id="transit_name" class="input-group hidden" value="行運"><p id="transit_name-error" class="input-error-message" aria-live="polite"></p></div>
                     <h4 class="text-lg font-semibold text-gray-700 mt-4 mb-2">日期與時間</h4>
                     <div class="date-time-grid">
@@ -1447,7 +1447,7 @@
             const content = (aspects?.length) ? [
                 `==== ${title} ====`,
                 "星體1 | 相位 | 星體2 | 動態 | 容許度",
-                "------------------------------------",
+                "-----------------------------",
                 ...aspects.sort((a, b) => DISPLAY_ORDER_NAMES.indexOf(a.p1_name) - DISPLAY_ORDER_NAMES.indexOf(b.p1_name) || DISPLAY_ORDER_NAMES.indexOf(a.p2_name) - DISPLAY_ORDER_NAMES.indexOf(b.p2_name)).map(a => `${a.p1_name} | ${a.aspect_name} | ${a.p2_name} | ${a.aspect_type || '-'} | ${formatDegreesMinutesSeconds(a.orb)}`),
                 "===================="
             ].join('\n') : "沒有相位";
