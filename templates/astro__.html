@@ -612,120 +612,7 @@
             margin-bottom: 5px; /* 下方外邊距 */
             display: block;   /* 讓它佔據一行 */
         }
-
-
-
-        /* 在您的 styles.css 或其他 CSS 文件中 */
-        .json-output-section {
-            background-color: #f8f8f8;
-            padding: 20px;
-            border-radius: 8px;
-            font-family: monospace;
-            margin-top: 30px; /* 與上方內容間距 */
-            margin-bottom: 20px;
-        }
-        .json-output-section h3 {
-            margin-top: 0;
-            color: #333;
-        }
-        .json-output-section pre {
-            white-space: pre-wrap;
-            word-wrap: break-word;
-            max-height: 400px; /* 限制高度，超出滾動 */
-            overflow-y: auto;
-            background-color: #eee;
-            padding: 15px;
-            border-radius: 5px;
-            border: 1px solid #ddd;
-        }
-        .json-output-section button {
-            padding: 10px 15px;
-            background-color: #007bff;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            margin-top: 10px;
-        }
-        .json-output-section button:hover {
-            background-color: #0056b3; /* 添加 hover 效果 */
-        }
-
-        /* JSON 輸出區塊的樣式 */
-        .json-output-wrapper {
-            background-color: #f8f8f8;
-            padding: 20px;
-            border: 1px dashed #ddd;
-            border-radius: 8px;
-            margin-top: 40px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-            /* 新增：為包含浮動元素的容器建立新的 BFC (Block Formatting Context) */
-            /* overflow: auto; 或 display: flow-root; 可以達到此目的 */
-            overflow: auto; /* 關鍵：確保父容器包含浮動子元素的高度 */
-        }
-
-        .json-output-wrapper h3 {
-            color: #333;
-            margin-top: 0;
-            margin-bottom: 0; /* 調整：移除底部間距以更好對齊按鈕 */
-            font-size: 1.2em;
-            padding-bottom: 8px;
-            float: left; /* 關鍵：讓標題浮動到左邊 */
-            max-width: calc(100% - 160px); /* 調整：為按鈕留出空間 */
-            box-sizing: border-box;
-            line-height: 1.2; /* 調整：優化垂直對齊 */
-        }
-
-        .json-output-area {
-            width: 100%;
-            min-height: 350px;
-            resize: vertical;
-            font-family: 'Consolas', 'Monaco', monospace;
-            font-size: 0.85em;
-            padding: 15px;
-            border: 1px solid #bbb;
-            border-radius: 5px;
-            box-sizing: border-box;
-            background-color: #fff;
-            color: #000;
-            line-height: 1.4;
-            clear: both; /* 關鍵：確保 textarea 在浮動元素下方開始 */
-        }
-
-        /* 新增：JSON 複製按鈕的專屬樣式 */
-        .copy-json-btn {
-            background-color: #6c757d;
-            color: white;
-            padding: 8px 15px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 0.9em;
-            margin-top: 0; /* 調整：與標題頂部對齊 */
-            margin-left: 15px; /* 調整：與標題之間間距 */
-            float: right; /* 關鍵：讓按鈕浮動到右邊 */
-            transition: background-color 0.2s ease;
-        }
-
-        .copy-json-btn:hover {
-            background-color: #5a6268;
-        }
-
-        /* 清除浮動，確保 .json-output-wrapper 的高度正確包含浮動元素 */
-        .json-output-wrapper::after {
-            content: "";
-            display: table;
-            clear: both;    
-        }
-
-        /* 新增的橫線樣式 */
-        .json-separator-line {
-            border: 0;
-            height: 1px;
-            background-image: linear-gradient(to right, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.25), rgba(0, 0, 0, 0));
-            margin: 40px 0;
-        }
-
+        
         
         @media (min-width: 768px) {
             .tab-button {
@@ -1070,10 +957,7 @@
             const button = event.currentTarget;
             let targetElement = null;
 
-            if (button.classList.contains('copy-json-btn')) {
-                // 對於 JSON 按鈕，查找其父容器 `.json-output-wrapper` 中的 `textarea.json-output-area`
-                targetElement = button.closest('.json-output-wrapper')?.querySelector('textarea.json-output-area');
-            } else if (button.classList.contains('copy-chart-btn')) {
+            if (button.classList.contains('copy-chart-btn')) {
                 // 對於「複製此盤」按鈕，查找其最近的父級 `.chart-wrapper`
                 targetElement = button.closest('.chart-wrapper');
             } else if (button.classList.contains('section-copy-btn')) {
@@ -1098,7 +982,7 @@
         // 設置複製按鈕事件監聽器的函數
         function setupCopyListenersSimplified() {
             const copyButtons = document.querySelectorAll(
-                '.copy-chart-btn, .section-copy-btn, .copy-report-btn, .copy-json-btn'
+                '.copy-chart-btn, .section-copy-btn, .copy-report-btn'
             );
             console.log("setupCopyListenersSimplified: 找到的複製按鈕數量:", copyButtons.length);
             copyButtons.forEach(button => {
@@ -1446,13 +1330,6 @@
             clearAllInputErrors();
             const resultOutput = document.getElementById('resultOutput');
             const loadingSpinner = document.getElementById('loadingSpinner');
-            // 獲取 JSON 和表格化文字的顯示區域以及切換按鈕容器
-            const jsonOutputArea = document.getElementById('jsonDisplayArea');
-            if (jsonOutputArea) {
-                // *** 確保這裡使用 .value ***
-                jsonOutputArea.value = JSON.stringify(chartData, null, 2);
-                // null, 2 參數會讓 JSON 格式化，有縮排，更易讀
-            }
             const textOutputArea = document.getElementById('tableTextDisplayArea');
             const outputToggleButtons = document.getElementById('outputToggleButtons');
 
@@ -1462,7 +1339,6 @@
 
             // --> START OF MODIFICATION IN calculateChart FUNCTION <--
             // 初始化隱藏顯示區域和切換按鈕，清空之前結果
-            if (jsonOutputArea) jsonOutputArea.style.display = 'none';
             if (textOutputArea) textOutputArea.innerHTML = ''; // 清空之前結果
             if (outputToggleButtons) outputToggleButtons.style.display = 'none';
             // --> END OF MODIFICATION IN calculateChart FUNCTION <--
@@ -1579,7 +1455,6 @@
                 // --> START OF MODIFICATION IN calculateChart FUNCTION (Error part) <--
                 // 錯誤時隱藏結果區域和切換按鈕
                 if (outputToggleButtons) outputToggleButtons.style.display = 'none';
-                if (jsonOutputArea) jsonOutputArea.style.display = 'none';
                 if (textOutputArea) textOutputArea.style.display = 'none';
                 // --> END OF MODIFICATION IN calculateChart FUNCTION (Error part) <--
 
@@ -1646,25 +1521,9 @@
             const combinedHtml = `
         <div class="main-report-content report-full-content">
             ${reportHtmlContent}
-        </div>
-        <hr class="json-separator-line">
-        <div class="json-output-wrapper">
-            <div style="overflow: auto; margin-bottom: 15px;">
-                <h3>原始數據 (AI好理解的JSON 格式)</h3>
-                <button class="copy-json-btn">複製 給AI好理解的 JSON 數據</button>
-            </div>
-            <textarea class="json-output-area" rows="20" cols="80" readonly></textarea>
-        </div>
-    `;
+        </div>`;
 
             container.innerHTML = combinedHtml; // 將所有內容一次性注入
-
-            const jsonOutputAreaElement = container.querySelector('.json-output-area');
-            if (jsonOutputAreaElement) {
-                jsonOutputAreaElement.value = rawJsonString;
-            } else {
-                console.error("找不到 Class 為 'json-output-area' 的元素。");
-            }
 
             // 在 DOM 更新後，呼叫事件綁定函數
             setupCopyListenersSimplified();
