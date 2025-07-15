@@ -508,12 +508,13 @@
             background-color: #007B9A;
         }
 
-        /* 單盤標題樣式 */
+        /* --- 請用此區塊，完整取代您 style 中所有 ...-header-style 的舊規則 --- */
+
+    /* 用於最外層的大標題，例如「您的本命盤」*/
         .single-chart-header-style {
             background: linear-gradient(135deg, #e3f2fd, #bbdefb); /* 淡藍 -> 稍深藍 */
             border-bottom: 1px solid #90caf9;
         }
-
         .single-chart-header-style h2 { /* 確保文字顏色與背景搭配 */
             color: #0d47a1; 
             text-shadow: 1px 1px 1px #ffffff;
@@ -529,11 +530,11 @@
             text-shadow: 1px 1px 1px #ffffff;
         }
 
-        /* --- 以下是各個子區塊標題的專屬樣式 --- */
+        /* --- 以下是各個子區塊標題的專屬樣式 (全部改為漸層) --- */
 
         /* 用於「星盤基礎數據」標題 */
         .summary-header-style {
-            background-color: #f5f5f5; /* 淺灰色 */
+            background: linear-gradient(135deg, #fafafa, #e0e0e0); /* 白色 -> 淺灰 */
             border-bottom: 1px solid #e0e0e0;
         }
         .summary-header-style span {
@@ -542,7 +543,7 @@
 
         /* 用於「宮頭」標題 */
         .cusp-header-style {
-            background-color: #e1f5fe; /* 更淺的藍色 */
+            background: linear-gradient(135deg, #e1f5fe, #b3e5fc); /* 淺天藍 -> 稍深天藍 */
             border-bottom: 1px solid #b3e5fc;
         }
         .cusp-header-style span {
@@ -551,16 +552,16 @@
 
         /* 用於「星體位置」標題 */
         .planet-header-style {
-            background-color: #e8f5e9; /* 淺綠色 */
+            background: linear-gradient(135deg, #e8f5e9, #c8e6c9); /* 淺綠 -> 稍深綠 */
             border-bottom: 1px solid #c8e6c9;
         }
         .planet-header-style span {
-        color: #1b5e20;
+            color: #1b5e20;
         }
 
         /* 用於「主要相位」標題 */
         .aspect-header-style {
-            background-color: #f3e5f5; /* 淺紫色 */
+            background: linear-gradient(135deg, #f3e5f5, #e1bee7); /* 淺紫 -> 稍深紫 */
             border-bottom: 1px solid #e1bee7;
         }
         .aspect-header-style span {
@@ -569,11 +570,11 @@
 
         /* 用於比較盤/行運盤的互動區塊標題 */
         .interaction-header-style {
-            background: linear-gradient(135deg, #f3e5f5, #e1bee7);
-            border-bottom: 1px solid #ce93d8;
+            background: linear-gradient(135deg, #ede7f6, #d1c4e9); /* 薰衣草紫漸層 */
+            border-bottom: 1px solid #b39ddb;
         }
         .interaction-header-style span {
-            color: #4a148c; 
+            color: #311b92; 
             text-shadow: 1px 1px 1px #ffffff;
         }
 
@@ -1223,7 +1224,7 @@
                     finalHtml = createReportWrapper('組合中點盤報告', buildSingleChartHTML(data.composite_chart_data, `${name1}與${name2}的組合盤`) + buildSingleChartHTML(data.natal_chart1_data, `${name1}的本命盤`) + buildSingleChartHTML(data.natal_chart2_data, `${name2}的本命盤`));
                     break;
                 case 'transit':
-                    const transitInteractionHtml = `<div class="sub-sections-container">${buildOverlayHTML(data.transit_planets_in_natal_houses, "行運", name1, '行運星體落入本命宮位')}${buildInterAspectsHTML(data.inter_aspects, "行運", name1, true)}</div>`;
+                    const transitInteractionHtml = `<div class="sub-sections-container">${buildOverlayHTML(data.transit_planets_in_natal_houses, "行運", name1, '行運星體落入本命盤位置')}${buildInterAspectsHTML(data.inter_aspects, "行運", name1, true)}</div>`;
                     finalHtml = createReportWrapper(`${name1}的行運盤報告`, buildSingleChartHTML(data.natal_chart_data, `${name1}的本命盤`) + buildSingleChartHTML(data.transit_chart_data, `行運盤`) + transitInteractionHtml);
                     break;
                 default:
@@ -1238,13 +1239,48 @@
 
             const { timestamps, birth_info, house_cusps, planet_positions, aspects } = chartInfo;
 
-            // --- 內容生成部分 (保持不變) ---
-            const summaryContent = (timestamps && birth_info) ? [`本地時間: ${timestamps.local_time}`, `UTC 時間: ${timestamps.utc_time}`, `緯度: ${birth_info.latitude}, 經度: ${birth_info.longitude}`].join('\n') : "基礎數據缺失";
-            const cuspContent = (house_cusps?.length > 0) ? ["宮頭 | 星座度數(度分)"].concat(house_cusps.map(c => `${c.house_number}宮 | ${c.zodiac_position_formatted}`)).join('\n') : "宮頭數據缺失";
-            const planetContent = (planet_positions) ? ["星體 | 順逆 | 星座度數(度分) | 宮位(度分)"].concat(DISPLAY_ORDER_NAMES.filter(name => planet_positions[name]).map(name => { const p = planet_positions[name]; const houseInfo = !HOUSE_DEFINING_POINTS.includes(name) && p.house != null ? `${p.house}宮(${formatDegreesMinutesSeconds(p.hdeg)})` : '-'; return `${name} | ${p.is_retrograde ? '逆行' : ''} | ${p.zodiac_position_formatted} | ${houseInfo}`; })).join('\n') : "星體數據缺失";
-            const aspectContent = (aspects?.length) > 0 ? ["星體1 | 相位 | 星體2 | 動態 | 容許度"].concat(aspects.map(a => `${a.p1_name} | ${a.aspect_name} | ${a.p2_name} | ${a.aspect_type || '-'} | ${formatDegreesMinutesSeconds(a.orb)}`)).join('\n') : "沒有相位";
+            // --- 【修改】為每個區塊的內容，在開頭都加上子標題和分隔線 ---
 
-            // --- HTML 返回部分 (套用樣式) ---
+            const summaryContent = (timestamps && birth_info) ? [
+                "==== 星盤基礎數據 ====",
+                `本地時間: ${timestamps.local_time}`,
+                `UTC 時間: ${timestamps.utc_time}`,
+                `緯度: ${birth_info.latitude}, 經度: ${birth_info.longitude}`,
+                "===================="
+            ].join('\n') : "基礎數據缺失";
+
+            const cuspContent = (house_cusps?.length > 0) ? [
+                "==== 宮頭 ====",
+                "宮頭 | 星座度數(度分)",
+                "--------------------", // 加回橫線分隔線
+                ...house_cusps.map(c => `${c.house_number}宮 | ${c.zodiac_position_formatted}`),
+                "============"
+            ].join('\n') : "宮頭數據缺失";
+
+            const planetContent = (planet_positions) ? [
+                "==== 星體位置 ====",
+                "星體 | 順逆 | 星座度數(度分) | 宮位(度分)",
+                "------------------------------------", // 加回橫線分隔線
+                ...DISPLAY_ORDER_NAMES
+                    .filter(name => planet_positions[name])
+                    .map(name => {
+                        const p = planet_positions[name];
+                        const houseInfo = !HOUSE_DEFINING_POINTS.includes(name) && p.house != null
+                            ? `${p.house}宮(${formatDegreesMinutesSeconds(p.hdeg)})` : '-';
+                        return `${name} | ${p.is_retrograde ? '逆行' : ''} | ${p.zodiac_position_formatted} | ${houseInfo}`;
+                    }),
+                "================"
+            ].join('\n') : "星體數據缺失";
+
+            const aspectContent = (aspects?.length) > 0 ? [
+                "==== 主要相位 ====",
+                "星體1 | 相位 | 星體2 | 動態 | 容許度",
+                "------------------------------------", // 加回橫線分隔線
+                ...aspects.map(a => `${a.p1_name} | ${a.aspect_name} | ${a.p2_name} | ${a.aspect_type || '-'} | ${formatDegreesMinutesSeconds(a.orb)}`),
+                "================"
+            ].join('\n') : "沒有相位";
+
+            // --- HTML 返回部分 (這部分不變) ---
             return `
         <div class="chart-wrapper">
             <div class="chart-main-header ${headerStyleClass}">
