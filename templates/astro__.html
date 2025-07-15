@@ -585,6 +585,10 @@
             white-space: nowrap; /* 防止文字換行 */
         }
 
+        .planet-toggle-btn .all-toggle-btn {
+            padding: 3px 12px; /* 內邊距 */
+        }
+
         /* 滑鼠移上去時的效果 */
         .planet-toggle-btn:hover {
             background-color: #e5e7eb;
@@ -817,6 +821,7 @@
                 </div>
                 <div class="synastry-input-section">
                     <h3 class="text-xl font-bold text-gray-800 mb-4 text-center">行運盤資訊</h3>
+                    <br>
                     <h3 class="text-xl font-bold text-gray-800 mb-4 text-left">行運</h3>
                     <div class="input-group"><label for="transit_name "></label><input type="text" id="transit_name" class="input-group hidden" value="行運"><p id="transit_name-error" class="input-error-message" aria-live="polite"></p></div>
                     <h4 class="text-lg font-semibold text-gray-700 mt-4 mb-2">日期與時間</h4>
@@ -1060,7 +1065,7 @@
             });
 
             // 最後，確保最上面的總按鈕也套用新樣式
-            document.getElementById('toggleAllPlanetsBtn').className = 'planet-toggle-btn';
+            document.getElementById('toggleAllPlanetsBtn').className = 'planet-toggle-btn all-toggle-btn';
         }
 
         // 設定輸入時自動清除錯誤提示
@@ -1346,8 +1351,8 @@
                     const transitInteractionHtml = `<div class="sub-sections-container">${buildOverlayHTML(data.transit_planets_in_natal_houses, "行運", name1, '行運星體落入本命宮位')}${buildInterAspectsHTML(data.inter_aspects, name1, "行運", true)}</div>`;
                     const transitNatalHtml = buildSingleChartHTML(data.natal_chart_data, `${name1}的本命盤`);
                     const transitDateTime = data.transit_chart_data.timestamps.local_time;
-                    const timePart = transitDateTime.split(' ')[1].substring(0, 5); // 提取 HH:MM
-                    const transitChartHtml = buildSingleChartHTML(data.transit_chart_data, `${timePart} 行運天象盤`);
+                    // const timePart = transitDateTime.split(' ')[1].substring(0, 5); // 提取 HH:MM
+                    const transitChartHtml = buildSingleChartHTML(data.transit_chart_data, `${transitDateTime} 行運天象盤`);
                     // 【修改點】將 buildInterAspectsHTML 的前兩個參數對調
                     finalHtml = createReportWrapper(`${name1}的行運盤報告`, transitInteractionHtml + transitNatalHtml + transitChartHtml);
                     break;
