@@ -525,11 +525,11 @@
 
         /* 用於組合盤的大標題 */
         .composite-chart-header-style {
-            background: linear-gradient(135deg, #fffbce, #fbc02d); /* 淡黃 -> 金黃 */
+            background: linear-gradient(135deg, #ff9500, #fbd22d); /* 淡黃 -> 金黃 */
             border-bottom: 1px solid #fbc02d;
         }
         .composite-chart-header-style h2 {
-            color: #f57f17;
+            color: #ffffff;
             text-shadow: 1px 1px 1px #ffffff;
         }
 
@@ -555,7 +555,7 @@
 
         /* 用於比較盤/行運盤的互動區塊標題 */
         .interaction-header-style {
-            background: linear-gradient(135deg, #c7bed6, #5d39b0); /* 薰衣草紫漸層 */
+            background: linear-gradient(135deg, #55adb5, #5d39b0); /* 薰衣草紫漸層 */
             border-bottom: 1px solid #5d39b0;
         }
         .interaction-header-style span {
@@ -573,12 +573,12 @@
 
         /* 用於「全部取消/選取」和「分類取消/選取」的通用按鈕樣式 */
         .planet-toggle-btn {
-            background-color: #f0f0f0; /* 淺灰色背景 */
-            border: 1px solid #d1d5db; /* 淺灰色邊框 */
+            background-color: rgb(248, 239, 255); /* 淺灰色背景 */
+            border: 1px solid indigo; /* 淺灰色邊框 */
             color: #4b5563; /* 深灰色文字 */
             padding: 2px 10px; /* 內邊距 */
             border-radius: 9999px; /* 膠囊形狀的圓角 */
-            font-size: 0.8rem; /* 字體稍小 */
+            font-size: 1rem; /* 字體稍小 */
             font-weight: 600; /* 字體加粗 */
             cursor: pointer;
             transition: all 0.2s ease-in-out;
@@ -701,10 +701,10 @@
                         <div id="singleTimezoneSuggestions" class="timezone-suggestions"></div>
                     </div>
                     <p class="text-sm text-gray-500 mt-2">
-                        若時區不在列表，請手動輸入出生地經緯度及「洲名/城市」格式的 IANA 時區<br>
+                        * 若時區不在列表，請手動輸入出生地經緯度及「洲名/城市」格式的 IANA 時區<br>
                         （ 如台灣：Asia/Taipei，中國：Asia/Shanghai，日本：Asia/Tokyo，<br>
                         美國紐約：America/New_York，美國洛杉磯：America/Los_Angeles ）<br><br>
-                        IANA 時區可詢問AI Chat 如 Chat GPT 或 Gemini ai等，<br>
+                        * IANA 時區可詢問AI Chat 如 Chat GPT 或 Gemini ai等，<br>
                         或由Google搜尋「[您出生城市名] IANA 時區」，以取得正確的星盤資訊。
                     </p>
                     <p id="single_timezone-error" class="input-error-message" aria-live="polite"></p>
@@ -748,10 +748,10 @@
                         <div class="input-group col-span-full"><label for="comp1_timezone">時區:</label><div class="timezone-input-group-container"><select id="comp1_timezone" class="select-field timezone-select"></select><input type="text" id="comp1_customTimezone" class="input-field" placeholder="或手動輸入 IANA 時區 "><div id="comp1TimezoneSuggestions" class="timezone-suggestions"></div></div><p id="comp1_timezone-error" class="input-error-message" aria-live="polite"></p></div>
                     </div>
                         <p class="text-sm text-gray-500 mt-2">
-                        若時區不在列表，請手動輸入出生地經緯度及「洲名/城市」格式的 IANA 時區<br>
+                        * 若時區不在列表，請手動輸入出生地經緯度及「洲名/城市」格式的 IANA 時區<br>
                         （ 如台灣：Asia/Taipei，中國：Asia/Shanghai，日本：Asia/Tokyo，<br>
                         美國紐約：America/New_York，美國洛杉磯：America/Los_Angeles ）<br><br>
-                        IANA 時區可詢問AI Chat 如 Chat GPT 或 Gemini ai等，<br>
+                        * IANA 時區可詢問AI Chat 如 Chat GPT 或 Gemini ai等，<br>
                         或由Google搜尋「[您出生城市名] IANA 時區」，以取得正確的星盤資訊。
                     </p>
                 </div>
@@ -773,10 +773,10 @@
                         <div class="input-group col-span-full"><label for="comp2_timezone">時區:</label><div class="timezone-input-group-container"><select id="comp2_timezone" class="select-field timezone-select"></select><input type="text" id="comp2_customTimezone" class="input-field" placeholder="或手動輸入 IANA 時區 "><div id="comp2TimezoneSuggestions" class="timezone-suggestions"></div></div><p id="comp2_timezone-error" class="input-error-message" aria-live="polite"></p></div>
                     </div>
                         <p class="text-sm text-gray-500 mt-2">
-                        若時區不在列表，請手動輸入出生地經緯度及「洲名/城市」格式的 IANA 時區<br>
+                        * 若時區不在列表，請手動輸入出生地經緯度及「洲名/城市」格式的 IANA 時區<br>
                         （ 如台灣：Asia/Taipei，中國：Asia/Shanghai，日本：Asia/Tokyo，<br>
                         美國紐約：America/New_York，美國洛杉磯：America/Los_Angeles ）<br><br>
-                        IANA 時區可詢問AI Chat 如 Chat GPT 或 Gemini ai等，<br>
+                        * IANA 時區可詢問AI Chat 如 Chat GPT 或 Gemini ai等，<br>
                         或由Google搜尋「[您出生城市名] IANA 時區」，以取得正確的星盤資訊。
                     </p>
                 </div>
@@ -801,16 +801,16 @@
                         <div class="input-group col-span-full"><label for="natal_timezone">時區:</label><div class="timezone-input-group-container"><select id="natal_timezone" class="select-field timezone-select"></select><input type="text" id="natal_customTimezone" class="input-field" placeholder="或手動輸入 IANA 時區 "><div id="natalTimezoneSuggestions" class="timezone-suggestions"></div></div><p id="natal_timezone-error" class="input-error-message" aria-live="polite"></p></div>
                     </div>
                         <p class="text-sm text-gray-500 mt-2">
-                        若時區不在列表，請手動輸入出生地經緯度及「洲名/城市」格式的 IANA 時區<br>
+                        * 若時區不在列表，請手動輸入出生地經緯度及「洲名/城市」格式的 IANA 時區<br>
                         （ 如台灣：Asia/Taipei，中國：Asia/Shanghai，日本：Asia/Tokyo，<br>
                         美國紐約：America/New_York，美國洛杉磯：America/Los_Angeles ）<br><br>
-                        IANA 時區可詢問AI Chat 如 Chat GPT 或 Gemini ai等，<br>
+                        * IANA 時區可詢問AI Chat 如 Chat GPT 或 Gemini ai等，<br>
                         或由Google搜尋「[您出生城市名] IANA 時區」，以取得正確的星盤資訊。
                     </p>
                 </div>
                 <div class="synastry-input-section">
                     <h3 class="text-xl font-bold text-gray-800 mb-4 text-center">行運盤資訊</h3>
-                    <div class="input-group"><label for="transit_name">名稱:</label><input type="text" id="transit_name" class="input-field" value="行運"><p id="transit_name-error" class="input-error-message" aria-live="polite"></p></div>
+                    <div class="input-group"><label for="transit_name">名稱:</label><input type="text" id="transit_name" class="input-group hidden" value="行運"><p id="transit_name-error" class="input-error-message" aria-live="polite"></p></div>
                     <h4 class="text-lg font-semibold text-gray-700 mt-4 mb-2">日期與時間</h4>
                     <div class="date-time-grid">
                         <div class="input-group"><label for="transit_year">西元年:</label><input type="number" id="transit_year" class="input-field" value="2025" min="1900" max="2100"><p id="transit_year-error" class="input-error-message" aria-live="polite"></p></div>
@@ -826,10 +826,10 @@
                         <div class="input-group col-span-full"><label for="transit_timezone">時區:</label><div class="timezone-input-group-container"><select id="transit_timezone" class="select-field timezone-select"></select><input type="text" id="transit_customTimezone" class="input-field" placeholder="或手動輸入 IANA 時區 "><div id="transitTimezoneSuggestions" class="timezone-suggestions"></div></div><p id="transit_timezone-error" class="input-error-message" aria-live="polite"></p></div>
                     </div>
                         <p class="text-sm text-gray-500 mt-2">
-                        若時區不在列表，請手動輸入出生地經緯度及「洲名/城市」格式的 IANA 時區<br>
+                        * 若時區不在列表，請手動輸入出生地經緯度及「洲名/城市」格式的 IANA 時區<br>
                         （ 如台灣：Asia/Taipei，中國：Asia/Shanghai，日本：Asia/Tokyo，<br>
                         美國紐約：America/New_York，美國洛杉磯：America/Los_Angeles ）<br><br>
-                        IANA 時區可詢問AI Chat 如 Chat GPT 或 Gemini ai等，<br>
+                        * IANA 時區可詢問AI Chat 如 Chat GPT 或 Gemini ai等，<br>
                         或由Google搜尋「[您出生城市名] IANA 時區」，以取得正確的星盤資訊。
                     </p>
                 </div>
@@ -930,6 +930,7 @@
             setupPlanetCheckboxes();
             setupInputErrorClearing();
             setupCustomTimezoneListeners();
+            setDefaultTransitTimeToNow();
             
             document.getElementById('calculateBtn').addEventListener('click', calculateChart);
             
@@ -943,6 +944,18 @@
             } catch (error) {
                 console.error('初始化時區功能失敗:', error);
             }
+        }
+
+        // 【新增】這是一個全新的函式
+        function setDefaultTransitTimeToNow() {
+            const now = new Date();
+
+            // 獲取並填入年、月、日、時、分
+            document.getElementById('transit_year').value = now.getFullYear();
+            document.getElementById('transit_month').value = now.getMonth() + 1; // getMonth() 是從 0 開始，所以要 +1
+            document.getElementById('transit_day').value = now.getDate();
+            document.getElementById('transit_hour').value = now.getHours();
+            document.getElementById('transit_minute').value = now.getMinutes();
         }
 
         // 設定主頁籤切換
@@ -1324,7 +1337,8 @@
                 case 'transit':
                     const transitInteractionHtml = `<div class="sub-sections-container">${buildOverlayHTML(data.transit_planets_in_natal_houses, "行運", name1, '行運星體落入本命宮位')}${buildInterAspectsHTML(data.inter_aspects, name1, "行運", true)}</div>`;
                     const transitNatalHtml = buildSingleChartHTML(data.natal_chart_data, `${name1}的本命盤`);
-                    const transitChartHtml = buildSingleChartHTML(data.transit_chart_data, `${name2}的行運盤`);
+                    const transitDate = data.transit_chart_data.timestamps.local_time.split(' ')[0]; // 提取 YYYY-MM-DD
+                    const transitChartHtml = buildSingleChartHTML(data.transit_chart_data, `${transitDate} 行運天象盤`);
                     // 【修改點】將 buildInterAspectsHTML 的前兩個參數對調
                     finalHtml = createReportWrapper(`${name1}的行運盤報告`, transitInteractionHtml + transitNatalHtml + transitChartHtml);
                     break;
