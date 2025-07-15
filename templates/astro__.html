@@ -1255,6 +1255,11 @@
             const loadingSpinner = document.getElementById('loadingSpinner');
             // 獲取 JSON 和表格化文字的顯示區域以及切換按鈕容器
             const jsonOutputArea = document.getElementById('jsonDisplayArea');
+            if (jsonOutputArea) {
+                // *** 確保這裡使用 .value ***
+                jsonOutputArea.value = JSON.stringify(chartData, null, 2);
+                // null, 2 參數會讓 JSON 格式化，有縮排，更易讀
+            }
             const textOutputArea = document.getElementById('tableTextDisplayArea');
             const outputToggleButtons = document.getElementById('outputToggleButtons');
 
