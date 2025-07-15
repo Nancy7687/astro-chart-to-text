@@ -7,6 +7,7 @@
     <title>占星命盤文字資料</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    
     <style>
         /* Base body styling with a modern, saturated multi-color gradient background */
         body {
@@ -916,7 +917,8 @@
         // =============================================================
         // 全域設定與常數
         // =============================================================
-        const BASE_API_URL = ''; // 相對路徑，適用於前後端同源部署
+        const BASE_API_URL = 'https://astro-chart-to-text.onrender.com/'; // 相對路徑，適用於前後端同源部署
+        const YOUR_API_KEY = window.FRONTEND_ASTRO_API_KEY || "local_dev_key";
         const HOUSE_DEFINING_POINTS = ['上升', '下降', '天頂', '天底'];
         const DISPLAY_ORDER_NAMES = [
             "太陽", "月亮", "水星", "金星", "火星", "木星", "土星", "天王", "海王", "冥王",
@@ -1668,6 +1670,7 @@
         initializeApp();
     });
 </script>
-
+<script src="/js/env-config.js"></script>
+<script src="/js/script.js"></script>
 </body>
 </html>
