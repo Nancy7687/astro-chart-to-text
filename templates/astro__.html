@@ -1348,7 +1348,7 @@
                     const transitInteractionHtml = `<div class="sub-sections-container">${buildOverlayHTML(data.transit_planets_in_natal_houses, "行運", name1, '行運星體落入本命宮位')}${buildInterAspectsHTML(data.inter_aspects, name1, "行運", true)}</div>`;
                     const transitNatalHtml = buildSingleChartHTML(data.natal_chart_data, `${name1}的本命盤`);
                     const transitDateTime = data.transit_chart_data.timestamps.local_time;
-                    const c = transitDateTime.split(' ')[1].substring(0, 5); // 提取 HH:MM
+                    const timePart = transitDateTime.split(' ')[1].substring(0, 5); // 提取 HH:MM
                     const transitChartHtml = buildSingleChartHTML(data.transit_chart_data, `${timePart} 行運天象盤`);
                     // 【修改點】將 buildInterAspectsHTML 的前兩個參數對調
                     finalHtml = createReportWrapper(`${name1}的行運盤報告`, transitInteractionHtml + transitNatalHtml + transitChartHtml);
