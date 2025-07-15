@@ -555,8 +555,8 @@
 
         /* 用於比較盤/行運盤的互動區塊標題 */
         .interaction-header-style {
-            background: linear-gradient(135deg, #7e57c2, #512da8); /* 薰衣草紫漸層 */
-            border-bottom: 1px solid #4527a0;
+            background: linear-gradient(135deg, #9c83c6, #6242ac); /* 薰衣草紫漸層 */
+            border-bottom: 1px solid #6242ac;
         }
         .interaction-header-style span {
             color: #ffffff;
@@ -1239,7 +1239,12 @@
                     finalHtml = createReportWrapper(`${name1}與${name2}的比較盤報告`, natal1Html + natal2Html + interactionHtml);
                     break;
                 case 'composite':
-                    finalHtml = createReportWrapper('組合中點盤報告', buildSingleChartHTML(data.composite_chart_data, `${name1}與${name2}的組合盤`) + buildSingleChartHTML(data.natal_chart1_data, `${name1}的本命盤`) + buildSingleChartHTML(data.natal_chart2_data, `${name2}的本命盤`));
+                    // 【修改】為組合盤主體傳入專屬的 'composite-chart-header-style'
+                    const compositeHtml = buildSingleChartHTML(data.composite_chart_data, `${name1}與${name2}的組合盤`, 'composite-chart-header-style');
+                    // 參考盤不傳遞參數，自動使用預設的單盤樣式
+                    const ref1Html = buildSingleChartHTML(data.natal_chart1_data, `${name1}的本命盤 (參考)`);
+                    const ref2Html = buildSingleChartHTML(data.natal_chart2_data, `${name2}的本命盤 (參考)`);
+                    finalHtml = createReportWrapper('組合中點盤報告', compositeHtml + ref1Html + ref2Html);
                     break;
                 case 'transit':
                     const transitInteractionHtml = `<div class="sub-sections-container">${buildOverlayHTML(data.transit_planets_in_natal_houses, "行運", name1, '行運星體落入本命宮位')}${buildInterAspectsHTML(data.inter_aspects, name1, "行運", true)}</div>`;
@@ -1260,19 +1265,27 @@
 
             const { timestamps, birth_info, house_cusps, planet_positions, aspects } = chartInfo;
 
-            // --- 【修改】為每個區塊的內容，在開頭都加上子標題和分隔線 ---
+            // --- 【核心修改】根據圖表類型，決定「基礎數據」的顯示內容 ---
+            let summaryContent;
 
-            const summaryContent = (timestamps && birth_info) ? [
-                "==== 星盤基礎數據 ====",
-                `本地時間: ${timestamps.local_time}`,
-                `UTC 時間: ${timestamps.utc_time}`,
-                // 【新增】加入 Delta T 和儒略日資訊
-                `Delta T (秒): ${timestamps.delta_t_seconds ? timestamps.delta_t_seconds.toFixed(4) : 'N/A'}`,
-                `儒略日 (UT): ${timestamps.julian_day_ut}`,
-                `儒略日 (TT): ${timestamps.julian_day_tt}`,
-                `緯度: ${birth_info.latitude}, 經度: ${birth_info.longitude}`,
-                "===================="
-            ].join('\n') : "基礎數據缺失";
+            // 1. 如果是組合盤，顯示其本質說明
+            if (title.includes("組合盤")) {
+                summaryContent = [
+                    "==== 組合盤資訊 ====",
+                    "此星盤為兩張本命盤的數學中點，",
+                    "===================="
+                ].join('\n');
+            }
+            // 2. 如果是其他盤（單盤、參考盤），則顯示簡化後的基礎數據
+            else {
+                summaryContent = (timestamps && birth_info) ? [
+                    "==== 星盤基礎數據 ====",
+                    `本地時間: ${timestamps.local_time}`,
+                    `UTC 時間: ${timestamps.utc_time}`,
+                    `緯度: ${birth_info.latitude}, 經度: ${birth_info.longitude}`,
+                    "===================="
+                ].join('\n') : "基礎數據缺失";
+            }
 
             const cuspContent = (house_cusps?.length > 0) ? [
                 "==== 宮頭 ====",
@@ -1305,12 +1318,12 @@
                 "================"
             ].join('\n') : "沒有相位";
 
-            // --- HTML 返回部分 (這部分不變) ---
             return `
         <div class="chart-wrapper">
+            {/* 【修改】在這裡加上傳入的 headerStyleClass */}
             <div class="chart-main-header ${headerStyleClass}">
                 <h2 class="main-title">${title}</h2>
-                <button class="copy-chart-btn">複製此盤（不含基礎數據）</button>
+                <button class="copy-chart-btn">複製此盤(不含基礎數據)</button>
             </div>
             <div class="summary-section-container">
                 ${createResultSection('星盤基礎數據', summaryContent, true, 'summary-header-style')}
