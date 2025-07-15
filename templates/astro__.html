@@ -512,12 +512,12 @@
 
     /* 用於最外層的大標題，例如「您的本命盤」*/
         .single-chart-header-style {
-            background: linear-gradient(135deg, #e3f2fd, #bbdefb); /* 淡藍 -> 稍深藍 */
-            border-bottom: 1px solid #90caf9;
+            background: linear-gradient(135deg, #42a5f5, #1a237e); /* 淡藍 -> 稍深藍 */
+            border-bottom: 1px solid #1a237e;
         }
         .single-chart-header-style h2 { /* 確保文字顏色與背景搭配 */
-            color: #0d47a1; 
-            text-shadow: 1px 1px 1px #ffffff;
+            color: #ffffff; 
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.6);
         }
 
         /* 用於組合盤的大標題 */
@@ -570,12 +570,12 @@
 
         /* 用於比較盤/行運盤的互動區塊標題 */
         .interaction-header-style {
-            background: linear-gradient(135deg, #ede7f6, #d1c4e9); /* 薰衣草紫漸層 */
-            border-bottom: 1px solid #b39ddb;
+            background: linear-gradient(135deg, #7e57c2, #512da8); /* 薰衣草紫漸層 */
+            border-bottom: 1px solid #4527a0;
         }
         .interaction-header-style span {
-            color: #311b92; 
-            text-shadow: 1px 1px 1px #ffffff;
+            color: #ffffff;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
         }
 
         @media (min-width: 768px) {
@@ -1217,15 +1217,18 @@
                 case 'comparison':
                     const natal1Html = buildSingleChartHTML(data.chart1_data, `${name1}的本命盤`);
                     const natal2Html = buildSingleChartHTML(data.chart2_data, `${name2}的本命盤`);
-                    const interactionHtml = `<div class="sub-sections-container">{/* 【修改】採用更專業精準的標題 */}${buildOverlayHTML(data.chart1_planets_in_chart2_houses, name1, name2, `${name1}的行星落入${name2}的宮位`)}${buildOverlayHTML(data.chart2_planets_in_chart1_houses, name2, name1, `${name2}的行星落入${name1}的宮位`)}${buildInterAspectsHTML(data.inter_aspects, name1, name2)}</div>`;
+                    const interactionHtml = `<div class="sub-sections-container">${buildOverlayHTML(data.chart1_planets_in_chart2_houses, name1, name2, `${name1}的行星落入${name2}的宮位`)}${buildOverlayHTML(data.chart2_planets_in_chart1_houses, name2, name1, `${name2}的行星落入${name1}的宮位`)}${buildInterAspectsHTML(data.inter_aspects, name1, name2)}</div>`;
                     finalHtml = createReportWrapper(`${name1}與${name2}的比較盤報告`, natal1Html + natal2Html + interactionHtml);
                     break;
                 case 'composite':
                     finalHtml = createReportWrapper('組合中點盤報告', buildSingleChartHTML(data.composite_chart_data, `${name1}與${name2}的組合盤`) + buildSingleChartHTML(data.natal_chart1_data, `${name1}的本命盤`) + buildSingleChartHTML(data.natal_chart2_data, `${name2}的本命盤`));
                     break;
                 case 'transit':
-                    const transitInteractionHtml = `<div class="sub-sections-container">${buildOverlayHTML(data.transit_planets_in_natal_houses, "行運", name1, '行運星體落入本命盤位置')}${buildInterAspectsHTML(data.inter_aspects, "行運", name1, true)}</div>`;
-                    finalHtml = createReportWrapper(`${name1}的行運盤報告`, buildSingleChartHTML(data.natal_chart_data, `${name1}的本命盤`) + buildSingleChartHTML(data.transit_chart_data, `行運盤`) + transitInteractionHtml);
+                    const transitNatalHtml = buildSingleChartHTML(data.natal_chart_data, `${name1}的本命盤`);
+                    const transitChartHtml = buildSingleChartHTML(data.transit_chart_data, `${name2}的行運盤`);
+                    // 【修改點】將 buildInterAspectsHTML 的前兩個參數對調
+                    const transitInteractionHtml = `<div class="sub-sections-container">${buildOverlayHTML(data.transit_planets_in_natal_houses, "行運", name1, '行運星體落入本命宮位')}${buildInterAspectsHTML(data.inter_aspects, name1, "行運", true)}</div>`;
+                    finalHtml = createReportWrapper(`${name1}的行運盤報告`, transitNatalHtml + transitChartHtml + transitInteractionHtml);
                     break;
                 default:
                     finalHtml = `<div class="error-message">錯誤: 未知的星盤類型 '${data.chart_type}'</div>`;
