@@ -525,7 +525,7 @@
 
         /* 用於組合盤的大標題 */
         .composite-chart-header-style {
-            background: linear-gradient(135deg, #fffde7, #fff59d); /* 淡黃 -> 金黃 */
+            background: linear-gradient(135deg, #fffbce, #fbc02d); /* 淡黃 -> 金黃 */
             border-bottom: 1px solid #fbc02d;
         }
         .composite-chart-header-style h2 {
@@ -555,12 +555,48 @@
 
         /* 用於比較盤/行運盤的互動區塊標題 */
         .interaction-header-style {
-            background: linear-gradient(135deg, #b09ecf, #6242ac); /* 薰衣草紫漸層 */
-            border-bottom: 1px solid #6242ac;
+            background: linear-gradient(135deg, #c7bed6, #5d39b0); /* 薰衣草紫漸層 */
+            border-bottom: 1px solid #5d39b0;
         }
         .interaction-header-style span {
             color: #ffffff;
             text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+        }
+        
+
+        .report-wrapper .chart-wrapper {
+            margin: 1rem; /* 上下左右都增加 1rem 的邊距，產生內縮效果 */
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08); /* 陰影可以稍微減弱 */
+            border: 1px solid #d1c4e9; /* 邊框顏色也可以用主題色系的淡色 */
+        }
+
+
+        /* 用於「全部取消/選取」和「分類取消/選取」的通用按鈕樣式 */
+        .planet-toggle-btn {
+            background-color: #f0f0f0; /* 淺灰色背景 */
+            border: 1px solid #d1d5db; /* 淺灰色邊框 */
+            color: #4b5563; /* 深灰色文字 */
+            padding: 2px 10px; /* 內邊距 */
+            border-radius: 9999px; /* 膠囊形狀的圓角 */
+            font-size: 0.8rem; /* 字體稍小 */
+            font-weight: 600; /* 字體加粗 */
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+            white-space: nowrap; /* 防止文字換行 */
+        }
+
+        /* 滑鼠移上去時的效果 */
+        .planet-toggle-btn:hover {
+            background-color: #e5e7eb;
+            border-color: #9ca3af;
+        }
+
+        /* 讓主標題和分類標題的容器使用 flex 排版 */
+        .planet-group-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
         }
 
         @media (min-width: 768px) {
@@ -666,9 +702,9 @@
                     </div>
                     <p class="text-sm text-gray-500 mt-2">
                         若時區不在列表，請手動輸入出生地經緯度及「洲名/城市」格式的 IANA 時區<br>
-                        （如台灣：Asia/Taipei，中國：Asia/Shanghai，日本：Asia/Tokyo，<br>
-                        美國紐約：America/New_York，美國洛杉磯：America/Los_Angeles）<br><br>
-                        可詢問AI Chat 如 Chat GPT 或 Gemini ai等，<br>
+                        （ 如台灣：Asia/Taipei，中國：Asia/Shanghai，日本：Asia/Tokyo，<br>
+                        美國紐約：America/New_York，美國洛杉磯：America/Los_Angeles ）<br><br>
+                        IANA 時區可詢問AI Chat 如 Chat GPT 或 Gemini ai等，<br>
                         或由Google搜尋「[您出生城市名] IANA 時區」，以取得正確的星盤資訊。
                     </p>
                     <p id="single_timezone-error" class="input-error-message" aria-live="polite"></p>
@@ -713,9 +749,9 @@
                     </div>
                         <p class="text-sm text-gray-500 mt-2">
                         若時區不在列表，請手動輸入出生地經緯度及「洲名/城市」格式的 IANA 時區<br>
-                        （如台灣：Asia/Taipei，中國：Asia/Shanghai，日本：Asia/Tokyo，<br>
-                        美國紐約：America/New_York，美國洛杉磯：America/Los_Angeles）<br><br>
-                        可詢問AI Chat 如 Chat GPT 或 Gemini ai等，<br>
+                        （ 如台灣：Asia/Taipei，中國：Asia/Shanghai，日本：Asia/Tokyo，<br>
+                        美國紐約：America/New_York，美國洛杉磯：America/Los_Angeles ）<br><br>
+                        IANA 時區可詢問AI Chat 如 Chat GPT 或 Gemini ai等，<br>
                         或由Google搜尋「[您出生城市名] IANA 時區」，以取得正確的星盤資訊。
                     </p>
                 </div>
@@ -738,9 +774,9 @@
                     </div>
                         <p class="text-sm text-gray-500 mt-2">
                         若時區不在列表，請手動輸入出生地經緯度及「洲名/城市」格式的 IANA 時區<br>
-                        （如台灣：Asia/Taipei，中國：Asia/Shanghai，日本：Asia/Tokyo，<br>
-                        美國紐約：America/New_York，美國洛杉磯：America/Los_Angeles）<br><br>
-                        可詢問AI Chat 如 Chat GPT 或 Gemini ai等，<br>
+                        （ 如台灣：Asia/Taipei，中國：Asia/Shanghai，日本：Asia/Tokyo，<br>
+                        美國紐約：America/New_York，美國洛杉磯：America/Los_Angeles ）<br><br>
+                        IANA 時區可詢問AI Chat 如 Chat GPT 或 Gemini ai等，<br>
                         或由Google搜尋「[您出生城市名] IANA 時區」，以取得正確的星盤資訊。
                     </p>
                 </div>
@@ -766,9 +802,9 @@
                     </div>
                         <p class="text-sm text-gray-500 mt-2">
                         若時區不在列表，請手動輸入出生地經緯度及「洲名/城市」格式的 IANA 時區<br>
-                        （如台灣：Asia/Taipei，中國：Asia/Shanghai，日本：Asia/Tokyo，<br>
-                        美國紐約：America/New_York，美國洛杉磯：America/Los_Angeles）<br><br>
-                        可詢問AI Chat 如 Chat GPT 或 Gemini ai等，<br>
+                        （ 如台灣：Asia/Taipei，中國：Asia/Shanghai，日本：Asia/Tokyo，<br>
+                        美國紐約：America/New_York，美國洛杉磯：America/Los_Angeles ）<br><br>
+                        IANA 時區可詢問AI Chat 如 Chat GPT 或 Gemini ai等，<br>
                         或由Google搜尋「[您出生城市名] IANA 時區」，以取得正確的星盤資訊。
                     </p>
                 </div>
@@ -791,9 +827,9 @@
                     </div>
                         <p class="text-sm text-gray-500 mt-2">
                         若時區不在列表，請手動輸入出生地經緯度及「洲名/城市」格式的 IANA 時區<br>
-                        （如台灣：Asia/Taipei，中國：Asia/Shanghai，日本：Asia/Tokyo，<br>
-                        美國紐約：America/New_York，美國洛杉磯：America/Los_Angeles）<br><br>
-                        可詢問AI Chat 如 Chat GPT 或 Gemini ai等，<br>
+                        （ 如台灣：Asia/Taipei，中國：Asia/Shanghai，日本：Asia/Tokyo，<br>
+                        美國紐約：America/New_York，美國洛杉磯：America/Los_Angeles ）<br><br>
+                        IANA 時區可詢問AI Chat 如 Chat GPT 或 Gemini ai等，<br>
                         或由Google搜尋「[您出生城市名] IANA 時區」，以取得正確的星盤資訊。
                     </p>
                 </div>
@@ -927,7 +963,6 @@
             });
         }
         
-        // 動態生成小行星/虛點的核取方塊
         function setupPlanetCheckboxes() {
             const optionalPlanetsConfig = {
                 '核心星體': ["太陽", "月亮", "水星", "金星", "火星", "木星", "土星", "天王", "海王", "冥王"],
@@ -938,33 +973,73 @@
             const container = document.getElementById('optionalPlanetsContainer');
             container.innerHTML = ''; // 清空
 
+            // 【修改1】動態生成所有內容
             for (const groupName in optionalPlanetsConfig) {
-                const groupTitle = document.createElement('div');
-                groupTitle.className = 'col-span-full font-semibold text-lg text-fuchsia-900 mt-2';
-                groupTitle.textContent = groupName;
-                container.appendChild(groupTitle);
+                // 建立一個包含標題和按鈕的 header div
+                const headerDiv = document.createElement('div');
+                headerDiv.className = 'planet-group-header col-span-full mt-2'; // 使用新的 CSS class
 
+                // 建立分類標題
+                const groupTitle = document.createElement('span');
+                groupTitle.className = 'font-semibold text-lg text-fuchsia-900';
+                groupTitle.textContent = groupName;
+
+                // 建立分類切換按鈕
+                const groupToggleButton = document.createElement('button');
+                groupToggleButton.className = 'planet-toggle-btn group-toggle-btn'; // 通用按鈕樣式 + 分類按鈕的專屬 class
+                groupToggleButton.textContent = '分類取消';
+                groupToggleButton.dataset.state = 'all-checked';
+                groupToggleButton.dataset.groupKey = groupName; // 用 data-* 屬性記住它屬於哪個分類
+
+                headerDiv.appendChild(groupTitle);
+                headerDiv.appendChild(groupToggleButton);
+                container.appendChild(headerDiv);
+
+                // 生成該分類下的所有 checkbox
                 optionalPlanetsConfig[groupName].forEach(planet => {
                     const wrapper = document.createElement('div');
                     wrapper.className = 'flex items-center';
-                    // ▼▼▼▼▼ 【確認點】確保 class 名稱是 'optional-planet-checkbox' ▼▼▼▼▼
                     wrapper.innerHTML = `
-                <input id="chk-${planet}" type="checkbox" value="${planet}" class="optional-planet-checkbox h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500" checked>
+                <input id="chk-${planet}" type="checkbox" value="${planet}" class="optional-planet-checkbox h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500" data-group="${groupName}" checked>
                 <label for="chk-${planet}" class="ml-2 block text-base text-gray-900">${planet}</label>
             `;
                     container.appendChild(wrapper);
                 });
             }
 
-            const toggleBtn = document.getElementById('toggleAllPlanetsBtn');
-            toggleBtn.dataset.state = 'all-checked';
-            toggleBtn.addEventListener('click', () => {
-                const checkboxes = document.querySelectorAll('.optional-planet-checkbox');
-                const isChecked = toggleBtn.dataset.state === 'all-checked';
-                checkboxes.forEach(cb => { cb.checked = !isChecked; });
-                toggleBtn.textContent = isChecked ? '全部選取' : '全部取消';
-                toggleBtn.dataset.state = isChecked ? 'all-unchecked' : 'all-checked';
+            // 【修改2】使用「事件代理」來統一處理所有按鈕的點擊事件，更高效
+            const selectionDiv = document.getElementById('planetSelection');
+            selectionDiv.addEventListener('click', (event) => {
+                const target = event.target;
+
+                // --- 判斷點擊的是「總開關」按鈕 ---
+                if (target.id === 'toggleAllPlanetsBtn') {
+                    const checkboxes = document.querySelectorAll('.optional-planet-checkbox');
+                    const isChecked = target.dataset.state === 'all-checked';
+                    checkboxes.forEach(cb => { cb.checked = !isChecked; });
+                    target.textContent = isChecked ? '全部選取' : '全部取消';
+                    target.dataset.state = isChecked ? 'all-unchecked' : 'all-checked';
+
+                    // 同步更新所有分類按鈕的狀態和文字
+                    document.querySelectorAll('.group-toggle-btn').forEach(btn => {
+                        btn.textContent = isChecked ? '分類選取' : '分類取消';
+                        btn.dataset.state = isChecked ? 'all-unchecked' : 'all-checked';
+                    });
+                }
+
+                // --- 判斷點擊的是「分類」按鈕 ---
+                if (target.classList.contains('group-toggle-btn')) {
+                    const groupKey = target.dataset.groupKey;
+                    const checkboxesInGroup = document.querySelectorAll(`.optional-planet-checkbox[data-group="${groupKey}"]`);
+                    const isChecked = target.dataset.state === 'all-checked';
+                    checkboxesInGroup.forEach(cb => { cb.checked = !isChecked; });
+                    target.textContent = isChecked ? '分類選取' : '分類取消';
+                    target.dataset.state = isChecked ? 'all-unchecked' : 'all-checked';
+                }
             });
+
+            // 最後，確保最上面的總按鈕也套用新樣式
+            document.getElementById('toggleAllPlanetsBtn').className = 'planet-toggle-btn';
         }
 
         // 設定輸入時自動清除錯誤提示
@@ -1240,10 +1315,10 @@
                     break;
                 case 'composite':
                     // 【修改】為組合盤主體傳入專屬的 'composite-chart-header-style'
-                    const compositeHtml = buildSingleChartHTML(data.composite_chart_data, `${name1}與${name2}的組合盤`, 'composite-chart-header-style');
+                    const compositeHtml = buildSingleChartHTML(data.composite_chart_data, `${name1}與${name2}的組合中點盤`, 'composite-chart-header-style');
                     // 參考盤不傳遞參數，自動使用預設的單盤樣式
-                    const ref1Html = buildSingleChartHTML(data.natal_chart1_data, `${name1}的本命盤 (參考)`);
-                    const ref2Html = buildSingleChartHTML(data.natal_chart2_data, `${name2}的本命盤 (參考)`);
+                    const ref1Html = buildSingleChartHTML(data.natal_chart1_data, `${name1}的本命盤`);
+                    const ref2Html = buildSingleChartHTML(data.natal_chart2_data, `${name2}的本命盤`);
                     finalHtml = createReportWrapper('組合中點盤報告', compositeHtml + ref1Html + ref2Html);
                     break;
                 case 'transit':
@@ -1269,10 +1344,10 @@
             let summaryContent;
 
             // 1. 如果是組合盤，顯示其本質說明
-            if (title.includes("組合盤")) {
+            if (title.includes("組合中點盤")) {
                 summaryContent = [
-                    "==== 組合盤資訊 ====",
-                    "此星盤為兩張本命盤的數學中點，",
+                    "==== 組合中點盤盤資訊 ====",
+                    "組合中點盤為兩張本命盤的數學中點取得的星盤",
                     "===================="
                 ].join('\n');
             }
