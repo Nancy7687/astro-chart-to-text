@@ -534,7 +534,7 @@
 
         /* 用於「星盤基礎數據」標題 */
         .summary-header-style {
-            background: linear-gradient(135deg, #e0e0e0, #bdbdbd); /* 淺灰 -> 中灰 */
+            background: linear-gradient(135deg, #e0e0e0, #989898); /* 淺灰 -> 中灰 */
             border-bottom: 1px solid #bdbdbd;
         }
         .summary-header-style span {
@@ -543,7 +543,7 @@
 
         /* 用於「宮頭」標題 */
         .cusp-header-style {
-            background: linear-gradient(135deg, #b3e5fc, #81d4fa); /* 淺天藍 -> 天藍 */
+            background: linear-gradient(135deg, #e1f6ff, #81d4fa); /* 淺天藍 -> 天藍 */
             border-bottom: 1px solid #81d4fa;
         }
         .cusp-header-style span {
@@ -552,7 +552,7 @@
 
         /* 用於「星體位置」標題 */
         .planet-header-style {
-            background: linear-gradient(135deg, #c8e6c9, #a5d6a7); /* 淺綠 -> 草綠 */
+            background: linear-gradient(135deg, #edffee, #8cd28e); /* 淺綠 -> 草綠 */
             border-bottom: 1px solid #a5d6a7;
         }
         .planet-header-style span {
@@ -561,7 +561,7 @@
 
         /* 用於「主要相位」標題 */
         .aspect-header-style {
-            background: linear-gradient(135deg, #e1bee7, #ce93d8); /* 淺紫 -> 稍深紫 */
+            background: linear-gradient(135deg, #fce8ff, #ca81d7); /* 淺紫 -> 稍深紫 */
             border-bottom: 1px solid #ce93d8;
         }
         .aspect-header-style span {
@@ -913,7 +913,8 @@
         // 動態生成小行星/虛點的核取方塊
         function setupPlanetCheckboxes() {
             const optionalPlanetsConfig = {
-                '核心星體與四軸': ["太陽", "月亮", "水星", "金星", "火星", "木星", "土星", "天王", "海王", "冥王", "上升", "下降", "天頂", "天底"],
+                '核心星體': ["太陽", "月亮", "水星", "金星", "火星", "木星", "土星", "天王", "海王", "冥王"],
+                '四軸': ["上升", "下降", "天頂", "天底"],
                 '命運與潛意識': ["北交", "南交", "宿命", "福點", "莉莉絲"],
                 '小行星': ["凱龍", "穀神", "智神", "婚神", "灶神", "愛神", "靈神", "人龍"]
             };
@@ -1217,17 +1218,17 @@
                 case 'comparison':
                     const natal1Html = buildSingleChartHTML(data.chart1_data, `${name1}的本命盤`);
                     const natal2Html = buildSingleChartHTML(data.chart2_data, `${name2}的本命盤`);
-                    const interactionHtml = `<div class="sub-sections-container">${buildOverlayHTML(data.chart1_planets_in_chart2_houses, name1, name2, `${name1}的行星落入${name2}的宮位`)}${buildOverlayHTML(data.chart2_planets_in_chart1_houses, name2, name1, `${name2}的行星落入${name1}的宮位`)}${buildInterAspectsHTML(data.inter_aspects, name1, name2)}</div>`;
+                    const interactionHtml = `<div class="sub-sections-container">${buildOverlayHTML(data.chart1_planets_in_chart2_houses, name1, name2, `${name1}星體落入${name2}宮位`)}${buildOverlayHTML(data.chart2_planets_in_chart1_houses, name2, name1, `${name2}星體落入${name1}宮位`)}${buildInterAspectsHTML(data.inter_aspects, name1, name2)}</div>`;
                     finalHtml = createReportWrapper(`${name1}與${name2}的比較盤報告`, natal1Html + natal2Html + interactionHtml);
                     break;
                 case 'composite':
                     finalHtml = createReportWrapper('組合中點盤報告', buildSingleChartHTML(data.composite_chart_data, `${name1}與${name2}的組合盤`) + buildSingleChartHTML(data.natal_chart1_data, `${name1}的本命盤`) + buildSingleChartHTML(data.natal_chart2_data, `${name2}的本命盤`));
                     break;
                 case 'transit':
+                    const transitInteractionHtml = `<div class="sub-sections-container">${buildOverlayHTML(data.transit_planets_in_natal_houses, "行運", name1, '行運星體落入本命宮位')}${buildInterAspectsHTML(data.inter_aspects, name1, "行運", true)}</div>`;
                     const transitNatalHtml = buildSingleChartHTML(data.natal_chart_data, `${name1}的本命盤`);
                     const transitChartHtml = buildSingleChartHTML(data.transit_chart_data, `${name2}的行運盤`);
                     // 【修改點】將 buildInterAspectsHTML 的前兩個參數對調
-                    const transitInteractionHtml = `<div class="sub-sections-container">${buildOverlayHTML(data.transit_planets_in_natal_houses, "行運", name1, '行運星體落入本命宮位')}${buildInterAspectsHTML(data.inter_aspects, name1, "行運", true)}</div>`;
                     finalHtml = createReportWrapper(`${name1}的行運盤報告`, transitNatalHtml + transitChartHtml + transitInteractionHtml);
                     break;
                 default:
@@ -1248,6 +1249,10 @@
                 "==== 星盤基礎數據 ====",
                 `本地時間: ${timestamps.local_time}`,
                 `UTC 時間: ${timestamps.utc_time}`,
+                // 【新增】加入 Delta T 和儒略日資訊
+                `Delta T (秒): ${timestamps.delta_t_seconds ? timestamps.delta_t_seconds.toFixed(4) : 'N/A'}`,
+                `儒略日 (UT): ${timestamps.julian_day_ut}`,
+                `儒略日 (TT): ${timestamps.julian_day_tt}`,
                 `緯度: ${birth_info.latitude}, 經度: ${birth_info.longitude}`,
                 "===================="
             ].join('\n') : "基礎數據缺失";
