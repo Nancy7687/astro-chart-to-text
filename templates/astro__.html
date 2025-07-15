@@ -1441,12 +1441,11 @@
             }
 
             // 將 JSON 輸出部分添加到最終 HTML 中
-            finalHtml += `<hr>
-                            <textarea class="json-output-section">
+            finalHtml += `<div class="json-output-wrapper output-section"> 
                                 <h3>原始數據 (AI好理解的JSON 格式)</h3>
-                                <pre class="json-data-pre"></pre>
-                                <button onclick="copyToClipboard(this, 'json-data-pre')">複製 給AI好理解的 JSON 數據</button>
-                            </textarea>`;
+                                <textarea id="jsonOutputArea" rows="20" cols="80" readonly></textarea> 
+                                <button class="copy-button" data-target-id="jsonOutputArea">複製 給AI好理解的 JSON 數據</button>
+                            </div>`;
 
             container.innerHTML = finalHtml;
             setupCopyListeners(); // 確保已有的複製監聽器也設置好
