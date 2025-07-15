@@ -555,7 +555,7 @@
 
         /* 用於比較盤/行運盤的互動區塊標題 */
         .interaction-header-style {
-            background: linear-gradient(135deg, #55adb5, #5d39b0); /* 薰衣草紫漸層 */
+            background: linear-gradient(135deg, #55adb5, #39b043); /* 薰衣草紫漸層 */
             border-bottom: 1px solid #5d39b0;
         }
         .interaction-header-style span {
@@ -571,7 +571,7 @@
         }
 
 
-        /* 用於「全部取消/選取」和「分類取消/選取」的通用按鈕樣式 */
+        /* 用於「全部取消/選取」和「此類取消/選取」的通用按鈕樣式 */
         .planet-toggle-btn {
             background-color: rgb(248, 239, 255); /* 淺灰色背景 */
             border: 1px solid indigo; /* 淺灰色邊框 */
@@ -810,7 +810,7 @@
                 </div>
                 <div class="synastry-input-section">
                     <h3 class="text-xl font-bold text-gray-800 mb-4 text-center">行運盤資訊</h3>
-                    <div class="input-group"><label for="transit_name">名稱:</label><input type="text" id="transit_name" class="input-group hidden" value="行運"><p id="transit_name-error" class="input-error-message" aria-live="polite"></p></div>
+                    <div class="input-group"><label for="transit_name">行運</label><input type="text" id="transit_name" class="input-group hidden" value="行運"><p id="transit_name-error" class="input-error-message" aria-live="polite"></p></div>
                     <h4 class="text-lg font-semibold text-gray-700 mt-4 mb-2">日期與時間</h4>
                     <div class="date-time-grid">
                         <div class="input-group"><label for="transit_year">西元年:</label><input type="number" id="transit_year" class="input-field" value="2025" min="1900" max="2100"><p id="transit_year-error" class="input-error-message" aria-live="polite"></p></div>
@@ -1000,7 +1000,7 @@
                 // 建立分類切換按鈕
                 const groupToggleButton = document.createElement('button');
                 groupToggleButton.className = 'planet-toggle-btn group-toggle-btn'; // 通用按鈕樣式 + 分類按鈕的專屬 class
-                groupToggleButton.textContent = '分類取消';
+                groupToggleButton.textContent = 'h3類取消';
                 groupToggleButton.dataset.state = 'all-checked';
                 groupToggleButton.dataset.groupKey = groupName; // 用 data-* 屬性記住它屬於哪個分類
 
@@ -1035,7 +1035,7 @@
 
                     // 同步更新所有分類按鈕的狀態和文字
                     document.querySelectorAll('.group-toggle-btn').forEach(btn => {
-                        btn.textContent = isChecked ? '分類選取' : '分類取消';
+                        btn.textContent = isChecked ? '此類選取' : '此類取消';
                         btn.dataset.state = isChecked ? 'all-unchecked' : 'all-checked';
                     });
                 }
@@ -1046,7 +1046,7 @@
                     const checkboxesInGroup = document.querySelectorAll(`.optional-planet-checkbox[data-group="${groupKey}"]`);
                     const isChecked = target.dataset.state === 'all-checked';
                     checkboxesInGroup.forEach(cb => { cb.checked = !isChecked; });
-                    target.textContent = isChecked ? '分類選取' : '分類取消';
+                    target.textContent = isChecked ? '此類選取' : '此類取消';
                     target.dataset.state = isChecked ? 'all-unchecked' : 'all-checked';
                 }
             });
