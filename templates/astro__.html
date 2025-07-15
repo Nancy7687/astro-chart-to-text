@@ -572,7 +572,7 @@
         }
 
 
-        /* 用於「全部取消/選取」和「此類別取消/選取」的通用按鈕樣式 */
+        /* 用於「全部取消/選取」和「此類取消/選取」的通用按鈕樣式 */
         .planet-toggle-btn {
             background-color: rgb(248, 239, 255); /* 淺灰色背景 */
             border: 1px solid indigo; /* 淺灰色邊框 */
@@ -592,7 +592,7 @@
 
         /* 滑鼠移上去時的效果 */
         .planet-toggle-btn:hover {
-            background-color: ffffff;
+            background-color: #ffffff;
             border-color: rgb(142, 122, 156);
         }
 
@@ -1246,7 +1246,7 @@
                 // 建立分類切換按鈕
                 const groupToggleButton = document.createElement('button');
                 groupToggleButton.className = 'planet-toggle-btn group-toggle-btn'; // 通用按鈕樣式 + 分類按鈕的專屬 class
-                groupToggleButton.textContent = '此類別取消';
+                groupToggleButton.textContent = '此類取消';
                 groupToggleButton.dataset.state = 'all-checked';
                 groupToggleButton.dataset.groupKey = groupName; // 用 data-* 屬性記住它屬於哪個分類
 
@@ -1281,7 +1281,7 @@
 
                     // 同步更新所有分類按鈕的狀態和文字
                     document.querySelectorAll('.group-toggle-btn').forEach(btn => {
-                        btn.textContent = isChecked ? '此類別選取' : '此類別取消';
+                        btn.textContent = isChecked ? '此類別選取' : '此類取消';
                         btn.dataset.state = isChecked ? 'all-unchecked' : 'all-checked';
                     });
                 }
@@ -1292,7 +1292,7 @@
                     const checkboxesInGroup = document.querySelectorAll(`.optional-planet-checkbox[data-group="${groupKey}"]`);
                     const isChecked = target.dataset.state === 'all-checked';
                     checkboxesInGroup.forEach(cb => { cb.checked = !isChecked; });
-                    target.textContent = isChecked ? '此類別選取' : '此類別取消';
+                    target.textContent = isChecked ? '此類別選取' : '此類取消';
                     target.dataset.state = isChecked ? 'all-unchecked' : 'all-checked';
                 }
             });
