@@ -534,7 +534,7 @@
 
         /* 用於「星盤基礎數據」標題 */
         .summary-header-style {
-            background: linear-gradient(135deg, #e0e0e0, #989898); /* 淺灰 -> 中灰 */
+            background: linear-gradient(135deg, #ededed, #989898); /* 淺灰 -> 中灰 */
             border-bottom: 1px solid #bdbdbd;
         }
         .summary-header-style span {
@@ -1318,7 +1318,7 @@
         // 請用此版本完整取代舊的 buildOverlayHTML 函式
         function buildOverlayHTML(overlayData, guestName, hostName, title) {
             const content = (overlayData?.length) ? ["-".repeat(50)].concat(overlayData.sort((a, b) => DISPLAY_ORDER_NAMES.indexOf(a.planet_name) - DISPLAY_ORDER_NAMES.indexOf(b.planet_name)).map(o => `${o.planet_name.padEnd(4, '　')} | ${o.zodiac_position_formatted.padEnd(10)} | ${o.house_in_target_chart}宮(${formatDegreesMinutesSeconds(o.degree_in_target_house)})`)).join('\n') : "資料缺失";
-            return createResultSection(title, content);
+            return createResultSection(title, content, false, 'interaction-header-style');
         }
         
         // 建立單個結果區塊的HTML (可重用)
@@ -1331,7 +1331,7 @@
         <div class="result-section-item">
             <div class="result-section-header ${headerStyleClass}">
                 <span>${title}</span>
-                ${isSummary ? '' : '<button class="section-copy-btn">複製</button>'}
+                <button class="section-copy-btn">複製</button>
             </div>
             <div class="result-section-content scrollable-content">
                 <pre>${content}</pre>
