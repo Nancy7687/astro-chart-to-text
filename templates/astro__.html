@@ -7,6 +7,9 @@
     <title>占星命盤文字資料</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <!-- 1. 引入轉輪套件 (此為範例，請替換成您選擇的套件) -->
+    <link href="https://cdn.jsdelivr.net/npm/pickerjs@1.2.1/dist/picker.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/pickerjs@1.2.1/dist/picker.min.js"></script>
     
     <style>
         /* Base body styling with a modern, saturated multi-color gradient background */
@@ -639,7 +642,7 @@
                 flex-direction: row;
             }
             .scrollable-content {
-                max-height: 400px;
+                max-height: 450px;
             }
         }
 
@@ -683,12 +686,12 @@
                 </div>
                 <div class="input-group">
                     <label for="single_hour">時 (0-23):</label>
-                    <input type="number" id="single_hour" class="input-field" value="12" min="0" max="23">
+                    <input type="text" id="single_hour" class="input-field" value="12" readonly placeholder="點擊選擇小時">
                     <p id="single_hour-error" class="input-error-message" aria-live="polite"></p>
                 </div>
                 <div class="input-group">
                     <label for="single_minute">分 (0-59):</label>
-                    <input type="number" id="single_minute" class="input-field" value="00" min="0" max="59">
+                    <input type="text" id="single_minute" class="input-field" value="00" readonly placeholder="點擊選擇分鐘">
                     <p id="single_minute-error" class="input-error-message" aria-live="polite"></p>
                 </div>
             </div>
@@ -823,7 +826,7 @@
                 <div class="synastry-input-section">
                     <h3 class="text-xl font-bold text-gray-800 mb-4 text-center">行運盤資訊</h3>
                     <br>
-                    <h3 class="text-2xl font-bold text-gray-800 mb-4 text-left">行運</h3>
+                    <h3 class="text-2xl font-bold text-gray-800 mb-3 text-left">行運</h3>
                     <div class="input-group"><label for="transit_name "></label><input type="text" id="transit_name" class="input-group hidden" value="行運"><p id="transit_name-error" class="input-error-message" aria-live="polite"></p></div>
                     <h4 class="text-lg font-semibold text-gray-700 mt-4 mb-2">日期與時間</h4>
                     <div class="date-time-grid">
@@ -1135,6 +1138,7 @@
             setupPlanetCheckboxes();
             setupInputErrorClearing();
             setupCustomTimezoneListeners();
+            setupWheelPickers(); // 【新增】啟用轉輪選擇器
             setDefaultTransitTimeToNow();
             
             document.getElementById('calculateBtn').addEventListener('click', calculateChart);
@@ -1149,6 +1153,35 @@
             } catch (error) {
                 console.error('初始化時區功能失敗:', error);
             }
+        }
+
+        // 4. 【新增】一個用來設定轉輪的全新函式
+        function setupWheelPickers() {
+            // 建立小時和分鐘的資料來源
+            const hoursData = Array.from({ length: 24 }, (_, i) => String(i).padStart(2, '0'));
+            const minutesData = Array.from({ length: 60 }, (_, i) => String(i).padStart(2, '0'));
+
+            // 遍歷所有需要轉輪的輸入框
+            const timeInputs = [
+                { id: 'single_hour', data: hoursData }, { id: 'single_minute', data: minutesData },
+                { id: 'comp1_hour', data: hoursData }, { id: 'comp1_minute', data: minutesData },
+                { id: 'comp2_hour', data: hoursData }, { id: 'comp2_minute', data: minutesData },
+                { id: 'natal_hour', data: hoursData }, { id: 'natal_minute', data: minutesData },
+                { id: 'transit_hour', data: hoursData }, { id: 'transit_minute', data: minutesData },
+            ];
+
+            timeInputs.forEach(inputConfig => {
+                const inputElement = document.getElementById(inputConfig.id);
+                if (inputElement) {
+                    new Picker(inputElement, {
+                        data: [inputConfig.data], // Picker.js 需要二維陣列
+                        headers: false, // 不顯示標頭
+                        format: 'HH:mm', // 這是 Picker.js 內部的格式，我們只用它來取值
+                        text: { done: '確定', cancel: '取消' },
+                        // 當使用者按下「確定」時，套件會自動將選擇的值更新到 inputElement.value
+                    });
+                }
+            });
         }
 
         // 【新增】這是一個全新的函式
