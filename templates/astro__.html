@@ -1643,7 +1643,8 @@
                 "==== 主要相位 ====",
                 "星體1 | 相位 | 星體2 | 動態 | 容許度",
                 "----------------------", // 加回橫線分隔線
-                ...aspects.map(a => `${a.p1_name} | ${a.aspect_name} | ${a.p2_name} | ${a.aspect_type || '-'} | ${formatDegreesMinutesSeconds(a.orb)}`),
+                ...aspects.sort((a, b) => DISPLAY_ORDER_NAMES.indexOf(a.p1_name) - DISPLAY_ORDER_NAMES.indexOf(b.p1_name) || DISPLAY_ORDER_NAMES.indexOf(a.p2_name) - DISPLAY_ORDER_NAMES.indexOf(b.p2_name)).map(a => `${a.p1_name} | ${a.aspect_name} | ${a.p2_name} | ${a.aspect_type || '-'} | ${formatDegreesMinutesSeconds(a.orb)}`),
+                // ...aspects.map(a => `${a.p1_name} | ${a.aspect_name} | ${a.p2_name} | ${a.aspect_type || '-'} | ${formatDegreesMinutesSeconds(a.orb)}`),
                 "================"
             ].join('\n') : "沒有相位";
 
