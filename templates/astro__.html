@@ -2051,16 +2051,11 @@
             return sectionsData;
         }
         
-        // 修改後的 buildSingleChartHTML 函數
-        // 它現在接收由 generateSingleChartSectionData 預先生成的內容物件
         function buildSingleChartHTML(sectionsData, title, headerStyleClass = 'single-chart-header-style') {
-            // 這裡的 chartInfo 實際上已經是經過處理的 sectionsData，但為了與舊參數名兼容性先保留
-            // 真正的資料檢查應在 generateSingleChartSectionData 內部完成
-            if (!sectionsData || !sectionsData.summary) { // 檢查是否是有效的 sectionsData 物件
+            if (!sectionsData || !sectionsData.summary) {
                 return `<div class="error-message">${title} 資料缺失或格式不正確。</div>`;
             }
 
-            // 直接解構 sectionsData 物件
             const { summary, cusp, planet, aspect } = sectionsData;
 
             return `
@@ -2069,29 +2064,31 @@
                 <h2 class="main-title">${title}</h2>
                 <button class="copy-chart-btn">複製此盤</button>
             </div>
+
             <div class="summary-section-container">
-                <div class="result-section-item">
-                    ${createResultSection('星盤基礎數據', '', true, 'summary-header-style')}
+                <div class="result-section-item"> ${createResultSection('星盤基礎數據', true, 'summary-header-style')}
                     <pre class="table-content">${summary.table}</pre>
                     <div class="narrative-content" style="display:none;">${summary.narrative}</div>
-                    <button class="section-copy-btn">複製章節</button>
-                </div>
+                    </div>
             </div>
+
             <div class="sub-sections-container">
                 <div class="result-section-item">
-                    ${createResultSection('宮頭', '', false, 'cusp-header-style')}
+                    ${createResultSection('宮頭', false, 'cusp-header-style')}
                     <pre class="table-content">${cusp.table}</pre>
                     <div class="narrative-content" style="display:none;">${cusp.narrative}</div>
                     <button class="section-copy-btn">複製章節</button>
                 </div>
+
                 <div class="result-section-item">
-                    ${createResultSection('星體位置', '', false, 'planet-header-style')}
+                    ${createResultSection('星體位置', false, 'planet-header-style')}
                     <pre class="table-content">${planet.table}</pre>
                     <div class="narrative-content" style="display:none;">${planet.narrative}</div>
                     <button class="section-copy-btn">複製章節</button>
                 </div>
+
                 <div class="result-section-item">
-                    ${createResultSection('主要相位', '', false, 'aspect-header-style')}
+                    ${createResultSection('主要相位', false, 'aspect-header-style')}
                     <pre class="table-content">${aspect.table}</pre>
                     <div class="narrative-content" style="display:none;">${aspect.narrative}</div>
                     <button class="section-copy-btn">複製章節</button>
@@ -2142,9 +2139,10 @@
 
         // 修改後的 buildInterAspectsHTML 函數
         // 它現在接收由 generateInterAspectsSectionData 預先生成的內容物件
-        function buildInterAspectsHTML(sectionsData, name1, name2, isTransit = false) { // isTransit 參數現在主要用於標題顯示，不再影響內容生成
+        function buildInterAspectsHTML(sectionsData, name1, name2, isTransit = false) {
             // 檢查 sectionsData 是否有效
-            if (!sectionsData || (!sectionsData.table && !sectionsData.narrative)) {
+            // 這裡檢查 sectionsData 是否存在，以及它是否包含 table 和 narrative 屬性
+            if (!sectionsData || (typeof sectionsData.table === 'undefined' && typeof sectionsData.narrative === 'undefined')) {
                 return `<div class="error-message">交互相位數據缺失或格式不正確。</div>`;
             }
 
@@ -2152,13 +2150,15 @@
 
             return `
         <div class="result-section-item">
-            ${createResultSection(title, '', false, 'interaction-header-style')}
+            ${createResultSection(title, false, 'interaction-header-style')}
+            
             <pre class="table-content">${sectionsData.table}</pre>
+            
             <div class="narrative-content" style="display:none;">${sectionsData.narrative}</div>
+            
             <button class="section-copy-btn">複製章節</button>
         </div>`;
         }
-
         // 新增的輔助函數：生成行星落宮部分的數據（表格和敘述兩種格式）
         function generateOverlaySectionData(overlayData, guestName, hostName, title) {
             const sectionData = { table: '', narrative: '' };
@@ -2197,42 +2197,41 @@
             return sectionData;
         }
 
-        // 修改後的 buildOverlayHTML 函數
-        // 它現在接收由 generateOverlaySectionData 預先生成的內容物件
-        function buildOverlayHTML(sectionsData, guestName, hostName, title) { // guestName, hostName 參數現在主要用於標題顯示，不再影響內容生成
+        function buildOverlayHTML(sectionsData, guestName, hostName, title) {
             // 檢查 sectionsData 是否有效
-            if (!sectionsData || (!sectionsData.table && !sectionsData.narrative)) {
+            // 確保 sectionsData 存在，並且 table 和 narrative 屬性至少有一個有值
+            if (!sectionsData || (typeof sectionsData.table === 'undefined' && typeof sectionsData.narrative === 'undefined')) {
                 return `<div class="error-message">行星落宮資料缺失或格式不正確。</div>`;
             }
 
-            // 網頁上顯示的標題
-            // 注意：這裡的 title 參數是從外部傳入的，例如 `${name1}星體落入${name2}宮位`
-            // 它與 generateOverlaySectionData 內部用於文本標題的 title 是同一個
+            // title 參數是從外部傳入的，例如 `${name1}星體落入${name2}宮位`
+            // createResultSection 現在只接受 title 和樣式類別
             return `
         <div class="result-section-item">
-            ${createResultSection(title, '', false, 'interaction-header-style')}
+            ${createResultSection(title, false, 'interaction-header-style')}
+            
             <pre class="table-content">${sectionsData.table}</pre>
+            
             <div class="narrative-content" style="display:none;">${sectionsData.narrative}</div>
+            
             <button class="section-copy-btn">複製章節</button>
         </div>`;
         }
         
         // 建立單個結果區塊的HTML (可重用)
-        function createResultSection(title, content, isSummary = false, headerStyleClass = 'single-chart-header-style') {
-            // 【修改說明】
-            // 1. 函式簽名改變：增加了 headerStyleClass 參數，並給了它一個預設值。
-            // 2. 動態加入 Class：在下方的 <div> 中，我們將 headerStyleClass 變數加入到 class 列表中。
-            // 3. 複製按鈕邏輯：我們也恢復了 isSummary 參數的判斷，確保「基礎數據」區塊不會顯示複製按鈕。
+        function createResultSection(title, isSummary = false, headerStyleClass = '') {
+            // 【核心職責】
+            // 此函式現在只生成「章節標題頭」的 HTML 結構。
+            // 它不再包含 .result-section-item 本身，也不包含內容 (pre/div) 或章節複製按鈕。
+            // isSummary 參數在這裡不再用於控制複製按鈕，而是用於判斷標題樣式（如 summary-header-style）。
+
+            const sectionHeaderClass = isSummary ? 'summary-section-header' : 'result-section-header';
+
             return `
-        <div class="result-section-item">
-            <div class="result-section-header ${headerStyleClass}">
-                <span>${title}</span>
-                <button class="section-copy-btn">複製</button>
-            </div>
-            <div class="result-section-content scrollable-content">
-                <pre>${content}</pre>
-            </div>
-        </div>`;
+        <div class="${sectionHeaderClass} ${headerStyleClass}">
+            <h3>${title}</h3>
+        </div>
+    `;
         }
         
         // 設定複製按鈕的監聽器
