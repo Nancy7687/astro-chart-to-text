@@ -995,14 +995,13 @@
                         }
 
                         // 2. 遍歷報告內所有的內容區塊 (星盤或互動區塊)
-                        const sections = reportWrapper.querySelectorAll('.chart-wrapper, .sub-sections-container > .result-section-item');
-                        sections.forEach(section => {
-                            // 情況 A: 如果區塊是一個完整的星盤 (chart-wrapper)
+                        reportWrapper.querySelectorAll('.chart-wrapper, .sub-sections-container > .result-section-item').forEach(section => {
+                             // 情況 A: 如果區塊是一個完整的星盤 (chart-wrapper)
                             if (section.classList.contains('chart-wrapper')) {
-                                fullText += copyChartWrapper(section); // 使用新的輔助函數
+                                fullText += copyChartWrapper(section);
                             }
                             // 情況 B: 如果區塊是一個互動分析區塊 (例如相位、落宮)
-                            else if (section.classList.contains('result-section-item')) {
+                             else if (section.classList.contains('result-section-item')) {
                                 const pre = section.querySelector('pre');
                                 if (pre) fullText += `${pre.textContent}\n\n`; // 這些區塊的 <pre> 內容已包含標題
                             }
@@ -1039,16 +1038,14 @@
             }
             // 只複製此星盤內非隱私部分的內容 (<pre> 標籤)
             chartWrapper.querySelectorAll('.sub-sections-container .result-section-item').forEach(block => {
-                const pre = block.querySelector('pre');
-                if (pre) text += `${pre.textContent}\n\n`;
-            });
+                    const pre = block.querySelector('pre');
+                    if (pre) text += `${pre.textContent}\n\n`;
+                });
             return text;
         }
         // 設置複製按鈕事件監聽器的函數
         function setupCopyListenersSimplified() {
-            const copyButtons = document.querySelectorAll(
-                '.copy-chart-btn, .section-copy-btn, .copy-report-btn'
-            );
+            const copyButtons = document.querySelectorAll('.copy-chart-btn, .section-copy-btn, .copy-report-btn');
             console.log("setupCopyListenersSimplified: 找到的複製按鈕數量:", copyButtons.length);
             copyButtons.forEach(button => {
                 button.removeEventListener('click', handleCopyButtonClickSimplified);
