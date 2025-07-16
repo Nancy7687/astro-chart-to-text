@@ -1617,7 +1617,7 @@
                 summaryContent = [
                     "==== 組合中點盤盤資訊 ====",
                     "組合中點盤為兩張本命盤的數學中點取得的星盤",
-                    "===================="
+                    "====================\n"
                 ].join('\n');
             }
             // 2. 如果是其他盤（單盤、參考盤），則顯示簡化後的基礎數據
@@ -1627,7 +1627,7 @@
                     `本地時間: ${timestamps.local_time}`,
                     `UTC 時間: ${timestamps.utc_time}`,
                     `緯度: ${birth_info.latitude}, 經度: ${birth_info.longitude}`,
-                    "===================="
+                    "====================\n"
                 ].join('\n') : "基礎數據缺失";
             }
             const cuspContent = (house_cusps?.length > 0) ? [
@@ -1635,7 +1635,7 @@
                 "宮頭 | 星座度數(度分)",
                 "--------------------", // 加回橫線分隔線
                 ...house_cusps.map(c => `${c.house_number}宮 | ${c.zodiac_position_formatted}`),
-                "============"
+                "============\n"
             ].join('\n') : "宮頭數據缺失";
 
             const planetContent = (planet_positions) ? [
@@ -1650,7 +1650,7 @@
                             ? `${p.house}宮(${formatDegreesMinutesSeconds(p.hdeg)})` : '-';
                         return `${name} | ${p.is_retrograde ? '逆行' : ''} | ${p.zodiac_position_formatted} | ${houseInfo}`;
                     }),
-                "================"
+                "================\n"
             ].join('\n') : "星體數據缺失";
 
             const aspectContent = (aspects?.length) > 0 ? [
@@ -1659,7 +1659,7 @@
                 "----------------------", // 加回橫線分隔線
                 ...aspects.sort((a, b) => DISPLAY_ORDER_NAMES.indexOf(a.p1_name) - DISPLAY_ORDER_NAMES.indexOf(b.p1_name) || DISPLAY_ORDER_NAMES.indexOf(a.p2_name) - DISPLAY_ORDER_NAMES.indexOf(b.p2_name)).map(a => `${a.p1_name} | ${a.aspect_name} | ${a.p2_name} | ${a.aspect_type || '-'} | ${formatDegreesMinutesSeconds(a.orb)}`),
                 // ...aspects.map(a => `${a.p1_name} | ${a.aspect_name} | ${a.p2_name} | ${a.aspect_type || '-'} | ${formatDegreesMinutesSeconds(a.orb)}`),
-                "================"
+                "================\n"
             ].join('\n') : "沒有相位";
 
             return `
@@ -1687,10 +1687,10 @@
             // 【修改】為內容加入子標題和分隔線
             const content = (aspects?.length) ? [
                 `==== ${title} ====`,
-                "${name1}星體 | 相位 | ${name2}星體 | 動態 | 容許度",
+                `${name1}星體 | 相位 | ${name2}星體 | 動態 | 容許度`,
                 "-----------------------------",
                 ...aspects.sort((a, b) => DISPLAY_ORDER_NAMES.indexOf(a.p1_name) - DISPLAY_ORDER_NAMES.indexOf(b.p1_name) || DISPLAY_ORDER_NAMES.indexOf(a.p2_name) - DISPLAY_ORDER_NAMES.indexOf(b.p2_name)).map(a => `${a.p1_name} | ${a.aspect_name} | ${a.p2_name} | ${a.aspect_type || '-'} | ${formatDegreesMinutesSeconds(a.orb)}`),
-                "===================="
+                "====================\n"
             ].join('\n') : "沒有相位";
 
             // 這裡的 title 參數現在只用於網頁顯示，複製出來的內容自帶標題
@@ -1707,7 +1707,7 @@
                 "-----------------------------",
                 ...overlayData.sort((a, b) => DISPLAY_ORDER_NAMES.indexOf(a.planet_name) - DISPLAY_ORDER_NAMES.indexOf(b.planet_name))
                     .map(o => `${o.planet_name} | ${o.zodiac_position_formatted} | ${o.house_in_target_chart}宮(${formatDegreesMinutesSeconds(o.degree_in_target_house)})`),
-                "===================="
+                "====================\n"
             ].join('\n') : "資料缺失";
 
             // 這裡的 title 參數現在主要用於網頁UI顯示，複製出來的內容已自帶標題
@@ -1747,7 +1747,7 @@
             else if (target.classList.contains('copy-chart-btn')) {
                 const chartWrapper = target.closest('.chart-wrapper');
                 const titleElement = chartWrapper.querySelector('.chart-main-header h2');
-                let textToCopy = titleElement ? `${titleElement.textContent}\n====================\n\n` : '';
+                let textToCopy = titleElement ? `${titleElement.textContent}\n====================\n` : '';
                 chartWrapper.querySelectorAll('.sub-sections-container .result-section-item').forEach(block => {
                     const pre = block.querySelector('pre');
                     textToCopy += pre ? `${pre.textContent}\n\n` : ''; // 只複製內文
