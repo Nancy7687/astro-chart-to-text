@@ -951,7 +951,6 @@
             }
             selection.removeAllRanges();
         }
-
         // 處理複製按鈕點擊的事件函數 (已精確匹配你的 HTML 結構)
         function handleCopyButtonClickSimplified(event) {
             const button = event.currentTarget;
@@ -978,7 +977,6 @@
                 }
             }
         }
-
         // 設置複製按鈕事件監聽器的函數
         function setupCopyListenersSimplified() {
             const copyButtons = document.querySelectorAll(
@@ -990,7 +988,6 @@
                 button.addEventListener('click', handleCopyButtonClickSimplified);
             });
         }
-
         // =============================================================
         // 全域設定與常數
         // =============================================================
@@ -1323,7 +1320,6 @@
             }
             return isValid;
         }
-
         // 主要計算函式
         async function calculateChart() {
             console.log('Calculate button clicked.');
@@ -1556,7 +1552,6 @@
                     "===================="
                 ].join('\n') : "基礎數據缺失";
             }
-
             const cuspContent = (house_cusps?.length > 0) ? [
                 "==== 宮頭 ====",
                 "宮頭 | 星座度數(度分)",
@@ -1613,7 +1608,7 @@
             // 【修改】為內容加入子標題和分隔線
             const content = (aspects?.length) ? [
                 `==== ${title} ====`,
-                "星體1 | 相位 | 星體2 | 動態 | 容許度",
+                "${name1}星體 | 相位 | ${name2}星體 | 動態 | 容許度",
                 "-----------------------------",
                 ...aspects.sort((a, b) => DISPLAY_ORDER_NAMES.indexOf(a.p1_name) - DISPLAY_ORDER_NAMES.indexOf(b.p1_name) || DISPLAY_ORDER_NAMES.indexOf(a.p2_name) - DISPLAY_ORDER_NAMES.indexOf(b.p2_name)).map(a => `${a.p1_name} | ${a.aspect_name} | ${a.p2_name} | ${a.aspect_type || '-'} | ${formatDegreesMinutesSeconds(a.orb)}`),
                 "===================="
@@ -1662,43 +1657,31 @@
         // 請用此版本完整取代舊的 setupCopyListeners 函式
         function setupCopyListeners() {
             document.getElementById('resultOutput').addEventListener('click', function (e) {
-                const target = e.target;
-                // 處理單一區塊複製
-                if (target.classList.contains('section-copy-btn')) {
-                    const pre = target.closest('.result-section-item').querySelector('pre');
-                    if (pre) copyToClipboard(pre.textContent, target);
-                }
-                // 處理單一星盤複製 (不含基礎數據)
-                else if (target.classList.contains('copy-chart-btn')) {
-                    const chartWrapper = target.closest('.chart-wrapper');
-                    const title = chartWrapper.querySelector('.chart-main-header h2').textContent;
-                    let textToCopy = `${title}\n====================\n\n`;
-                    chartWrapper.querySelectorAll('.sub-sections-container .result-section-item').forEach(block => {
-                        textToCopy += `${block.querySelector('.result-section-header span').textContent}\n${"-".repeat(20)}\n${block.querySelector('pre').textContent}\n\n`;
-                    });
-                    copyToClipboard(textToCopy.trim(), target);
-                }
-                // 處理報告總複製
-                else if (target.classList.contains('copy-report-btn')) {
-                    const reportWrapper = target.closest('.report-wrapper');
-                    let fullText = `${reportWrapper.querySelector('.report-main-header h2').textContent}\n====================\n\n`;
-                    // 遍歷報告內所有的內容區塊
-                    reportWrapper.querySelectorAll('.chart-wrapper, .sub-sections-container > .result-section-item').forEach(section => {
-                        if (section.classList.contains('chart-wrapper')) {
-                            // 如果是單一星盤，複製其標題和非隱私內容
-                            fullText += `--- ${section.querySelector('.chart-main-header h2').textContent} ---\n`;
-                            section.querySelectorAll('.sub-sections-container .result-section-item').forEach(block => {
-                                fullText += `${block.querySelector('.result-section-header span').textContent}\n${"-".repeat(20)}\n${block.querySelector('pre').textContent}\n\n`;
-                            });
-                        } else if (section.closest('.sub-sections-container')) {
-                            // 如果是互動區塊
-                            fullText += `--- ${section.querySelector('.result-section-header span').textContent} ---\n${section.querySelector('pre').textContent}\n\n`;
-                        }
-                    });
-                    copyToClipboard(fullText.trim(), target);
-                }
-            });
-        }
+            const target = e.target;
+
+            // 處理單一區塊複製
+            if (target.classList.contains('section-copy-btn')) {
+                const pre = target.closest('.result-section-item').querySelector('pre');
+                if (pre) copyContent(pre, target); // 只複製內文
+            }
+            // 處理單一星盤複製 (不含基礎數據)
+            else if (target.classList.contains('copy-chart-btn')) {
+                const chartWrapper = target.closest('.chart-wrapper');
+                const titleElement = chartWrapper.querySelector('.chart-main-header h2');
+                let textToCopy = titleElement ? `${titleElement.textContent}\n====================\n\n` : '';
+                chartWrapper.querySelectorAll('.sub-sections-container .result-section-item').forEach(block => {
+                    const pre = block.querySelector('pre');
+                    textToCopy += pre ? `${pre.textContent}\n\n` : ''; // 只複製內文
+                });
+                copyContent({ innerText: textToCopy.trim() }, target);
+            }
+            // 處理報告總複製
+            else if (target.classList.contains('copy-report-btn')) {
+                const reportWrapper = target.closest('.report-wrapper');
+                copyContent(reportWrapper, target); // 複製整個報告區塊
+            }
+         });
+      }
 
         // 這是一個全新的函式，請將它新增到 script 中
         function createReportWrapper(title, content) {
@@ -1710,9 +1693,6 @@
                 ${content}
             </div>`;
         }
-
-        
-        
         // 執行初始化
         initializeApp();
     });
