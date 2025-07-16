@@ -575,7 +575,7 @@
         /* 用於「全部取消/選取」和「此類取消/選取」的通用按鈕樣式 */
         .planet-toggle-btn {
             background-color: #d2d0d0;
-            border-color: rgb(142, 122, 156);
+            border: 1px solid rgb(142, 122, 156); /* 淺灰色邊框 */
             color: #4b5563; /* 深灰色文字 */
             padding: 2px 10px; /* 內邊距 */
             border-radius: 9999px; /* 膠囊形狀的圓角 */
@@ -966,6 +966,7 @@
 
                     // 2. 遍歷非隱私區塊 (.sub-sections-container)，僅複製其內部的 <pre> 內容
                     chartWrapper.querySelectorAll('.sub-sections-container .result-section-item').forEach(block => {
+                        event.stopPropagation(); // 阻止事件向上冒泡，避免父級重複觸發
                         const pre = block.querySelector('pre');
                         if (pre) {
                             textToCopy += `${pre.textContent}\n\n`;
@@ -974,15 +975,19 @@
 
                     // 3. 呼叫複製函式 (我們傳遞一個有 innerText 屬性的物件來模擬元素)
                     copyContent({ innerText: textToCopy.trim() }, button);
+                    event.stopPropagation(); // 阻止事件向上冒泡，避免父級重複觸發
                     return; // 處理完畢，直接返回
                 }} else if (button.classList.contains('section-copy-btn')) {
-                // 對於「複製章節」按鈕，查找其最近的父級 `.result-section-item`
+                    event.stopPropagation(); // 阻止事件向上冒泡，避免父級重複觸發
+                    // 對於「複製章節」按鈕，查找其最近的父級 `.result-section-item`
                     // 【修正】找到父級 item 後，再精準選取內部的 <pre> 元素作為複製目標
                     const sectionItem = button.closest('.result-section-item');
+                    event.stopPropagation(); // 阻止事件向上冒泡，避免父級重複觸發
                     if (sectionItem) {
                         targetElement = sectionItem.querySelector('pre');
                     }
                 } else if (button.classList.contains('copy-report-btn')) {
+                    event.stopPropagation(); // 阻止事件向上冒泡，避免父級重複觸發
                     // 對於「複製完整報告」按鈕，執行特殊邏輯以組合所有需要的內容，並排除標題和隱私資訊
                     const reportWrapper = button.closest('.report-wrapper');
                     if (reportWrapper) {
