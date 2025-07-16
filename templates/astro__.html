@@ -1710,17 +1710,18 @@
         // 生成行星落宮的HTML
         // 請用此版本完整取代舊的 buildOverlayHTML 函式
         function buildOverlayHTML(overlayData, guestName, hostName, title) {
-            // 【修改】為內容加入子標題和分隔線，並移除 padEnd()
+            // 【新修改】建立動態的表頭註解
+            const dynamicHeaderComment = `${guestName}星體 | 星座度數(度分) | 落入${hostName}宮位(度分)`;
+
             const content = (overlayData?.length) ? [
                 `==== ${title} ====`,
-                "星體 | 星座度數(度分) | 落入宮位(度分)",
+                dynamicHeaderComment, // <--- 將這裡替換為動態生成的表頭註解
                 "-----------------------------",
                 ...overlayData.sort((a, b) => DISPLAY_ORDER_NAMES.indexOf(a.planet_name) - DISPLAY_ORDER_NAMES.indexOf(b.planet_name))
                     .map(o => `${o.planet_name} | ${o.zodiac_position_formatted} | ${o.house_in_target_chart}宮(${formatDegreesMinutesSeconds(o.degree_in_target_house)})`),
                 "====================\n"
             ].join('\n') : "資料缺失";
 
-            // 這裡的 title 參數現在主要用於網頁UI顯示，複製出來的內容已自帶標題
             return createResultSection(title, content, false, 'interaction-header-style');
         }
         
