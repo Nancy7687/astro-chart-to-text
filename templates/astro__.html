@@ -574,7 +574,7 @@
 
         /* 用於「全部取消/選取」和「此類取消/選取」的通用按鈕樣式 */
         .planet-toggle-btn {
-            background-color: #ffffff;
+            background-color: #d2d0d0;
             border-color: rgb(142, 122, 156);
             color: #4b5563; /* 深灰色文字 */
             padding: 2px 10px; /* 內邊距 */
@@ -977,47 +977,46 @@
                     return; // 處理完畢，直接返回
                 }} else if (button.classList.contains('section-copy-btn')) {
                 // 對於「複製章節」按鈕，查找其最近的父級 `.result-section-item`
-                // 【修正】找到父級 item 後，再精準選取內部的 <pre> 元素作為複製目標
-                const sectionItem = button.closest('.result-section-item');
-                if (sectionItem) {
-                    targetElement = sectionItem.querySelector('pre');
-                }
-            } else if (button.classList.contains('copy-report-btn')) {
-                // 對於「複製完整報告」按鈕，執行特殊邏輯以組合所有需要的內容，並排除標題和隱私資訊
-                const reportWrapper = button.closest('.report-wrapper');
-                if (reportWrapper) {
-                    let fullText = '';
-
-                    // 1. 取得報告總標題
-                    const reportTitleElement = reportWrapper.querySelector('.report-main-header h2');
-                    if (reportTitleElement) {
-                        fullText += `${reportTitleElement.textContent}\n====================\n\n`;
+                    // 【修正】找到父級 item 後，再精準選取內部的 <pre> 元素作為複製目標
+                    const sectionItem = button.closest('.result-section-item');
+                    if (sectionItem) {
+                        targetElement = sectionItem.querySelector('pre');
                     }
+                } else if (button.classList.contains('copy-report-btn')) {
+                    // 對於「複製完整報告」按鈕，執行特殊邏輯以組合所有需要的內容，並排除標題和隱私資訊
+                    const reportWrapper = button.closest('.report-wrapper');
+                    if (reportWrapper) {
+                        let fullText = '';
 
-                    // 2. 遍歷報告內所有的內容區塊 (星盤或互動區塊)
-                    reportWrapper.querySelectorAll('.chart-wrapper, .sub-sections-container > .result-section-item').forEach(section => {
-                        // 情況 A: 如果區塊是一個完整的星盤 (chart-wrapper)
-                        if (section.classList.contains('chart-wrapper')) {
-                            const chartTitleElement = section.querySelector('.chart-main-header h2');
-                            if (chartTitleElement) {
-                                fullText += `--- ${chartTitleElement.textContent} ---\n\n`;
-                            }
-                            // 只複製此星盤內非隱私部分的內容 (<pre> 標籤)
-                            section.querySelectorAll('.sub-sections-container .result-section-item').forEach(block => {
-                                const pre = block.querySelector('pre');
-                                if (pre) fullText += `${pre.textContent}\n\n`;
-                            });
-                        } 
-                        // 情況 B: 如果區塊是一個互動分析區塊 (例如相位、落宮)
-                        else if (section.classList.contains('result-section-item')) {
-                            const pre = section.querySelector('pre');
-                            if (pre) fullText += `${pre.textContent}\n\n`; // 這些區塊的 <pre> 內容已包含標題
+                        // 1. 取得報告總標題
+                        const reportTitleElement = reportWrapper.querySelector('.report-main-header h2');
+                        if (reportTitleElement) {
+                            fullText += `${reportTitleElement.textContent}\n====================\n\n`;
                         }
-                    });
 
-                    copyContent({ innerText: fullText.trim() }, button);
-                    return; // 處理完畢，直接返回
+                        // 2. 遍歷報告內所有的內容區塊 (星盤或互動區塊)
+                        const sections = reportWrapper.querySelectorAll('.chart-wrapper, .sub-sections-container > .result-section-item');
+                        sections.forEach(section => {
+                            // 情況 A: 如果區塊是一個完整的星盤 (chart-wrapper)
+                            if (section.classList.contains('chart-wrapper')) {
+                                fullText += copyChartWrapper(section); // 使用新的輔助函數
+                            }
+                            // 情況 B: 如果區塊是一個互動分析區塊 (例如相位、落宮)
+                            else if (section.classList.contains('result-section-item')) {
+                                const pre = section.querySelector('pre');
+                                if (pre) fullText += `${pre.textContent}\n\n`; // 這些區塊的 <pre> 內容已包含標題
+                            }
+                        });
+
+                        copyContent({ innerText: fullText.trim() }, button);
+                        return; // 處理完畢，直接返回
+                    }
                 }
+
+                if (targetElement) {
+                    copyContent(targetElement, button);
+                } else if (!button.classList.contains('copy-chart-btn') && !button.classList.contains('copy-report-btn')) {
+
             }
 
             if (targetElement) {
@@ -1030,6 +1029,20 @@
                     setTimeout(() => button.textContent = '複製', 2000);
                 }
             }
+        }
+
+        function copyChartWrapper(chartWrapper) {
+            let text = '';
+            const chartTitleElement = chartWrapper.querySelector('.chart-main-header h2');
+            if (chartTitleElement) {
+                text += `--- ${chartTitleElement.textContent} ---\n\n`;
+            }
+            // 只複製此星盤內非隱私部分的內容 (<pre> 標籤)
+            chartWrapper.querySelectorAll('.sub-sections-container .result-section-item').forEach(block => {
+                const pre = block.querySelector('pre');
+                if (pre) text += `${pre.textContent}\n\n`;
+            });
+            return text;
         }
         // 設置複製按鈕事件監聽器的函數
         function setupCopyListenersSimplified() {
