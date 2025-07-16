@@ -671,7 +671,7 @@
             <div class="date-time-grid">
                 <div class="input-group">
                     <label for="single_year">西元年:</label>
-                    <input type="number" id="single_year" class="input-field" value="1999" min="1900" max="2100">
+                    <input type="text" id="single_year" class="input-field" value="1999" readonly placeholder="點擊選擇年份">
                     <p id="single_year-error" class="input-error-message" aria-live="polite"></p>
                 </div>
                 <div class="input-group">
@@ -753,8 +753,16 @@
                         <div class="input-group"><label for="comp1_year">西元年:</label><input type="number" id="comp1_year" class="input-field" value="1999" min="1900" max="2100"><p id="comp1_year-error" class="input-error-message" aria-live="polite"></p></div>
                         <div class="input-group"><label for="comp1_month">月:</label><input type="number" id="comp1_month" class="input-field" value="1" min="1" max="12"><p id="comp1_month-error" class="input-error-message" aria-live="polite"></p></div>
                         <div class="input-group"><label for="comp1_day">日:</label><input type="number" id="comp1_day" class="input-field" value="1" min="1" max="31"><p id="comp1_day-error" class="input-error-message" aria-live="polite"></p></div>
-                        <div class="input-group"><label for="comp1_hour">時:</label><input type="number" id="comp1_hour" class="input-field" value="12" min="0" max="23"><p id="comp1_hour-error" class="input-error-message" aria-live="polite"></p></div>
-                        <div class="input-group"><label for="comp1_minute">分:</label><input type="number" id="comp1_minute" class="input-field" value="00" min="0" max="59"><p id="comp1_minute-error" class="input-error-message" aria-live="polite"></p></div>
+                        <div class="input-group">
+                            <label for="comp1_hour">時 (0-23):</label>
+                            <input type="text" id="comp1_hour" class="input-field" value="12" readonly placeholder="點擊選擇小時">
+                            <p id="comp1_hour-error" class="input-error-message" aria-live="polite"></p>
+                        </div>
+                        <div class="input-group">
+                            <label for="comp1_minute">分 (0-59):</label>
+                            <input type="text" id="comp1_minute" class="input-field" value="00" readonly placeholder="點擊選擇分鐘">
+                            <p id="comp1_minute-error" class="input-error-message" aria-live="polite"></p>
+                        </div>
                     </div>
                     <h4 class="text-lg font-semibold text-gray-700 mt-4 mb-2">出生地點與時區</h4>
                     <div class="location-timezone-grid">
@@ -1597,39 +1605,105 @@
 
             switch (data.chart_type) {
                 case 'single':
-                    // 呼叫 buildSingleChartHTML，其內部應生成你提供的 .chart-wrapper 結構
-                    reportHtmlContent = buildSingleChartHTML(data, `${name1}的星盤資訊`);
+                    // 步驟 1: 先呼叫 generateSingleChartSectionData 來準備好所有章節的表格和敘述文本
+                    const singleChartSectionsData = generateSingleChartSectionData(data, `${name1}的星盤資訊`);
+
+                    // 步驟 2: 然後將準備好的 sectionsData 傳遞給 buildSingleChartHTML 進行 HTML 結構的組裝
+                    reportHtmlContent = buildSingleChartHTML(singleChartSectionsData, `${name1}的星盤資訊`);
                     break;
 
                 case 'comparison':
-                    const natal1Html = buildSingleChartHTML(data.chart1_data, `${name1}的本命盤`);
-                    const natal2Html = buildSingleChartHTML(data.chart2_data, `${name2}的本命盤`);
-                    const interactionHtml = `<div class="sub-sections-container">` +
-                        // 您的星體落入對方宮位：guestName 是 name1，hostName 是 name2
-                        buildOverlayHTML(data.chart1_planets_in_chart2_houses, name1, name2, `${name1}星體落入${name2}宮位`) +
-                        // 對方星體落入您的宮位：guestName 是 name2，hostName 是 name1
-                        buildOverlayHTML(data.chart2_planets_in_chart1_houses, name2, name1, `${name2}星體落入${name1}宮位`) +
-                        buildInterAspectsHTML(data.inter_aspects, name1, name2) + `</div>`; 
-                    reportHtmlContent = createReportWrapper(`${name1}與${name2}的比較盤報告`, natal1Html + natal2Html + interactionHtml);
+                    // 1. 生成並構建第一個本命盤的 HTML
+                    const natal1SectionsData = generateSingleChartSectionData(data.chart1_data, `${name1}的本命盤`);
+                    const natal1Html = buildSingleChartHTML(natal1SectionsData, `${name1}的本命盤`);
+
+                    // 2. 生成並構建第二個本命盤的 HTML
+                    const natal2SectionsData = generateSingleChartSectionData(data.chart2_data, `${name2}的本命盤`);
+                    const natal2Html = buildSingleChartHTML(natal2SectionsData, `${name2}的本命盤`);
+
+                    // 3. 生成並構建交互相位和疊盤的 HTML
+                    let interactionHtmlComparison = `<div class="sub-sections-container">`; // 使用不同的變數名，避免衝突
+
+                    // 3.1 您的星體落入對方宮位 (Overlay 1)
+                    // 先生成兩種格式的內容數據
+                    const overlay1SectionsData = generateOverlaySectionData(data.chart1_planets_in_chart2_houses, name1, name2, `${name1}星體落入${name2}宮位`);
+                    // 再將數據傳給 HTML 組裝函數 (注意：buildOverlayHTML 的簽名已調整，不再需要 guestName, hostName)
+                    interactionHtmlComparison += buildOverlayHTML(overlay1SectionsData, `${name1}星體落入${name2}宮位`);
+
+                    // 3.2 對方星體落入您的宮位 (Overlay 2)
+                    // 先生成兩種格式的內容數據
+                    const overlay2SectionsData = generateOverlaySectionData(data.chart2_planets_in_chart1_houses, name2, name1, `${name2}星體落入${name1}宮位`);
+                    // 再將數據傳給 HTML 組裝函數 (注意：buildOverlayHTML 的簽名已調整，不再需要 guestName, hostName)
+                    interactionHtmlComparison += buildOverlayHTML(overlay2SectionsData, `${name2}星體落入${name1}宮位`);
+
+                    // 3.3 交互相位
+                    // 先生成兩種格式的內容數據
+                    const interAspectsSectionsDataComparison = generateInterAspectsSectionData(data.inter_aspects, name1, name2);
+                    // 再將數據傳給 HTML 組裝函數 (注意：buildInterAspectsHTML 的簽名已調整)
+                    interactionHtmlComparison += buildInterAspectsHTML(interAspectsSectionsDataComparison, name1, name2);
+
+                    interactionHtmlComparison += `</div>`; // 關閉 sub-sections-container
+
+                    // 4. 組裝最終的報告 HTML
+                    reportHtmlContent = createReportWrapper(`${name1}與${name2}的比較盤報告`, natal1Html + natal2Html + interactionHtmlComparison);
                     break;
+
                 case 'composite':
-                    const compositeHtml = buildSingleChartHTML(data.composite_chart_data, `${name1}與${name2}的組合中點盤`, 'composite-chart-header-style');
-                    const ref1Html = buildSingleChartHTML(data.natal_chart1_data, `${name1}的本命盤`);
-                    const ref2Html = buildSingleChartHTML(data.natal_chart2_data, `${name2}的本命盤`);
+                    // Step 1: Generate the section data for the Composite Chart
+                    const compositeSectionsData = generateSingleChartSectionData(data.composite_chart_data, `${name1}與${name2}的組合中點盤`);
+                    // Step 2: Build the HTML for the Composite Chart using the generated data
+                    const compositeHtml = buildSingleChartHTML(compositeSectionsData, `${name1}與${name2}的組合中點盤`, 'composite-chart-header-style');
+
+                    // Step 3: Generate the section data for Natal Chart 1
+                    const ref1SectionsData = generateSingleChartSectionData(data.natal_chart1_data, `${name1}的本命盤`);
+                    // Step 4: Build the HTML for Natal Chart 1 using the generated data
+                    const ref1Html = buildSingleChartHTML(ref1SectionsData, `${name1}的本命盤`);
+
+                    // Step 5: Generate the section data for Natal Chart 2
+                    const ref2SectionsData = generateSingleChartSectionData(data.natal_chart2_data, `${name2}的本命盤`);
+                    // Step 6: Build the HTML for Natal Chart 2 using the generated data
+                    const ref2Html = buildSingleChartHTML(ref2SectionsData, `${name2}的本命盤`);
+
+                    // Step 7: Wrap all the generated chart HTML into the final report structure
                     reportHtmlContent = createReportWrapper('組合中點盤報告', compositeHtml + ref1Html + ref2Html);
                     break;
+
                 case 'transit':
-                    const transitInteractionHtml = `<div class="sub-sections-container">` +
-                        // --- 修改這裡 ---
-                        // 行運星體落入本命宮位：guestName 是 "行運"，hostName 是 name1 (本命盤主人)
-                        buildOverlayHTML(data.transit_planets_in_natal_houses, "行運", name1, '行運星體落入本命宮位') +
-                        buildInterAspectsHTML(data.inter_aspects, name1, "行運", true) +`</div>`;
-                    // --- 修改結束 ---
-                    const transitNatalHtml = buildSingleChartHTML(data.natal_chart_data, `${name1}的本命盤`);
+                    // Define transitDateTime early as it's used in the title
                     const transitDateTime = data.transit_chart_data.timestamps.local_time;
-                    const transitChartHtml = buildSingleChartHTML(data.transit_chart_data, `${transitDateTime} 行運天象盤`);
+
+                    // --- 單個星盤的生成與構建 ---
+                    // Step 1: Generate section data for the Natal Chart
+                    const transitNatalSectionsData = generateSingleChartSectionData(data.natal_chart_data, `${name1}的本命盤`);
+                    // Step 2: Build HTML for the Natal Chart
+                    const transitNatalHtml = buildSingleChartHTML(transitNatalSectionsData, `${name1}的本命盤`);
+
+                    // Step 3: Generate section data for the Transit Chart
+                    const transitChartSectionsData = generateSingleChartSectionData(data.transit_chart_data, `${transitDateTime} 行運天象盤`);
+                    // Step 4: Build HTML for the Transit Chart
+                    const transitChartHtml = buildSingleChartHTML(transitChartSectionsData, `${transitDateTime} 行運天象盤`);
+
+                    // --- 交互部分的生成與構建 ---
+                    let transitInteractionHtml = `<div class="sub-sections-container">`; // 使用不同的變數名
+
+                    // 行運星體落入本命宮位：guestName 是 "行運"，hostName 是 name1 (本命盤主人)
+                    // 先生成兩種格式的內容數據
+                    const transitOverlaySectionsData = generateOverlaySectionData(data.transit_planets_in_natal_houses, "行運", name1, '行運星體落入本命宮位');
+                    // 再將數據傳給 HTML 組裝函數 (注意：buildOverlayHTML 的簽名已調整)
+                    transitInteractionHtml += buildOverlayHTML(transitOverlaySectionsData, '行運星體落入本命宮位');
+
+                    // 行運與本命的交互相位
+                    // 先生成兩種格式的內容數據
+                    const transitInterAspectsSectionsData = generateInterAspectsSectionData(data.inter_aspects, name1, "行運", true);
+                    // 再將數據傳給 HTML 組裝函數 (注意：buildInterAspectsHTML 的簽名已調整)
+                    transitInteractionHtml += buildInterAspectsHTML(transitInterAspectsSectionsData, name1, "行運", true);
+
+                    transitInteractionHtml += `</div>`; // 關閉 sub-sections-container
+
+                    // Step 5: Wrap all the generated chart HTML and interaction HTML into the final report structure
                     reportHtmlContent = createReportWrapper(`${name1}的行運盤報告`, transitInteractionHtml + transitNatalHtml + transitChartHtml);
                     break;
+
                 default:
                     reportHtmlContent = `<div class="error-message">錯誤: 未知的星盤類型 '${data.chart_type}'</div>`;
             }
@@ -1645,117 +1719,311 @@
             // 在 DOM 更新後，呼叫事件綁定函數
             setupCopyListenersSimplified();
         }
-        
-        // 生成單一星盤的完整HTML
-        function buildSingleChartHTML(chartInfo, title, headerStyleClass = 'single-chart-header-style') {
-            if (!chartInfo) return `<div class="error-message">${title} 資料缺失。</div>`;
+
+        // 新增的輔助函數：生成單一星盤各部分的數據（表格和敘述兩種格式）
+        // 它會接收原始的 chartInfo 和圖表標題 (title)，因為基礎數據的判斷依賴 title
+        function generateSingleChartSectionData(chartInfo, chartTitle) {
+            // 錯誤處理：如果 chartInfo 不存在，返回空物件或帶有錯誤信息的物件
+            if (!chartInfo) {
+                return {
+                    summary: { table: "資料缺失", narrative: "星盤資料缺失，無法提供詳細資訊。" },
+                    cusp: { table: "宮頭數據缺失", narrative: "宮頭數據缺失，無法提供完整敘述。" },
+                    planet: { table: "星體數據缺失", narrative: "星體數據缺失，無法提供完整敘述。" },
+                    aspect: { table: "沒有相位", narrative: "本命盤中沒有偵測到主要相位。" }
+                };
+            }
 
             const { timestamps, birth_info, house_cusps, planet_positions, aspects } = chartInfo;
 
-            // --- 【核心修改】根據圖表類型，決定「基礎數據」的顯示內容 ---
-            let summaryContent;
+            const sectionsData = {}; // 儲存所有部分的表格和敘述文本
 
-            // 1. 如果是組合盤，顯示其本質說明
-            if (title.includes("組合中點盤")) {
-                summaryContent = [
+            // --- 1. 基礎數據 (Summary Content) ---
+            sectionsData.summary = {};
+            if (chartTitle.includes("組合中點盤")) {
+                sectionsData.summary.table = [
                     "==== 組合中點盤盤資訊 ====",
                     "組合中點盤為兩張本命盤的數學中點取得的星盤",
                     "====================\n"
                 ].join('\n');
-            }
-            // 2. 如果是其他盤（單盤、參考盤），則顯示簡化後的基礎數據
-            else {
-                summaryContent = (timestamps && birth_info) ? [
+                sectionsData.summary.narrative = "【星盤基礎資訊】\n組合中點盤是透過數學方式計算兩張本命盤中點所形成的特殊星盤，用於探索兩人關係的獨立生命本質。\n\n";
+            } else {
+                sectionsData.summary.table = (timestamps && birth_info) ? [
                     "==== 星盤基礎數據 ====",
                     `本地時間: ${timestamps.local_time}`,
                     `UTC 時間: ${timestamps.utc_time}`,
                     `緯度: ${birth_info.latitude}, 經度: ${birth_info.longitude}`,
                     "====================\n"
                 ].join('\n') : "基礎數據缺失";
+
+                sectionsData.summary.narrative = (timestamps && birth_info) ?
+                    `【星盤基礎資訊】\n本地時間：${timestamps.local_time}\nUTC時間：${timestamps.utc_time}\n出生地座標：緯度 ${birth_info.latitude}, 經度 ${birth_info.longitude}\n\n` :
+                    "基礎數據缺失，無法提供完整敘述。\n\n";
             }
-            const cuspContent = (house_cusps?.length > 0) ? [
-                "==== 宮頭 ====",
-                "宮頭 | 星座度數(度分)",
-                "--------------------", // 加回橫線分隔線
-                ...house_cusps.map(c => `${c.house_number}宮 | ${c.zodiac_position_formatted}`),
-                "============\n"
-            ].join('\n') : "宮頭數據缺失";
 
-            const planetContent = (planet_positions) ? [
-                "==== 星體位置 ====",
-                "星體 | 順逆 | 星座度數(度分) | 宮位(度分)",
-                "-----------------------------", // 加回橫線分隔線
-                ...DISPLAY_ORDER_NAMES
+            // --- 2. 宮頭 (Cusp Content) ---
+            sectionsData.cusp = {};
+            if (house_cusps?.length > 0) {
+                sectionsData.cusp.table = [
+                    "==== 宮頭 ====",
+                    "宮頭 | 星座度數(度分)",
+                    "--------------------", // 表格分隔線
+                    ...house_cusps.map(c => `${c.house_number}宮 | ${c.zodiac_position_formatted}`),
+                    "============\n"
+                ].join('\n');
+
+                sectionsData.cusp.narrative = "【宮頭】\n";
+                house_cusps.forEach(c => {
+                    // 敘述版沒有表格分隔線
+                    sectionsData.cusp.narrative += `${c.house_number} 宮頭: ${c.zodiac_position_formatted}\n`;
+                });
+                sectionsData.cusp.narrative += "\n"; // 段落間距
+            } else {
+                sectionsData.cusp.table = "宮頭數據缺失";
+                sectionsData.cusp.narrative = "宮頭數據缺失，無法提供完整敘述。\n\n";
+            }
+
+            // --- 3. 星體位置 (Planet Content) ---
+            sectionsData.planet = {};
+            if (planet_positions) {
+                sectionsData.planet.table = [
+                    "==== 星體位置 ====",
+                    "星體 | 順逆 | 星座度數(度分) | 宮位(度分)",
+                    "-----------------------------", // 表格分隔線
+                    ...DISPLAY_ORDER_NAMES // 假設 DISPLAY_ORDER_NAMES 是已定義的全局常量
+                        .filter(name => planet_positions[name])
+                        .map(name => {
+                            const p = planet_positions[name];
+                            // 假設 HOUSE_DEFINING_POINTS 是已定義的全局常量
+                            // 假設 formatDegreesMinutesSeconds 是已定義的全局函數
+                            const houseInfo = !HOUSE_DEFINING_POINTS.includes(name) && p.house != null
+                                ? `${p.house}宮(${formatDegreesMinutesSeconds(p.hdeg)})` : '-';
+                            return `${name} | ${p.is_retrograde ? '逆行' : ''} | ${p.zodiac_position_formatted} | ${houseInfo}`;
+                        }),
+                    "================\n"
+                ].join('\n');
+
+                sectionsData.planet.narrative = "【星體位置】\n";
+                DISPLAY_ORDER_NAMES
                     .filter(name => planet_positions[name])
-                    .map(name => {
+                    .forEach(name => {
                         const p = planet_positions[name];
-                        const houseInfo = !HOUSE_DEFINING_POINTS.includes(name) && p.house != null
-                            ? `${p.house}宮(${formatDegreesMinutesSeconds(p.hdeg)})` : '-';
-                        return `${name} | ${p.is_retrograde ? '逆行' : ''} | ${p.zodiac_position_formatted} | ${houseInfo}`;
-                    }),
-                "================\n"
-            ].join('\n') : "星體數據缺失";
+                        const houseText = !HOUSE_DEFINING_POINTS.includes(name) && p.house != null
+                            ? `${p.house}宮(${formatDegreesMinutesSeconds(p.hdeg)})` : '';
+                        const retrogradeText = p.is_retrograde ? '（逆行）' : '';
+                        // 敘述版中，如果沒有宮位資訊則不顯示
+                        const positionAndHouse = p.zodiac_position_formatted + (houseText ? houseText : '');
+                        sectionsData.planet.narrative += `${name}${retrogradeText} ${positionAndHouse}\n`;
+                    });
+                sectionsData.planet.narrative += "\n";
+            } else {
+                sectionsData.planet.table = "星體數據缺失";
+                sectionsData.planet.narrative = "星體數據缺失，無法提供完整敘述。\n\n";
+            }
 
-            const aspectContent = (aspects?.length) > 0 ? [
-                "==== 主要相位 ====",
-                "星體1 | 相位 | 星體2 | 動態 | 容許度",
-                "----------------------", // 加回橫線分隔線
-                ...aspects.sort((a, b) => DISPLAY_ORDER_NAMES.indexOf(a.p1_name) - DISPLAY_ORDER_NAMES.indexOf(b.p1_name) || DISPLAY_ORDER_NAMES.indexOf(a.p2_name) - DISPLAY_ORDER_NAMES.indexOf(b.p2_name)).map(a => `${a.p1_name} | ${a.aspect_name} | ${a.p2_name} | ${a.aspect_type || '-'} | ${formatDegreesMinutesSeconds(a.orb)}`),
-                // ...aspects.map(a => `${a.p1_name} | ${a.aspect_name} | ${a.p2_name} | ${a.aspect_type || '-'} | ${formatDegreesMinutesSeconds(a.orb)}`),
-                "================\n"
-            ].join('\n') : "沒有相位";
+            // --- 4. 主要相位 (Aspect Content) ---
+            sectionsData.aspect = {};
+            if (aspects?.length > 0) {
+                sectionsData.aspect.table = [
+                    "==== 主要相位 ====",
+                    "星體1 | 相位 | 星體2 | 動態 | 容許度",
+                    "----------------------", // 表格分隔線
+                    // 假設 DISPLAY_ORDER_NAMES 是已定義的全局常量
+                    // 假設 formatDegreesMinutesSeconds 是已定義的全局函數
+                    ...aspects.sort((a, b) => DISPLAY_ORDER_NAMES.indexOf(a.p1_name) - DISPLAY_ORDER_NAMES.indexOf(b.p1_name) || DISPLAY_ORDER_NAMES.indexOf(a.p2_name) - DISPLAY_ORDER_NAMES.indexOf(b.p2_name)).map(a => `${a.p1_name} | ${a.aspect_name} | ${a.p2_name} | ${a.aspect_type || '-'} | ${formatDegreesMinutesSeconds(a.orb)}`),
+                    "================\n"
+                ].join('\n');
+
+                sectionsData.aspect.narrative = "【主要相位】\n";
+                aspects.sort((a, b) => DISPLAY_ORDER_NAMES.indexOf(a.p1_name) - DISPLAY_ORDER_NAMES.indexOf(b.p1_name) || DISPLAY_ORDER_NAMES.indexOf(a.p2_name) - DISPLAY_ORDER_NAMES.indexOf(b.p2_name)).forEach(a => {
+                    const p1 = planet_positions[a.p1_name];
+                    const p1HouseInfo = p1 && !HOUSE_DEFINING_POINTS.includes(a.p1_name) && p1.house != null
+                        ? `${p1.house}宮(${formatDegreesMinutesSeconds(p1.hdeg)})` : '';
+                    const p1FullPosition = p1 ? `${p1.zodiac_position_formatted}${p1HouseInfo}` : a.p1_name;
+
+                    const p2 = planet_positions[a.p2_name];
+                    const p2HouseInfo = p2 && !HOUSE_DEFINING_POINTS.includes(a.p2_name) && p2.house != null
+                        ? `${p2.house}宮(${formatDegreesMinutesSeconds(p2.hdeg)})` : '';
+                    const p2FullPosition = p2 ? `${p2.zodiac_position_formatted}${p2HouseInfo}` : a.p2_name;
+
+                    const aspectType = a.aspect_type ? `${a.aspect_type}` : '';
+                    const orbFormatted = formatDegreesMinutesSeconds(a.orb);
+
+                    // 敘述版沒有表格分隔線
+                    sectionsData.aspect.narrative += `${a.p1_name}${p1FullPosition}${a.aspect_name}${a.p2_name}${p2FullPosition}，${aspectType}${orbFormatted}。\n`;
+                });
+                sectionsData.aspect.narrative += "\n";
+            } else {
+                sectionsData.aspect.table = "沒有相位";
+                sectionsData.aspect.narrative = "本命盤中沒有偵測到主要相位。\n\n";
+            }
+
+            return sectionsData;
+        }
+        
+        // 修改後的 buildSingleChartHTML 函數
+        // 它現在接收由 generateSingleChartSectionData 預先生成的內容物件
+        function buildSingleChartHTML(sectionsData, title, headerStyleClass = 'single-chart-header-style') {
+            // 這裡的 chartInfo 實際上已經是經過處理的 sectionsData，但為了與舊參數名兼容性先保留
+            // 真正的資料檢查應在 generateSingleChartSectionData 內部完成
+            if (!sectionsData || !sectionsData.summary) { // 檢查是否是有效的 sectionsData 物件
+                return `<div class="error-message">${title} 資料缺失或格式不正確。</div>`;
+            }
+
+            // 直接解構 sectionsData 物件
+            const { summary, cusp, planet, aspect } = sectionsData;
 
             return `
         <div class="chart-wrapper">
             <div class="chart-main-header ${headerStyleClass}">
                 <h2 class="main-title">${title}</h2>
-                <button class="copy-chart-btn">複製此盤(不含基礎數據)</button>
+                <button class="copy-chart-btn">複製此盤</button>
             </div>
             <div class="summary-section-container">
-                ${createResultSection('星盤基礎數據', summaryContent, true, 'summary-header-style')}
+                <div class="result-section-item">
+                    ${createResultSection('星盤基礎數據', '', true, 'summary-header-style')}
+                    <pre class="table-content">${summary.table}</pre>
+                    <div class="narrative-content" style="display:none;">${summary.narrative}</div>
+                    <button class="section-copy-btn">複製章節</button>
+                </div>
             </div>
             <div class="sub-sections-container">
-                ${createResultSection('宮頭', cuspContent, false, 'cusp-header-style')}
-                ${createResultSection('星體位置', planetContent, false, 'planet-header-style')}
-                ${createResultSection('主要相位', aspectContent, false, 'aspect-header-style')}
+                <div class="result-section-item">
+                    ${createResultSection('宮頭', '', false, 'cusp-header-style')}
+                    <pre class="table-content">${cusp.table}</pre>
+                    <div class="narrative-content" style="display:none;">${cusp.narrative}</div>
+                    <button class="section-copy-btn">複製章節</button>
+                </div>
+                <div class="result-section-item">
+                    ${createResultSection('星體位置', '', false, 'planet-header-style')}
+                    <pre class="table-content">${planet.table}</pre>
+                    <div class="narrative-content" style="display:none;">${planet.narrative}</div>
+                    <button class="section-copy-btn">複製章節</button>
+                </div>
+                <div class="result-section-item">
+                    ${createResultSection('主要相位', '', false, 'aspect-header-style')}
+                    <pre class="table-content">${aspect.table}</pre>
+                    <div class="narrative-content" style="display:none;">${aspect.narrative}</div>
+                    <button class="section-copy-btn">複製章節</button>
+                </div>
             </div>
         </div>`;
         }
 
-        // 生成交互相位的HTML
-        // 請用此版本完整取代舊的 buildInterAspectsHTML 函式
-        function buildInterAspectsHTML(aspects, name1, name2, isTransit = false) {
-            const title = isTransit ? `${name1}與${name2}相位` : `交互相位`;
+        // 新增的輔助函數：生成交互相位部分的數據（表格和敘述兩種格式）
+        function generateInterAspectsSectionData(aspects, name1, name2, isTransit = false) {
+            const sectionData = { table: '', narrative: '' };
+            const titlePrefix = isTransit ? `${name1}與${name2}` : `主要`;
+            const sectionTitle = `${titlePrefix}交互相位`; // 用於內部文本標題
 
-            // 【修改】為內容加入子標題和分隔線
-            const content = (aspects?.length) ? [
-                `==== ${title} ====`,
+            if (!aspects?.length) {
+                sectionData.table = "沒有相位";
+                sectionData.narrative = `雙方之間沒有偵測到${titlePrefix}交互相位。`;
+                return sectionData;
+            }
+
+            // --- 表格內容生成 ---
+            const tableLines = [
+                `==== ${sectionTitle} ====`,
                 `${name1}星體 | 相位 | ${name2}星體 | 動態 | 容許度`,
-                "-----------------------------",
-                ...aspects.sort((a, b) => DISPLAY_ORDER_NAMES.indexOf(a.p1_name) - DISPLAY_ORDER_NAMES.indexOf(b.p1_name) || DISPLAY_ORDER_NAMES.indexOf(a.p2_name) - DISPLAY_ORDER_NAMES.indexOf(b.p2_name)).map(a => `${a.p1_name} | ${a.aspect_name} | ${a.p2_name} | ${a.aspect_type || '-'} | ${formatDegreesMinutesSeconds(a.orb)}`),
+                "-----------------------------", // 表格分隔線
+                ...aspects.sort((a, b) => DISPLAY_ORDER_NAMES.indexOf(a.p1_name) - DISPLAY_ORDER_NAMES.indexOf(b.p1_name) || DISPLAY_ORDER_NAMES.indexOf(a.p2_name) - DISPLAY_ORDER_NAMES.indexOf(b.p2_name)).map(a =>
+                    `${a.p1_name} | ${a.aspect_name} | ${a.p2_name} | ${a.aspect_type || '-'} | ${formatDegreesMinutesSeconds(a.orb)}`
+                ),
                 "====================\n"
-            ].join('\n') : "沒有相位";
+            ];
+            sectionData.table = tableLines.join('\n');
 
-            // 這裡的 title 參數現在只用於網頁顯示，複製出來的內容自帶標題
-            return createResultSection(title, content, false, 'interaction-header-style');
+            // --- 敘述內容生成 ---
+            const narrativeLines = [
+                `【${sectionTitle}】`
+            ];
+            // 假設 planet_positions 在這裡是可以訪問的全局或通過參數傳入，用於獲取更多詳細信息
+            // 如果沒有，就只使用 a.p1_name, a.p2_name
+            aspects.sort((a, b) => DISPLAY_ORDER_NAMES.indexOf(a.p1_name) - DISPLAY_ORDER_NAMES.indexOf(b.p1_name) || DISPLAY_ORDER_NAMES.indexOf(a.p2_name) - DISPLAY_ORDER_NAMES.indexOf(b.p2_name)).forEach(a => {
+                // 你可以根據需要為敘述版添加更多細節，例如星體所落星座/宮位
+                narrativeLines.push(`${name1}的${a.p1_name}與${name2}的${a.p2_name}形成${a.aspect_name}相位，容許度為${formatDegreesMinutesSeconds(a.orb)}。`);
+            });
+            narrativeLines.push("\n");
+            sectionData.narrative = narrativeLines.join('\n');
+
+            return sectionData;
         }
 
-        // 生成行星落宮的HTML
-        // 請用此版本完整取代舊的 buildOverlayHTML 函式
-        function buildOverlayHTML(overlayData, guestName, hostName, title) {
-            // 【新修改】建立動態的表頭註解
+        // 修改後的 buildInterAspectsHTML 函數
+        // 它現在接收由 generateInterAspectsSectionData 預先生成的內容物件
+        function buildInterAspectsHTML(sectionsData, name1, name2, isTransit = false) { // isTransit 參數現在主要用於標題顯示，不再影響內容生成
+            // 檢查 sectionsData 是否有效
+            if (!sectionsData || (!sectionsData.table && !sectionsData.narrative)) {
+                return `<div class="error-message">交互相位數據缺失或格式不正確。</div>`;
+            }
+
+            const title = isTransit ? `${name1}與${name2}相位` : `交互相位`; // 網頁上顯示的標題
+
+            return `
+        <div class="result-section-item">
+            ${createResultSection(title, '', false, 'interaction-header-style')}
+            <pre class="table-content">${sectionsData.table}</pre>
+            <div class="narrative-content" style="display:none;">${sectionsData.narrative}</div>
+            <button class="section-copy-btn">複製章節</button>
+        </div>`;
+        }
+
+        // 新增的輔助函數：生成行星落宮部分的數據（表格和敘述兩種格式）
+        function generateOverlaySectionData(overlayData, guestName, hostName, title) {
+            const sectionData = { table: '', narrative: '' };
             const dynamicHeaderComment = `${guestName}星體 | 星座度數(度分) | 落入${hostName}宮位(度分)`;
 
-            const content = (overlayData?.length) ? [
+            if (!overlayData?.length) {
+                sectionData.table = "資料缺失";
+                sectionData.narrative = `${title} 的行星落宮資料缺失，無法提供敘述。`;
+                return sectionData;
+            }
+
+            // --- 表格內容生成 ---
+            const tableLines = [
                 `==== ${title} ====`,
-                dynamicHeaderComment, // <--- 將這裡替換為動態生成的表頭註解
-                "-----------------------------",
+                dynamicHeaderComment, // 表格標頭
+                "-----------------------------", // 表格分隔線
                 ...overlayData.sort((a, b) => DISPLAY_ORDER_NAMES.indexOf(a.planet_name) - DISPLAY_ORDER_NAMES.indexOf(b.planet_name))
                     .map(o => `${o.planet_name} | ${o.zodiac_position_formatted} | ${o.house_in_target_chart}宮(${formatDegreesMinutesSeconds(o.degree_in_target_house)})`),
                 "====================\n"
-            ].join('\n') : "資料缺失";
+            ];
+            sectionData.table = tableLines.join('\n');
 
-            return createResultSection(title, content, false, 'interaction-header-style');
+            // --- 敘述內容生成 ---
+            const narrativeLines = [
+                `【${title}】`
+            ];
+            overlayData.sort((a, b) => DISPLAY_ORDER_NAMES.indexOf(a.planet_name) - DISPLAY_ORDER_NAMES.indexOf(b.planet_name))
+                .forEach(o => {
+                    narrativeLines.push(
+                        `${guestName}的${o.planet_name}（位於${o.zodiac_position_formatted}）落入${hostName}的${o.house_in_target_chart}宮（${formatDegreesMinutesSeconds(o.degree_in_target_house)}）。`
+                    );
+                });
+            narrativeLines.push("\n");
+            sectionData.narrative = narrativeLines.join('\n');
+
+            return sectionData;
+        }
+
+        // 修改後的 buildOverlayHTML 函數
+        // 它現在接收由 generateOverlaySectionData 預先生成的內容物件
+        function buildOverlayHTML(sectionsData, guestName, hostName, title) { // guestName, hostName 參數現在主要用於標題顯示，不再影響內容生成
+            // 檢查 sectionsData 是否有效
+            if (!sectionsData || (!sectionsData.table && !sectionsData.narrative)) {
+                return `<div class="error-message">行星落宮資料缺失或格式不正確。</div>`;
+            }
+
+            // 網頁上顯示的標題
+            // 注意：這裡的 title 參數是從外部傳入的，例如 `${name1}星體落入${name2}宮位`
+            // 它與 generateOverlaySectionData 內部用於文本標題的 title 是同一個
+            return `
+        <div class="result-section-item">
+            ${createResultSection(title, '', false, 'interaction-header-style')}
+            <pre class="table-content">${sectionsData.table}</pre>
+            <div class="narrative-content" style="display:none;">${sectionsData.narrative}</div>
+            <button class="section-copy-btn">複製章節</button>
+        </div>`;
         }
         
         // 建立單個結果區塊的HTML (可重用)
