@@ -962,65 +962,68 @@
                 if (chartWrapper) {
                     const titleElement = chartWrapper.querySelector('.chart-main-header h2');
                     // 1. 複製大標題
-                    let textToCopy = titleElement ? `${titleElement.textContent}\n====================\n\n` : '';
+                    let textToCopy = titleElement ? `${titleElement.textContent}\n====================\n` : '';
 
                     // 2. 遍歷非隱私區塊 (.sub-sections-container)，僅複製其內部的 <pre> 內容
                     chartWrapper.querySelectorAll('.sub-sections-container .result-section-item').forEach(block => {
-                        event.stopPropagation(); // 阻止事件向上冒泡，避免父級重複觸發
                         const pre = block.querySelector('pre');
                         if (pre) {
-                            textToCopy += `${pre.textContent}\n\n`;
+                            textToCopy += `${pre.textContent}\n`;
                         }
                     });
 
                     // 3. 呼叫複製函式 (我們傳遞一個有 innerText 屬性的物件來模擬元素)
                     copyContent({ innerText: textToCopy.trim() }, button);
-                    event.stopPropagation(); // 阻止事件向上冒泡，避免父級重複觸發
                     return; // 處理完畢，直接返回
-                }} else if (button.classList.contains('section-copy-btn')) {
-                    event.stopPropagation(); // 阻止事件向上冒泡，避免父級重複觸發
-                    // 對於「複製章節」按鈕，查找其最近的父級 `.result-section-item`
-                    // 【修正】找到父級 item 後，再精準選取內部的 <pre> 元素作為複製目標
-                    const sectionItem = button.closest('.result-section-item');
-                    event.stopPropagation(); // 阻止事件向上冒泡，避免父級重複觸發
-                    if (sectionItem) {
-                        targetElement = sectionItem.querySelector('pre');
-                    }
-                } else if (button.classList.contains('copy-report-btn')) {
-                    event.stopPropagation(); // 阻止事件向上冒泡，避免父級重複觸發
-                    // 對於「複製完整報告」按鈕，執行特殊邏輯以組合所有需要的內容，並排除標題和隱私資訊
-                    const reportWrapper = button.closest('.report-wrapper');
-                    if (reportWrapper) {
-                        let fullText = '';
-
-                        // 1. 取得報告總標題
-                        const reportTitleElement = reportWrapper.querySelector('.report-main-header h2');
-                        if (reportTitleElement) {
-                            fullText += `${reportTitleElement.textContent}\n====================\n\n`;
-                        }
-
-                        // 2. 遍歷報告內所有的內容區塊 (星盤或互動區塊)
-                        reportWrapper.querySelectorAll('.chart-wrapper, .sub-sections-container > .result-section-item').forEach(section => {
-                             // 情況 A: 如果區塊是一個完整的星盤 (chart-wrapper)
-                            if (section.classList.contains('chart-wrapper')) {
-                                fullText += copyChartWrapper(section);
-                            }
-                            // 情況 B: 如果區塊是一個互動分析區塊 (例如相位、落宮)
-                             else if (section.classList.contains('result-section-item')) {
-                                const pre = section.querySelector('pre');
-                                if (pre) fullText += `${pre.textContent}\n\n`; // 這些區塊的 <pre> 內容已包含標題
-                            }
-                        });
-
-                        copyContent({ innerText: fullText.trim() }, button);
-                        return; // 處理完畢，直接返回
-                    }
                 }
+            } else if (button.classList.contains('section-copy-btn')) {
+                // 對於「複製章節」按鈕，查找其最近的父級 `.result-section-item`
+                // 【修正】找到父級 item 後，再精準選取內部的 <pre> 元素作為複製目標
+                const sectionItem = button.closest('.result-section-item');
+                if (sectionItem) {
+                    targetElement = sectionItem.querySelector('pre');
+                }
+            } else if (button.classList.contains('copy-report-btn')) {
+                event.stopPropagation(); // 阻止事件向上冒泡，避免父級重複觸發
+                // 對於「複製完整報告」按鈕，執行特殊邏輯以組合所有需要的內容，並排除標題和隱私資訊
+                const reportWrapper = button.closest('.report-wrapper');
+                if (reportWrapper) {
+                    let fullText = '';
 
-                if (targetElement) {
-                    copyContent(targetElement, button);
-                } else if (!button.classList.contains('copy-chart-btn') && !button.classList.contains('copy-report-btn')) {
+                    // 1. 取得報告總標題
+                    const reportTitleElement = reportWrapper.querySelector('.report-main-header h2');
+                    if (reportTitleElement) {
+                        fullText += `${reportTitleElement.textContent}\n====================\n`;
+                    }
 
+                    // 2. 遍歷報告內所有的內容區塊
+                    reportWrapper.querySelectorAll('.chart-wrapper, .result-section-item').forEach(section => {
+                        // 情況 A: 如果區塊是一個完整的星盤 (chart-wrapper)
+                        if (section.classList.contains('chart-wrapper')) {
+                            const chartTitleElement = section.querySelector('.chart-main-header h2');
+                            if (chartTitleElement) {
+                                fullText += `\n--- ${chartTitleElement.textContent} ---\n\n`; // 添加星盤標題
+                            }
+                            // 只複製此星盤內非隱私部分的內容 (<pre> 標籤)
+                            section.querySelectorAll('.sub-sections-container .result-section-item').forEach(block => {
+                                const pre = block.querySelector('pre');
+                                if (pre) {
+                                    fullText += `${pre.textContent}\n`;
+                                }
+                            });
+                        }
+                        // 情況 B: 如果區塊是一個獨立的分析區塊 (例如交互相位)，且它不是 .chart-wrapper 內部的一部分
+                        else if (section.classList.contains('result-section-item') && !section.closest('.chart-wrapper')) {
+                            const pre = section.querySelector('pre');
+                            if (pre) {
+                                fullText += `${pre.textContent}\n`;
+                            }
+                        }
+                    });
+
+                    copyContent({ innerText: fullText.trim() }, button);
+                    return; // 處理完畢，直接返回
+                }
             }
 
             if (targetElement) {
@@ -1035,19 +1038,25 @@
             }
         }
 
+        // 由於 `copyChartWrapper` 的邏輯已經整合到 `handleCopyButtonClickSimplified` 中，
+        // 並且不再需要作為一個獨立的外部函數，可以考慮移除或將其內部邏輯合併。
+        // 在此修改中，我將其功能直接內聯處理，以避免重複邏輯。
+        // 因此，原來的 `copyChartWrapper` 函數在此版本中不再被直接呼叫，可以移除或註釋掉。
+        /*
         function copyChartWrapper(chartWrapper) {
             let text = '';
             const chartTitleElement = chartWrapper.querySelector('.chart-main-header h2');
             if (chartTitleElement) {
-                text += `--- ${chartTitleElement.textContent} ---\n\n`;
+                text += `--- ${chartTitleElement.textContent} ---\n`;
             }
             // 只複製此星盤內非隱私部分的內容 (<pre> 標籤)
             chartWrapper.querySelectorAll('.sub-sections-container .result-section-item').forEach(block => {
-                    const pre = block.querySelector('pre');
-                    if (pre) text += `${pre.textContent}\n\n`;
-                });
+                const pre = block.querySelector('pre');
+                if (pre) text += `${pre.textContent}\n`;
+            });
             return text;
         }
+        */
         // 設置複製按鈕事件監聽器的函數
         function setupCopyListenersSimplified() {
             const copyButtons = document.querySelectorAll('.copy-chart-btn, .section-copy-btn, .copy-report-btn');
