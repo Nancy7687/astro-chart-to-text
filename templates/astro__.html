@@ -2469,9 +2469,9 @@
     return `
         <div class="${sectionHeaderClass} ${headerStyleClass}">
             <h3>${title}</h3>
-            ${copyButtonHtml} {/* 複製按鈕現在直接放在標題 div 內部 */}
+            ${copyButtonHtml}
         </div>
-        <div class="result-section-content scrollable-content"> {/* 內容區塊重新加回 */}
+        <div class="result-section-content scrollable-content">
             <pre class="table-content">${content}</pre> {/* content (來自 summary.table, cusp.table 等) 放在這裡 */}
         </div>
         `;
