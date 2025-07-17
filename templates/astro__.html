@@ -2314,29 +2314,26 @@
             </div>
 
             <div class="summary-section-container">
-                <div class="result-section-item"> ${createResultSection('星盤基礎數據', true, 'summary-header-style')}
-                    <pre class="table-content scrollable-content">${summary.table}</pre>
-                    <pre class="narrative-content scrollable-content " style="display:none;">${summary.narrative}</pre>
-                    </div>
+                <div class="result-section-item">
+                    ${createResultSection('星盤基礎數據', summary.table, true, 'summary-header-style')}
+                    <pre class="narrative-content scrollable-content" style="display:none;">${summary.narrative}</pre>
+                </div>
             </div>
 
             <div class="sub-sections-container">
                 <div class="result-section-item">
-                    ${createResultSection('宮頭', false, 'cusp-header-style')}
-                    <pre class="table-content scrollable-content">${cusp.table}</pre>
-                    <pre class="narrative-content scrollable-content " style="display:none;">${cusp.narrative}</pre>
+                    ${createResultSection('宮頭', cusp.table, false, 'cusp-header-style')}
+                    <pre class="narrative-content scrollable-content" style="display:none;">${cusp.narrative}</pre>
                 </div>
 
                 <div class="result-section-item">
-                    ${createResultSection('星體位置', false, 'planet-header-style')}
-                    <pre class="table-content scrollable-content">${planet.table}</pre>
-                    <pre class="narrative-content scrollable-content " style="display:none;">${planet.narrative}</pre>
+                    ${createResultSection('星體位置', planet.table, false, 'planet-header-style')}
+                    <pre class="narrative-content scrollable-content" style="display:none;">${planet.narrative}</pre>
                 </div>
 
                 <div class="result-section-item">
-                    ${createResultSection('主要相位', false, 'aspect-header-style')}
-                    <pre class="table-content scrollable-content">${aspect.table}</pre>
-                    <pre class="narrative-content scrollable-content " style="display:none;">${aspect.narrative}</pre>
+                    ${createResultSection('主要相位', aspect.table, false, 'aspect-header-style')}
+                    <pre class="narrative-content scrollable-content" style="display:none;">${aspect.narrative}</pre>
                 </div>
             </div>
         </div>`;
@@ -2460,7 +2457,7 @@
         function createResultSection(title, content, isSummary = false, headerStyleClass = '') {
             // 根據你的要求：所有章節（包括 summary）都需要有複製按鈕。
             // 所以 copyButtonHtml 無條件地生成按鈕的 HTML 字串。
-            const copyButtonHtml = `<button class="section-copy-btn">複製章節</button>`;
+            const copyButtonHtml = `<button class="section-copy-btn">複製</button>`;
 
             // sectionHeaderClass 仍根據 isSummary 判斷，用於樣式區分 (summary-header-style vs. result-section-header)。
             const sectionHeaderClass = isSummary ? 'summary-section-header' : 'result-section-header';
