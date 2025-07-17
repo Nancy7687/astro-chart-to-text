@@ -883,8 +883,7 @@
             }
         
             .result-section-item {
-                flex: 1 1 calc(50% - 15px); /* 在兩列佈局中，每個項目佔 50% 寬度，並減去 gap */
-                max-width: calc(50% - 15px); /* 確保不會超過 50% */
+                flex-direction: row;
                 margin-bottom: 0; /* 移除垂直間距，由 gap 控制 */
             }
         
@@ -916,10 +915,7 @@
                 padding: 0 30px 25px;
             }
         
-            .result-section-item {
-                flex: 1 1 calc(33.333% - 20px); /* 桌面三列佈局 */
-                max-width: calc(33.333% - 20px);
-            }
+
         }
 
     </style>
@@ -1270,7 +1266,7 @@
                     return; // 處理完畢，直接返回
                 }
             } else if (button.classList.contains('section-copy-btn')) {
-                // 對於「複製章節」按鈕，查找其最近的父級 `.result-section-item`
+                // 對於「複製」按鈕，查找其最近的父級 `.result-section-item`
                 // 【修正】找到父級 item 後，再精準選取內部的 <pre> 元素作為複製目標
                 const sectionItem = button.closest('.result-section-item');
                 if (sectionItem) {
@@ -2314,21 +2310,21 @@
 
             <div class="sub-sections-container">
                 <div class="result-section-item">
-                    <button class="section-copy-btn">複製章節</button>
+                    <button class="section-copy-btn">複製</button>
                     ${createResultSection('宮頭', false, 'cusp-header-style')}
                     <pre class="table-content scrollable-content">${cusp.table}</pre>
                     <pre class="narrative-content scrollable-content " style="display:none;">${cusp.narrative}</pre>
                 </div>
 
                 <div class="result-section-item">
-                    <button class="section-copy-btn">複製章節</button>
+                    <button class="section-copy-btn">複製</button>
                     ${createResultSection('星體位置', false, 'planet-header-style')}
                     <pre class="table-content scrollable-content">${planet.table}</pre>
                     <pre class="narrative-content scrollable-content " style="display:none;">${planet.narrative}</pre>
                 </div>
 
                 <div class="result-section-item">
-                    <button class="section-copy-btn">複製章節</button>
+                    <button class="section-copy-btn">複製</button>
                     ${createResultSection('主要相位', false, 'aspect-header-style')}
                     <pre class="table-content scrollable-content">${aspect.table}</pre>
                     <pre class="narrative-content scrollable-content " style="display:none;">${aspect.narrative}</pre>
@@ -2391,7 +2387,7 @@
             return `
         <div class="result-section-item">
             ${createResultSection(title, false, 'interaction-header-style')}
-            <button class="section-copy-btn">複製章節</button>
+            <button class="section-copy-btn">複製</button>
             
             <pre class="table-content scrollable-content">${sectionsData.table}</pre>
             
@@ -2449,7 +2445,7 @@
             return `
         <div class="result-section-item">
             ${createResultSection(title, false, 'interaction-header-style')}
-            <button class="section-copy-btn">複製章節</button>
+            <button class="section-copy-btn">複製</button>
             
             <pre class="table-content scrollable-content">${sectionsData.table}</pre>
             
