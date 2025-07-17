@@ -895,7 +895,7 @@
             }
         
             .result-section-item {
-                flex-direction: row;
+                display: flex; /* 讓子區塊在平板上可以並排 */
                 margin-bottom: 0; /* 移除垂直間距，由 gap 控制 */
             }
         
@@ -2472,7 +2472,7 @@
             ${copyButtonHtml}
         </div>
         <div class="result-section-content scrollable-content">
-            <pre class="table-content">${content}</pre> {/* content (來自 summary.table, cusp.table 等) 放在這裡 */}
+            <pre class="table-content">${content}</pre> 
         </div>
         `;
 }
