@@ -2458,24 +2458,23 @@
         }
         
         function createResultSection(title, content, isSummary = false, headerStyleClass = '') {
-    // === 確保 copyButtonHtml 在這裡被定義 ===
-    // 根據 isSummary 判斷是否顯示複製按鈕
-    // 如果 isSummary 為 true (基礎數據)，則不顯示複製按鈕；否則顯示。
-    const copyButtonHtml = isSummary ? '' : `<button class="section-copy-btn">複製章節</button>`;
-    // ======================================
+            // 根據你的要求：所有章節（包括 summary）都需要有複製按鈕。
+            // 所以 copyButtonHtml 無條件地生成按鈕的 HTML 字串。
+            const copyButtonHtml = `<button class="section-copy-btn">複製章節</button>`;
 
-    const sectionHeaderClass = isSummary ? 'summary-section-header' : 'result-section-header'; // 這行可以在 copyButtonHtml 定義之後
+            // sectionHeaderClass 仍根據 isSummary 判斷，用於樣式區分 (summary-header-style vs. result-section-header)。
+            const sectionHeaderClass = isSummary ? 'summary-section-header' : 'result-section-header';
 
-    return `
+            return `
         <div class="${sectionHeaderClass} ${headerStyleClass}">
             <h3>${title}</h3>
-            ${copyButtonHtml}
+            ${copyButtonHtml} {/* 複製按鈕現在直接放在標題 div 內部，所有章節都有 */}
         </div>
         <div class="result-section-content scrollable-content">
             <pre class="table-content">${content}</pre> 
         </div>
-        `;
-}
+    `;
+        }
         // 設定複製按鈕的監聽器
         // 請用此版本完整取代舊的 setupCopyListeners 函式
         function setupCopyListeners() {
