@@ -2434,17 +2434,20 @@
             return sectionData;
         }
 
-        function buildOverlayHTML(sectionsData, guestName, hostName, title) {
+        function buildOverlayHTML(sectionsData, guestName, hostName) {
             // 檢查 sectionsData 是否有效
             if (!sectionsData || (typeof sectionsData.table === 'undefined' && typeof sectionsData.narrative === 'undefined')) {
                 return `<div class="error-message">行星落宮資料缺失或格式不正確。</div>`;
             }
 
-            // title 參數是從外部傳入的，例如 `${name1}星體落入${name2}宮位`
-            // createResultSection 現在將接收完整的四個參數
+            // 在此函數內部生成標題，使用之前的格式
+            const displayTitle = `【${guestName}星體落入${hostName}宮位】`;
+            // 如果你希望使用「您星體落入對方宮位」的格式，請改用下面這行：
+            // const displayTitle = `【您星體落入對方宮位】(${guestName}星體落入${hostName}宮位)`;
+
             return `
         <div class="result-section-item">
-            ${createResultSection(title, sectionsData.table, false, 'interaction-header-style')}
+            ${createResultSection(displayTitle, sectionsData.table, false, 'interaction-header-style')}
             <pre class="narrative-content scrollable-content" style="display:none;">${sectionsData.narrative}</pre>
         </div>`;
         }
