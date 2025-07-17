@@ -357,23 +357,24 @@
         }
         
         .result-section-item {
-            border: 1px solid #e4e6eb;
+            border: 1px solid #e4e6eb; /* 根據你原來的設定選擇此顏色，或 #eee */
             border-radius: 6px;
             flex: 1 1 300px;
             display: flex;
             flex-direction: column;
             background-color: #fff;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-            width: 100%; /* 每個具體內容區塊（如宮頭、星體）的寬度 */
+            width: 100%;
             box-sizing: border-box;
-            /* 重要的：給內部內容留出空間，並處理溢出 */
-            padding: 15px; /* 內容與邊框的間距 */
-            border: 1px solid #eee; /* 可選：方便調試 */
-            margin-bottom: 15px; /* 各章節之間的間距 */
-            /* background-color: #f9f9f9; /* 可選：視覺區分 */ 
+            /* 移除 padding，讓內容直接貼齊邊框內側 */
+            /* padding: 15px; <-- 刪除或註釋掉這一行 */
+    
+            margin-bottom: 15px; /* 各章節之間的間距保持不變 */
+    
             /* 確保內部內容不會溢出 */
-            overflow: hidden; /* 隱藏超出部分的內容，通常不建議，除非確定內容會被正確處理 */
-            /* 更好的做法是讓內容本身換行或捲動 */
+            /* 如果你希望內容自動換行或捲動，而不是被隱藏，可以調整或移除這裡的 overflow */
+            overflow: hidden; /* 如果你確定內容會被正確處理且不希望滾動條，則保留 */
+            /* 如果內容可能溢出，且需要滾動，通常會在這裡設定 overflow-y: auto; 或 overflow: auto; */
         }
         
         /* 章節標題 */
@@ -2383,7 +2384,6 @@
         // 它現在接收由 generateInterAspectsSectionData 預先生成的內容物件
         function buildInterAspectsHTML(sectionsData, name1, name2, isTransit = false) {
             // 檢查 sectionsData 是否有效
-            // 這裡檢查 sectionsData 是否存在，以及它是否包含 table 和 narrative 屬性
             if (!sectionsData || (typeof sectionsData.table === 'undefined' && typeof sectionsData.narrative === 'undefined')) {
                 return `<div class="error-message">交互相位數據缺失或格式不正確。</div>`;
             }
@@ -2392,10 +2392,8 @@
 
             return `
         <div class="result-section-item">
-            ${createResultSection(title, false, 'interaction-header-style')}
-            <pre class="table-content scrollable-content">${sectionsData.table}</pre>
-            <pre class="narrative-content scrollable-content " style="display:none;">${sectionsData.narrative}</pre>
-            
+            ${createResultSection(title, sectionsData.table, false, 'interaction-header-style')}
+            <pre class="narrative-content scrollable-content" style="display:none;">${sectionsData.narrative}</pre>
         </div>`;
         }
         // 新增的輔助函數：生成行星落宮部分的數據（表格和敘述兩種格式）
@@ -2438,19 +2436,16 @@
 
         function buildOverlayHTML(sectionsData, guestName, hostName, title) {
             // 檢查 sectionsData 是否有效
-            // 確保 sectionsData 存在，並且 table 和 narrative 屬性至少有一個有值
             if (!sectionsData || (typeof sectionsData.table === 'undefined' && typeof sectionsData.narrative === 'undefined')) {
                 return `<div class="error-message">行星落宮資料缺失或格式不正確。</div>`;
             }
 
             // title 參數是從外部傳入的，例如 `${name1}星體落入${name2}宮位`
-            // createResultSection 現在只接受 title 和樣式類別
+            // createResultSection 現在將接收完整的四個參數
             return `
         <div class="result-section-item">
-            ${createResultSection(title, false, 'interaction-header-style')}
-            <pre class="table-content scrollable-content">${sectionsData.table}</pre>
-            <pre class="narrative-content scrollable-content " style="display:none;">${sectionsData.narrative}</pre>
-            
+            ${createResultSection(title, sectionsData.table, false, 'interaction-header-style')}
+            <pre class="narrative-content scrollable-content" style="display:none;">${sectionsData.narrative}</pre>
         </div>`;
         }
         
