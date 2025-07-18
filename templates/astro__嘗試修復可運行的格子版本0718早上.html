@@ -4,13 +4,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>占星命盤文字資料</title>
+    <title>占星命盤計算</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet"
+        href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.13.2/themes/smoothness/jquery-ui.css">
+
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-    <!-- 1. 引入轉輪套件 (此為範例，請替換成您選擇的套件) -->
-    <!-- <link href="https://cdn.jsdelivr.net/npm/pickerjs@1.2.1/dist/picker.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/pickerjs@1.2.1/dist/picker.min.js"></script> -->
-
+    <!-- <script src="https://cdn.jsdelivr.net/npm/pickerjs"></script> -->
     <style>
         html,
         body {
@@ -623,7 +624,7 @@
             font-size: 1.25rem;
             padding: 8px 16px;
             border-radius: 8px;
-            /* 【新增】設定 8px 的圓角 */
+            /* 新增設定 8px 的圓角 */
             transition: all 0.2s ease-in-out;
             /* 加上過渡效果讓 hover 更平滑 */
         }
@@ -1117,6 +1118,7 @@
                 data-tab-content="synastryChartSection">雙人合盤<br>or<br>行運盤</button>
         </div>
 
+
         <div id="singleChartSection" class="chart-section">
             <h2 class="text-xl md:text-2xl font-semibold text-gray-700 mb-2">姓名</h2>
             <div class="input-group">
@@ -1125,9 +1127,17 @@
             </div>
             <br>
             <h2 class="text-xl md:text-2xl font-semibold text-gray-700 mb-2">出生日期與時間</h2>
-            <div class="date-time-grid">
-                <div class="input-group"><label for="single_year">西元年:</label><input type="number" id="single_year"
-                        class="input-field" value="1999" min="1900" max="2100">
+
+            <div class="date-time-input-container">
+                <label for="birthDateTimeCombined">出生日期和時間:</label>
+                <input type="text" id="birthDateTimeCombined" class="input-field" readonly placeholder="點擊選擇出生日期時間">
+                <input type="hidden" id="finalBirthDateTime" name="birth_date_time">
+            </div>
+
+            <!-- <div class="date-time-grid">
+                <div class="input-group">
+                    <label for="single_year">西元年:</label>
+                    <input type="text" id="single_year" class="input-field" value="1999" readonly placeholder="點擊選擇年份">
                     <p id="single_year-error" class="input-error-message" aria-live="polite"></p>
                 </div>
                 <div class="input-group">
@@ -1142,15 +1152,15 @@
                 </div>
                 <div class="input-group">
                     <label for="single_hour">時 (0-23):</label>
-                    <input type="number" id="single_hour" class="input-field" value="12" min="0" max="23">
+                    <input type="text" id="single_hour" class="input-field" value="12" readonly placeholder="點擊選擇小時">
                     <p id="single_hour-error" class="input-error-message" aria-live="polite"></p>
                 </div>
                 <div class="input-group">
                     <label for="single_minute">分 (0-59):</label>
-                    <input type="number" id="single_minute" class="input-field" value="00" min="0" max="59">
+                    <input type="text" id="single_minute" class="input-field" value="00" readonly placeholder="點擊選擇分鐘">
                     <p id="single_minute-error" class="input-error-message" aria-live="polite"></p>
                 </div>
-            </div>
+            </div> -->
 
             <h2 class="text-xl md:text-2xl font-semibold text-gray-700 mb-2">出生地點與時區</h2>
             <div class="location-timezone-grid">
@@ -1206,33 +1216,33 @@
                     <h3 class="text-xl font-bold text-gray-800 mb-4 text-center">命盤A</h3>
                     <div class="input-group"><label for="comp1_name">姓名:</label><input type="text" id="comp1_name"
                             class="input-field" value="您">
-                        <p id="comp1_name-error" class="input-error-message" aria-live="polite"></p>
-                    </div>
+                        <p id="comp1_name-error" class="input-error-message" aria-live="polite">
+                    
                     <h4 class="text-lg font-semibold text-gray-700 mt-4 mb-2">出生日期與時間</h4>
-                    <div class="date-time-grid">
-                        <div class="input-group"><label for="comp1_year">西元年:</label><input type="number"
-                                id="comp1_year" class="input-field" value="1999" min="1900" max="2100">
-                            <p id="comp1_year-error" class="input-error-message" aria-live="polite"></p>
-                        </div>
-                        <div class="input-group"><label for="comp1_month">月:</label><input type="number"
-                                id="comp1_month" class="input-field" value="1" min="1" max="12">
-                            <p id="comp1_month-error" class="input-error-message" aria-live="polite"></p>
-                        </div>
-                        <div class="input-group"><label for="comp1_day">日:</label><input type="number" id="comp1_day"
-                                class="input-field" value="1" min="1" max="31">
-                            <p id="comp1_day-error" class="input-error-message" aria-live="polite"></p>
-                        </div>
+
+                    <div class="date-time-input-container">
+                        <label for="comp1_birthDateTimeCombined">西元年/月/日/時/分:</label>
+                        <input type="text" id="comp1_birthDateTimeCombined" class="input-field" readonly
+                            placeholder="點擊選擇出生日期時間">
+                        <input type="hidden" id="comp1_finalBirthDateTime" name="comp1_birth_date_time">
+                        <p id="comp1_birthDateTimeCombined-error" class="input-error-message" aria-live="polite"></p>
+                    </div>
+
+                    <!-- <div class="date-time-grid">
+                        <div class="input-group"><label for="comp1_year">西元年:</label><input type="number" id="comp1_year" class="input-field" value="1999" min="1900" max="2100"><p id="comp1_year-error" class="input-error-message" aria-live="polite"></p></div>
+                        <div class="input-group"><label for="comp1_month">月:</label><input type="number" id="comp1_month" class="input-field" value="1" min="1" max="12"><p id="comp1_month-error" class="input-error-message" aria-live="polite"></p></div>
+                        <div class="input-group"><label for="comp1_day">日:</label><input type="number" id="comp1_day" class="input-field" value="1" min="1" max="31"><p id="comp1_day-error" class="input-error-message" aria-live="polite"></p></div>
                         <div class="input-group">
                             <label for="comp1_hour">時 (0-23):</label>
-                            <input type="number" id="comp1_hour" class="input-field" value="12" min="0" max="23">
+                            <input type="text" id="comp1_hour" class="input-field" value="12" readonly placeholder="點擊選擇小時">
                             <p id="comp1_hour-error" class="input-error-message" aria-live="polite"></p>
                         </div>
                         <div class="input-group">
                             <label for="comp1_minute">分 (0-59):</label>
-                            <input type="number" id="comp1_minute" class="input-field" value="00" min="0" max="59">
+                            <input type="text" id="comp1_minute" class="input-field" value="00" readonly placeholder="點擊選擇分鐘">
                             <p id="comp1_minute-error" class="input-error-message" aria-live="polite"></p>
                         </div>
-                    </div>
+                    </div> -->
                     <h4 class="text-lg font-semibold text-gray-700 mt-4 mb-2">出生地點與時區</h4>
                     <div class="location-timezone-grid">
                         <div class="input-group"><label for="comp1_latitude">緯度:</label><input type="number"
@@ -1267,28 +1277,22 @@
                         <p id="comp2_name-error" class="input-error-message" aria-live="polite"></p>
                     </div>
                     <h4 class="text-lg font-semibold text-gray-700 mt-4 mb-2">出生日期與時間</h4>
-                    <div class="date-time-grid">
-                        <div class="input-group"><label for="comp2_year">西元年:</label><input type="number"
-                                id="comp2_year" class="input-field" value="1999" min="1900" max="2100">
-                            <p id="comp2_year-error" class="input-error-message" aria-live="polite"></p>
-                        </div>
-                        <div class="input-group"><label for="comp2_month">月:</label><input type="number"
-                                id="comp2_month" class="input-field" value="6" min="1" max="12">
-                            <p id="comp2_month-error" class="input-error-message" aria-live="polite"></p>
-                        </div>
-                        <div class="input-group"><label for="comp2_day">日:</label><input type="number" id="comp2_day"
-                                class="input-field" value="15" min="1" max="31">
-                            <p id="comp2_day-error" class="input-error-message" aria-live="polite"></p>
-                        </div>
-                        <div class="input-group"><label for="comp2_hour">時:</label><input type="number" id="comp2_hour"
-                                class="input-field" value="12" min="0" max="23">
-                            <p id="comp2_hour-error" class="input-error-message" aria-live="polite"></p>
-                        </div>
-                        <div class="input-group"><label for="comp2_minute">分:</label><input type="number"
-                                id="comp2_minute" class="input-field" value="00" min="0" max="59">
-                            <p id="comp2_minute-error" class="input-error-message" aria-live="polite"></p>
-                        </div>
+
+                    <div class="date-time-input-container">
+                        <label for="[YOUR_PREFIX]_birthDateTimeCombined">西元年/月/日/時/分:</label>
+                        <input type="text" id="[YOUR_PREFIX]_birthDateTimeCombined" class="input-field" readonly
+                            placeholder="點擊選擇出生日期時間">
+                        <input type="hidden" id="[YOUR_PREFIX]_finalBirthDateTime" name="[YOUR_PREFIX]_birth_date_time">
+                        <p id="[YOUR_PREFIX]_birthDateTimeCombined-error" class="input-error-message"
+                            aria-live="polite"></p>
                     </div>
+                    <!-- <div class="date-time-grid">
+                        <div class="input-group"><label for="comp2_year">西元年:</label><input type="number" id="comp2_year" class="input-field" value="1999" min="1900" max="2100"><p id="comp2_year-error" class="input-error-message" aria-live="polite"></p></div>
+                        <div class="input-group"><label for="comp2_month">月:</label><input type="number" id="comp2_month" class="input-field" value="6" min="1" max="12"><p id="comp2_month-error" class="input-error-message" aria-live="polite"></p></div>
+                        <div class="input-group"><label for="comp2_day">日:</label><input type="number" id="comp2_day" class="input-field" value="15" min="1" max="31"><p id="comp2_day-error" class="input-error-message" aria-live="polite"></p></div>
+                        <div class="input-group"><label for="comp2_hour">時:</label><input type="number" id="comp2_hour" class="input-field" value="12" min="0" max="23"><p id="comp2_hour-error" class="input-error-message" aria-live="polite"></p></div>
+                        <div class="input-group"><label for="comp2_minute">分:</label><input type="number" id="comp2_minute" class="input-field" value="00" min="0" max="59"><p id="comp2_minute-error" class="input-error-message" aria-live="polite"></p></div>
+                    </div> -->
                     <h4 class="text-lg font-semibold text-gray-700 mt-4 mb-2">出生地點與時區</h4>
                     <div class="location-timezone-grid">
                         <div class="input-group"><label for="comp2_latitude">緯度:</label><input type="number"
@@ -1326,28 +1330,21 @@
                         <p id="natal_name-error" class="input-error-message" aria-live="polite"></p>
                     </div>
                     <h4 class="text-lg font-semibold text-gray-700 mt-4 mb-2">出生日期與時間</h4>
-                    <div class="date-time-grid">
-                        <div class="input-group"><label for="natal_year">西元年:</label><input type="number"
-                                id="natal_year" class="input-field" value="1999" min="1900" max="2100">
-                            <p id="natal_year-error" class="input-error-message" aria-live="polite"></p>
-                        </div>
-                        <div class="input-group"><label for="natal_month">月:</label><input type="number"
-                                id="natal_month" class="input-field" value="1" min="1" max="12">
-                            <p id="natal_month-error" class="input-error-message" aria-live="polite"></p>
-                        </div>
-                        <div class="input-group"><label for="natal_day">日:</label><input type="number" id="natal_day"
-                                class="input-field" value="1" min="1" max="31">
-                            <p id="natal_day-error" class="input-error-message" aria-live="polite"></p>
-                        </div>
-                        <div class="input-group"><label for="natal_hour">時:</label><input type="number" id="natal_hour"
-                                class="input-field" value="12" min="0" max="23">
-                            <p id="natal_hour-error" class="input-error-message" aria-live="polite"></p>
-                        </div>
-                        <div class="input-group"><label for="natal_minute">分:</label><input type="number"
-                                id="natal_minute" class="input-field" value="00" min="0" max="59">
-                            <p id="natal_minute-error" class="input-error-message" aria-live="polite"></p>
-                        </div>
+
+                    <div class="date-time-input-container">
+                        <label for="natal_birthDateTimeCombined">西元年/月/日/時/分:</label>
+                        <input type="text" id="natal_birthDateTimeCombined" class="input-field" readonly
+                            placeholder="點擊選擇出生日期時間">
+                        <input type="hidden" id="natal_finalBirthDateTime" name="natal_birth_date_time">
+                        <p id="natal_birthDateTimeCombined-error" class="input-error-message" aria-live="polite"></p>
                     </div>
+                    <!-- <div class="date-time-grid">
+                        <div class="input-group"><label for="natal_year">西元年:</label><input type="number" id="natal_year" class="input-field" value="1999" min="1900" max="2100"><p id="natal_year-error" class="input-error-message" aria-live="polite"></p></div>
+                        <div class="input-group"><label for="natal_month">月:</label><input type="number" id="natal_month" class="input-field" value="1" min="1" max="12"><p id="natal_month-error" class="input-error-message" aria-live="polite"></p></div>
+                        <div class="input-group"><label for="natal_day">日:</label><input type="number" id="natal_day" class="input-field" value="1" min="1" max="31"><p id="natal_day-error" class="input-error-message" aria-live="polite"></p></div>
+                        <div class="input-group"><label for="natal_hour">時:</label><input type="number" id="natal_hour" class="input-field" value="12" min="0" max="23"><p id="natal_hour-error" class="input-error-message" aria-live="polite"></p></div>
+                        <div class="input-group"><label for="natal_minute">分:</label><input type="number" id="natal_minute" class="input-field" value="00" min="0" max="59"><p id="natal_minute-error" class="input-error-message" aria-live="polite"></p></div>
+                    </div> -->
                     <h4 class="text-lg font-semibold text-gray-700 mt-4 mb-2">出生地點與時區</h4>
                     <div class="location-timezone-grid">
                         <div class="input-group"><label for="natal_latitude">緯度:</label><input type="number"
@@ -1384,28 +1381,22 @@
                         <p id="transit_name-error" class="input-error-message" aria-live="polite"></p>
                     </div>
                     <h4 class="text-lg font-semibold text-gray-700 mt-4 mb-2">日期與時間</h4>
-                    <div class="date-time-grid">
-                        <div class="input-group"><label for="transit_year">西元年:</label><input type="number"
-                                id="transit_year" class="input-field" value="2025" min="1900" max="2100">
-                            <p id="transit_year-error" class="input-error-message" aria-live="polite"></p>
-                        </div>
-                        <div class="input-group"><label for="transit_month">月:</label><input type="number"
-                                id="transit_month" class="input-field" value="7" min="1" max="12">
-                            <p id="transit_month-error" class="input-error-message" aria-live="polite"></p>
-                        </div>
-                        <div class="input-group"><label for="transit_day">日:</label><input type="number"
-                                id="transit_day" class="input-field" value="1" min="1" max="31">
-                            <p id="transit_day-error" class="input-error-message" aria-live="polite"></p>
-                        </div>
-                        <div class="input-group"><label for="transit_hour">時:</label><input type="number"
-                                id="transit_hour" class="input-field" value="12" min="0" max="23">
-                            <p id="transit_hour-error" class="input-error-message" aria-live="polite"></p>
-                        </div>
-                        <div class="input-group"><label for="transit_minute">分:</label><input type="number"
-                                id="transit_minute" class="input-field" value="00" min="0" max="59">
-                            <p id="transit_minute-error" class="input-error-message" aria-live="polite"></p>
-                        </div>
+
+                    <div class="date-time-input-container">
+                        <label for="transit_birthDateTimeCombined">西元年/月/日/時/分:</label>
+                        <input type="text" id="transit_birthDateTimeCombined" class="input-field" readonly
+                            placeholder="點擊選擇出生日期時間">
+                        <input type="hidden" id="transit_finalBirthDateTime" name="transit_birth_date_time">
+                        <p id="transit_birthDateTimeCombined-error" class="input-error-message" aria-live="polite"></p>
                     </div>
+
+                    <!-- <div class="date-time-grid">
+                                                <div class="input-group"><label for="transit_year">西元年:</label><input type="number" id="transit_year" class="input-field" value="2025" min="1900" max="2100"><p id="transit_year-error" class="input-error-message" aria-live="polite"></p></div>
+                                                <div class="input-group"><label for="transit_month">月:</label><input type="number" id="transit_month" class="input-field" value="7" min="1" max="12"><p id="transit_month-error" class="input-error-message" aria-live="polite"></p></div>
+                                                <div class="input-group"><label for="transit_day">日:</label><input type="number" id="transit_day" class="input-field" value="1" min="1" max="31"><p id="transit_day-error" class="input-error-message" aria-live="polite"></p></div>
+                                                <div class="input-group"><label for="transit_hour">時:</label><input type="number" id="transit_hour" class="input-field" value="12" min="0" max="23"><p id="transit_hour-error" class="input-error-message" aria-live="polite"></p></div>
+                                                <div class="input-group"><label for="transit_minute">分:</label><input type="number" id="transit_minute" class="input-field" value="00" min="0" max="59"><p id="transit_minute-error" class="input-error-message" aria-live="polite"></p></div>
+                                            </div> -->
                     <h4 class="text-lg font-semibold text-gray-700 mt-4 mb-2">地點與時區</h4>
                     <div class="location-timezone-grid">
                         <div class="input-group"><label for="transit_latitude">緯度:</label><input type="number"
@@ -1435,7 +1426,6 @@
                 </div>
             </div>
         </div>
-
         <div id="planetSelection" class="my-6 p-4 border border-gray-200 rounded-lg bg-gray-50">
             <div class="flex justify-between items-center mb-3">
                 <h3 class="text-xl md:text-2xl font-bold text-gray-700">顯示選項 (小行星/虛點)</h3>
@@ -1466,9 +1456,68 @@
         </div>
     </div>
 
+
+
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             console.log('Script Start Test! Version: Refactored v3.0');
+
+
+            $(function () {
+                $('#birthDateTimeCombined').datetimepicker({
+                    // --- 日期選擇器選項 ---
+                    changeMonth: true,       // 允許切換月份
+                    changeYear: true,        // 允許切換年份
+                    yearRange: "c-100:c+0",  // 年份範圍：從當前年份往前100年到今年
+                    showButtonPanel: true,   // 顯示按鈕面板 (例如：今天、關閉)
+                    dateFormat: 'yy/mm/dd',  // 統一日期格式，避免後端解析問題，可依需求調整
+
+                    // --- 時間選擇器選項 (來自 jQuery Timepicker Addon) ---
+                    timeFormat: 'HH:mm:ss',    // 時間顯示格式 (包含秒數，以便後端解析)
+                    controlType: 'select',     // 模擬滾輪效果，這裡會以下拉選單形式呈現
+                    oneLine: true,             // 將時間選擇器顯示在同一行 (效果可能因CSS而異)
+                    hourMin: 0,
+                    hourMax: 23,
+                    minuteMin: 0,
+                    minuteMax: 59,
+                    secondMin: 0,
+                    secondMax: 59,
+                    showSecond: true,          // 顯示秒數選擇器
+
+                    // --- 國際化設定 (確保有引入中文語系檔，否則這些設定無效) ---
+                    currentText: '現在',
+                    closeText: '確認',
+                    timeText: '時間',
+                    hourText: '時',
+                    minuteText: '分',
+                    secondText: '秒',
+                    // 如果不需要毫秒和時區，可以移除，讓設定更精簡
+                    // millisecText: '毫秒',
+                    // timezoneText: '時區',
+
+                    // --- 事件處理 ---
+                    onSelect: function (dateText, inst) {
+                        // 當日期或時間被選定時，這個函數會被觸發
+                        // dateText 是根據 dateFormat 和 timeFormat 組合後的字串
+                        console.log("選定的日期時間字串:", dateText);
+                        // 將這個字串設定到隱藏欄位，準備提交給後端
+                        $('#finalBirthDateTime').val(dateText);
+                    },
+                    onClose: function (dateText, inst) {
+                        // 選擇器關閉時也更新一次，確保資料同步
+                        $('#finalBirthDateTime').val(dateText);
+                    }
+                });
+
+                // 初始載入時，如果 input 有預設值，也更新隱藏欄位
+                // 這段邏輯放在 datetimepicker 初始化之後，確保能正確取得格式化後的日期時間
+                const initialValue = $('#birthDateTimeCombined').val();
+                if (initialValue) {
+                    // 如果你的 initialValue 是符合 timeFormat 的字串，可以直接用
+                    // 否則可能需要進一步處理確保格式一致性，例如從後端傳來的值
+                    $('#finalBirthDateTime').val(initialValue);
+                }
+            });
 
             // ===========================================
             // 全域定義的輔助函數 (放在 <script> 標籤的頂部或適當的區塊內)
@@ -1545,6 +1594,9 @@
                 }
                 selection.removeAllRanges();
             }
+
+
+
             // 處理複製按鈕點擊的事件函數 (已精確匹配你的 HTML 結構)
 
             async function handleCopyButtonClickSimplified(event) {
@@ -1645,7 +1697,7 @@
                 });
                 return text;
             }
-            */
+                            */
             // 設置複製按鈕事件監聽器的函數
             function setupCopyListenersSimplified() {
                 const copyButtons = document.querySelectorAll('.copy-chart-btn, .section-copy-btn, .copy-report-btn');
@@ -1807,7 +1859,8 @@
             // =============================================================
             // 全域設定與常數
             // =============================================================
-            const BASE_API_URL = 'http://127.0.0.1:5000/'; // 相對路徑，適用於前後端同源部署
+            const BASE_API_URL = 'https://astro-chart-to-text.onrender.com/'; // 相對路徑，適用於前後端同源部署
+
             const YOUR_API_KEY = window.FRONTEND_ASTRO_API_KEY || "local_dev_key";
             const HOUSE_DEFINING_POINTS = ['上升', '下降', '天頂', '天底'];
             const DISPLAY_ORDER_NAMES = [
@@ -1873,8 +1926,8 @@
                 setupPlanetCheckboxes();
                 setupInputErrorClearing();
                 setupCustomTimezoneListeners();
-                // setupWheelPickers(); // 【新增】啟用轉輪選擇器
-                // setDefaultTransitTimeToNow();
+                setupWheelPickers(); // 新增啟用轉輪選擇器
+                setDefaultTransitTimeToNow();
 
                 document.getElementById('calculateBtn').addEventListener('click', calculateChart);
 
@@ -1890,7 +1943,7 @@
                 }
             }
 
-            // 4. 【新增】一個用來設定轉輪的全新函式
+            // 4. 新增一個用來設定轉輪的全新函式
             function setupWheelPickers() {
                 // 建立小時和分鐘的資料來源
                 const hoursData = Array.from({ length: 24 }, (_, i) => String(i).padStart(2, '0'));
@@ -1919,17 +1972,17 @@
                 });
             }
 
-            // // 【新增】這是一個全新的函式
-            // function setDefaultTransitTimeToNow() {
-            //     const now = new Date();
+            // 新增這是一個全新的函式
+            function setDefaultTransitTimeToNow() {
+                const now = new Date();
 
-            //     // 獲取並填入年、月、日、時、分
-            //     document.getElementById('transit_year').value = now.getFullYear();
-            //     document.getElementById('transit_month').value = now.getMonth() + 1; // getMonth() 是從 0 開始，所以要 +1
-            //     document.getElementById('transit_day').value = now.getDate();
-            //     document.getElementById('transit_hour').value = now.getHours();
-            //     document.getElementById('transit_minute').value = now.getMinutes();
-            // }
+                // 獲取並填入年、月、日、時、分
+                document.getElementById('transit_year').value = now.getFullYear();
+                document.getElementById('transit_month').value = now.getMonth() + 1; // getMonth() 是從 0 開始，所以要 +1
+                document.getElementById('transit_day').value = now.getDate();
+                document.getElementById('transit_hour').value = now.getHours();
+                document.getElementById('transit_minute').value = now.getMinutes();
+            }
 
             // 設定主頁籤切換
             function setupTabListeners() {
@@ -2199,13 +2252,38 @@
                 if (activeMainTabId === 'singleChartTab') {
                     chart1Name = getInputValue('single_name') || "我的星盤";
                     isValid = validateInputs('single_');
+                    // --- 新增：從 birthDateTimeCombined 獲取並解析日期時間 ---
+                    const birthDateTimeString = getInputValue('birthDateTimeCombined'); // 注意這裡要用新的 ID
+                    let year, month, day, hour, minute;
+
+                    if (birthDateTimeString) {
+                        // 假設格式是 "YYYY/MM/DD HH:mm:ss"
+                        const [datePart, timePart] = birthDateTimeString.split(' ');
+                        const [y, m, d] = datePart.split('/').map(Number);
+                        const [h, min, s] = timePart.split(':').map(Number); // s 是秒，這裡用不到，但可以解析出來
+
+                        year = y;
+                        month = m;
+                        day = d;
+                        hour = h;
+                        minute = min;
+                        // 如果需要秒數，也可以加到 payload 中：second = s;
+                    } else {
+                        // 如果沒有選擇日期時間，可以設置預設值，或者將 isValid 設為 false
+                        console.error("出生日期時間未選擇！");
+                        isValid = false; // 確保沒有日期時間就不送出
+                    }
+                // --- 結束新增 ---
                     if (isValid) {
                         payload = {
                             year: parseInt(getInputValue('single_year')), month: parseInt(getInputValue('single_month')), day: parseInt(getInputValue('single_day')),
                             hour: parseInt(getInputValue('single_hour')), minute: parseInt(getInputValue('single_minute')),
                             latitude: parseFloat(getInputValue('single_latitude')), longitude: parseFloat(getInputValue('single_longitude')),
-                            timezone: getInputValue('single_customTimezone') || getInputValue('single_timezone'),
-                            optional_planets: optionalPlanets // 將正確收集的列表放入 payload
+                            // 時區部分保持原樣，但在下方處理時區建議的問題
+            timezone: getInputValue('single_customTimezone') || getInputValue('single_timezone'),
+            optional_planets: optionalPlanets
+                            // timezone: getInputValue('single_customTimezone') || getInputValue('single_timezone'),
+                            // optional_planets: optionalPlanets // 將正確收集的列表放入 payload
                         };
                         apiUrl = `${BASE_API_URL}/calculate_single_chart`;
                     }
@@ -2264,15 +2342,39 @@
                 loadingSpinner.style.display = 'inline-block';
 
                 try {
+                    console.log("即將發送的 API URL:", apiUrl); // 👈 新增這行
                     // 發送 Axios POST 請求
                     const response = await axios.post(apiUrl, payload, {
                         headers: {
                             'X-API-Key': YOUR_API_KEY // 確保你的 API Key 被正確傳送
                         }
                     });
+                    const rawData = response.data; // 這是你從 API 收到的所有數據包裹
+
+                    // 🚨 **請確保這行在你的程式碼中，並且在你運行後，看到它的輸出。** 🚨
+                    console.log("API 回應的完整數據包裹：", rawData);
+
+                    // // --- 這段代碼只用於獲取數據，之後你可以刪除或註釋掉 ---
+                    // const outputDiv = document.createElement('div');
+                    // outputDiv.style.whiteSpace = 'pre-wrap'; // 保持格式，防止換行被移除
+                    // outputDiv.style.fontFamily = 'monospace'; // 等寬字體，方便閱讀
+                    // outputDiv.style.border = '2px solid red'; // 加上紅色邊框，讓你一眼就能看到
+                    // outputDiv.style.padding = '15px'; // 增加內邊距
+                    // outputDiv.style.margin = '20px auto'; // 增加外邊距，並居中
+                    // outputDiv.style.maxWidth = '800px'; // 限制最大寬度
+                    // outputDiv.style.backgroundColor = '#fff3f3'; // 輕微的粉紅色背景
+                    // outputDiv.style.color = '#333'; // 深灰色文字
+                    // outputDiv.innerHTML = '<h2>--- 請複製這個紅色框內的所有內容給我 ---</h2>' +
+                    //     '<p>這包括整個 JSON 數據，從第一個 `{` 到最後一個 `}`。</p>' +
+                    //     '<pre>' + JSON.stringify(rawData.chart1_planets_in_chart2_houses[0], null, 2) + '</pre>';
+                    // document.body.prepend(outputDiv); // 將這個框添加到網頁的最前面
+
+                    // 你原有的 displayChartData 函數呼叫可以放在這裡，或者如果暫時只想獲取數據，也可以先讓它保持註釋
+                    displayChartData(response.data, chart1Name, chart2Name);
+                    // --- 臨時性代碼結束 ---
 
                     // 成功響應：將數據傳遞給 displayChartData 函數進行統一處理
-                    displayChartData(response.data, chart1Name, chart2Name);
+                    // displayChartData(response.data, chart1Name, chart2Name);
 
                 } catch (error) {
                     // 錯誤處理邏輯 (你現有的)
@@ -2389,9 +2491,7 @@
                         );
 
                         // 3.3 交互相位
-                        // 先生成兩種格式的內容數據
                         const interAspectsSectionsDataComparison = generateInterAspectsSectionData(data.inter_aspects, name1, name2);
-                        // 再將數據傳給 HTML 組裝函數 (注意：buildInterAspectsHTML 的簽名已調整)
                         interactionHtmlComparison += buildInterAspectsHTML(interAspectsSectionsDataComparison, name1, name2);
 
                         interactionHtmlComparison += `</div>`; // 關閉 sub-sections-container
@@ -2484,6 +2584,7 @@
                 // 在 DOM 更新後，呼叫事件綁定函數
                 setupCopyListenersSimplified();
             }
+
 
             // 新增的輔助函數：生成單一星盤各部分的數據（表格和敘述兩種格式）
             // 它會接收原始的 chartInfo 和圖表標題 (title)，因為基礎數據的判斷依賴 title
@@ -2691,17 +2792,15 @@
 
                 // --- 敘述內容生成 ---
                 const narrativeLines = [
-                    "====================\n",
-                    `${sectionTitle}`,
-                    "--------------------\n"
+                    `${sectionTitle}`
                 ];
                 // 假設 planet_positions 在這裡是可以訪問的全局或通過參數傳入，用於獲取更多詳細信息
                 // 如果沒有，就只使用 a.p1_name, a.p2_name
                 aspects.sort((a, b) => DISPLAY_ORDER_NAMES.indexOf(a.p1_name) - DISPLAY_ORDER_NAMES.indexOf(b.p1_name) || DISPLAY_ORDER_NAMES.indexOf(a.p2_name) - DISPLAY_ORDER_NAMES.indexOf(b.p2_name)).forEach(a => {
                     // 你可以根據需要為敘述版添加更多細節，例如星體所落星座/宮位
-                    narrativeLines.push(`${name1}的${a.p1_name}與${name2}的${a.p2_name}形成${a.aspect_name}，容許度為${formatDegreesMinutesSeconds(a.orb)}。`);
+                    narrativeLines.push(`${name1}的${a.p1_name}與${name2}的${a.p2_name}形成${a.aspect_name}相位，容許度為${formatDegreesMinutesSeconds(a.orb)}。`);
                 });
-                narrativeLines.push("\n--------------------\n");
+                narrativeLines.push("\n");
                 sectionData.narrative = narrativeLines.join('\n');
 
                 return sectionData;
@@ -2753,15 +2852,15 @@
                     .forEach(o => {
                         narrativeLines.push(
                             // 這是行星落宮位元的基本訊息
-                            `${guestName}的${o.planet_name}${o.zodiac_position_formatted}落入${hostName}的${o.house_in_target_chart}宮（${formatDegreesMinutesSeconds(o.degree_in_target_house)}）。`
+                            `${guestName}的${o.planet_name}（位於${o.zodiac_position_formatted}）落入${hostName}的${o.house_in_target_chart}宮（${formatDegreesMinutesSeconds(o.degree_in_target_house)}）。`
                         );
                         // 🎯 關鍵修改在這裡：添加 o.description 到敘述中
                         // 確保 o.description 存在且有值，如果沒有，就添加一個預設提示或留空
                         if (o.description) {
                             narrativeLines.push(`${o.description}\n`); // 每個描述後面加兩個換行，讓排版更清晰
-                        // } else {
-                        //     // 如果沒有描述，可以選擇添加一個提示，或者不添加任何內容
-                        //     narrativeLines.push(`${o.planet_name}落${o.house_in_target_chart}宮\n`);
+                        } else {
+                            // 如果沒有描述，可以選擇添加一個提示，或者不添加任何內容
+                            narrativeLines.push(`[${o.planet_name}落${o.house_in_target_chart}宮無詳細描述]\n`);
                         }
                         narrativeLines.push("--------------------\n"); // 每個星體解釋之間添加分隔線
                     });
