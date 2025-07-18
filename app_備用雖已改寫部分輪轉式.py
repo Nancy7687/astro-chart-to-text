@@ -11,7 +11,6 @@ import math
 from functools import wraps
 from dotenv import load_dotenv
 from datetime import datetime
-import logging # 用於日誌記錄
 
 load_dotenv() # 在應用程式啟動時從 .env 載入變數
 
@@ -32,12 +31,6 @@ CORS(app)
 API_KEY = os.getenv("ASTRO_API_KEY")
 if not API_KEY:
     logging.warning("警告：在 .env 檔案中找不到 ASTRO_API_KEY。API 端點將無法訪問。")
-
-
-# 配置日誌 (建議在你的 Flask 應用中進行更詳細的日誌配置)
-if not app.logger.handlers:
-    logging.basicConfig(level=logging.INFO)
-    app.logger.addHandler(logging.StreamHandler())
 
 
 # 取得所有 IANA 時區名稱
@@ -109,22 +102,21 @@ BASE_PLANETS = [
 # ==============================================================================
 # Helper Functions (輔助函數)
 # ==============================================================================
-# --- 日期時間解析輔助函式 (請將此函式放在所有 Flask 路由定義的上方) ---
+# --- 共用的日期時間解析輔助函式 (為 JSON 請求調整) ---
 def parse_datetime_from_json_string(date_time_str, label="數據"):
     """
-    將日期時間字串 (格式: 'YYYY-MM-DD HH:MM:SS') 轉換為 datetime 物件。
-    失敗時回傳 None 和錯誤訊息。
+    嘗試將日期時間字串 (格式: 'YYYY-MM-DD HH:MM:SS') 轉換為 datetime 物件。
+    適用於從 JSON 請求中獲取的數據。
     """
     if not date_time_str:
-        error_msg = f"未提供 {label} 日期時間數據。"
-        app.logger.warning(f"警告：{error_msg}")
-        return None, error_msg
+        app.logger.warning(f"警告：未接收到 {label} 的日期時間數據。")
+        return None, f"未提供 {label} 日期時間數據。"
     try:
         parsed_datetime_obj = datetime.strptime(date_time_str, '%Y-%m-%d %H:%M:%S')
         app.logger.info(f"後端成功解析 {label} 的日期時間: {parsed_datetime_obj}")
         return parsed_datetime_obj, None
     except ValueError:
-        error_msg = f"{label} 的日期時間格式不正確！字串: '{date_time_str}'。"
+        error_msg = f"錯誤：{label} 的日期時間格式不正確！字串: '{date_time_str}'。"
         app.logger.error(error_msg)
         return None, error_msg
     except Exception as e:
@@ -537,28 +529,33 @@ def index():
 #         app.logger.error(f"後端發生未知錯誤: {e}", exc_info=True)
 #         return jsonify({"error": f"伺服器內部錯誤: {e}"}), 500
 
-# --- 單人星盤路由 ---
+# --- 改寫後的 calculate_single_chart_api 路由 ---
 @app.route('/calculate_single_chart', methods=['POST'])
 def calculate_single_chart_api():
-    data = request.get_json(force=True)
+    data = request.get_json(force=True) # 確保這裡能正確解析前端發送的 JSON
     
-    # 從 JSON 獲取完整的日期時間字串 (前端隱藏欄位 name='birth_date_time')
+    # 預期前端 JSON 中包含一個完整的日期時間字串，例如 'birth_date_time'
+    # 這與你前端隱藏欄位的 name 屬性是 'birth_date_time' 相呼應
     birth_date_time_str = data.get('birth_date_time') 
 
+    # 使用新的輔助函式解析日期時間
     birth_datetime_obj, error_message = parse_datetime_from_json_string(birth_date_time_str, "單人星盤")
+
     if error_message:
         return jsonify({"error": error_message}), 400
 
     try:
-        # 獲取其他參數 (假設它們的 key 保持不變)
-        latitude = float(data.get('latitude'))
+        # 從 JSON 數據中獲取其他計算所需的參數
+        latitude = float(data.get('latitude')) # 使用 .get() 並提供預設值會更健壯
         longitude = float(data.get('longitude'))
         timezone = data.get('timezone')
-        optional_planets = data.get('optional_planets', [])
+        optional_planets = data.get('optional_planets', []) # 如果沒有提供，預設為空列表
 
-        # 調用你的 calculate_astrology_chart 函式，傳入 datetime 物件
+        # 在這裡，calculate_astrology_chart 應該接收一個 datetime 物件，而不是分開的年、月、日、時、分
+        # 你需要檢查並可能調整 `calculate_astrology_chart` 函式的定義，
+        # 讓它能接受一個 `datetime` 物件作為日期時間參數。
         raw_chart_data = calculate_astrology_chart(
-            birth_datetime_obj, # <--- 這裡傳入 datetime 物件
+            birth_datetime_obj, # 傳入解析後的 datetime 物件
             latitude,
             longitude,
             timezone,
@@ -574,122 +571,41 @@ def calculate_single_chart_api():
         return jsonify(formatted_output)
 
     except KeyError as ke:
-        error_msg = f"請求中缺少必要的數據 (KeyError): {ke}。"
+        error_msg = f"請求中缺少必要的數據: {ke}"
         app.logger.error(error_msg, exc_info=True)
         return jsonify({"error": error_msg}), 400
     except ValueError as ve:
-        error_msg = f"數據類型轉換錯誤 (例如：經緯度或時區格式不正確): {ve}"
+        error_msg = f"數據類型轉換錯誤 (例如：經緯度): {ve}"
         app.logger.error(error_msg, exc_info=True)
         return jsonify({"error": error_msg}), 400
     except Exception as e:
         app.logger.error(f"後端發生未知錯誤: {e}", exc_info=True)
         return jsonify({"error": f"伺服器內部錯誤: {e}"}), 500
 
-# @app.route('/calculate_comparison_chart', methods=['POST'])
-# def calculate_comparison_chart_api():
-#     data = request.get_json(force=True)
-#     try:
-#         optional_planets = data.get('optional_planets', [])
-#         c1_raw = calculate_astrology_chart(
-#             int(data['chart1_year']), int(data['chart1_month']), int(data['chart1_day']),
-#             int(data['chart1_hour']), int(data['chart1_minute']),
-#             float(data['chart1_latitude']), float(data['chart1_longitude']),
-#             data['chart1_timezone'], optional_planets)
-#         if "error" in c1_raw:
-#             c1_raw["error_source"] = "chart1"
-#             app.logger.error(f"比較盤計算錯誤 (命盤A): {c1_raw.get('error', 'N/A')}")
-#             return jsonify(c1_raw), 400
-        
-#         c2_raw = calculate_astrology_chart(
-#             int(data['chart2_year']), int(data['chart2_month']), int(data['chart2_day']),
-#             int(data['chart2_hour']), int(data['chart2_minute']),
-#             float(data['chart2_latitude']), float(data['chart2_longitude']),
-#             data['chart2_timezone'], optional_planets)
-#         if "error" in c2_raw:
-#             c2_raw["error_source"] = "chart2"
-#             app.logger.error(f"比較盤計算錯誤 (命盤B): {c2_raw.get('error', 'N/A')}")
-#             return jsonify(c2_raw), 400
-#         response_data = {
-#             "chart_type": "comparison",
-#             "chart1_data": format_chart_data_for_display(c1_raw),
-#             "chart2_data": format_chart_data_for_display(c2_raw),
-#             "inter_aspects": list_interchart_aspects(c1_raw['planet_positions'], c2_raw['planet_positions']),
-#             "chart1_planets_in_chart2_houses": get_planet_overlays_in_houses(c1_raw['planet_positions'], c2_raw['house_cusps']),
-#             "chart2_planets_in_chart1_houses": get_planet_overlays_in_houses(c2_raw['planet_positions'], c1_raw['house_cusps']),
-#         }
-#         return jsonify(response_data)
-#     except Exception as e:
-#         app.logger.error(f"後端發生未知錯誤: {e}", exc_info=True)
-#         return jsonify({"error": f"伺服器內部錯誤: {e}"}), 500
-# --- 比較盤路由 (Chart 1 和 Chart 2) ---
 @app.route('/calculate_comparison_chart', methods=['POST'])
 def calculate_comparison_chart_api():
     data = request.get_json(force=True)
-    
     try:
         optional_planets = data.get('optional_planets', [])
-
-        # --- 處理第一個命盤 (Chart 1) 的數據 ---
-        # 從 JSON 中獲取完整的日期時間字串 (前端隱藏欄位 name='comp1_birth_date_time')
-        chart1_date_time_str = data.get('comp1_birth_date_time')
-        chart1_latitude = float(data['chart1_latitude']) # 保持原有 KeyError 處理方式
-        chart1_longitude = float(data['chart1_longitude']) # 保持原有 KeyError 處理方式
-        chart1_timezone = data['chart1_timezone'] # 保持原有 KeyError 處理方式
-
-        # 使用輔助函式解析日期時間字串為 datetime 物件
-        chart1_datetime_obj, error_message = parse_datetime_from_json_string(chart1_date_time_str, "比較盤命盤A")
-        if error_message:
-            return jsonify({"error": error_message, "error_source": "chart1"}), 400
-
-        # 調用 calculate_astrology_chart 函式。
-        # 由於你的 calculate_astrology_chart 函式接收分開的年、月、日、時、分，
-        # 我們從解析後的 datetime 物件中提取這些值。
         c1_raw = calculate_astrology_chart(
-            chart1_datetime_obj.year,    # 從 datetime 物件提取年份
-            chart1_datetime_obj.month,   # 從 datetime 物件提取月份
-            chart1_datetime_obj.day,     # 從 datetime 物件提取日期
-            chart1_datetime_obj.hour,    # 從 datetime 物件提取小時
-            chart1_datetime_obj.minute,  # 從 datetime 物件提取分鐘
-            chart1_latitude,
-            chart1_longitude,
-            chart1_timezone,
-            optional_planets
-        )
+            int(data['chart1_year']), int(data['chart1_month']), int(data['chart1_day']),
+            int(data['chart1_hour']), int(data['chart1_minute']),
+            float(data['chart1_latitude']), float(data['chart1_longitude']),
+            data['chart1_timezone'], optional_planets)
         if "error" in c1_raw:
             c1_raw["error_source"] = "chart1"
             app.logger.error(f"比較盤計算錯誤 (命盤A): {c1_raw.get('error', 'N/A')}")
             return jsonify(c1_raw), 400
         
-        # --- 處理第二個命盤 (Chart 2) 的數據 ---
-        # 從 JSON 中獲取完整的日期時間字串 (前端隱藏欄位 name='comp2_birth_date_time')
-        chart2_date_time_str = data.get('comp2_birth_date_time')
-        chart2_latitude = float(data['chart2_latitude']) # 保持原有 KeyError 處理方式
-        chart2_longitude = float(data['chart2_longitude']) # 保持原有 KeyError 處理方式
-        chart2_timezone = data['chart2_timezone'] # 保持原有 KeyError 處理方式
-
-        # 使用輔助函式解析日期時間字串為 datetime 物件
-        chart2_datetime_obj, error_message = parse_datetime_from_json_string(chart2_date_time_str, "比較盤命盤B")
-        if error_message:
-            return jsonify({"error": error_message, "error_source": "chart2"}), 400
-
-        # 調用 calculate_astrology_chart 函式，同樣從 datetime 物件中提取分開的年、月、日、時、分
         c2_raw = calculate_astrology_chart(
-            chart2_datetime_obj.year,    # 從 datetime 物件提取年份
-            chart2_datetime_obj.month,   # 從 datetime 物件提取月份
-            chart2_datetime_obj.day,     # 從 datetime 物件提取日期
-            chart2_datetime_obj.hour,    # 從 datetime 物件提取小時
-            chart2_datetime_obj.minute,  # 從 datetime 物件提取分鐘
-            chart2_latitude,
-            chart2_longitude,
-            chart2_timezone,
-            optional_planets
-        )
+            int(data['chart2_year']), int(data['chart2_month']), int(data['chart2_day']),
+            int(data['chart2_hour']), int(data['chart2_minute']),
+            float(data['chart2_latitude']), float(data['chart2_longitude']),
+            data['chart2_timezone'], optional_planets)
         if "error" in c2_raw:
             c2_raw["error_source"] = "chart2"
             app.logger.error(f"比較盤計算錯誤 (命盤B): {c2_raw.get('error', 'N/A')}")
             return jsonify(c2_raw), 400
-        
-        # --- 組合響應數據 (這部分保持不變) ---
         response_data = {
             "chart_type": "comparison",
             "chart1_data": format_chart_data_for_display(c1_raw),
@@ -699,127 +615,34 @@ def calculate_comparison_chart_api():
             "chart2_planets_in_chart1_houses": get_planet_overlays_in_houses(c2_raw['planet_positions'], c1_raw['house_cusps']),
         }
         return jsonify(response_data)
-
-    except KeyError as ke:
-        # 捕獲因前端 JSON 缺少必要鍵而引起的錯誤
-        error_msg = f"請求中缺少必要的數據 (KeyError): {ke}。請檢查前端發送的 JSON 鍵名是否正確。"
-        app.logger.error(error_msg, exc_info=True)
-        return jsonify({"error": error_msg}), 400
-    except ValueError as ve:
-        # 捕獲因數據類型轉換失敗 (例如：經緯度或時區格式不正確) 而引起的錯誤
-        error_msg = f"數據類型轉換錯誤 (例如：經緯度或時區格式不正確): {ve}"
-        app.logger.error(error_msg, exc_info=True)
-        return jsonify({"error": error_msg}), 400
     except Exception as e:
-        # 捕獲所有其他未預期的錯誤
         app.logger.error(f"後端發生未知錯誤: {e}", exc_info=True)
         return jsonify({"error": f"伺服器內部錯誤: {e}"}), 500
     
-# @app.route('/calculate_transit_chart', methods=['POST'])
-# def calculate_transit_chart_api():
-#     data = request.get_json(force=True)
-#     try:
-#         optional_planets = data.get('optional_planets', [])
-#         natal_raw = calculate_astrology_chart(
-#             int(data['natal_year']), int(data['natal_month']), int(data['natal_day']),
-#             int(data['natal_hour']), int(data['natal_minute']),
-#             float(data['natal_latitude']), float(data['natal_longitude']),
-#             data['natal_timezone'], optional_planets)
-#         if "error" in natal_raw:
-#             natal_raw["error_source"] = "chart1"
-#             app.logger.error(f"行運盤計算錯誤 (本命盤): {natal_raw.get('error', 'N/A')}")
-#             return jsonify(natal_raw), 400
-        
-#         transit_raw = calculate_astrology_chart(
-#             int(data['transit_year']), int(data['transit_month']), int(data['transit_day']),
-#             int(data['transit_hour']), int(data['transit_minute']),
-#             float(data['transit_latitude']), float(data['transit_longitude']),
-#             data['transit_timezone'], optional_planets)
-#         if "error" in transit_raw:
-#             transit_raw["error_source"] = "chart2"
-#             app.logger.error(f"行運盤計算錯誤 (行運盤): {transit_raw.get('error', 'N/A')}")
-#             return jsonify(transit_raw), 400
-#         response_data = {
-#             "chart_type": "transit",
-#             "natal_chart_data": format_chart_data_for_display(natal_raw),
-#             "transit_chart_data": format_chart_data_for_display(transit_raw),
-#             "inter_aspects": list_interchart_aspects(natal_raw['planet_positions'], transit_raw['planet_positions']),
-#             "natal_planets_in_transit_houses": get_planet_overlays_in_houses(natal_raw['planet_positions'], transit_raw['house_cusps']),
-#             "transit_planets_in_natal_houses": get_planet_overlays_in_houses(transit_raw['planet_positions'], natal_raw['house_cusps']),
-#         }
-#         return jsonify(response_data)
-#     except Exception as e:
-#         app.logger.error(f"後端發生未知錯誤: {e}", exc_info=True)
-#         return jsonify({"error": f"伺服器內部錯誤: {e}"}), 500
-# --- 流年盤路由 ---
 @app.route('/calculate_transit_chart', methods=['POST'])
 def calculate_transit_chart_api():
     data = request.get_json(force=True)
-    
     try:
         optional_planets = data.get('optional_planets', [])
-
-        # --- 處理本命盤 (Natal Chart) 的數據 ---
-        # 從 JSON 中獲取完整的日期時間字串 (前端隱藏欄位 name='natal_birth_date_time')
-        natal_date_time_str = data.get('natal_birth_date_time')
-        natal_latitude = float(data['natal_latitude']) # 保持原有 KeyError 處理方式
-        natal_longitude = float(data['natal_longitude']) # 保持原有 KeyError 處理方式
-        natal_timezone = data['natal_timezone'] # 保持原有 KeyError 處理方式
-
-        # 使用輔助函式解析日期時間字串為 datetime 物件
-        natal_datetime_obj, error_message = parse_datetime_from_json_string(natal_date_time_str, "本命盤")
-        if error_message:
-            return jsonify({"error": error_message, "error_source": "natal_chart"}), 400 # 調整 error_source 名稱
-        
-        # 調用 calculate_astrology_chart 函式。
-        # 由於你的 calculate_astrology_chart 函式接收分開的年、月、日、時、分，
-        # 我們從解析後的 datetime 物件中提取這些值。
         natal_raw = calculate_astrology_chart(
-            natal_datetime_obj.year,    # 從 datetime 物件提取年份
-            natal_datetime_obj.month,   # 從 datetime 物件提取月份
-            natal_datetime_obj.day,     # 從 datetime 物件提取日期
-            natal_datetime_obj.hour,    # 從 datetime 物件提取小時
-            natal_datetime_obj.minute,  # 從 datetime 物件提取分鐘
-            natal_latitude,
-            natal_longitude,
-            natal_timezone,
-            optional_planets
-        )
+            int(data['natal_year']), int(data['natal_month']), int(data['natal_day']),
+            int(data['natal_hour']), int(data['natal_minute']),
+            float(data['natal_latitude']), float(data['natal_longitude']),
+            data['natal_timezone'], optional_planets)
         if "error" in natal_raw:
-            natal_raw["error_source"] = "natal_chart" # 調整 error_source 名稱
+            natal_raw["error_source"] = "chart1"
             app.logger.error(f"行運盤計算錯誤 (本命盤): {natal_raw.get('error', 'N/A')}")
             return jsonify(natal_raw), 400
         
-        # --- 處理行運盤 (Transit Chart) 的數據 ---
-        # 從 JSON 中獲取完整的日期時間字串 (前端隱藏欄位 name='transit_birth_date_time')
-        transit_date_time_str = data.get('transit_birth_date_time')
-        transit_latitude = float(data['transit_latitude']) # 保持原有 KeyError 處理方式
-        transit_longitude = float(data['transit_longitude']) # 保持原有 KeyError 處理方式
-        transit_timezone = data['transit_timezone'] # 保持原有 KeyError 處理方式
-
-        # 使用輔助函式解析日期時間字串為 datetime 物件
-        transit_datetime_obj, error_message = parse_datetime_from_json_string(transit_date_time_str, "行運盤")
-        if error_message:
-            return jsonify({"error": error_message, "error_source": "transit_chart"}), 400 # 調整 error_source 名稱
-
-        # 調用 calculate_astrology_chart 函式，同樣從 datetime 物件中提取分開的年、月、日、時、分
         transit_raw = calculate_astrology_chart(
-            transit_datetime_obj.year,    # 從 datetime 物件提取年份
-            transit_datetime_obj.month,   # 從 datetime 物件提取月份
-            transit_datetime_obj.day,     # 從 datetime 物件提取日期
-            transit_datetime_obj.hour,    # 從 datetime 物件提取小時
-            transit_datetime_obj.minute,  # 從 datetime 物件提取分鐘
-            transit_latitude,
-            transit_longitude,
-            transit_timezone,
-            optional_planets
-        )
+            int(data['transit_year']), int(data['transit_month']), int(data['transit_day']),
+            int(data['transit_hour']), int(data['transit_minute']),
+            float(data['transit_latitude']), float(data['transit_longitude']),
+            data['transit_timezone'], optional_planets)
         if "error" in transit_raw:
-            transit_raw["error_source"] = "transit_chart" # 調整 error_source 名稱
+            transit_raw["error_source"] = "chart2"
             app.logger.error(f"行運盤計算錯誤 (行運盤): {transit_raw.get('error', 'N/A')}")
             return jsonify(transit_raw), 400
-        
-        # --- 組合響應數據 (這部分保持不變) ---
         response_data = {
             "chart_type": "transit",
             "natal_chart_data": format_chart_data_for_display(natal_raw),
@@ -829,135 +652,15 @@ def calculate_transit_chart_api():
             "transit_planets_in_natal_houses": get_planet_overlays_in_houses(transit_raw['planet_positions'], natal_raw['house_cusps']),
         }
         return jsonify(response_data)
-
-    except KeyError as ke:
-        # 捕獲因前端 JSON 缺少必要鍵而引起的錯誤
-        error_msg = f"請求中缺少必要的數據 (KeyError): {ke}。請檢查前端發送的 JSON 鍵名是否正確。"
-        app.logger.error(error_msg, exc_info=True)
-        return jsonify({"error": error_msg}), 400
-    except ValueError as ve:
-        # 捕獲因數據類型轉換失敗 (例如：經緯度或時區格式不正確) 而引起的錯誤
-        error_msg = f"數據類型轉換錯誤 (例如：經緯度或時區格式不正確): {ve}"
-        app.logger.error(error_msg, exc_info=True)
-        return jsonify({"error": error_msg}), 400
     except Exception as e:
-        # 捕獲所有其他未預期的錯誤
         app.logger.error(f"後端發生未知錯誤: {e}", exc_info=True)
         return jsonify({"error": f"伺服器內部錯誤: {e}"}), 500
-    
-# @app.route('/calculate_composite_chart', methods=['POST'])
-# def calculate_composite_chart_api():
-#     data = request.get_json(force=True)
-#     if not data:
-#         return jsonify({"error": "請求中未提供 JSON 數據"}), 400
-#     try:
-#         # --- 【核心修正 1】: 強化內部計算列表的依賴處理 ---
-#         user_requested_planets = data.get('optional_planets', [])
-#         planets_for_base_charts = set(user_requested_planets)
-        
-#         # 強制加入組合盤計算所必需的「上升」和「天頂」
-#         planets_for_base_charts.update({"上升", "天頂"})
-        
-#         # 【新增】如果使用者想看組合盤的「福點」，則基礎盤必須先計算「太陽」和「月亮」
-#         if "福點" in user_requested_planets:
-#             planets_for_base_charts.update({"太陽", "月亮"})
-            
-#         # 【新增】如果使用者想看組合盤的「宿命點」，則基礎盤必須先計算「宿命點」
-#         if "宿命" in user_requested_planets:
-#             planets_for_base_charts.add("宿命")
 
-#         app.logger.info(f"組合盤計算 - 使用者請求: {user_requested_planets}")
-#         app.logger.info(f"組合盤計算 - 內部基礎盤計算使用: {list(planets_for_base_charts)}")
-
-#         # --- 使用修正後的列表來計算兩個基礎盤 ---
-#         c1_raw = calculate_astrology_chart(
-#             int(data['chart1_year']), int(data['chart1_month']), int(data['chart1_day']),
-#             int(data['chart1_hour']), int(data['chart1_minute']),
-#             float(data['chart1_latitude']), float(data['chart1_longitude']),
-#             data['chart1_timezone'], list(planets_for_base_charts))
-#         if "error" in c1_raw:
-#             c1_raw["error_source"] = "chart1"; return jsonify(c1_raw), 400
-
-#         c2_raw = calculate_astrology_chart(
-#             int(data['chart2_year']), int(data['chart2_month']), int(data['chart2_day']),
-#             int(data['chart2_hour']), int(data['chart2_minute']),
-#             float(data['chart2_latitude']), float(data['chart2_longitude']),
-#             data['chart2_timezone'], list(planets_for_base_charts))
-#         if "error" in c2_raw:
-#             c2_raw["error_source"] = "chart2"; return jsonify(c2_raw), 400
-        
-#         # --- 中點計算邏輯 ---
-#         composite_positions_raw = {}
-#         # 這裡遍歷使用者原始請求的列表
-#         for name in user_requested_planets:
-#             if name in c1_raw['planet_positions'] and name in c2_raw['planet_positions'] and name in PLANET_IDS:
-#                 lon1 = c1_raw['planet_positions'][name]['lon']
-#                 lon2 = c2_raw['planet_positions'][name]['lon']
-#                 composite_positions_raw[name] = {'lon': get_midpoint(lon1, lon2), 'speed': 0}
-        
-#         # 四軸計算
-#         mc1 = c1_raw['planet_positions']['天頂']['lon']
-#         mc2 = c2_raw['planet_positions']['天頂']['lon']
-#         composite_mc_deg = get_midpoint(mc1, mc2)
-#         asc1 = c1_raw['planet_positions']['上升']['lon']
-#         asc2 = c2_raw['planet_positions']['上升']['lon']
-#         composite_asc_deg = get_midpoint(asc1, asc2)
-
-#         # 將組合盤的四軸加入（如果使用者有勾選它們）
-#         if '上升' in user_requested_planets: composite_positions_raw['上升'] = {'lon': composite_asc_deg, 'speed': 0}
-#         if '下降' in user_requested_planets: composite_positions_raw['下降'] = {'lon': (composite_asc_deg + 180) % 360, 'speed': 0}
-#         if '天頂' in user_requested_planets: composite_positions_raw['天頂'] = {'lon': composite_mc_deg, 'speed': 0}
-#         if '天底' in user_requested_planets: composite_positions_raw['天底'] = {'lon': (composite_mc_deg + 180) % 360, 'speed': 0}
-        
-#         # 【核心修正 2】: 新增宿命點和福點的中點計算邏輯
-#         # 計算宿命點中點
-#         if "宿命" in user_requested_planets and '宿命' in c1_raw['planet_positions'] and '宿命' in c2_raw['planet_positions']:
-#             vertex1 = c1_raw['planet_positions']['宿命']['lon']
-#             vertex2 = c2_raw['planet_positions']['宿命']['lon']
-#             composite_positions_raw['宿命'] = {'lon': get_midpoint(vertex1, vertex2), 'speed': 0}
-
-#         # 計算福點中點
-#         if "福點" in user_requested_planets and '福點' in c1_raw['planet_positions'] and '福點' in c2_raw['planet_positions']:
-#             pof1 = c1_raw['planet_positions']['福點']['lon']
-#             pof2 = c2_raw['planet_positions']['福點']['lon']
-#             composite_positions_raw['福點'] = {'lon': get_midpoint(pof1, pof2), 'speed': 0}
-
-#         # --- 最終格式化與回傳 (不變) ---
-#         composite_cusps_dict = {i: get_midpoint(c1_raw['house_cusps'][i], c2_raw['house_cusps'][i]) for i in range(1, 13)}
-#         final_composite_positions = {}
-#         for name, info in composite_positions_raw.items():
-#             house_num, hdeg = find_house(info['lon'], composite_cusps_dict)
-#             final_composite_positions[name] = { 'lon': info['lon'], 'speed': 0, 'house': house_num, 'hdeg': hdeg, 'is_retrograde': False, 'retrograde_label': "", 'zodiac_position_formatted': zodiac_format(info['lon']) }
-
-#         composite_raw = {
-#             "local_time": "Composite Chart", "utc_time": "N/A",
-#             "latitude": (c1_raw['latitude'] + c2_raw['latitude']) / 2, 
-#             "longitude": get_midpoint(c1_raw['longitude'], c2_raw['longitude']),
-#             "house_cusps": composite_cusps_dict,
-#             "planet_positions": final_composite_positions,
-#             "aspects": list_aspects(final_composite_positions)
-#         }
-
-#         return jsonify({
-#             "chart_type": "composite",
-#             "composite_chart_data": format_chart_data_for_display(composite_raw),
-#             "natal_chart1_data": format_chart_data_for_display(c1_raw),
-#             "natal_chart2_data": format_chart_data_for_display(c2_raw),
-#         })
-#     except KeyError as e:
-#         app.logger.error(f"組合盤計算中缺少必要的鍵: {e}", exc_info=True)
-#         return jsonify({"error": f"組合盤計算中缺少必要的鍵，可能是因為基礎盤未勾選 '上升' 或 '天頂': {e}"}), 500
-#     except Exception as e:
-#         app.logger.error(f"組合盤後端發生未知錯誤: {e}", exc_info=True)
-#         return jsonify({"error": f"組合盤伺服器內部錯誤: {e}"}), 500
-
-# --- 組合盤路由 ---
 @app.route('/calculate_composite_chart', methods=['POST'])
 def calculate_composite_chart_api():
     data = request.get_json(force=True)
     if not data:
         return jsonify({"error": "請求中未提供 JSON 數據"}), 400
-    
     try:
         # --- 【核心修正 1】: 強化內部計算列表的依賴處理 ---
         user_requested_planets = data.get('optional_planets', [])
@@ -977,63 +680,24 @@ def calculate_composite_chart_api():
         app.logger.info(f"組合盤計算 - 使用者請求: {user_requested_planets}")
         app.logger.info(f"組合盤計算 - 內部基礎盤計算使用: {list(planets_for_base_charts)}")
 
-        # --- 處理第一個命盤 (Chart 1) 的數據 ---
-        # 從 JSON 中獲取完整的日期時間字串 (前端隱藏欄位 name='chart1_birth_date_time')
-        chart1_date_time_str = data.get('chart1_birth_date_time')
-        chart1_latitude = float(data['chart1_latitude'])
-        chart1_longitude = float(data['chart1_longitude'])
-        chart1_timezone = data['chart1_timezone']
-
-        # 使用輔助函式解析日期時間字串為 datetime 物件
-        chart1_datetime_obj, error_message = parse_datetime_from_json_string(chart1_date_time_str, "組合盤命盤A")
-        if error_message:
-            return jsonify({"error": error_message, "error_source": "chart1"}), 400
-
-        # 調用 calculate_astrology_chart 函式。
-        # 由於你的 calculate_astrology_chart 函式接收分開的年、月、日、時、分，
-        # 我們從解析後的 datetime 物件中提取這些值。
+        # --- 使用修正後的列表來計算兩個基礎盤 ---
         c1_raw = calculate_astrology_chart(
-            chart1_datetime_obj.year,    # 從 datetime 物件提取年份
-            chart1_datetime_obj.month,   # 從 datetime 物件提取月份
-            chart1_datetime_obj.day,     # 從 datetime 物件提取日期
-            chart1_datetime_obj.hour,    # 從 datetime 物件提取小時
-            chart1_datetime_obj.minute,  # 從 datetime 物件提取分鐘
-            chart1_latitude,
-            chart1_longitude,
-            chart1_timezone,
-            list(planets_for_base_charts) # 使用修正後的列表
-        )
+            int(data['chart1_year']), int(data['chart1_month']), int(data['chart1_day']),
+            int(data['chart1_hour']), int(data['chart1_minute']),
+            float(data['chart1_latitude']), float(data['chart1_longitude']),
+            data['chart1_timezone'], list(planets_for_base_charts))
         if "error" in c1_raw:
             c1_raw["error_source"] = "chart1"; return jsonify(c1_raw), 400
-        
-        # --- 處理第二個命盤 (Chart 2) 的數據 ---
-        # 從 JSON 中獲取完整的日期時間字串 (前端隱藏欄位 name='chart2_birth_date_time')
-        chart2_date_time_str = data.get('chart2_birth_date_time')
-        chart2_latitude = float(data['chart2_latitude'])
-        chart2_longitude = float(data['chart2_longitude'])
-        chart2_timezone = data['chart2_timezone']
 
-        # 使用輔助函式解析日期時間字串為 datetime 物件
-        chart2_datetime_obj, error_message = parse_datetime_from_json_string(chart2_date_time_str, "組合盤命盤B")
-        if error_message:
-            return jsonify({"error": error_message, "error_source": "chart2"}), 400
-
-        # 調用 calculate_astrology_chart 函式，同樣從 datetime 物件中提取分開的年、月、日、時、分
         c2_raw = calculate_astrology_chart(
-            chart2_datetime_obj.year,    # 從 datetime 物件提取年份
-            chart2_datetime_obj.month,   # 從 datetime 物件提取月份
-            chart2_datetime_obj.day,     # 從 datetime 物件提取日期
-            chart2_datetime_obj.hour,    # 從 datetime 物件提取小時
-            chart2_datetime_obj.minute,  # 從 datetime 物件提取分鐘
-            chart2_latitude,
-            chart2_longitude,
-            chart2_timezone,
-            list(planets_for_base_charts) # 使用修正後的列表
-        )
+            int(data['chart2_year']), int(data['chart2_month']), int(data['chart2_day']),
+            int(data['chart2_hour']), int(data['chart2_minute']),
+            float(data['chart2_latitude']), float(data['chart2_longitude']),
+            data['chart2_timezone'], list(planets_for_base_charts))
         if "error" in c2_raw:
             c2_raw["error_source"] = "chart2"; return jsonify(c2_raw), 400
         
-        # --- 中點計算邏輯 (這部分保持不變) ---
+        # --- 中點計算邏輯 ---
         composite_positions_raw = {}
         # 這裡遍歷使用者原始請求的列表
         for name in user_requested_planets:
@@ -1056,7 +720,7 @@ def calculate_composite_chart_api():
         if '天頂' in user_requested_planets: composite_positions_raw['天頂'] = {'lon': composite_mc_deg, 'speed': 0}
         if '天底' in user_requested_planets: composite_positions_raw['天底'] = {'lon': (composite_mc_deg + 180) % 360, 'speed': 0}
         
-        # 【核心修正 2】: 新增宿命點和福點的中點計算邏輯 (這部分保持不變)
+        # 【核心修正 2】: 新增宿命點和福點的中點計算邏輯
         # 計算宿命點中點
         if "宿命" in user_requested_planets and '宿命' in c1_raw['planet_positions'] and '宿命' in c2_raw['planet_positions']:
             vertex1 = c1_raw['planet_positions']['宿命']['lon']
@@ -1069,23 +733,20 @@ def calculate_composite_chart_api():
             pof2 = c2_raw['planet_positions']['福點']['lon']
             composite_positions_raw['福點'] = {'lon': get_midpoint(pof1, pof2), 'speed': 0}
 
-        # --- 最終格式化與回傳 (這部分保持不變) ---
+        # --- 最終格式化與回傳 (不變) ---
         composite_cusps_dict = {i: get_midpoint(c1_raw['house_cusps'][i], c2_raw['house_cusps'][i]) for i in range(1, 13)}
         final_composite_positions = {}
         for name, info in composite_positions_raw.items():
-            # 確保 find_house 和 zodiac_format 這些函數是可用的
             house_num, hdeg = find_house(info['lon'], composite_cusps_dict)
             final_composite_positions[name] = { 'lon': info['lon'], 'speed': 0, 'house': house_num, 'hdeg': hdeg, 'is_retrograde': False, 'retrograde_label': "", 'zodiac_position_formatted': zodiac_format(info['lon']) }
 
-        # 注意：composite_raw 中的 'local_time' 和 'utc_time' 在組合盤中通常是概念性的，
-        # 因為組合盤沒有單一的出生時間點。這裡保持與你原有代碼一致。
         composite_raw = {
             "local_time": "Composite Chart", "utc_time": "N/A",
             "latitude": (c1_raw['latitude'] + c2_raw['latitude']) / 2, 
             "longitude": get_midpoint(c1_raw['longitude'], c2_raw['longitude']),
             "house_cusps": composite_cusps_dict,
             "planet_positions": final_composite_positions,
-            "aspects": list_aspects(final_composite_positions) # 確保 list_aspects 是可用的
+            "aspects": list_aspects(final_composite_positions)
         }
 
         return jsonify({
@@ -1095,20 +756,11 @@ def calculate_composite_chart_api():
             "natal_chart2_data": format_chart_data_for_display(c2_raw),
         })
     except KeyError as e:
-        # 捕獲因前端 JSON 缺少必要鍵而引起的錯誤
-        app.logger.error(f"組合盤計算中缺少必要的鍵 (KeyError): {e}", exc_info=True)
-        return jsonify({"error": f"組合盤計算中缺少必要的鍵，請確保所有必要數據已提供 (例如：經緯度、時區或基本行星資訊): {e}"}), 400
-    except ValueError as ve:
-        # 捕獲因數據類型轉換失敗 (例如：經緯度或時區格式不正確) 而引起的錯誤
-        app.logger.error(f"組合盤數據類型轉換錯誤 (ValueError): {ve}", exc_info=True)
-        return jsonify({"error": f"組合盤數據格式不正確，請檢查數值類型 (例如：經緯度): {ve}"}), 400
+        app.logger.error(f"組合盤計算中缺少必要的鍵: {e}", exc_info=True)
+        return jsonify({"error": f"組合盤計算中缺少必要的鍵，可能是因為基礎盤未勾選 '上升' 或 '天頂': {e}"}), 500
     except Exception as e:
-        # 捕獲所有其他未預期的錯誤
         app.logger.error(f"組合盤後端發生未知錯誤: {e}", exc_info=True)
         return jsonify({"error": f"組合盤伺服器內部錯誤: {e}"}), 500
-    
-# 
-
 # ==============================================================================
 # --- NEW: API Endpoint for AI/Gemini Integration ---
 # ==============================================================================
@@ -1118,36 +770,18 @@ def calculate_single_chart_for_ai():
     """
     這個端點專為 AI 整合設計。
     它直接回傳未經格式化的原始星盤數據 JSON，方便程式解析。
-    已更新為從前端接收單一的日期時間字串。
     """
     data = request.get_json(force=True)
     if not data:
         return jsonify({"error": "請求中未提供 JSON 數據"}), 400
         
     try:
-        # 從 JSON 中獲取完整的日期時間字串 (前端的鍵名應是 'birth_date_time')
-        birth_date_time_str = data.get('birth_date_time') 
-
-        # 使用輔助函式解析日期時間字串為 datetime 物件
-        # `parse_datetime_from_json_string` 函數必須在你的檔案頂部定義一次
-        birth_datetime_obj, error_message = parse_datetime_from_json_string(birth_date_time_str, "AI API 單盤")
-        if error_message:
-            return jsonify({"error": error_message}), 400
-
         # 直接呼叫核心計算函式
-        # 由於你的 calculate_astrology_chart 函式接收分開的年、月、日、時、分，
-        # 我們從解析後的 datetime 物件中提取這些值。
         raw_chart_data = calculate_astrology_chart(
-            birth_datetime_obj.year,    # 從 datetime 物件提取年份
-            birth_datetime_obj.month,   # 從 datetime 物件提取月份
-            birth_datetime_obj.day,     # 從 datetime 物件提取日期
-            birth_datetime_obj.hour,    # 從 datetime 物件提取小時
-            birth_datetime_obj.minute,  # 從 datetime 物件提取分鐘
-            float(data['latitude']),
-            float(data['longitude']),
-            data['timezone'],
-            data.get('optional_planets', [])
-        )
+            int(data['year']), int(data['month']), int(data['day']),
+            int(data['hour']), int(data['minute']),
+            float(data['latitude']), float(data['longitude']),
+            data['timezone'], data.get('optional_planets', []))
 
         # 檢查計算過程中是否有錯誤，如果有的話直接回傳
         if "error" in raw_chart_data:
@@ -1158,11 +792,8 @@ def calculate_single_chart_for_ai():
         return jsonify(raw_chart_data)
 
     except KeyError as e:
-        app.logger.error(f"AI API - 請求中缺少必要欄位 (KeyError): {e}", exc_info=True)
+        app.logger.error(f"AI API - 請求中缺少必要欄位: {e}", exc_info=True)
         return jsonify({"error": f"請求的 JSON 中缺少必要欄位: {e}"}), 400
-    except ValueError as ve:
-        app.logger.error(f"AI API - 數據類型轉換錯誤 (ValueError): {ve}", exc_info=True)
-        return jsonify({"error": f"數據類型轉換錯誤，請檢查數值類型 (例如：經緯度): {ve}"}), 400
     except Exception as e:
         app.logger.error(f"AI API - 後端發生未知錯誤: {e}", exc_info=True)
         return jsonify({"error": f"伺服器內部錯誤: {e}"}), 500
