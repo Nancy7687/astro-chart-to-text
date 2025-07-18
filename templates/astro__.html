@@ -4,24 +4,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>占星命盤文字資料</title>
+    <title>占星命盤計算</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet"
+        href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.13.2/themes/smoothness/jquery-ui.css">
+
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <!-- 1. 引入轉輪套件(包jQuery UI ) -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 
-    <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.13.2/themes/smoothness/jquery-ui.css">
-
+    
     <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.13.2/jquery-ui.min.js"></script>
 
     <link rel="stylesheet"
         href="https://cdnjs.cloudflare.com/ajax/libs/jquery-ui-timepicker-addon/1.6.3/jquery-ui-timepicker-addon.min.css">
 
     <script
-        src="https://cdnjs.cloudflare.com/ajax/libs/jquery-ui-timepicker-addon/1.6.3/jquery-ui-timepicker-addon.min.js"></script>
-
+        src="https://cdnjs.cloudflare.com/ajax/libs/jquery-ui-timepicker-addon/1.6.3/jquery-ui-timepicker-addon.min.js"
+        defer></script>
     <script
         src="https://cdnjs.cloudflare.com/ajax/libs/jquery-ui-timepicker-addon/1.6.3/i18n/jquery-ui-timepicker-zh-TW.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/pickerjs"></script>
+    <script src="{{ url_for('static', filename='js/main.js') }}" defer></script>
     <style>
         html,
         body {
@@ -1226,8 +1231,8 @@
                     <h3 class="text-xl font-bold text-gray-800 mb-4 text-center">命盤A</h3>
                     <div class="input-group"><label for="comp1_name">姓名:</label><input type="text" id="comp1_name"
                             class="input-field" value="您">
-                        <p id="comp1_name-error" class="input-error-message" aria-live="polite"></p>
-                    </div>
+                        <p id="comp1_name-error" class="input-error-message" aria-live="polite">
+                    
                     <h4 class="text-lg font-semibold text-gray-700 mt-4 mb-2">出生日期與時間</h4>
 
                     <div class="date-time-input-container">
@@ -1474,8 +1479,10 @@
             $(function () {
                 // 將 Datepicker 和 Timepicker Addon 應用到同一個輸入框
                 $('#birthDateTimeInput').datetimepicker({
-                    // Datepicker 選項
-                    dateFormat: "yy-mm-dd",     // 日期顯示格式
+                    changeMonth: true,
+                    changeYear: true,
+                    changeMonth: true,
+                    changeYear: true,
                     changeMonth: true,           // 允許切換月份
                     changeYear: true,            // 允許切換年份
                     yearRange: "c-100:c+0",      // 年份範圍：從當前年份往前100年到今年
