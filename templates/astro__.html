@@ -962,7 +962,6 @@
             word-wrap: break-word;
             /* 強制在長單詞內部換行 */
             overflow-x: auto;
-            /* 如果因為某種原因內容還是過長，允許水平捲動 */
             margin: 0;
             /* 移除 <pre> 預設的 margin */
         }
@@ -2140,7 +2139,7 @@
                     const inputId = `${prefix}${field}`;
                     const inputElement = document.getElementById(inputId);
                     const value = inputElement.value;
-                    const parsedValue = parseFloat(value);
+                    const parsedValue = parseInt(value, 10); // 【修正】確保使用 parseInt 進行整數解析
                     const { min, max, label } = fields[field];
 
                     if (value.trim() === '' || isNaN(parsedValue) || parsedValue < min || parsedValue > max) {
