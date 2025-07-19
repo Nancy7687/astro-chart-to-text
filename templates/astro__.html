@@ -1711,7 +1711,7 @@
 
                 if (shouldRescan) {
                     console.log("DOM 結構變動，重新設置複製按鈕監聽器。");
-                    setupCopyListeners();
+                    setupCopyListeners(); // 正確呼叫修改後的函數名稱
                 }
             });
 
@@ -2402,7 +2402,7 @@
                 container.innerHTML = combinedHtml; // 將所有內容一次性注入
 
                 // 在 DOM 更新後，呼叫事件綁定函數
-                setupCopyListenersSimplified();
+                setupCopyListeners();
             }
 
             // 新增的輔助函數：生成單一星盤各部分的數據（表格和敘述兩種格式）
@@ -2667,7 +2667,9 @@
 
                 // --- 敘述內容生成 ---
                 const narrativeLines = [
-                    `${title}`
+                    "====================\n",
+                    `${title}`,
+                    "--------------------\n"
                 ];
                 overlayData.sort((a, b) => DISPLAY_ORDER_NAMES.indexOf(a.planet_name) - DISPLAY_ORDER_NAMES.indexOf(b.planet_name))
                     .forEach(o => {
@@ -2683,9 +2685,8 @@
                         //     // 如果沒有描述，可以選擇添加一個提示，或者不添加任何內容
                         //     narrativeLines.push(`${o.planet_name}落${o.house_in_target_chart}宮\n`);
                         }
-                        narrativeLines.push("--------------------\n"); // 每個星體解釋之間添加分隔線
                     });
-                // narrativeLines.push("\n"); // 這個可能不需要了，因為每個描述後面已經有換行
+                narrativeLines.push("====================\n"); 
                 sectionData.narrative = narrativeLines.join('\n');
 
                 return sectionData;
