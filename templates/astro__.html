@@ -2413,6 +2413,9 @@
 
                 // 在 DOM 更新後，呼叫事件綁定函數
                 setupCopyListeners();
+
+                // 【核心修正 1】: 重新套用使用者當前選擇的顯示模式 (表格或敘述)
+                updateDisplayMode(currentDisplayMode);
             }
 
             // 新增的輔助函數：生成單一星盤各部分的數據（表格和敘述兩種格式）
@@ -2458,7 +2461,7 @@
                 // --- 2. 宮頭 (Cusp Content) ---
                 sectionsData.cusp = {};
                 if (house_cusps?.length > 0) {
-                    sectionsData.cusp.table = [
+                    sectionsData.cusp.table = [ // 表格內容不變
                         "==== 宮頭 ====",
                         "宮頭 | 星座度數(度分)",
                         "--------------------", // 表格分隔線
@@ -2466,7 +2469,8 @@
                         "============\n"
                     ].join('\n');
 
-                    sectionsData.cusp.narrative = "宮頭\n--------------------";
+                    // 【核心修正 2】: 在分隔線後方加上換行符 `\n`
+                    sectionsData.cusp.narrative = "宮頭\n--------------------\n";
                     house_cusps.forEach(c => {
                         // 敘述版沒有表格分隔線
                         sectionsData.cusp.narrative += `${c.house_number} 宮頭: ${c.zodiac_position_formatted}\n`;
@@ -2480,7 +2484,7 @@
                 // --- 3. 星體位置 (Planet Content) ---
                 sectionsData.planet = {};
                 if (planet_positions) {
-                    sectionsData.planet.table = [
+                    sectionsData.planet.table = [ // 表格內容不變
                         "==== 星體位置 ====",
                         "星體 | 順逆 | 星座度數(度分) | 宮位(度分)",
                         "-----------------------------", // 表格分隔線
@@ -2497,7 +2501,8 @@
                         "================\n"
                     ].join('\n');
 
-                    sectionsData.planet.narrative = "星體位置\n--------------------";
+                    // 【核心修正 2】: 在分隔線後方加上換行符 `\n`
+                    sectionsData.planet.narrative = "星體位置\n--------------------\n";
                     DISPLAY_ORDER_NAMES
                         .filter(name => planet_positions[name])
                         .forEach(name => {
@@ -2518,7 +2523,7 @@
                 // --- 4. 主要相位 (Aspect Content) ---
                 sectionsData.aspect = {};
                 if (aspects?.length > 0) {
-                    sectionsData.aspect.table = [
+                    sectionsData.aspect.table = [ // 表格內容不變
                         "==== 主要相位 ====",
                         "星體1 | 相位 | 星體2 | 動態 | 容許度",
                         "----------------------", // 表格分隔線
@@ -2528,7 +2533,8 @@
                         "================\n"
                     ].join('\n');
 
-                    sectionsData.aspect.narrative = "主要相位\n--------------------";
+                    // 【核心修正 2】: 在分隔線後方加上換行符 `\n`
+                    sectionsData.aspect.narrative = "主要相位\n--------------------\n";
                     aspects.sort((a, b) => DISPLAY_ORDER_NAMES.indexOf(a.p1_name) - DISPLAY_ORDER_NAMES.indexOf(b.p1_name) || DISPLAY_ORDER_NAMES.indexOf(a.p2_name) - DISPLAY_ORDER_NAMES.indexOf(b.p2_name)).forEach(a => {
                         const p1 = planet_positions[a.p1_name];
                         const p1HouseInfo = p1 && !HOUSE_DEFINING_POINTS.includes(a.p1_name) && p1.house != null
@@ -2619,7 +2625,7 @@
                 const narrativeLines = [
                     "====================",
                     `${sectionTitle}`,
-                    "--------------------"
+                    "--------------------\n" // 【核心修正 2】: 加上換行符，讓分隔線與內容之間多一個空行，更美觀
                 ];
                 // 假設 planet_positions 在這裡是可以訪問的全局或通過參數傳入，用於獲取更多詳細信息
                 // 如果沒有，就只使用 a.p1_name, a.p2_name
@@ -2674,7 +2680,7 @@
                 const narrativeLines = [
                     "====================",
                     `${title}`,
-                    "--------------------\n\n"
+                    "--------------------"
                 ];
                 overlayData.sort((a, b) => DISPLAY_ORDER_NAMES.indexOf(a.planet_name) - DISPLAY_ORDER_NAMES.indexOf(b.planet_name))
                     .forEach(o => {
