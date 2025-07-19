@@ -7,9 +7,9 @@
     <title>占星命盤文字資料</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-    <!-- 1. 引入轉輪套件 (此為範例，請替換成您選擇的套件) -->
-    <!-- <link href="https://cdn.jsdelivr.net/npm/pickerjs@1.2.1/dist/picker.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/pickerjs@1.2.1/dist/picker.min.js"></script> -->
+    <!-- 1. 引入轉輪套件 -->
+    <link href="https://cdn.jsdelivr.net/npm/pickerjs@1.2.1/dist/picker.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/pickerjs@1.2.1/dist/picker.min.js"></script>
 
     <style>
         html,
@@ -966,6 +966,11 @@
             margin: 0;
             /* 移除 <pre> 預設的 margin */
         }
+        /* 讓使用者知道這些欄位是可以點擊的 */
+        .input-field[readonly] {
+            cursor: pointer;
+            background-color: #f8f9fa; /* 使用淺色背景提示這不是一個標準的文字輸入框 */
+        }
 
         /* 預設隱藏敘述內容 */
         .narrative-content {
@@ -1806,7 +1811,7 @@
                 setupPlanetCheckboxes();
                 setupInputErrorClearing();
                 setupCustomTimezoneListeners();
-                // setupWheelPickers(); // 【新增】啟用轉輪選擇器
+                setupWheelPickers(); // 【新增】啟用轉輪選擇器
                 // setDefaultTransitTimeToNow();
 
                 document.getElementById('calculateBtn').addEventListener('click', calculateChart);
@@ -1823,30 +1828,84 @@
                 }
             }
 
-            // 4. 【新增】一個用來設定轉輪的全新函式
+            // 4. 【修改】擴充此函式以支援所有日期時間輸入
             function setupWheelPickers() {
-                // 建立小時和分鐘的資料來源
-                const hoursData = Array.from({ length: 24 }, (_, i) => String(i).padStart(2, '0'));
-                const minutesData = Array.from({ length: 60 }, (_, i) => String(i).padStart(2, '0'));
+                // // 建立小時和分鐘的資料來源
+                // const hoursData = Array.from({ length: 24 }, (_, i) => String(i).padStart(2, '0'));
+                // const minutesData = Array.from({ length: 60 }, (_, i) => String(i).padStart(2, '0'));
 
-                // 遍歷所有需要轉輪的輸入框
-                const timeInputs = [
-                    { id: 'single_hour', data: hoursData }, { id: 'single_minute', data: minutesData },
-                    { id: 'comp1_hour', data: hoursData }, { id: 'comp1_minute', data: minutesData },
-                    { id: 'comp2_hour', data: hoursData }, { id: 'comp2_minute', data: minutesData },
-                    { id: 'natal_hour', data: hoursData }, { id: 'natal_minute', data: minutesData },
-                    { id: 'transit_hour', data: hoursData }, { id: 'transit_minute', data: minutesData },
+                // // 遍歷所有需要轉輪的輸入框
+                // const timeInputs = [
+                //     { id: 'single_hour', data: hoursData }, { id: 'single_minute', data: minutesData },
+                //     { id: 'comp1_hour', data: hoursData }, { id: 'comp1_minute', data: minutesData },
+                //     { id: 'comp2_hour', data: hoursData }, { id: 'comp2_minute', data: minutesData },
+                //     { id: 'natal_hour', data: hoursData }, { id: 'natal_minute', data: minutesData },
+                //     { id: 'transit_hour', data: hoursData }, { id: 'transit_minute', data: minutesData },
+                // 建立年、月、日、時、分的資料來源
+                const yearsData = Array.from({ length: 2100 - 1900 + 1 }, (_, i) => String(1900 + i));
+                const monthsData = Array.from({ length: 12 }, (_, i) => String(i + 1));
+                const daysData = Array.from({ length: 31 }, (_, i) => String(i + 1));
+                const hoursData = Array.from({ length: 24 }, (_, i) => String(i));
+                const minutesData = Array.from({ length: 60 }, (_, i) => String(i));
+
+                // 定義所有需要轉輪的輸入框及其對應的資料
+                const pickerConfigs = [
+                    // 個人星盤
+                    { id: 'single_year', data: yearsData, title: '選擇年份' },
+                    { id: 'single_month', data: monthsData, title: '選擇月份' },
+                    { id: 'single_day', data: daysData, title: '選擇日期' },
+                    { id: 'single_hour', data: hoursData, title: '選擇小時' },
+                    { id: 'single_minute', data: minutesData, title: '選擇分鐘' },
+                    // 比較盤 A
+                    { id: 'comp1_year', data: yearsData, title: '選擇年份' },
+                    { id: 'comp1_month', data: monthsData, title: '選擇月份' },
+                    { id: 'comp1_day', data: daysData, title: '選擇日期' },
+                    { id: 'comp1_hour', data: hoursData, title: '選擇小時' },
+                    { id: 'comp1_minute', data: minutesData, title: '選擇分鐘' },
+                    // 比較盤 B
+                    { id: 'comp2_year', data: yearsData, title: '選擇年份' },
+                    { id: 'comp2_month', data: monthsData, title: '選擇月份' },
+                    { id: 'comp2_day', data: daysData, title: '選擇日期' },
+                    { id: 'comp2_hour', data: hoursData, title: '選擇小時' },
+                    { id: 'comp2_minute', data: minutesData, title: '選擇分鐘' },
+                    // 行運盤 (本命)
+                    { id: 'natal_year', data: yearsData, title: '選擇年份' },
+                    { id: 'natal_month', data: monthsData, title: '選擇月份' },
+                    { id: 'natal_day', data: daysData, title: '選擇日期' },
+                    { id: 'natal_hour', data: hoursData, title: '選擇小時' },
+                    { id: 'natal_minute', data: minutesData, title: '選擇分鐘' },
+                    // 行運盤 (行運)
+                    { id: 'transit_year', data: yearsData, title: '選擇年份' },
+                    { id: 'transit_month', data: monthsData, title: '選擇月份' },
+                    { id: 'transit_day', data: daysData, title: '選擇日期' },
+                    { id: 'transit_hour', data: hoursData, title: '選擇小時' },
+                    { id: 'transit_minute', data: minutesData, title: '選擇分鐘' },
                 ];
 
-                timeInputs.forEach(inputConfig => {
-                    const inputElement = document.getElementById(inputConfig.id);
+                // timeInputs.forEach(inputConfig => {
+                //     const inputElement = document.getElementById(inputConfig.id);
+                pickerConfigs.forEach(config => {
+                    const inputElement = document.getElementById(config.id);
+                    
                     if (inputElement) {
+                        // 將輸入框設為唯讀，以防止在手機上彈出鍵盤，並強制使用選擇器
+                        inputElement.readOnly = true;
+
                         new Picker(inputElement, {
-                            data: [inputConfig.data], // Picker.js 需要二維陣列
-                            headers: false, // 不顯示標頭
-                            format: 'HH:mm', // 這是 Picker.js 內部的格式，我們只用它來取值
+                            // data: [inputConfig.data], // Picker.js 需要二維陣列
+                            // headers: false, // 不顯示標頭
+                            // format: 'HH:mm', // 這是 Picker.js 內部的格式，我們只用它來取值
+                            data: [config.data],
+                            title: config.title,
                             text: { done: '確定', cancel: '取消' },
                             // 當使用者按下「確定」時，套件會自動將選擇的值更新到 inputElement.value
+                            // 當選擇器顯示時，自動將其滾動到輸入框的當前值
+                            show: function() {
+                                const currentValue = this.picker.element.value;
+                                if (currentValue) {
+                                    this.picker.setValue([currentValue]);
+                                }
+                            }
                         });
                     }
                 });
