@@ -2571,25 +2571,21 @@
 
             <div class="summary-section-container">
                 <div class="result-section-item">
-                    ${createResultSection('星盤基礎數據', summary.table, true, 'summary-header-style')}
-                    <pre class="narrative-content scrollable-content" style="display:none;">${summary.narrative}</pre>
+                    ${createResultSection('星盤基礎數據', summary.table, summary.narrative, true, 'summary-header-style')}
                 </div>
             </div>
 
             <div class="sub-sections-container">
                 <div class="result-section-item">
-                    ${createResultSection('宮頭', cusp.table, false, 'cusp-header-style')}
-                    <pre class="narrative-content scrollable-content" style="display:none;">${cusp.narrative}</pre>
+                    ${createResultSection('宮頭', cusp.table, cusp.narrative, false, 'cusp-header-style')}
                 </div>
 
                 <div class="result-section-item">
-                    ${createResultSection('星體位置', planet.table, false, 'planet-header-style')}
-                    <pre class="narrative-content scrollable-content" style="display:none;">${planet.narrative}</pre>
+                    ${createResultSection('星體位置', planet.table, planet.narrative, false, 'planet-header-style')}
                 </div>
 
                 <div class="result-section-item">
-                    ${createResultSection('主要相位', aspect.table, false, 'aspect-header-style')}
-                    <pre class="narrative-content scrollable-content" style="display:none;">${aspect.narrative}</pre>
+                    ${createResultSection('主要相位', aspect.table, aspect.narrative, false, 'aspect-header-style')}
                 </div>
             </div>
         </div>`;
@@ -2649,8 +2645,7 @@
 
                 return `
         <div class="result-section-item">
-            ${createResultSection(title, sectionsData.table, false, 'interaction-header-style')}
-            <pre class="narrative-content scrollable-content" style="display:none;">${sectionsData.narrative}</pre>
+            ${createResultSection(title, sectionsData.table, sectionsData.narrative, false, 'interaction-header-style')}
         </div>`;
             }
             // 新增的輔助函數：生成行星落宮部分的數據（表格和敘述兩種格式）
@@ -2713,12 +2708,11 @@
 
                 return `
     <div class="result-section-item">
-        ${createResultSection(displayTitle, sectionsData.table, false, 'interaction-header-style')}
-        <pre class="narrative-content scrollable-content" style="display:none;">${sectionsData.narrative}</pre>
+        ${createResultSection(displayTitle, sectionsData.table, sectionsData.narrative, false, 'interaction-header-style')}
     </div>`;
             }
 
-            function createResultSection(title, content, isSummary = false, headerStyleClass = '') {
+            function createResultSection(title, tableContent, narrativeContent, isSummary = false, headerStyleClass = '') {
                 // 根據你的要求：所有章節（包括 summary）都需要有複製按鈕。
                 // 所以 copyButtonHtml 無條件地生成按鈕的 HTML 字串。
                 const copyButtonHtml = `<button class="section-copy-btn">複製</button>`;
@@ -2732,7 +2726,8 @@
             ${copyButtonHtml}
         </div>
         <div class="result-section-content scrollable-content">
-            <pre class="table-content">${content}</pre> 
+            <pre class="table-content">${tableContent}</pre>
+            <pre class="narrative-content" style="display:none;">${narrativeContent}</pre>
         </div>
     `;
             }
