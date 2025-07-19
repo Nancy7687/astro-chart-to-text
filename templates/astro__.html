@@ -1573,6 +1573,10 @@
             // 處理複製按鈕點擊的事件函數 (已精確匹配你的 HTML 結構)
             async function handleCopyButtonClick(event) {
                 const button = event.currentTarget;
+                console.log("--- 點擊事件開始 ---");
+                console.log("1. 點擊的按鈕元素:", button);
+                console.log("2. 按鈕的 Class 列表:", Array.from(button.classList).join(', ')); // 將 DOMTokenList 轉為可讀的字串
+                
                 let contentToCopy = '';
 
                 try {
