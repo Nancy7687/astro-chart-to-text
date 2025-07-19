@@ -486,7 +486,7 @@ def get_timezones():
 @app.route('/')
 def index():
     # 這裡會渲染 templates/astro__.html
-    return render_template('astro__.html')
+    return render_template('astro__格子版ok.html')
 
 # ... (這裡的所有 API 路由，從 /calculate_single_chart 到 /calculate_composite_chart，都保持不變) ...
 # ... 我將省略貼上這部分相同的程式碼，請直接從您的 app13.py 複製過來 ...
