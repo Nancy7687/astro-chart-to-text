@@ -1544,29 +1544,32 @@
             const toggleNarrativeModeBtn = document.getElementById('toggle-narrative-mode');
 
             // 函數：更新顯示模式 (UI 和內容)
-            function updateDisplayMode(mode) {
-                if (currentDisplayMode === mode) {
-                    return;
+            function updateDisplayMode(newMode) {
+                // 只有當模式確實改變時才更新全域狀態 (主要由按鈕點擊觸發)
+                if (currentDisplayMode !== newMode) {
+                    currentDisplayMode = newMode;
                 }
 
-                currentDisplayMode = mode;
+                // 總是根據當前的狀態來更新 UI
+                // 這確保了即使模式沒有改變 (例如重新計算後)，UI 也能被強制同步到正確的狀態
+                const modeToShow = currentDisplayMode;
 
                 if (toggleTableModeBtn) {
-                    toggleTableModeBtn.classList.toggle('active', mode === 'table');
+                    toggleTableModeBtn.classList.toggle('active', modeToShow === 'table');
                 }
                 if (toggleNarrativeModeBtn) {
-                    toggleNarrativeModeBtn.classList.toggle('active', mode === 'narrative');
+                    toggleNarrativeModeBtn.classList.toggle('active', modeToShow === 'narrative');
                 }
 
                 const tableContents = document.querySelectorAll('.table-content');
                 const narrativeContents = document.querySelectorAll('.narrative-content');
 
                 tableContents.forEach(el => {
-                    el.style.display = (mode === 'table') ? 'block' : 'none';
+                    el.style.display = (modeToShow === 'table') ? 'block' : 'none';
                 });
 
                 narrativeContents.forEach(el => {
-                    el.style.display = (mode === 'narrative') ? 'block' : 'none';
+                    el.style.display = (modeToShow === 'narrative') ? 'block' : 'none';
                 });
             }
 
@@ -2454,7 +2457,7 @@
                     ].join('\n') : "基礎數據缺失";
 
                     sectionsData.summary.narrative = (timestamps && birth_info) ?
-                        `星盤基礎資訊\n本地時間：${timestamps.local_time}\nUTC時間：${timestamps.utc_time}\n出生地座標：緯度 ${birth_info.latitude}, 經度 ${birth_info.longitude}\n\n` :
+                        `星盤基礎資訊\n--------------------\n本地時間：${timestamps.local_time}\nUTC時間：${timestamps.utc_time}\n出生地座標：緯度 ${birth_info.latitude}, 經度 ${birth_info.longitude}\n\n` :
                         "基礎數據缺失，無法提供完整敘述。\n";
                 }
 
@@ -2601,7 +2604,7 @@
             function generateInterAspectsSectionData(aspects, name1, name2, isTransit = false) {
                 const sectionData = { table: '', narrative: '' };
                 const titlePrefix = isTransit ? `${name1}與${name2}` : `主要`;
-                const sectionTitle = `${titlePrefix}交互相位`; // 用於內部文本標題
+                const sectionTitle = `${titlePrefix}相位`; // 用於內部文本標題
 
                 if (!aspects?.length) {
                     sectionData.table = "沒有相位";
