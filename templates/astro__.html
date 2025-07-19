@@ -1903,10 +1903,10 @@
                             text: { done: '確定', cancel: '取消' },
                             // 【功能修正】新增 done 回調，確保選擇後的值被正確設定
                             done: function (values) {
-                                // 明確地將選擇的值設定到輸入框的 value 屬性
-                                this.picker.element.value = values[0];
-                                // 手動觸發 change 事件，以防有其他邏輯依賴此事件
-                                this.picker.element.dispatchEvent(new Event('change', { bubbles: true }));
+                                // 【核心修正】使用 this.element 來引用輸入框，而不是錯誤的 this.picker.element
+                                this.element.value = values[0];
+                                // 手動觸發 change 事件，以防有其他邏輯依賴此事件 (可選，但建議保留)
+                                this.element.dispatchEvent(new Event('change', { bubbles: true }));
                             },
                             // 當選擇器顯示時，自動將其滾動到輸入框的當前值
                             show: function() {
