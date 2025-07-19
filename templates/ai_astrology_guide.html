@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI 占星解析與提問指南</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&family=Playfair+Display:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-dark: #0f1419;
+            --secondary-dark: #1a2332;
+            --accent-gold: #d4af37;
+            --accent-purple: #8b5cf6;
+            --accent-silver: #c0c0c0;
+            --text-light: #f8fafc;
+            --text-muted: #cbd5e1;
+        }
+
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background: linear-gradient(135deg, var(--primary-dark) 0%, var(--secondary-dark) 100%);
+            color: var(--text-light);
+            min-height: 100vh;
+        }
+
+        .nav-item {
+            position: relative;
+        }
+
+        .submenu {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            min-width: 280px;
+            background: rgba(26, 35, 50, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(139, 92, 246, 0.3);
+            border-radius: 8px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .nav-item:hover .submenu {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .submenu a {
+            padding: 12px 16px;
+            display: block;
+            color: var(--text-muted);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border-bottom: 1px solid rgba(139, 92, 246, 0.1);
+        }
+
+        .submenu a:hover {
+            background: rgba(139, 92, 246, 0.1);
+            color: var(--accent-gold);
+            padding-left: 20px;
+        }
+
+        .submenu a:last-child {
+            border-bottom: none;
+        }
+
+        .hero-section {
+            background: radial-gradient(circle at center, rgba(139, 92, 246, 0.1) 0%, transparent 70%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="1" fill="%23d4af37" opacity="0.3"><animate attributeName="opacity" values="0.3;0.8;0.3" dur="2s" repeatCount="indefinite"/></circle><circle cx="20" cy="20" r="0.5" fill="%23c0c0c0" opacity="0.5"/><circle cx="80" cy="30" r="0.8" fill="%238b5cf6" opacity="0.4"/><circle cx="30" cy="80" r="0.6" fill="%23d4af37" opacity="0.6"/></svg>') repeat;
+            animation: twinkle 20s linear infinite;
+        }
+
+        @keyframes twinkle {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(-100px); }
+        }
+
+        .content-section {
+            display: none;
+        }
+
+        .content-section.active {
+            display: block;
+        }
+
+        .form-input {
+            background: rgba(26, 35, 50, 0.8);
+            border: 1px solid rgba(139, 92, 246, 0.3);
+            color: var(--text-light);
+            border-radius: 8px;
+            padding: 12px 16px;
+            width: 100%;
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--accent-gold);
+            box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.1);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent-purple) 0%, var(--accent-gold) 100%);
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(139, 92, 246, 0.3);
+        }
+
+        .card {
+            background: rgba(26, 35, 50, 0.6);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(139, 92, 246, 0.2);
+            border-radius: 12px;
+            padding: 24px;
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            border-color: rgba(212, 175, 55, 0.4);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        @media (max-width: 768px) {
+            .submenu {
+                position: static;
+                min-width: auto;
+                width: 100%;
+                transform: none;
+                margin-top: 8px;
+                border-radius: 4px;
+            }
+            
+            .nav-item:hover .submenu {
+                transform: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header Navigation -->
+    <header class="bg-gray-900 bg-opacity-90 backdrop-filter backdrop-blur-lg border-b border-purple-500 border-opacity-30 sticky top-0 z-50">
+        <nav class="container mx-auto px-4 py-3">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-2">
+                    <i class="fas fa-star text-yellow-400 text-2xl"></i>
+                    <h1 class="text-xl font-bold text-white">AI 占星解析</h1>
+                </div>
+                
+                <!-- Mobile menu button -->
+                <button class="md:hidden text-white" onclick="toggleMobileMenu()">
+                    <i class="fas fa-bars text-xl"></i>
+                </button>
+                
+                <!-- Desktop Navigation -->
+                <div class="hidden md:flex space-x-6">
+                    <div class="nav-item">
+                        <a href="#" onclick="showSection('birth-chart')" class="text-white hover:text-yellow-400 transition-colors duration-300">
+                            📝 星盤資料生成
+                        </a>
+                    </div>
+                    
+                    <div class="nav-item">
+                        <a href="#" onclick="showSection('ai-guide')" class="text-white hover:text-yellow-400 transition-colors duration-300">
+                            🌟 AI 占星引導
+                        </a>
+                        <div class="submenu">
+                            <a href="#" onclick="showSection('start-reading')">啟程！解讀星盤奧秘</a>
+                            <a href="#" onclick="showSection('question-method')">提問心法：問對了，就對了！</a>
+                            <a href="#" onclick="showSection('ai-principles')">AI 解讀原則：讓星盤會說話</a>
+                            <a href="#" onclick="showSection('advanced-questions')">進階提問技巧：讓 AI 為您深度解析</a>
+                        </div>
+                    </div>
+                    
+                    <div class="nav-item">
+                        <a href="#" onclick="showSection('personal-chart')" class="text-white hover:text-yellow-400 transition-colors duration-300">
+                            🗝️ 個人星圖解鎖
+                        </a>
+                        <div class="submenu">
+                            <a href="#" onclick="showSection('self-discovery')">我是誰？內在天賦探索</a>
+                            <a href="#" onclick="showSection('career-guide')">職場升級：事業與職涯指南</a>
+                            <a href="#" onclick="showSection('wealth-chart')">財富星圖：金錢觀與開源秘密</a>
+                            <a href="#" onclick="showSection('love-language')">愛情星語：解鎖情場密碼</a>
+                            <a href="#" onclick="showSection('friendship')">友情連結：人際互動星解</a>
+                            <a href="#" onclick="showSection('family-chart')">根與脈絡：家庭星盤啟示</a>
+                            <a href="#" onclick="showSection('health-balance')">身心平衡：健康活力指南</a>
+                            <a href="#" onclick="showSection('life-lessons')">命運課題與成長之路</a>
+                            <a href="#" onclick="showSection('soul-imprint')">靈魂印記：前世今生</a>
+                        </div>
+                    </div>
+                    
+                    <div class="nav-item">
+                        <a href="#" onclick="showSection('instant-solution')" class="text-white hover:text-yellow-400 transition-colors duration-300">
+                            ⚡ 問題即時解
+                        </a>
+                        <div class="submenu">
+                            <a href="#" onclick="showSection('decision-moment')">決策時刻：選擇最佳路徑</a>
+                            <a href="#" onclick="showSection('situation-insight')">情境解惑：看清事件真相</a>
+                        </div>
+                    </div>
+                    
+                    <div class="nav-item">
+                        <a href="#" onclick="showSection('relationship-insight')" class="text-white hover:text-yellow-400 transition-colors duration-300">
+                            👁️ 關係星盤洞察
+                        </a>
+                        <div class="submenu">
+                            <a href="#" onclick="showSection('relationship-core')">關係核心：解鎖彼此磁場</a>
+                            <a href="#" onclick="showSection('love-synastry')">愛情關係：情侶合盤解讀</a>
+                            <a href="#" onclick="showSection('parent-child')">親子關係：家庭合盤啟示</a>
+                            <a href="#" onclick="showSection('friendship-synastry')">友情關係：知己合盤探索</a>
+                            <a href="#" onclick="showSection('work-synastry')">合作關係：職場合盤解析</a>
+                        </div>
+                    </div>
+                    
+                    <div class="nav-item">
+                        <a href="#" onclick="showSection('relationship-resonance')" class="text-white hover:text-yellow-400 transition-colors duration-300">
+                            🔗 關係共振探索
+                        </a>
+                        <div class="submenu">
+                            <a href="#" onclick="showSection('relationship-axis')">關係主軸：我們一起的「我們」</a>
+                        </div>
+                    </div>
+                    
+                    <div class="nav-item">
+                        <a href="#" onclick="showSection('fortune-tracking')" class="text-white hover:text-yellow-400 transition-colors duration-300">
+                            📈 運勢週期脈動追蹤
+                        </a>
+                        <div class="submenu">
+                            <a href="#" onclick="showSection('recent-fortune')">近期運勢：預見未來三個月</a>
+                            <a href="#" onclick="showSection('annual-focus')">年度焦點：掌握關鍵轉折點</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Mobile Navigation -->
+            <div id="mobile-menu" class="md:hidden mt-4 hidden">
+                <div class="space-y-2">
+                    <a href="#" onclick="showSection('birth-chart')" class="block py-2 text-white hover:text-yellow-400">📝 星盤資料生成</a>
+                    <a href="#" onclick="showSection('ai-guide')" class="block py-2 text-white hover:text-yellow-400">🌟 AI 占星引導</a>
+                    <a href="#" onclick="showSection('personal-chart')" class="block py-2 text-white hover:text-yellow-400">🗝️ 個人星圖解鎖</a>
+                    <a href="#" onclick="showSection('instant-solution')" class="block py-2 text-white hover:text-yellow-400">⚡ 問題即時解</a>
+                    <a href="#" onclick="showSection('relationship-insight')" class="block py-2 text-white hover:text-yellow-400">👁️ 關係星盤洞察</a>
+                    <a href="#" onclick="showSection('relationship-resonance')" class="block py-2 text-white hover:text-yellow-400">🔗 關係共振探索</a>
+                    <a href="#" onclick="showSection('fortune-tracking')" class="block py-2 text-white hover:text-yellow-400">📈 運勢週期脈動追蹤</a>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container mx-auto px-4 py-8">
+        <!-- Hero Section -->
+        <section id="hero" class="hero-section text-center py-16 mb-12 relative z-10">
+            <h1 class="text-4xl md:text-6xl font-bold mb-4" style="font-family: 'Playfair Display', serif;">
+                <span class="bg-gradient-to-r from-yellow-400 to-purple-400 bg-clip-text text-transparent">
+                    AI 占星解析
+                </span>
+            </h1>
+            <h2 class="text-xl md:text-2xl text-gray-300 mb-8">
+                您的宇宙智慧導師，啟迪星圖奧秘
+            </h2>
+            <p class="text-lg text-gray-400 max-w-2xl mx-auto">
+                結合古老占星智慧與現代AI科技，為您提供精準個人化的星盤解析與人生指引
+            </p>
+        </section>
+
+        <!-- Content Sections -->
+        
+        <!-- 星盤資料生成 -->
+        <section id="birth-chart" class="content-section active">
+            <div class="card max-w-4xl mx-auto">
+                <h1 class="text-3xl md:text-4xl font-bold mb-4 text-center">
+                    <i class="fas fa-star text-yellow-400 mr-3"></i>
+                    星盤資料生成：即刻開啟您的宇宙藍圖
+                </h1>
+                <h2 class="text-xl md:text-2xl text-gray-300 mb-8 text-center">
+                    輸入您的出生資訊，體驗個人化AI占星洞察之旅
+                </h2>
+                
+                <div class="grid md:grid-cols-2 gap-8">
+                    <div class="space-y-6">
+                        <div>
+                            <label class="block text-sm font-medium mb-2 text-gray-300">姓名 <span class="text-red-400">*</span></label>
+                            <input type="text" class="form-input" placeholder="請輸入您的姓名">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium mb-2 text-gray-300">出生日期 <span class="text-red-400">*</span></label>
+                            <input type="date" class="form-input">
+                        </div>
+                        
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium mb-2 text-gray-300">出生時間 <span class="text-red-400">*</span></label>
+                                <input type="time" class="form-input">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium mb-2 text-gray-300">性別</label>
+                                <select class="form-input">
+                                    <option value="">請選擇</option>
+                                    <option value="male">男性</option>
+                                    <option value="female">女性</option>
+                                    <option value="other">其他</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium mb-2 text-gray-300">出生城市 <span class="text-red-400">*</span></label>
+                            <input type="text" class="form-input" placeholder="例：台北市">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium mb-2 text-gray-300">出生國家 <span class="text-red-400">*</span></label>
+                            <input type="text" class="form-input" placeholder="例：台灣">
+                        </div>
+                    </div>
+                    
+                    <div class="space-y-6">
+                        <div class="bg-purple-900 bg-opacity-30 p-6 rounded-lg">
+                            <h3 class="text-lg font-semibold mb-3 text-yellow-400">
+                                <i class="fas fa-info-circle mr-2"></i>
+                                重要提醒
+                            </h3>
+                            <ul class="space-y-2 text-sm text-gray-300">
+                                <li><i class="fas fa-check text-green-400 mr-2"></i>出生時間請盡量精確到分鐘</li>
+                                <li><i class="fas fa-check text-green-400 mr-2"></i>如不確定時間，可填寫大概時段</li>
+                                <li><i class="fas fa-check text-green-400 mr-2"></i>出生地點影響宮位系統計算</li>
+                                <li><i class="fas fa-check text-green-400 mr-2"></i>所有資料僅用於星盤計算</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="bg-blue-900 bg-opacity-30 p-6 rounded-lg">
+                            <h3 class="text-lg font-semibold mb-3 text-blue-300">
+                                <i class="fas fa-magic mr-2"></i>
+                                星盤生成後您將獲得
+                            </h3>
+                            <ul class="space-y-2 text-sm text-gray-300">
+                                <li><i class="fas fa-star text-yellow-400 mr-2"></i>完整個人本命盤圖</li>
+                                <li><i class="fas fa-star text-yellow-400 mr-2"></i>十大行星位置解析</li>
+                                <li><i class="fas fa-star text-yellow-400 mr-2"></i>十二宮位詳細說明</li>
+                                <li><i class="fas fa-star text-yellow-400 mr-2"></i>相位關係解讀</li>
+                                <li><i class="fas fa-star text-yellow-400 mr-2"></i>AI個人化分析建議</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="text-center mt-8">
+                    <button class="btn-primary text-lg px-8 py-3">
+                        <i class="fas fa-magic mr-2"></i>
+                        立即生成我的星盤
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- AI 占星引導 -->
+        <section id="ai-guide" class="content-section">
+            <div class="card">
+                <h1 class="text-3xl md:text-4xl font-bold mb-4 text-center">
+                    <i class="fas fa-star text-yellow-400 mr-3"></i>
+                    AI 占星引導：您的宇宙智慧導師
+                </h1>
+                <h2 class="text-xl md:text-2xl text-gray-300 mb-8 text-center">
+                    啟迪星圖奧秘，助您智慧前行
+                </h2>
+                <div class="text-center text-gray-400">
+                    <p class="text-lg">探索AI占星的無限可能，讓科技與古老智慧完美結合</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 啟程！解讀星盤奧秘 -->
+        <section id="start-reading" class="content-section">
+            <div class="card">
+                <h3 class="text-2xl md:text-3xl font-bold mb-4 text-center text-yellow-400">
+                    啟程！解讀星盤奧秘：AI 如何成為您最貼心的星盤夥伴？
+                </h3>
+                <div class="text-center text-gray-400">
+                    <p class="text-lg">開始您的占星解讀之旅，讓AI成為您最信賴的星盤解讀夥伴</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 提問心法 -->
+        <section id="question-method" class="content-section">
+            <div class="card">
+                <h3 class="text-2xl md:text-3xl font-bold mb-4 text-center text-yellow-400">
+                    提問心法：問對了，就對了！解鎖 AI 精準解析的鑰匙
+                </h3>
+                <div class="text-center text-gray-400">
+                    <p class="text-lg">掌握提問技巧，讓AI為您提供更精準的占星解析</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- AI 解讀原則 -->
+        <section id="ai-principles" class="content-section">
+            <div class="card">
+                <h3 class="text-2xl md:text-3xl font-bold mb-4 text-center text-yellow-400">
+                    AI 解讀原則：讓星盤會說話，駕馭宇宙潛能
+                </h3>
+                <div class="text-center text-gray-400">
+                    <p class="text-lg">了解AI解讀的核心原則，讓星盤為您揭示宇宙的秘密</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 進階提問技巧 -->
+        <section id="advanced-questions" class="content-section">
+            <div class="card">
+                <h3 class="text-2xl md:text-3xl font-bold mb-4 text-center text-yellow-400">
+                    進階提問技巧：讓 AI 為您深度解析
+                </h3>
+                <div class="text-center text-gray-400">
+                    <p class="text-lg">掌握進階提問技巧，獲得更深層的占星洞察</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 個人星圖解鎖 -->
+        <section id="personal-chart" class="content-section">
+            <div class="card">
+                <h1 class="text-3xl md:text-4xl font-bold mb-4 text-center">
+                    <i class="fas fa-key text-yellow-400 mr-3"></i>
+                    本命星圖解鎖：探索您的生命藍圖
+                </h1>
+                <h2 class="text-xl md:text-2xl text-gray-300 mb-8 text-center">
+                    揭示天賦潛能，指引人生方向
+                </h2>
+                <div class="text-center text-gray-400">
+                    <p class="text-lg">深入探索您的個人星圖，發現隱藏的天賦與人生使命</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 其他子頁面 (簡化顯示) -->
+        <section id="self-discovery" class="content-section">
+            <div class="card">
+                <h3 class="text-2xl md:text-3xl font-bold mb-4 text-center text-yellow-400">我是誰？內在天賦探索</h3>
+                <div class="text-center text-gray-400"><p class="text-lg">發掘您內在的天賦與潛能</p></div>
+            </div>
+        </section>
+
+        <section id="career-guide" class="content-section">
+            <div class="card">
+                <h3 class="text-2xl md:text-3xl font-bold mb-4 text-center text-yellow-400">職場升級：事業與職涯指南</h3>
+                <div class="text-center text-gray-400"><p class="text-lg">星盤指引您的事業發展方向</p></div>
+            </div>
+        </section>
+
+        <section id="wealth-chart" class="content-section">
+            <div class="card">
+                <h3 class="text-2xl md:text-3xl font-bold mb-4 text-center text-yellow-400">財富星圖：金錢觀與開源秘密</h3>
+                <div class="text-center text-gray-400"><p class="text-lg">解讀您的財富運勢與理財天賦</p></div>
+            </div>
+        </section>
+
+        <section id="love-language" class="content-section">
+            <div class="card">
+                <h3 class="text-2xl md:text-3xl font-bold mb-4 text-center text-yellow-400">愛情星語：解鎖情場密碼</h3>
+                <div class="text-center text-gray-400"><p class="text-lg">探索您的愛情模式與情感表達</p></div>
+            </div>
+        </section>
+
+        <section id="friendship" class="content-section">
+            <div class="card">
+                <h3 class="text-2xl md:text-3xl font-bold mb-4 text-center text-yellow-400">友情連結：人際互動星解</h3>
+                <div class="text-center text-gray-400"><p class="text-lg">了解您的社交天賦與人際關係</p></div>
+            </div>
+        </section>
+
+        <section id="family-chart" class="content-section">
+            <div class="card">
+                <h3 class="text-2xl md:text-3xl font-bold mb-4 text-center text-yellow-400">根與脈絡：家庭星盤啟示</h3>
+                <div class="text-center text-gray-400"><p class="text-lg">探索家庭關係與原生家庭影響</p></div>
+            </div>
+        </section>
+
+        <section id="health-balance" class="content-section">
+            <div class="card">
+                <h3 class="text-2xl md:text-3xl font-bold mb-4 text-center text-yellow-400">身心平衡：健康活力指南</h3>
+                <div class="text-center text-gray-400"><p class="text-lg">星盤指引您的健康維護方向</p></div>
+            </div>
+        </section>
+
+        <section id="life-lessons" class="content-section">
+            <div class="card">
+                <h3 class="text-2xl md:text-3xl font-bold mb-4 text-center text-yellow-400">命運課題與成長之路</h3>
+                <div class="text-center text-gray-400"><p class="text-lg">了解人生課題與成長機會</p></div>
+            </div>
+        </section>
+
+        <section id="soul-imprint" class="content-section">
+            <div class="card">
+                <h3 class="text-2xl md:text-3xl font-bold mb-4 text-center text-yellow-400">靈魂印記：前世今生</h3>
+                <div class="text-center text-gray-400"><p class="text-lg">探索靈魂的印記與前世連結</p></div>
+            </div>
+        </section>
+
+        <!-- 問題即時解 -->
+        <section id="instant-solution" class="content-section">
+            <div class="card">
+                <h1 class="text-3xl md:text-4xl font-bold mb-4 text-center">
+                    <i class="fas fa-bolt text-yellow-400 mr-3"></i>
+                    問題即時解：卜卦星盤，當下解惑
+                </h1>
+                <h2 class="text-xl md:text-2xl text-gray-300 mb-8 text-center">
+                    問對一刻，即刻洞察，指引行動
+                </h2>
+                <div class="text-center text-gray-400">
+                    <p class="text-lg">運用卜卦占星術，為您當下的困惑提供即時指引</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="decision-moment" class="content-section">
+            <div class="card">
+                <h3 class="text-2xl md:text-3xl font-bold mb-4 text-center text-yellow-400">決策時刻：選擇最佳路徑</h3>
+                <div class="text-center text-gray-400"><p class="text-lg">在重要決策時刻獲得星盤指引</p></div>
+            </div>
+        </section>
+
+        <section id="situation-insight" class="content-section">
+            <div class="card">
+                <h3 class="text-2xl md:text-3xl font-bold mb-4 text-center text-yellow-400">情境解惑：看清事件真相</h3>
+                <div class="text-center text-gray-400"><p class="text-lg">透過星盤洞察事件的深層含義</p></div>
+            </div>
+        </section>
+
+        <!-- 關係星盤洞察 -->
+        <section id="relationship-insight" class="content-section">
+            <div class="card">
+                <h1 class="text-3xl md:text-4xl font-bold mb-4 text-center">
+                    <i class="fas fa-eye text-yellow-400 mr-3"></i>
+                    關係星盤洞察：揭示人際互動的化學反應
+                </h1>
+                <h2 class="text-xl md:text-2xl text-gray-300 mb-8 text-center">
+                    理解彼此磁場，共創和諧連結，深化人際互動
+                </h2>
+                <div class="text-center text-gray-400">
+                    <p class="text-lg">透過合盤分析，深入了解人際關係的奧秘</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="relationship-core" class="content-section">
+            <div class="card">
+                <h3 class="text-2xl md:text-3xl font-bold mb-4 text-center text-yellow-400">關係核心：解鎖彼此磁場</h3>
+                <div class="text-center text-gray-400"><p class="text-lg">探索關係中的核心動力與連結</p></div>
+            </div>
+        </section>
+
+        <section id="love-synastry" class="content-section">
+            <div class="card">
+                <h3 class="text-2xl md:text-3xl font-bold mb-4 text-center text-yellow-400">愛情關係：情侶合盤解讀</h3>
+                <div class="text-center text-gray-400"><p class="text-lg">深入分析戀愛關係的星盤配對</p></div>
+            </div>
+        </section>
+
+        <section id="parent-child" class="content-section">
+            <div class="card">
+                <h3 class="text-2xl md:text-3xl font-bold mb-4 text-center text-yellow-400">親子關係：家庭合盤啟示</h3>
+                <div class="text-center text-gray-400"><p class="text-lg">了解親子間的星盤互動模式</p></div>
+            </div>
+        </section>
+
+        <section id="friendship-synastry" class="content-section">
+            <div class="card">
+                <h3 class="text-2xl md:text-3xl font-bold mb-4 text-center text-yellow-400">友情關係：知己合盤探索</h3>
+                <div class="text-center text-gray-400"><p class="text-lg">探索友誼關係的深層連結</p></div>
+            </div>
+        </section>
+
+        <section id="work-synastry" class="content-section">
+            <div class="card">
+                <h3 class="text-2xl md:text-3xl font-bold mb-4 text-center text-yellow-400">合作關係：職場合盤解析</h3>
+                <div class="text-center text-gray-400"><p class="text-lg">分析工作夥伴間的合作潛能</p></div>
+            </div>
+        </section>
+
+        <!-- 關係共振探索 -->
+        <section id="relationship-resonance" class="content-section">
+            <div class="card">
+                <h1 class="text-3xl md:text-4xl font-bold mb-4 text-center">
+                    <i class="fas fa-link text-yellow-400 mr-3"></i>
+                    關係共振探索：關係共譜的生命旋律
+                </h1>
+                <h2 class="text-xl md:text-2xl text-gray-300 mb-8 text-center">
+                    超越個體，洞察「我們」的共同使命與潛能
+                </h2>
+                <div class="text-center text-gray-400">
+                    <p class="text-lg">探索關係中的共同振動頻率與集體潛能</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="relationship-axis" class="content-section">
+            <div class="card">
+                <h3 class="text-2xl md:text-3xl font-bold mb-4 text-center text-yellow-400">關係主軸：我們一起的「我們」</h3>
+                <div class="text-center text-gray-400"><p class="text-lg">發現關係中的共同主軸與使命</p></div>
+            </div>
+        </section>
+
+        <!-- 運勢週期脈動追蹤 -->
+        <section id="fortune-tracking" class="content-section">
+            <div class="card">
+                <h1 class="text-3xl md:text-4xl font-bold mb-4 text-center">
+                    <i class="fas fa-chart-line text-yellow-400 mr-3"></i>
+                    運勢週期脈動追蹤：掌握生命起伏與趨勢
+                </h1>
+                <h2 class="text-xl md:text-2xl text-gray-300 mb-8 text-center">
+                    順勢而為，預見機會，應對挑戰
+                </h2>
+                <div class="text-center text-gray-400">
+                    <p class="text-lg">透過行運分析，掌握人生的節奏與機遇</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="recent-fortune" class="content-section">
+            <div class="card">
+                <h3 class="text-2xl md:text-3xl font-bold mb-4 text-center text-yellow-400">近期運勢：預見未來三個月</h3>
+                <div class="text-center text-gray-400"><p class="text-lg">預測並準備未來三個月的重要趨勢</p></div>
+            </div>
+        </section>
+
+        <section id="annual-focus" class="content-section">
+            <div class="card">
+                <h3 class="text-2xl md:text-3xl font-bold mb-4 text-center text-yellow-400">年度焦點：掌握關鍵轉折點</h3>
+                <div class="text-center text-gray-400"><p class="text-lg">識別年度中的重要轉折與機會點</p></div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 bg-opacity-50 border-t border-purple-500 border-opacity-30 mt-16 py-8">
+        <div class="container mx-auto px-4 text-center">
+            <div class="flex items-center justify-center mb-4">
+                <i class="fas fa-star text-yellow-400 text-2xl mr-2"></i>
+                <span class="text-xl font-bold text-white">AI 占星解析</span>
+            </div>
+            <p class="text-gray-400 mb-4">結合古老占星智慧與現代AI科技的專業解析平台</p>
+            <div class="flex justify-center space-x-6 text-sm text-gray-500">
+                <span>© 2024 AI 占星解析</span>
+                <span>隱私政策</span>
+                <span>服務條款</span>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // 頁面切換功能
+        function showSection(sectionId) {
+            // 隱藏所有內容區塊
+            const sections = document.querySelectorAll('.content-section');
+            sections.forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            // 隱藏 hero 區塊
+            const hero = document.getElementById('hero');
+            if (hero) {
+                hero.style.display = 'none';
+            }
+            
+            // 顯示目標區塊
+            const targetSection = document.getElementById(sectionId);
+            if (targetSection) {
+                targetSection.classList.add('active');
+            }
+            
+            // 關閉手機選單
+            closeMobileMenu();
+        }
+
+        // 手機選單控制
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobile-menu');
+            menu.classList.toggle('hidden');
+        }
+
+        function closeMobileMenu() {
+            const menu = document.getElementById('mobile-menu');
+            menu.classList.add('hidden');
+        }
+
+        // 初始化 - 顯示首頁
+        document.addEventListener('DOMContentLoaded', function() {
+            // 預設顯示星盤資料生成頁面
+            showSection('birth-chart');
+        });
+
+        // 點擊外部區域關閉手機選單
+        document.addEventListener('click', function(event) {
+            const nav = document.querySelector('nav');
+            const menu = document.getElementById('mobile-menu');
+            
+            if (!nav.contains(event.target) && !menu.classList.contains('hidden')) {
+                closeMobileMenu();
+            }
+        });
+    </script>
+</body>
+</html>
