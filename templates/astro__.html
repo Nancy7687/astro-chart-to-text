@@ -1470,18 +1470,13 @@
         document.addEventListener('DOMContentLoaded', () => {
             console.log('Script Start Test! Version: Refactored v3.0');
 
-            // ===========================================
-            // 全域定義的輔助函數 (放在 <script> 標籤的頂部或適當的區塊內)
-            // 確保 copyToClipboard 和 setupCopyListeners 在整個應用中只被定義一次
-            // ===========================================
-
-            /*** 複製指定元素的內容到剪貼簿。
-            * @param {HTMLElement} targetElement 要複製內容的 DOM 元素。
-            * @param {HTMLElement} btnElement 觸發複製的按鈕元素。
-            */
-            function copyContent(targetElement, btnElement) {
-                if (!targetElement) {
-                    console.error("複製錯誤: 目標元素不存在。");
+            /*** 複製指定內容到剪貼簿。
+                        * @param {string} textToCopy 要複製的文字。
+                        * @param {HTMLElement} btnElement 觸發複製的按鈕元素 (可選)。
+                        */
+            function copyContent(textToCopy, btnElement) {
+                if (!textToCopy || textToCopy.trim() === '') {
+                    console.error("複製錯誤: 沒有內容可複製。");
                     if (btnElement) {
                         btnElement.textContent = '複製失敗';
                         setTimeout(() => btnElement.textContent = '複製', 2000);
@@ -1489,16 +1484,8 @@
                     return;
                 }
 
-                let textToCopy;
-                if (targetElement.tagName === 'TEXTAREA' || targetElement.tagName === 'INPUT') {
-                    textToCopy = targetElement.value;
-                } else {
-                    // 對於一般內容，使用 innerText 以獲得更純淨的文本結果，避免複製隱藏元素或過多空白
-                    textToCopy = targetElement.innerText;
-                }
-
                 if (navigator.clipboard && navigator.clipboard.writeText) {
-                    navigator.clipboard.writeText(textToCopy)
+                    navigator.clipboard.writeText(textToCopy.trim())
                         .then(() => {
                             if (btnElement) {
                                 const originalText = btnElement.textContent;
@@ -1510,21 +1497,23 @@
                         })
                         .catch(err => {
                             console.error('複製到剪貼簿失敗，嘗試降級方案:', err);
-                            fallbackCopyToClipboardSimple(targetElement, btnElement);
+                            fallbackCopyToClipboardSimple(textToCopy, btnElement);
                         });
                 } else {
                     console.warn('瀏覽器不支持 navigator.clipboard，使用降級複製方案。');
-                    fallbackCopyToClipboardSimple(targetElement, btnElement);
+                    fallbackCopyToClipboardSimple(textToCopy, btnElement);
                 }
             }
 
             // 降級複製方案 (用於不支援 navigator.clipboard 的瀏覽器)
-            function fallbackCopyToClipboardSimple(element, button) {
-                let range = document.createRange();
-                range.selectNodeContents(element);
-                let selection = window.getSelection();
-                selection.removeAllRanges();
-                selection.addRange(range);
+            function fallbackCopyToClipboardSimple(textToCopy, button) {
+                const textarea = document.createElement('textarea');
+                textarea.value = textToCopy.trim();
+                textarea.style.position = 'fixed'; // 防止滾動
+                textarea.style.opacity = 0; // 隱藏 textarea
+                document.body.appendChild(textarea);
+                textarea.focus();
+                textarea.select();
 
                 try {
                     document.execCommand('copy');
@@ -1542,122 +1531,10 @@
                         button.textContent = '複製失敗';
                         setTimeout(() => button.textContent = '複製', 2000);
                     }
-                }
-                selection.removeAllRanges();
-            }
-            // 處理複製按鈕點擊的事件函數 (已精確匹配你的 HTML 結構)
-
-            async function handleCopyButtonClickSimplified(event) {
-                const button = event.currentTarget;
-                let contentToCopy = '';
-                let isSuccess = false; // Flag to track if copy was successful
-
-                try {
-                    // Find the closest common ancestor for all report content.
-                    // This assumes either '.chart-wrapper' or '.report-wrapper' exists and contains the main text.
-                    const scopeElement = button.closest('.chart-wrapper') || button.closest('.report-wrapper');
-
-                    if (!scopeElement) {
-                        alert('無法找到可複製的報告內容範圍。'); // 保留這個提示，因為這是功能異常
-                        console.error('Copy button clicked, but neither .chart-wrapper nor .report-wrapper found as parent.');
-                        return;
-                    }
-
-                    // --- MOST RELIABLE METHOD: Get ALL visible text content from the determined scope ---
-                    // This will capture headings, paragraphs, and <pre> tags.
-                    // It relies on what the browser visually renders as text.
-                    let rawTextContent = scopeElement.innerText; // Use innerText for visible text
-
-                    // Fallback: If innerText is surprisingly empty, try textContent from all relevant <pre> tags
-                    if (!rawTextContent || rawTextContent.trim() === '') {
-                        console.warn('scopeElement.innerText was empty, attempting fallback with all <pre> tags.');
-                        const allPreElements = scopeElement.querySelectorAll('pre');
-                        if (allPreElements.length > 0) {
-                            rawTextContent = Array.from(allPreElements)
-                                .map(el => el.textContent.trim()) // Fallback to textContent from pre
-                                .filter(text => text.length > 0)
-                                .join('\n\n'); // Simple join
-                        }
-                    }
-
-                    // Further refinement: Remove excessive blank lines if any
-                    contentToCopy = rawTextContent.split('\n').filter(line => line.trim() !== '').join('\n');
-
-                    // Add a clear separator for report/chart title if applicable (optional, but good for structure)
-                    const mainTitleElement = scopeElement.querySelector('.chart-main-header h2, .report-main-header h2');
-                    if (mainTitleElement && contentToCopy.includes(mainTitleElement.textContent.trim())) {
-                        // If title is already part of the contentToCopy, just format it properly
-                        // Otherwise, prepend it. This prevents duplication if innerText already captured it.
-                        contentToCopy = `${mainTitleElement.textContent.trim()}\n====================\n\n${contentToCopy}`;
-                    }
-
-                    if (contentToCopy.trim() === '') {
-                        alert('沒有找到可複製的內容。'); // 保留這個提示，因為這是沒有內容可複製
-                        return;
-                    }
-
-                    // --- Perform the actual copy operation ---
-                    if (navigator.clipboard && navigator.clipboard.writeText) {
-                        await navigator.clipboard.writeText(contentToCopy.trim());
-                        isSuccess = true;
-                    } else {
-                        // Fallback for older browsers
-                        const textarea = document.createElement('textarea');
-                        textarea.value = contentToCopy.trim();
-                        textarea.style.position = 'fixed';
-                        textarea.style.opacity = 0;
-                        document.body.appendChild(textarea);
-                        textarea.focus();
-                        textarea.select();
-                        document.execCommand('copy');
-                        textarea.remove();
-                        isSuccess = true;
-                    }
-
-                    // Update button text (no alert needed here for success)
-                    if (isSuccess) {
-                        button.textContent = '已複製！';
-                        setTimeout(() => button.textContent = '複製', 2000); // Reset button text after 2 seconds
-                    }
-
-                } catch (error) {
-                    console.error('複製內容時發生錯誤:', error);
-                    alert('複製失敗，請檢查控制台錯誤。'); // 保留這個提示，因為這是錯誤情況
-                    button.textContent = '複製失敗';
-                    setTimeout(() => button.textContent = '複製', 2000); // Reset button text after 2 seconds
+                } finally {
+                    textarea.remove(); // 移除臨時的 textarea
                 }
             }
-            // 由於 `copyChartWrapper` 的邏輯已經整合到 `handleCopyButtonClickSimplified` 中，
-            // 並且不再需要作為一個獨立的外部函數，可以考慮移除或將其內部邏輯合併。
-            // 在此修改中，我將其功能直接內聯處理，以避免重複邏輯。
-            // 因此，原來的 `copyChartWrapper` 函數在此版本中不再被直接呼叫，可以移除或註釋掉。
-            /*
-            function copyChartWrapper(chartWrapper) {
-                let text = '';
-                const chartTitleElement = chartWrapper.querySelector('.chart-main-header h2');
-                if (chartTitleElement) {
-                    text += `--- ${chartTitleElement.textContent} ---\n`;
-                }
-                // 只複製此星盤內非隱私部分的內容 (<pre> 標籤)
-                chartWrapper.querySelectorAll('.sub-sections-container .result-section-item').forEach(block => {
-                    const pre = block.querySelector('pre');
-                    if (pre) text += `${pre.textContent}\n`;
-                });
-                return text;
-            }
-            */
-            // 設置複製按鈕事件監聽器的函數
-            function setupCopyListenersSimplified() {
-                const copyButtons = document.querySelectorAll('.copy-chart-btn, .section-copy-btn, .copy-report-btn');
-                console.log("setupCopyListenersSimplified: 找到的複製按鈕數量:", copyButtons.length);
-                copyButtons.forEach(button => {
-                    button.removeEventListener('click', handleCopyButtonClickSimplified);
-                    button.addEventListener('click', handleCopyButtonClickSimplified);
-                });
-            }
-
-
-            //關於table和narrative模式的toggle 
 
             // 定義一個全局變數來追蹤當前的顯示模式，預設為 'table'
             let currentDisplayMode = 'table'; // 可以是 'table' 或 'narrative'
@@ -1669,37 +1546,135 @@
             // 函數：更新顯示模式 (UI 和內容)
             function updateDisplayMode(mode) {
                 if (currentDisplayMode === mode) {
-                    // 如果已經是當前模式，則不做任何操作
                     return;
                 }
 
-                currentDisplayMode = mode; // 更新全局模式變數
+                currentDisplayMode = mode;
 
-                // 更新按鈕的激活狀態
-                if (mode === 'table') {
-                    toggleTableModeBtn.classList.add('active');
-                    toggleNarrativeModeBtn.classList.remove('active');
-                } else {
-                    toggleTableModeBtn.classList.remove('active');
-                    toggleNarrativeModeBtn.classList.add('active');
+                if (toggleTableModeBtn) {
+                    toggleTableModeBtn.classList.toggle('active', mode === 'table');
+                }
+                if (toggleNarrativeModeBtn) {
+                    toggleNarrativeModeBtn.classList.toggle('active', mode === 'narrative');
                 }
 
-                // 選擇頁面中所有包含表格內容的元素
                 const tableContents = document.querySelectorAll('.table-content');
-                // 選擇頁面中所有包含敘述內容的元素
                 const narrativeContents = document.querySelectorAll('.narrative-content');
 
-                // 根據當前模式切換顯示/隱藏
                 tableContents.forEach(el => {
-                    el.style.display = (mode === 'table') ? 'block' : 'none'; // 'block' 或其他適合你的 display 類型
+                    el.style.display = (mode === 'table') ? 'block' : 'none';
                 });
 
                 narrativeContents.forEach(el => {
-                    el.style.display = (mode === 'narrative') ? 'block' : 'none'; // 'block' 或其他適合你的 display 類型
+                    el.style.display = (mode === 'narrative') ? 'block' : 'none';
+                });
+            }
+
+            // 處理複製按鈕點擊的事件函數 (已精確匹配你的 HTML 結構)
+            async function handleCopyButtonClick(event) {
+                const button = event.currentTarget;
+                let contentToCopy = '';
+
+                try {
+                    if (button.classList.contains('copy-report-btn')) {
+                        // 複製整個報告: 大標題 + 所有單命盤標題 + 所有 <pre> 內容
+                        const reportWrapper = document.querySelector('.report-wrapper');
+                        if (!reportWrapper) {
+                            alert('無法找到報告內容範圍。');
+                            console.error('Copy report button clicked, but .report-wrapper not found.');
+                            return;
+                        }
+
+                        const mainReportTitleElement = reportWrapper.querySelector('.report-main-header h2');
+                        if (mainReportTitleElement) {
+                            contentToCopy += mainReportTitleElement.textContent.trim() + '\n';
+                        }
+
+                        const chartWrappers = reportWrapper.querySelectorAll('.chart-wrapper');
+                        chartWrappers.forEach(chartWrapper => {
+                            const chartTitleElement = chartWrapper.querySelector('.chart-main-header h2');
+                            if (chartTitleElement) {
+                                contentToCopy += '\n' + chartTitleElement.textContent.trim() + '\n';
+                                contentToCopy += '====================\n'; // 分隔線
+                            }
+
+                            const preElements = chartWrapper.querySelectorAll(`.${currentDisplayMode}-content pre`);
+                            preElements.forEach(pre => {
+                                contentToCopy += pre.innerText + '\n\n'; // 使用 innerText 並多加換行以確保格式
+                            });
+                        });
+
+                        // 移除開頭和結尾多餘的換行和空格
+                        contentToCopy = contentToCopy.trim();
+
+                    } else if (button.classList.contains('copy-chart-btn')) {
+                        // 複製單一命盤: 單命盤總標題 + 該命盤內所有 <pre> 內容
+                        const chartWrapper = button.closest('.chart-wrapper');
+                        if (!chartWrapper) {
+                            alert('無法找到單一命盤內容範圍。');
+                            console.error('Copy chart button clicked, but .chart-wrapper parent not found.');
+                            return;
+                        }
+
+                        const chartTitleElement = chartWrapper.querySelector('.chart-main-header h2');
+                        if (chartTitleElement) {
+                            contentToCopy += chartTitleElement.textContent.trim() + '\n';
+                            contentToCopy += '====================\n'; // 分隔線
+                        }
+
+                        const preElements = chartWrapper.querySelectorAll(`.${currentDisplayMode}-content pre`);
+                        preElements.forEach(pre => {
+                            contentToCopy += pre.innerText + '\n\n';
+                        });
+
+                        // 移除開頭和結尾多餘的換行和空格
+                        contentToCopy = contentToCopy.trim();
+
+                    } else if (button.classList.contains('section-copy-btn')) {
+                        // 複製單一區塊: 該按鈕範圍內的 <pre> 內容
+                        const sectionItem = button.closest('.result-section-item');
+                        if (!sectionItem) {
+                            alert('無法找到區塊內容範圍。');
+                            console.error('Section copy button clicked, but .result-section-item parent not found.');
+                            return;
+                        }
+
+                        const preElement = sectionItem.querySelector(`.${currentDisplayMode}-content pre`);
+                        if (preElement) {
+                            contentToCopy = preElement.innerText.trim();
+                        }
+                    }
+
+                    if (contentToCopy === '') {
+                        alert('沒有找到可複製的內容。');
+                        return;
+                    }
+
+                    // 執行複製操作
+                    await copyContent(contentToCopy, button);
+
+                } catch (error) {
+                    console.error('複製內容時發生錯誤:', error);
+                    alert('複製失敗，請檢查控制台錯誤。');
+                    button.textContent = '複製失敗';
+                    setTimeout(() => button.textContent = '複製', 2000);
+                }
+            }
+
+            // 設置複製按鈕事件監聽器的函數
+            function setupCopyListeners() {
+                // 移除舊的事件監聽器，避免重複綁定
+                const oldCopyButtons = document.querySelectorAll('.copy-chart-btn, .section-copy-btn, .copy-report-btn');
+                oldCopyButtons.forEach(button => {
+                    button.removeEventListener('click', handleCopyButtonClick);
                 });
 
-                // 可選：如果你希望在模式切換時做其他事情，例如更新複製按鈕的行為提示，可以在這裡添加。
-                // 但是，由於我們的複製按鈕已經被修改為直接複製當前顯示的內容，這裡可能不需要額外處理。
+                // 重新綁定事件監聽器
+                const copyButtons = document.querySelectorAll('.copy-chart-btn, .section-copy-btn, .copy-report-btn');
+                console.log("setupCopyListeners: 找到的複製按鈕數量:", copyButtons.length);
+                copyButtons.forEach(button => {
+                    button.addEventListener('click', handleCopyButtonClick);
+                });
             }
 
             // 為切換按鈕添加事件監聽器
@@ -1710,94 +1685,39 @@
                 toggleNarrativeModeBtn.addEventListener('click', () => updateDisplayMode('narrative'));
             }
 
-            // ----------------------------------------------------
-            // 最後，你需要修改你的複製按鈕邏輯，讓它始終複製「當前顯示模式」的內容。
-            // 這段程式碼假設你的複製按鈕是通過事件代理處理的，並且在點擊時會找到最近的父級 .result-section-item。
-            // ----------------------------------------------------
-            document.addEventListener('click', function (event) {
-                // 處理章節複製按鈕
-                if (event.target.classList.contains('section-copy-btn')) {
-                    const sectionItem = event.target.closest('.result-section-item');
-                    if (sectionItem) {
-                        let contentToCopy = '';
-                        if (currentDisplayMode === 'table') {
-                            const tableContentElement = sectionItem.querySelector('.table-content');
-                            if (tableContentElement) {
-                                contentToCopy = tableContentElement.innerText;
-                            }
-                        } else { // currentDisplayMode === 'narrative'
-                            const narrativeContentElement = sectionItem.querySelector('.narrative-content');
-                            if (narrativeContentElement) {
-                                contentToCopy = narrativeContentElement.innerText;
-                            }
-                        }
-                        if (contentToCopy) {
-                            copyContent(contentToCopy); // 假設 copyContent 是你已有的複製到剪貼板的函數
-                        }
-                    }
-                }
-                // 處理整個星盤的複製按鈕
-                else if (event.target.classList.contains('copy-chart-btn')) {
-                    const chartWrapper = event.target.closest('.chart-wrapper');
-                    if (chartWrapper) {
-                        let fullChartContent = '';
-                        const allSections = chartWrapper.querySelectorAll('.result-section-item');
-
-                        allSections.forEach(section => {
-                            if (currentDisplayMode === 'table') {
-                                const tableContentElement = section.querySelector('.table-content');
-                                if (tableContentElement) {
-                                    fullChartContent += tableContentElement.innerText + '\n'; // 添加換行符分隔各章節
-                                }
-                            } else { // currentDisplayMode === 'narrative'
-                                const narrativeContentElement = section.querySelector('.narrative-content');
-                                if (narrativeContentElement) {
-                                    fullChartContent += narrativeContentElement.innerText + '\n';
-                                }
-                            }
-                        });
-
-                        // 如果有 summary-section-container，確保它在最前面且不被重複添加
-                        const summaryContainer = chartWrapper.querySelector('.summary-section-container');
-                        if (summaryContainer) {
-                            let summaryContent = '';
-                            if (currentDisplayMode === 'table') {
-                                const tableContentElement = summaryContainer.querySelector('.table-content');
-                                if (tableContentElement) {
-                                    summaryContent = tableContentElement.innerText + '\n';
-                                }
-                            } else {
-                                const narrativeContentElement = summaryContainer.querySelector('.narrative-content');
-                                if (narrativeContentElement) {
-                                    summaryContent = narrativeContentElement.innerText + '\n';
-                                }
-                            }
-                            // 確保 summaryContent 在 fullChartContent 的最前面，且不重複
-                            // 因為 fullChartContent 可能已經包含 summary section
-                            // 這裡的邏輯需要你根據實際複製需求調整
-                            // 如果 copy-chart-btn 是複製 '所有' 內容，則上面 allSections 應該已經包含 summary
-                            // 如果 copy-chart-btn 是複製 '不含基礎數據'，則需要調整 allSections 的選擇器
-                            // 目前的 copy-chart-btn 不含基礎數據，但我們的範例是全複製
-                            // 請根據 '複製此盤' 的實際語義調整下面的複製邏輯
-                        }
-
-                        // 這裡需要根據你的 "複製此盤(不含基礎數據)" 語義來精確調整
-                        // 如果真的不含基礎數據，需要修改 allSections 的查詢方式，排除 summary-section-container
-                        // 為了完整性，我先假設 "複製此盤" 是複製所有顯示內容，包括基礎數據。
-                        // 如果要排除，你需要調整 allSections = chartWrapper.querySelectorAll('.sub-sections-container .result-section-item');
-
-                        copyContent(fullChartContent.trim()); // 移除末尾多餘的換行符
-                    }
-                }
-            });
-
-
-            // 初始載入時，確保顯示表格模式
             // 在你的網頁完全載入或生成報告後調用
             document.addEventListener('DOMContentLoaded', () => {
                 // 預設將報告內容設為表格模式顯示
                 updateDisplayMode('table');
+                // 設置複製按鈕監聽器
+                setupCopyListeners();
             });
+
+            // 監聽 DOM 變動，如果內容是動態載入的，則需要重新設置監聽器
+            const observer = new MutationObserver((mutationsList, observer) => {
+                // 檢查是否有新的 .chart-wrapper 或 .result-section-item 被添加
+                let shouldRescan = false;
+                for (const mutation of mutationsList) {
+                    if (mutation.type === 'childList' && mutation.addedNodes.length > 0) {
+                        for (const node of mutation.addedNodes) {
+                            if (node.nodeType === 1 && (node.matches('.chart-wrapper') || node.matches('.result-section-item'))) {
+                                shouldRescan = true;
+                                break;
+                            }
+                        }
+                    }
+                    if (shouldRescan) break;
+                }
+
+                if (shouldRescan) {
+                    console.log("DOM 結構變動，重新設置複製按鈕監聽器。");
+                    setupCopyListeners();
+                }
+            });
+
+            // 開始觀察 body 元素及其子元素的變化
+            observer.observe(document.body, { childList: true, subtree: true });
+
 
             // 如果你的報告是動態生成的，並且是在 DOMContentLoaded 之後才渲染，
             // 那麼你需要在報告渲染完成後，再次呼叫 updateDisplayMode('table');
