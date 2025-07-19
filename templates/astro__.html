@@ -1597,8 +1597,8 @@
                             }
 
                             // 確保獲取的是文字內容，並處理找不到元素的情況
-                            const preElements = chartWrapper.querySelectorAll(`pre.${currentDisplayMode}-content`);
-                            preElements.forEach(pre => {
+                             // 【核心修改】從整個 chartWrapper 改為只在 .sub-sections-container 中尋找，以排除 summary 區塊
+                        const preElements = chartWrapper.querySelectorAll(`.sub-sections-container pre.${currentDisplayMode}-content`);preElements.forEach(pre => {
                                 if (pre) { // 確保 pre 存在
                                     contentToCopy += pre.innerText.trim() + '\n\n'; // 使用 trim() 確保沒有多餘空白
                                 }
@@ -2679,7 +2679,7 @@
                 const narrativeLines = [
                     "====================",
                     `${title}`,
-                    "--------------------\n"
+                    "--------------------\n\n"
                 ];
                 overlayData.sort((a, b) => DISPLAY_ORDER_NAMES.indexOf(a.planet_name) - DISPLAY_ORDER_NAMES.indexOf(b.planet_name))
                     .forEach(o => {
