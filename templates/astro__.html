@@ -1576,7 +1576,7 @@
 
                 try {
                     if (button.classList.contains('copy-report-btn')) {
-                        const reportWrapper = document.querySelector('.report-wrapper');
+                        const reportWrapper = button.closest('.report-wrapper');
                         if (!reportWrapper) { // 加強檢查：如果找不到報告範圍，直接返回
                             alert('無法找到報告內容範圍。');
                             console.error('Copy report button clicked, but .report-wrapper not found.');
@@ -2679,7 +2679,7 @@
                 const narrativeLines = [
                     "====================",
                     `${title}`,
-                    "--------------------"
+                    "--------------------\n"
                 ];
                 overlayData.sort((a, b) => DISPLAY_ORDER_NAMES.indexOf(a.planet_name) - DISPLAY_ORDER_NAMES.indexOf(b.planet_name))
                     .forEach(o => {
@@ -2736,36 +2736,7 @@
         </div>
     `;
             }
-            // 設定複製按鈕的監聽器
-            // 請用此版本完整取代舊的 setupCopyListeners 函式
-            function setupCopyListeners() {
-                document.getElementById('resultOutput').addEventListener('click', function (e) {
-                    const target = e.target;
-
-                    // 處理單一區塊複製
-                    if (target.classList.contains('section-copy-btn')) {
-                        const pre = target.closest('.result-section-item').querySelector('pre');
-                        if (pre) copyContent(pre, target); // 只複製內文
-                    }
-                    // 處理單一星盤複製 (不含基礎數據)
-                    else if (target.classList.contains('copy-chart-btn')) {
-                        const chartWrapper = target.closest('.chart-wrapper');
-                        const titleElement = chartWrapper.querySelector('.chart-main-header h2');
-                        let textToCopy = titleElement ? `${titleElement.textContent}\n====================\n` : '';
-                        chartWrapper.querySelectorAll('.sub-sections-container .result-section-item').forEach(block => {
-                            const pre = block.querySelector('pre');
-                            textToCopy += pre ? `${pre.textContent}\n\n` : ''; // 只複製內文
-                        });
-                        copyContent({ innerText: textToCopy.trim() }, target);
-                    }
-                    // 處理報告總複製
-                    else if (target.classList.contains('copy-report-btn')) {
-                        const reportWrapper = target.closest('.report-wrapper');
-                        copyContent(reportWrapper, target); // 複製整個報告區塊
-                    }
-                });
-            }
-
+            
             // 這是一個全新的函式，請將它新增到 script 中
             function createReportWrapper(title, content) {
                 return `<div class="report-wrapper">
