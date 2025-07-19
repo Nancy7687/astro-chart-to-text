@@ -965,10 +965,14 @@
             margin: 0;
             /* 移除 <pre> 預設的 margin */
         }
-        /* 讓使用者知道這些欄位是可以點擊的 */
+        /* 【UI 修正】為輪轉式輸入框設計更清晰的樣式 */
         .input-field[readonly] {
             cursor: pointer;
-            background-color: #f8f9fa; /* 使用淺色背景提示這不是一個標準的文字輸入框 */
+            background-color: #f0f2f5; /* 淺灰色背景，使其看起來像一個可點擊的標籤 */
+            text-align: center; /* 數值居中 */
+            font-weight: 500; /* 字體稍粗 */
+            color: #334155; /* 清晰的文字顏色 */
+            border: 1px solid #e2e8f0;
         }
 
         /* 預設隱藏敘述內容 */
@@ -1897,7 +1901,13 @@
                             data: [config.data],
                             title: config.title,
                             text: { done: '確定', cancel: '取消' },
-                            // 當使用者按下「確定」時，套件會自動將選擇的值更新到 inputElement.value
+                            // 【功能修正】新增 done 回調，確保選擇後的值被正確設定
+                            done: function (values) {
+                                // 明確地將選擇的值設定到輸入框的 value 屬性
+                                this.picker.element.value = values[0];
+                                // 手動觸發 change 事件，以防有其他邏輯依賴此事件
+                                this.picker.element.dispatchEvent(new Event('change', { bubbles: true }));
+                            },
                             // 當選擇器顯示時，自動將其滾動到輸入框的當前值
                             show: function() {
                                 const currentValue = this.picker.element.value;
@@ -2139,7 +2149,7 @@
                     const inputId = `${prefix}${field}`;
                     const inputElement = document.getElementById(inputId);
                     const value = inputElement.value;
-                    const parsedValue = parseInt(value, 10); // 【修正】確保使用 parseInt 進行整數解析
+                    const parsedValue = parseInt(value, 10); // 【驗證修正】確保使用 parseInt 進行整數解析
                     const { min, max, label } = fields[field];
 
                     if (value.trim() === '' || isNaN(parsedValue) || parsedValue < min || parsedValue > max) {
