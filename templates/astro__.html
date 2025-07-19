@@ -1597,7 +1597,7 @@
                             }
 
                             // 確保獲取的是文字內容，並處理找不到元素的情況
-                            const preElements = chartWrapper.querySelectorAll(`.${currentDisplayMode}-content pre`);
+                            const preElements = chartWrapper.querySelectorAll(`pre.${currentDisplayMode}-content`);
                             preElements.forEach(pre => {
                                 if (pre) { // 確保 pre 存在
                                     contentToCopy += pre.innerText.trim() + '\n\n'; // 使用 trim() 確保沒有多餘空白
@@ -1621,7 +1621,7 @@
                         }
 
                         // 確保獲取的是文字內容，並處理找不到元素的情況
-                        const preElements = chartWrapper.querySelectorAll(`.${currentDisplayMode}-content pre`);
+                        const preElements = chartWrapper.querySelectorAll(`pre.${currentDisplayMode}-content`);
                         preElements.forEach(pre => {
                             if (pre) { // 確保 pre 存在
                                 contentToCopy += pre.innerText.trim() + '\n\n';
@@ -1638,7 +1638,7 @@
                         }
 
                         // 這是最常見的出錯點，確保 preElement 存在且取得其 innerText
-                        const preElement = sectionItem.querySelector(`.${currentDisplayMode}-content pre`);
+                        const preElement = sectionItem.querySelector(`pre.${currentDisplayMode}-content`);
                         if (preElement) { // <-- 關鍵檢查：確保 preElement 確實找到了
                             contentToCopy = preElement.innerText.trim(); // <-- 從元素中提取文字內容
                         } else {
@@ -2714,7 +2714,7 @@
                 return `
     <div class="result-section-item">
         ${createResultSection(displayTitle, sectionsData.table, false, 'interaction-header-style')}
-        <pre class="narrative-content scrollable-content">${sectionsData.narrative}</pre>
+        <pre class="narrative-content scrollable-content" style="display:none;">${sectionsData.narrative}</pre>
     </div>`;
             }
 
