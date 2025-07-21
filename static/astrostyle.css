@@ -1333,6 +1333,10 @@
                 /* 靠右對齊 */
                 margin-right: 0;
             }
+
+            .p-deskContent {
+                padding: 40px 40px;
+            }
         }
 
         /* --- 桌面設備 (通常 >= 1024px) --- */
