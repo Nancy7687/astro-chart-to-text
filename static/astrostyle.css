@@ -24,8 +24,8 @@
             padding: 8px;
             z-index: 1001;
             position:fixed;
-            top: 0px;
-            right: 0px;
+            top: 5px;
+            right: 5px;
         }
 
         .hamburger span {
