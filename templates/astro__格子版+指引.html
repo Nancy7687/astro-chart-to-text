@@ -35,6 +35,70 @@
             min-height: 100vh;
         }
 
+        /* 漢堡選單樣式 */
+        .hamburger {
+            display: flex;
+            flex-direction: column;
+            cursor: pointer;
+            padding: 8px;
+            z-index: 1001;
+        }
+
+        .hamburger span {
+            width: 25px;
+            height: 3px;
+            background-color: #fbbf24;
+            margin: 3px 0;
+            transition: 0.3s;
+            border-radius: 2px;
+        }
+
+        .hamburger.active span:nth-child(1) {
+            transform: rotate(-45deg) translate(-5px, 6px);
+        }
+
+        .hamburger.active span:nth-child(2) {
+            opacity: 0;
+        }
+
+        .hamburger.active span:nth-child(3) {
+            transform: rotate(45deg) translate(-5px, -6px);
+        }
+
+        /* 手機導覽選單 */
+        .mobile-nav {
+            position: fixed;
+            top: 0;
+            left: -100%;
+            width: 80%;
+            max-width: 350px;
+            height: 100vh;
+            background: linear-gradient(180deg, #1e1b4b 0%, #312e81 100%);
+            z-index: 1000;
+            transition: left 0.3s ease;
+            overflow-y: auto;
+            padding-top: 80px;
+        }
+
+        .mobile-nav.active {
+            left: 0;
+        }
+
+        .mobile-nav-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+            display: none;
+        }
+
+        .mobile-nav-overlay.active {
+            display: block;
+        }
+
         .nav-item {
             position: relative;
         }
@@ -1285,11 +1349,16 @@
                     <i class="fas fa-star text-yellow-400 text-2xl"></i>
                     <h1 class="text-xl font-bold text-black">AI 占星解析</h1>
                 </div>
-                
+                <!-- 漢堡選單按鈕 (手機版) -->
+            <div class="hamburger md:hidden" onclick="toggleMobileNav()">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
                 <!-- Mobile menu button -->
-                <button class="md:hidden text-white" onclick="toggleMobileMenu()">
+                <!-- <button class="md:hidden text-white" onclick="toggleMobileMenu()">
                     <i class="fas fa-bars text-xl"></i>
-                </button>
+                </button> -->
                 
                 <!-- Desktop Navigation -->
                 <div class="hidden md:flex space-x-6">
@@ -1883,31 +1952,31 @@
                     <p class="text-lg">開始您的占星解讀之旅，讓AI成為您最信賴的星盤解讀夥伴</p>
                 </div>
                 <div class="text-left text-white-400 text-lg leading-relaxed p-12">
-                    <br>
+                <br>
                 這份指南是您運用 AI 星盤解析服務的「藏寶圖」。
                 <br>
                 <br>
-                它將引導您如何提出精準、生活化的問題，讓 AI 能夠根據您的星盤資訊，提供真實深入、貼切精準的個人化洞察。
+                我們理解您對自我探索、關係洞察或未來趨勢的好奇，在此將引導您如何有效提問，讓AI能根據您的星盤資訊，給出最貼近您現況、最實用且有深度的分析。
+                <br>
+                <br>
+                請放心，我們會提供您生活化且易懂的建議，幫助您更好地理解自己，並在人生旅途中做出更明智的選擇。
                 <br>
                 <br>
                 當您懂得「問對問題」，AI不再只是冰冷的資料庫，而是您探索自我與生命旅程的智慧夥伴。
                 <br>
                 <br>
-                我們理解您對自我探索、關係洞察或未來趨勢的好奇。這個頁面旨在引導您如何有效提問，讓AI能根據您的星盤資訊，給出最貼近您現況、最實用且有深度的分析。
-                請放心，我們會提供您生活化且易懂的建議，幫助您更好地理解自己，並在人生旅途中做出更明智的選擇。
+                <p class="font-bold">為何依循本指南提問？</p>
                 <br>
-                <br>
-                為何依循本指南提問？
                 AI 擁有強大的占星資料整合與分析能力，能從您的星盤中讀取豐富的生命密碼。然而，問題的品質，直接決定了 AI 回饋的深度與精準度。
                 <br>
                 <br>
-                避免空泛： 清晰具體的提問，能幫助 AI 聚焦您的核心關切，避免廣泛空泛的答案，讓建議更切合您的實際需求。
+                <p class="font-bold">避免空泛：</p> 清晰具體的提問，能幫助 AI 聚焦您的核心關切，避免廣泛空泛的答案，讓建議更切合您的實際需求。
                 <br>
                 <br>
-                提升效益： 就像您需要給地圖明確的起點和終點，AI 才能規劃出最佳路線。具體提問能讓您獲得最有價值的分析，節省時間，直達核心。
+                <p class="font-bold">提升效益：</p> 就像您需要給地圖明確的起點和終點，AI 才能規劃出最佳路線。具體提問能讓您獲得最有價值的分析，節省時間，直達核心。
                 <br>
                 <br>
-                個人化體驗： 您輸入的背景情境越詳細，AI 的回覆就越能貼合您的個人狀況，給予更具生活感的實用建議。
+                <p class="font-bold">個人化體驗：</p> 您輸入的背景情境越詳細，AI 的回覆就越能貼合您的個人狀況，給予更具生活感的實用建議。
                 </div>
             </div>
         </section>
@@ -1969,11 +2038,11 @@
                 <div class="text-center text-gray-400">
                     <p class="text-lg">了解AI解讀的核心原則，讓星盤為您揭示宇宙的秘密</p>
                 </div>
-                <div class="text-center text-white-400 text-lg leading-relaxed p-8">
+                <div class="text-left text-white-400 text-lg leading-relaxed p-8">
                     <br>
                     我們旨在提供星盤文字資訊給AI，讓AI用生活化、淺顯易懂的語言，呈現精確且專業的星盤分析。它在每一次解讀中，會根據您提問的深度和廣度，盡力整合與權衡星盤上的關鍵占星要素。這些要素包括：星座度數、宮位度數、行星間的相位（細緻考量入相與出相、精準的容許度範圍），甚至行星的廟旺落陷、飛星等。
                     <br><br>
-                    重要提醒： 當您僅提出籠統問題時，AI可能會優先呈現某個單一面向的解釋。
+                    <p class="font-bold">重要提醒：</p> 當您僅提出籠統問題時，AI可能會優先呈現某個單一面向的解釋。
                     <br><br>
                     為避免誤讀或偏頗，強烈建議您在提問中明確要求將多個相關元素綜合考量
                     <br><br>
@@ -1993,7 +2062,7 @@
                 <div class="text-center text-gray-400">
                     <p class="text-lg">掌握進階提問技巧，獲得更深層的占星洞察</p>
                 </div>
-                <div class="text-center text-white-400 text-lg leading-relaxed ">
+                <div class="text-left text-white-400 text-lg leading-relaxed ">
                     <br>
                     <br>
                     希望 AI 的分析更全面、更貼合您的複雜情況？試試以下這些進階引導句，幫助 AI 綜合考量星盤細節，避免單點解讀的偏差。
@@ -2033,6 +2102,7 @@
                         <p class="text-gray-300">請結合我的個人特質，分析某特定行運對我情緒的具體影響。</p>
                         <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
                     </div>
+                    <br>
                     <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg">
                         <p class="text-gray-300">請指出我的星盤中，在某個特定領域（如事業或感情）中，同時存在的機會與挑戰。</p>
                         <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
@@ -2075,7 +2145,7 @@
                 </div>
                 <br>
                 <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg">
-                    <p class="text-gray-300">根據我的星盤，我天生的優勢與劣勢在哪?要如何善用優勢克服劣勢?</p>
+                    <p class="text-gray-300">我天生的優勢與劣勢在哪?要如何善用優勢克服補強劣勢?</p>
                     <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
                 </div>
                 <br>
