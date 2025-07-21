@@ -97,7 +97,8 @@
             opacity: 0;
             visibility: hidden;
             transform: translateY(-10px);
-            transition: all 0.3s ease;
+            /* transition: all 0.3s ease; */
+            transition: opacity 0.3s ease, visibility 0.3s ease; /* 過渡效果 */
             z-index: 1000;
         }
 
