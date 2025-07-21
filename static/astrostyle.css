@@ -248,6 +248,10 @@
             .nav-item:hover .submenu {
                 transform: none;
             }
+
+            .mobile-flex {
+                flex-direction: column;
+            }
         }
 
         /* 原本的style */ 
