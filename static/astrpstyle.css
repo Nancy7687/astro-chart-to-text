@@ -1,0 +1,1318 @@
+        /* ai_astrology_guide.html 的style */
+        :root {
+            --primary-dark: #0f1419;
+            --secondary-dark: #1a2332;
+            --accent-gold: #d4af37;
+            --accent-purple: #8b5cf6;
+            --accent-silver: #c0c0c0;
+            --text-light: #f8fafc;
+            --text-muted: #cbd5e1;
+        }
+
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background: linear-gradient(135deg, var(--primary-dark) 0%, var(--secondary-dark) 100%);
+            color: var(--text-light);
+            min-height: 100vh;
+        }
+
+        /* 漢堡選單樣式 */
+        .hamburger {
+            display: flex;
+            flex-direction: column;
+            cursor: pointer;
+            padding: 8px;
+            z-index: 1001;
+        }
+
+        .hamburger span {
+            width: 25px;
+            height: 3px;
+            background-color: #fbbf24;
+            margin: 3px 0;
+            transition: 0.3s;
+            border-radius: 2px;
+        }
+
+        .hamburger.active span:nth-child(1) {
+            transform: rotate(-45deg) translate(-5px, 6px);
+        }
+
+        .hamburger.active span:nth-child(2) {
+            opacity: 0;
+        }
+
+        .hamburger.active span:nth-child(3) {
+            transform: rotate(45deg) translate(-5px, -6px);
+        }
+
+        /* 手機導覽選單 */
+        .mobile-nav {
+            position: fixed;
+            top: 0;
+            left: -100%;
+            width: 80%;
+            max-width: 350px;
+            height: 100vh;
+            background: linear-gradient(180deg, #1e1b4b 0%, #312e81 100%);
+            z-index: 1000;
+            transition: left 0.3s ease;
+            overflow-y: auto;
+            padding-top: 80px;
+        }
+
+        .mobile-nav.active {
+            left: 0;
+        }
+
+        .mobile-nav-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+            display: none;
+        }
+
+        .mobile-nav-overlay.active {
+            display: block;
+        }
+
+        .nav-item {
+            position: relative;
+        }
+
+        .submenu {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            min-width: 280px;
+            background: rgba(26, 35, 50, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(139, 92, 246, 0.3);
+            border-radius: 8px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .nav-item:hover .submenu {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .submenu a {
+            padding: 12px 16px;
+            display: block;
+            color: var(--text-muted);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border-bottom: 1px solid rgba(139, 92, 246, 0.1);
+        }
+
+        .submenu a:hover {
+            background: rgba(139, 92, 246, 0.1);
+            color: var(--accent-gold);
+            padding-left: 20px;
+        }
+
+        .submenu a:last-child {
+            border-bottom: none;
+        }
+
+        .hero-section {
+            background: radial-gradient(circle at center, rgba(139, 92, 246, 0.1) 0%, transparent 70%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="1" fill="%23d4af37" opacity="0.3"><animate attributeName="opacity" values="0.3;0.8;0.3" dur="2s" repeatCount="indefinite"/></circle><circle cx="20" cy="20" r="0.5" fill="%23c0c0c0" opacity="0.5"/><circle cx="80" cy="30" r="0.8" fill="%238b5cf6" opacity="0.4"/><circle cx="30" cy="80" r="0.6" fill="%23d4af37" opacity="0.6"/></svg>') repeat;
+            animation: twinkle 20s linear infinite;
+        }
+
+        @keyframes twinkle {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(-100px); }
+        }
+
+        .content-section {
+            display: none;
+        }
+
+        .content-section.active {
+            display: block;
+        }
+
+        .form-input {
+            background: rgba(26, 35, 50, 0.8);
+            border: 1px solid rgba(139, 92, 246, 0.3);
+            color: var(--text-light);
+            border-radius: 8px;
+            padding: 12px 16px;
+            width: 100%;
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--accent-gold);
+            box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.1);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent-purple) 0%, var(--accent-gold) 100%);
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(139, 92, 246, 0.3);
+        }
+
+        .card {
+            background: rgba(26, 35, 50, 0.6);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(139, 92, 246, 0.2);
+            border-radius: 12px;
+            padding: 24px;
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            border-color: rgba(212, 175, 55, 0.4);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        @media (max-width: 768px) {
+            .submenu {
+                position: static;
+                min-width: auto;
+                width: 100%;
+                transform: none;
+                margin-top: 8px;
+                border-radius: 4px;
+            }
+            
+            .nav-item:hover .submenu {
+                transform: none;
+            }
+        }
+
+        /* 原本的style */ 
+
+        html,
+        body {
+            /* guild 的 body style */
+            /* background: linear-gradient(135deg, var(--primary-dark) 0%, var(--secondary-dark) 100%);
+            color: var(--text-light); */
+
+            /* 原本的 body style */
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', 'Noto Sans TC', 'Microsoft JhengHei', sans-serif;
+            line-height: 1.6;
+        }
+
+        /* 將 box-sizing 應用到所有元素，這是最佳實踐 */
+        html {
+            box-sizing: border-box;
+        }
+
+        /* Base body styling with a modern, saturated multi-color gradient background */
+        body {
+            min-height: 100vh;
+            /* 衝突部分先註解掉 */
+            /* display: flex;
+            justify-content: center;
+            align-items: flex-start; */
+
+            /* 先註解掉試試 */
+            /* box-sizing: border-box; */
+            overflow-y: auto;
+            transition: background 1s ease-in-out;
+        }
+
+        *,
+        *::before,
+        *::after {
+            box-sizing: inherit;
+        }
+
+        /* 輸出容器 */
+        #resultOutput {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        /* 「大餐盤」(單一星盤) 的樣式 */
+        .chart-wrapper {
+            border: 1px solid #dcdfe6;
+            border-radius: 12px;
+            background-color: #fff;
+            overflow: hidden;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+            width: 100%;
+            /* border: 1px solid #ccc; /* 方便調試時觀察邊界 */
+            box-sizing: border-box;
+            margin-bottom: 30px;
+            /* 各個星盤報告之間的間距 */
+        }
+
+        .chart-main-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 1.5rem;
+            color: white;
+            border-radius: 12px 12px 0 0;
+        }
+
+        /* Specific header colors */
+        .single-chart-header-main {
+            background: linear-gradient(to right, #2084ff, #dfecff);
+        }
+
+        .comparison-chart-header-main {
+            background: linear-gradient(to right, #8B008B, #ffc0cb);
+        }
+
+        .composite-chart-header-main {
+            background: linear-gradient(to right, #fde047, #fef9c3);
+        }
+
+        .transit-chart-header-main {
+            background: linear-gradient(to right, #00db6d, #ceffe6);
+        }
+
+
+        .chart-main-header h2 {
+            margin: 0;
+            font-size: 1.5em;
+            flex-grow: 1;
+            margin-right: 20px;
+        }
+
+        .sub-sections-container,
+        .summary-section-container {
+            padding: 0 15px 15px;
+            /* 手機上左右內邊距 */
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            width: 100%;
+            box-sizing: border-box;
+            /* 確保這些容器有足夠的寬度來包含其子元素 */
+        }
+
+
+        /* 動態背景的動畫 */
+        @keyframes move-bg {
+            0% {
+                background-position: 0% 50%;
+            }
+
+            50% {
+                background-position: 100% 50%;
+            }
+
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+        /* 個人星盤背景 */
+        .bg-single {
+            background: radial-gradient(circle at top left, #00008B, transparent 40%), radial-gradient(circle at top right, #ffd13b, transparent 40%), radial-gradient(circle at bottom left, #009d95, transparent 40%), radial-gradient(circle at bottom right, #2F4F4F, transparent 40%);
+            background-size: 400% 400%;
+            animation: move-bg 20s ease infinite;
+        }
+
+        /* 雙人合盤背景 */
+        .bg-synastry {
+            background: radial-gradient(circle at top left, #FF4500, transparent 40%), radial-gradient(circle at top right, #ff45a2, transparent 40%), radial-gradient(circle at bottom left, #DA70D6, transparent 40%), radial-gradient(circle at bottom right, #5800aa, transparent 40%);
+            background-size: 400% 400%;
+            animation: move-bg 20s ease infinite;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: .5rem;
+            background-color: #ffffff;
+            border-radius: 18px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.25);
+            box-sizing: border-box;
+        }
+
+        .header-bg {
+            background: linear-gradient(to right, #6A0DAD, #C71585);
+            border-radius: 12px;
+            padding: 40px 0;
+            margin-bottom: 32px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .header-bg h1 {
+            color: #ffffff;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
+        }
+
+        .input-group {
+            margin-bottom: 12px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .input-group label {
+            font-weight: 600;
+            color: #4a5568;
+            font-size: 1rem;
+            margin-bottom: 4px;
+            line-height: 1.5rem;
+        }
+
+        .input-field,
+        .select-field {
+            border: .5px solid #cbd5e0;
+            border-radius: 8px;
+            padding: 9px 13px;
+            font-size: 1rem;
+            color: #2d3748;
+            width: 100%;
+            transition: all 0.2s ease-in-out;
+            line-height: 1.1rem;
+            border-color: var(--input-border-color, #cbd5e0);
+        }
+
+        .input-field:focus,
+        .select-field:focus {
+            border-color: #4B0082;
+            box-shadow: 0 0 0 3px rgba(75, 0, 130, 0.3);
+            outline: none;
+        }
+
+        .timezone-suggestions {
+            border: 1px solid #ccc;
+            max-height: 200px;
+            overflow-y: auto;
+            display: none;
+            background-color: #fff;
+            z-index: 1000;
+            position: absolute;
+            width: inherit;
+        }
+
+        .timezone-suggestions div {
+            padding: 8px;
+            cursor: pointer;
+            background-color: #f9f9f9;
+            border-bottom: 1px solid #eee;
+        }
+
+        .timezone-suggestions div:hover {
+            background-color: #e9e9e9;
+        }
+
+        #calculateBtn {
+            background-color: #007bff;
+            color: white;
+            padding: 20px 40px;
+            font-size: 40px;
+            font-weight: bold;
+            transition: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        #calculateBtn:hover {
+            background-color: #FF69B4;
+            transform: translateY(-3px);
+            box-shadow: 0 9px 25px rgba(75, 0, 130, 0.6);
+        }
+
+        #calculateBtn:active {
+            transform: translateY(0);
+            box-shadow: none;
+        }
+
+        .result-box {
+            background-color: #e2e8f0;
+            border-radius: 10px;
+            padding: 18px;
+            min-height: 200px;
+            color: #2d3748;
+            margin-top: 28px;
+            box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        .error-message {
+            color: #ef4444;
+            font-weight: 600;
+            margin-top: 10px;
+            font-size: 1.5rem;
+            /* Reduced for better fit */
+        }
+
+        .input-error-message {
+            color: #ef4444;
+            font-size: 1rem;
+            margin-top: 4px;
+            display: none;
+        }
+
+        .loading-spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-left-color: #4B0082;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            animation: spin 1s linear infinite;
+            display: none;
+            vertical-align: middle;
+            margin-left: 10px;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .tab-buttons {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        .tab-button {
+            padding: 10px 15px;
+            font-weight: 600;
+            cursor: pointer;
+            border-radius: 8px 8px 0 0;
+            transition: all 0.2s ease-in-out;
+            color: #4a5568;
+            background-color: #d9dcdf;
+            border: 1px solid #e2e8f0;
+            border-bottom: none;
+            margin-right: 2px;
+            font-size: 1.2rem;
+            /* Adjusted for better readability */
+            letter-spacing: 0.05em;
+        }
+
+        .tab-button.active {
+            color: #4B0082;
+            background-color: #ffffff;
+            border-color: #4B0082;
+            border-bottom: 2px solid #ffffff;
+            transform: translateY(2px);
+            box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.05);
+            z-index: 1;
+        }
+
+        .tab-button:hover:not(.active) {
+            background-color: #e0efff;
+        }
+
+        .chart-section {
+            background-color: #fefefe;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.03);
+            margin-bottom: 20px;
+        }
+
+        .synastry-inputs-wrapper {
+            display: flex;
+            flex-direction: column;
+            gap: 40px;
+            margin-top: 24px;
+            margin-bottom: 32px;
+        }
+
+        .synastry-input-section {
+            flex: 1;
+            padding: 24px;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            background-color: #f8fafc;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .date-time-grid,
+        .location-timezone-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .location-timezone-grid .input-group.col-span-full {
+            grid-column: 1 / -1;
+        }
+
+        .timezone-input-group-container {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .timezone-input-group-container .select-field,
+        .timezone-input-group-container .input-field {
+            flex: 1;
+            min-width: 120px;
+        }
+
+        .scrollable-content {
+            max-height: 300px;
+            overflow-y: auto;
+            /* 垂直滾動 */
+            overflow-x: auto;
+            /* 水平滾動 */
+            padding: 10px;
+            box-sizing: border-box;
+        }
+
+        .scrollable-content::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .scrollable-content::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+
+        .scrollable-content::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 10px;
+        }
+
+        .scrollable-content::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+
+        .simple-section-wrapper {
+            flex: 1 1 350px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .result-section-item {
+            border: 1px solid #e4e6eb;
+            /* 根據你原來的設定選擇此顏色，或 #eee */
+            border-radius: 6px;
+            flex: 1 1 300px;
+            display: flex;
+            flex-direction: column;
+            background-color: #fff;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            width: 100%;
+            box-sizing: border-box;
+            /* 移除 padding，讓內容直接貼齊邊框內側 */
+            /* padding: 15px; <-- 刪除或註釋掉這一行 */
+
+            margin-bottom: 15px;
+            /* 各章節之間的間距保持不變 */
+
+            /* 確保內部內容不會溢出 */
+            /* 如果你希望內容自動換行或捲動，而不是被隱藏，可以調整或移除這裡的 overflow */
+            overflow: hidden;
+            /* 如果你確定內容會被正確處理且不希望滾動條，則保留 */
+            /* 如果內容可能溢出，且需要滾動，通常會在這裡設定 overflow-y: auto; 或 overflow: auto; */
+        }
+
+        /* 章節標題 */
+        .result-section-header,
+        .summary-section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            box-sizing: border-box;
+            padding: 10px 0;
+            font-weight: bold;
+            color: #555;
+            margin-bottom: 8px;
+            background-color: #f0f2f5;
+            /* border-bottom: 1px solid #e4e6eb; */
+            margin-bottom: 5px;
+            /* 標題與下方內容的間距 */
+            padding: 10px 15px;
+            /* 標題區域的內邊距 */
+        }
+
+        .result-section-header h3 {
+            margin: 0;
+            /* 移除 h3 預設的 margin，避免影響 Flexbox 佈局 */
+            font-size: 1em;
+            /* 標題字體大小 */
+            color: #333;
+            flex-grow: 1;
+            /* 允許標題佔據更多空間 */
+        }
+
+        .result-section-header span {
+            font-weight: 600;
+            color: #003468;
+            font-size: 1.1em;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+
+        .result-section-content {
+            flex-grow: 1;
+            position: relative;
+        }
+
+        .result-section-content pre {
+            margin: 0;
+            padding: 15px;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 14px;
+            line-height: 1.6;
+            color: #212529;
+            height: 100%;
+        }
+
+        button.section-copy-btn,
+        button.copy-chart-btn {
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: .85em;
+            transition: all 0.2s ease-in-out;
+            background-color: #007bff;
+            color: white;
+            white-space: nowrap;
+            /* 防止按鈕文字換行 */
+            flex-shrink: 0;
+            /* 防止按鈕被壓縮，確保其寬度 */
+        }
+
+        /* button.section-copy-btn:hover, button.copy-chart-btn:hover { opacity: 0.85; } */
+        /* 為不同按鈕設定各自的 hover 效果 */
+        button.section-copy-btn:hover {
+            background-color: #0056b3;
+        }
+
+        .report-main-header .copy-report-btn:hover,
+        .chart-main-header .copy-chart-btn:hover {
+            filter: brightness(90%);
+            /* 讓按鈕顏色稍微變暗，比透明度更有質感 */
+        }
+
+        .chart-main-header .copy-chart-btn {
+            background-color: #42b72a;
+            color: white;
+            font-size: 1rem;
+            padding: 8px 16px;
+        }
+
+        .section-copy-btn.copied {
+            background-color: #10b981;
+        }
+
+        .chart-type-selection-sub {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+            justify-content: center;
+            margin-bottom: 1rem;
+        }
+
+        .chart-card-sub {
+            background-color: #f7fafc;
+            padding: 1.5rem 1rem;
+            border-radius: 12px;
+            border: 2px solid #e2e8f0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            min-width: 160px;
+            flex: 1;
+            text-align: center;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .chart-card-sub:hover {
+            border-color: #8B008B;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+        }
+
+        .chart-card-sub.active {
+            border-color: #4B0082;
+            background-color: #e6e6fa;
+            box-shadow: 0 4px 15px rgba(75, 0, 130, 0.25);
+        }
+
+        .chart-card-sub h3 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #2d3748;
+            margin-bottom: 0.25rem;
+        }
+
+        .chart-card-sub p {
+            font-size: 1rem;
+            color: #6b7280;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .main-title {
+            font-size: 1.75rem;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+            color: #1e40af;
+        }
+
+        /* --- 請將以下樣式加入到 <style> 標籤內 --- */
+
+        /* 用於比較盤/行運盤/組合盤的總外框 */
+        .report-wrapper {
+            border: 1px solid #b39ddb;
+            /* 淡紫色邊框 */
+            border-radius: 12px;
+            background-color: #f3e5f5;
+            /* 非常淺的紫色背景 */
+            overflow: hidden;
+            margin-bottom: 1.5rem;
+            /* 與下一個報告的間距 */
+        }
+
+        /* 報告的總標題列 */
+        .report-main-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 1.5rem;
+            color: white;
+            background: linear-gradient(to right, #6A0DAD, #C71585);
+            /* 主要的紫色漸層 */
+        }
+
+        .report-main-header h2 {
+            font-size: 1.5em;
+            font-weight: bold;
+        }
+
+        /* 讓總複製按鈕更顯眼 */
+        .report-main-header .copy-report-btn {
+            background-color: #4CAF50;
+            /* 綠色 */
+            font-size: 1.25rem;
+            padding: 8px 16px;
+            border-radius: 8px;
+            /* 【新增】設定 8px 的圓角 */
+            transition: all 0.2s ease-in-out;
+            /* 加上過渡效果讓 hover 更平滑 */
+        }
+
+        .report-main-header .copy-report-btn:hover {
+            background-color: #45a049;
+        }
+
+        /* 確保單一星盤的複製按鈕樣式也被覆蓋 */
+        .chart-main-header .copy-chart-btn {
+            background-color: #008CBA;
+            /* 藍色 */
+        }
+
+        .chart-main-header .copy-chart-btn:hover {
+            background-color: #007B9A;
+        }
+
+        /* --- 請用此區塊，完整取代您 style 中所有 ...-header-style 的舊規則 --- */
+
+        /* 用於最外層的大標題，例如「您的本命盤」*/
+        .single-chart-header-style {
+            background: linear-gradient(135deg, #42a5f5, #1a237e);
+            /* 淡藍 -> 稍深藍 */
+            border-bottom: 1px solid #1a237e;
+        }
+
+        .single-chart-header-style h2 {
+            /* 確保文字顏色與背景搭配 */
+            color: #ffffff;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.6);
+        }
+
+        /* 用於組合盤的大標題 */
+        .composite-chart-header-style {
+            background: linear-gradient(135deg, #ff9500, #fbd22d);
+            /* 淡黃 -> 金黃 */
+            border-bottom: 1px solid #fbc02d;
+        }
+
+        .composite-chart-header-style h2 {
+            color: #ffffff;
+            text-shadow: 1px 1px 1px #ffffff;
+        }
+
+        /* --- 以下是各個子區塊標題的專屬樣式 (全部改為漸層) --- */
+
+        /* 用於「星盤基礎數據」標題 */
+        .summary-header-style {
+            background: linear-gradient(135deg, #ededed, #989898);
+            /* 淺灰 -> 中灰 */
+            border-bottom: 1px solid #bdbdbd;
+        }
+
+        .summary-header-style span {
+            color: #212121;
+        }
+
+        /* 用於「宮頭」「星體位置」「主要相位」標題 */
+        .cusp-header-style,
+        .planet-header-style,
+        .aspect-header-style {
+            background: linear-gradient(135deg, #e1f6ff, #81d4fa);
+            /* 淺天藍 -> 天藍 */
+            border-bottom: 1px solid #81d4fa;
+        }
+
+        .cusp-header-style span,
+        .planet-header-style span,
+        .aspect-header-style span {
+            color: #01579b;
+        }
+
+        /* 用於比較盤/行運盤的互動區塊標題 */
+        .interaction-header-style {
+            background: linear-gradient(135deg, #4fba58, #5fb1b9);
+            /* 薰衣草紫漸層 */
+            border-bottom: 1px solid #5d39b0;
+        }
+
+        .interaction-header-style span {
+            color: #ffffff;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+        }
+
+
+        .report-wrapper .chart-wrapper {
+            margin: 1rem;
+            /* 上下左右都增加 1rem 的邊距，產生內縮效果 */
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            /* 陰影可以稍微減弱 */
+            border: 1px solid #d1c4e9;
+            /* 邊框顏色也可以用主題色系的淡色 */
+        }
+
+        /* 各星盤報告的外層包裝 - 手機優先：全寬，有上下間距 */
+        .chart-wrapper {
+            width: 100%;
+            border: 1px solid #dcdfe6;
+            border-radius: 12px;
+            background-color: #fff;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            box-sizing: border-box;
+            margin-bottom: 25px;
+            padding: 0;
+            /* 由內部元素提供 padding */
+        }
+
+        /* 星盤主要標題 */
+        .chart-main-header {
+            display: flex;
+            flex-direction: column;
+            /* 手機上標題和複製按鈕垂直堆疊 */
+            align-items: flex-start;
+            /* 左對齊 */
+            padding: 15px;
+            /* 手機上標題內邊距 */
+            background-color: #f5f7fa;
+            border-bottom: 1px solid #eee;
+            font-size: 1.1em;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .chart-main-header .main-header-text {
+            margin-bottom: 5px;
+            /* 標題文字和按鈕間距 */
+            text-align: left;
+            width: 100%;
+            /* 確保文字佔滿寬度 */
+        }
+
+        .chart-main-header .copy-chart-btn {
+            padding: 8px 12px;
+            font-size: 0.85em;
+            /* 按鈕字體小一點 */
+            /* 確保按鈕有足夠的寬度或自適應 */
+            width: fit-content;
+            /* 讓按鈕根據內容自動調整寬度 */
+            background-color: #6c757d;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        /* 總結數據區塊（基礎數據） */
+        .summary-section-container {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 15px;
+            /* 手機上內容內邊距 */
+            background-color: #f5f7fa;
+            border-bottom: 1px solid #eee;
+        }
+
+        /* 實際內容（表格和敘述） */
+        .table-content,
+        .narrative-content {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 0;
+            margin: 0;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            /* 改善手機上滾動體驗 */
+        }
+
+        /* 敘述內容的樣式 */
+        .narrative-content {
+            display: none;
+            line-height: 1.6;
+            color: #444;
+        }
+
+        /* 章節內部的複製按鈕 */
+        .section-copy-btn {
+            display: block;
+            /* 讓按鈕佔據整行 */
+            width: 100%;
+            /* 讓按鈕在手機上全寬 */
+            padding: 8px 0;
+            margin-top: 10px;
+            /* 與內容間隔 */
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9em;
+            text-align: center;
+        }
+
+
+        /* 用於「全部取消/選取」和「此類取消/選取」的通用按鈕樣式 */
+        .planet-toggle-btn {
+            background-color: #eaeaea;
+            border: 1px solid rgb(142, 122, 156);
+            /* 淺灰色邊框 */
+            color: #4b5563;
+            /* 深灰色文字 */
+            padding: 2px 10px;
+            /* 內邊距 */
+            border-radius: 9999px;
+            /* 膠囊形狀的圓角 */
+            font-size: 1rem;
+            /* 字體稍小 */
+            font-weight: 600;
+            /* 字體加粗 */
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+            white-space: nowrap;
+            /* 防止文字換行 */
+        }
+
+        .all-toggle-btn {
+            padding: 3px 12px;
+            /* 內邊距 */
+        }
+
+        /* 滑鼠移上去時的效果 */
+        .planet-toggle-btn:hover {
+            background-color: rgb(248, 239, 255);
+            /* 淺灰色背景 */
+            border: 1px solid indigo;
+            /* 淺灰色邊框 */
+        }
+
+        /* 讓主標題和分類標題的容器使用 flex 排版 */
+        .planet-group-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+
+        label[for="transit_name"] {
+            font-size: 1.5em;
+            /* 字體大小 */
+            color: #333;
+            /* 文字顏色 */
+            font-weight: bold;
+            /* 字體加粗 */
+            margin-bottom: 5px;
+            /* 下方外邊距 */
+            display: block;
+            /* 讓它佔據一行 */
+        }
+
+
+
+        /* display-mode-toggle-container 樣式 */
+        /* 切換按鈕容器 - 手機優先：預設垂直堆疊或全寬顯示 */
+        .display-mode-toggle-container {
+            display: flex;
+            /* 讓按鈕並排 */
+            flex-wrap: wrap;
+            /* 如果空間不足，允許換行 */
+            margin-bottom: 20px;
+            /* 與下方報告內容保持距離 */
+            border: 1px solid #ccc;
+            /* 外框 */
+            border-radius: 5px;
+            /* 圓角 */
+            overflow: hidden;
+            /* 確保按鈕圓角不超出容器 */
+            width: fit-content;
+            /* 寬度根據內容調整 */
+            margin-left: auto;
+            /* 讓它居中或靠右 */
+            margin-right: auto;
+            width: 100%;
+            /* 手機上讓按鈕容器佔滿寬度 */
+        }
+
+        /* 共同按鈕樣式 */
+        .mode-toggle-btn {
+            padding: 12px 10px;
+            border: none;
+            background-color: #f0f0f0;
+            cursor: pointer;
+            font-size: .95rem;
+            /* 手機上字體可以稍微小一點 */
+            color: #333;
+            transition: background-color 0.3s ease, color 0.3s ease;
+            flex-grow: 1;
+            /* 讓按鈕在 flex 容器中均勻分配空間 */
+        }
+
+        /* 激活狀態的按鈕樣式 */
+        .mode-toggle-btn.active {
+            background-color: #007bff;
+            /* 藍色背景 */
+            color: white;
+            /* 白色文字 */
+            font-weight: bold;
+        }
+
+        /* 按鈕懸停效果 */
+        .mode-toggle-btn:not(.active):hover {
+            background-color: #e0e0e0;
+        }
+
+        /* 確保所有層級的容器都有正確的盒子模型和寬度 */
+        #report-output-area {
+            width: 100%;
+            /* 確保它填滿可用空間 */
+            max-width: 1200px;
+            /* 或者一個你認為合適的最大寬度 */
+            margin: 0;
+            /* 居中 */
+            padding: 15px;
+            /* 內部邊距 */
+            box-sizing: border-box;
+            /* 確保 padding 不會增加總寬度 */
+        }
+
+        /*table和narrative的輸出區塊樣式*/
+        .table-content,
+        .narrative-content {
+            /* 移除任何固定寬度，讓它們自適應父容器 */
+            width: 100%;
+            /* 確保它們填滿 .result-section-item 的內容區域 */
+            box-sizing: border-box;
+            /* 確保 padding 不會導致溢出 */
+            padding: 0;
+            /* 如果 .result-section-item 已經有 padding，這裡可能不需要額外 padding */
+
+            /* 針對 <pre> 的特殊處理 */
+            white-space: pre-wrap;
+            /* 允許長行自動換行 */
+            word-wrap: break-word;
+            /* 強制在長單詞內部換行 */
+            overflow-x: auto;
+            /* 如果因為某種原因內容還是過長，允許水平捲動 */
+            margin: 0;
+            /* 移除 <pre> 預設的 margin */
+        }
+
+        /* 預設隱藏敘述內容 */
+        .narrative-content {
+            display: none;
+        }
+
+        /* ==================================== */
+        /* 2. Media Queries (逐步適應平板和桌面) */
+        /* ==================================== */
+
+        /* --- 平板設備 (通常 >= 768px) --- */
+        @media (min-width: 768px) {
+
+            .tab-button {
+                font-size: 1.5rem;
+            }
+
+            .tab-button br {
+                display: none;
+            }
+
+            .date-time-grid {
+                grid-template-columns: repeat(5, minmax(0, 1fr));
+            }
+
+            .location-timezone-grid {
+                grid-template-columns: repeat(3, minmax(0, 1fr));
+            }
+
+            .input-group {
+                margin-bottom: 0;
+            }
+
+            .synastry-inputs-wrapper {
+                flex-direction: row;
+            }
+
+            .scrollable-content {
+                max-height: 450px;
+            }
+
+            #report-output-area {
+                max-width: 900px;
+                /* 平板上可以稍微寬一點 */
+                padding: 20px;
+                /* 增加左右邊距 */
+            }
+
+            .display-mode-toggle-container {
+                width: fit-content;
+                /* 平板上按鈕可以居中且不佔滿寬度 */
+            }
+
+            .chart-main-header {
+                flex-direction: row;
+                /* 平板上標題和按鈕並排 */
+                justify-content: space-between;
+                /* 兩端對齊 */
+                align-items: center;
+                padding: 15px 25px;
+                /* 增加左右 padding */
+            }
+
+            .chart-main-header .main-header-text {
+                margin-bottom: 0;
+                /* 移除垂直間距 */
+            }
+
+            .chart-main-header .copy-chart-btn {
+                width: auto;
+                /* 按鈕寬度自適應內容 */
+            }
+
+            .summary-section-container {
+                padding: 20px 25px;
+                /* 增加左右 padding */
+            }
+
+            .sub-sections-container {
+                display: flex;
+                /* 讓子區塊在平板上可以並排 */
+                flex-wrap: wrap;
+                /* 允許換行 */
+                gap: 15px;
+                /* 區塊之間的間距 */
+                padding: 0 25px 20px;
+                /* 增加左右 padding 和底部 padding */
+                flex-direction: row;
+                align-items: stretch;
+            }
+
+            .result-section-item {
+                display: flex;
+                /* 讓子區塊在平板上可以並排 */
+                margin-bottom: 0;
+                /* 移除垂直間距，由 gap 控制 */
+            }
+
+            .section-copy-btn {
+                width: auto;
+                /* 按鈕寬度自適應內容 */
+                display: inline-block;
+                /* 讓按鈕可以不佔滿整行 */
+                margin-left: auto;
+                /* 靠右對齊 */
+                margin-right: 0;
+            }
+        }
+
+        /* --- 桌面設備 (通常 >= 1024px) --- */
+        @media (min-width: 1024px) {
+            #report-output-area {
+                max-width: 1200px;
+                /* 桌面可以更寬 */
+                padding: 25px;
+                /* 增加更多邊距 */
+            }
+
+            .chart-main-header {
+                padding: 20px 30px;
+                /* 桌面標題更大 padding */
+            }
+
+            .summary-section-container {
+                padding: 25px 30px;
+            }
+
+            .sub-sections-container {
+                gap: 20px;
+                /* 桌面可以更大間距 */
+                padding: 0 30px 25px;
+            }
+
+
+        }
