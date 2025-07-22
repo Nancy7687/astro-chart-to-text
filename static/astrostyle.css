@@ -14,8 +14,9 @@
             background: linear-gradient(135deg, var(--primary-dark) 0%, var(--secondary-dark) 100%);
             color: var(--text-light);
             min-height: 100vh;
-            line-height: 1.8;
+            line-height: 2;
             margin-bottom: 2em;
+            letter-spacing: .05em;
         }
 
         /* 漢堡選單樣式 */
@@ -1353,7 +1354,7 @@
             }
 
             .card {
-                padding: 60px;
+                padding: 100px;
             }
         }
 
