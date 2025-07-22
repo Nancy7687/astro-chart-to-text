@@ -14,6 +14,8 @@
             background: linear-gradient(135deg, var(--primary-dark) 0%, var(--secondary-dark) 100%);
             color: var(--text-light);
             min-height: 100vh;
+            line-height: 1.8;
+            margin-bottom: 2em;
         }
 
         /* 漢堡選單樣式 */
