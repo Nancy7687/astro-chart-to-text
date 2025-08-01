@@ -18,21 +18,24 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='astrostyle.css') }}">
     <!-- 4. 引入.TailwindCSS output.css -->
     <link rel="stylesheet" href="../dist/output.css">
+
+    
 </head>
 
-    <body class="bg-single leading-loose tracking-widest md:tracking-normal md:leading-normal">
+<body class="bg-single leading-loose tracking-widest md:tracking-normal md:leading-normal">
 
 <!-- guild 的UI -->
 
 <!-- Header Navigation -->
-    <header class="bg-zinc-700 backdrop-filter backdrop-blur-lg border-b border-purple-500 sticky top-0 z-50">
-        <nav class="container mx-auto px-4 py-3 bg-zinc-700">
+    <header class="bg-gray-900 bg-opacity-90 backdrop-filter backdrop-blur-lg border-b border-purple-500 border-opacity-30 sticky top-0 z-50">
+        <nav class="container mx-auto px-4 py-3">
             <!-- 漢堡選單按鈕 (手機版) -->
-        <button id="hamburger" class="hamburger md:hidden">
+            <button id="hamburger" class="hamburger md:hidden">
                 <span></span>
                 <span></span>
                 <span></span>
             </button>
+
             <div class="mobile-flex flex items-start justify-start md:justify-between">
                 <div class="flex items-center justify-start space-x-2">
                     <i class="fas fa-star text-yellow-400 text-2xl"></i>
@@ -43,7 +46,8 @@
                     <i class="fas fa-bars text-xl"></i>
                 </button> -->
                 
-                 <!-- 新的手機nav -->
+                
+                <!-- 新的手機nav -->
                 <div id="mobile-menu" class="md:hidden mt-4 hidden w-full h-screen">
                     <div class="md:flex space-y-1 flex flex-col justify-evenly h-full">
                 
@@ -182,7 +186,17 @@
                     </div>
                 </div>
 
-                <!-- Desktop Navigation -->
+
+
+
+             
+
+
+
+
+
+
+<!-- Desktop Navigation -->
                 <div class="hidden md:flex space-x-6">
                     <!-- <div class="nav-item nav-list desk-nav-list"> -->
                     <div class="nav-item ">
@@ -860,7 +874,7 @@
 
                    
                 
-                    <div class="text-left text-white-400 text-lg leading-loose p-4 text-white flex flex-col gap-20 mt-8">
+                    <div class="text-left text-white-400 text-lg leading-loose p-4 text-zinc-800 flex flex-col gap-20 mt-8">
                         
 
                             <div class="rounded-lg overflow-hidden shadow-xl flex flex-col

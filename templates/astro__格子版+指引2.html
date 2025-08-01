@@ -18,34 +18,37 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='astrostyle.css') }}">
     <!-- 4. 引入.TailwindCSS output.css -->
     <link rel="stylesheet" href="../dist/output.css">
+
+    
 </head>
 
-    <body class="bg-single leading-loose tracking-widest md:tracking-normal md:leading-normal">
+<body class="bg-single">
 
 <!-- guild 的UI -->
 
 <!-- Header Navigation -->
-    <header class="bg-zinc-700 backdrop-filter backdrop-blur-lg border-b border-purple-500 sticky top-0 z-50">
-        <nav class="container mx-auto px-4 py-3 bg-zinc-700">
+    <header class="bg-gray-900 bg-opacity-90 backdrop-filter backdrop-blur-lg border-b border-purple-500 border-opacity-30 sticky top-0 z-50">
+        <nav class="container mx-auto px-4 py-3">
             <!-- 漢堡選單按鈕 (手機版) -->
-        <button id="hamburger" class="hamburger md:hidden">
-                <span></span>
-                <span></span>
-                <span></span>
-            </button>
-            <div class="mobile-flex flex items-start justify-start md:justify-between">
-                <div class="flex items-center justify-start space-x-2">
+        <div class="hamburger md:hidden" onclick="toggleMobileMenu()">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+            <div class="mobile-flex flex items-center justify-between ">
+                <div class="flex items-center space-x-2">
                     <i class="fas fa-star text-yellow-400 text-2xl"></i>
-                    <h1 class="text-4xl font-bold text-white">AI 占星解析助手</h1>
+                    <h1 class="text-2xl font-bold text-white">AI 占星解析助手</h1>
                 </div>
                 <!-- Mobile menu button -->
                 <!-- <button class="md:hidden text-white" onclick="toggleMobileMenu()">
                     <i class="fas fa-bars text-xl"></i>
                 </button> -->
                 
-                 <!-- 新的手機nav -->
-                <div id="mobile-menu" class="md:hidden mt-4 hidden w-full h-screen">
-                    <div class="md:flex space-y-1 flex flex-col justify-evenly h-full">
+                
+                <!-- 新的手機nav -->
+                <div id="mobile-menu" class="md:hidden mt-4 hidden">
+                    <div class="md:flex space-y-1">
                 
                         <div class="nav-item">
                             <a href="#" onclick="showSection('birth-chart')"
@@ -55,10 +58,9 @@
                         </div>
                 
                         <div class="nav-item">
-                            
                             <div class="main-item flex items-center justify-between py-2 cursor-pointer"
                                 onclick="toggleSubmenu('ai-guide')">
-                                <span class="py-2 text-white font-bold text-2xl hover:text-yellow-400 transition-colors duration-300">
+                                <span class="py-2 text-white font-bold text-base hover:text-yellow-400 transition-colors duration-300">
                                     🌟 AI 占星引導
                                 </span>
                                 <i id="ai-guide-arrow" class="fas fa-chevron-down text-white transition-transform duration-300"></i>
@@ -74,7 +76,7 @@
                         <div class="nav-item">
                             <div class="main-item flex items-center justify-between py-2 cursor-pointer"
                                 onclick="toggleSubmenu('personal-chart-unlock')">
-                                <span class="py-2 text-white font-bold text-2xl hover:text-yellow-400 transition-colors duration-300">
+                                <span class="py-2 text-white font-bold text-base hover:text-yellow-400 transition-colors duration-300">
                                     🗝️ 個人星圖解鎖
                                 </span>
                                 <i id="personal-chart-unlock-arrow"
@@ -107,7 +109,7 @@
                         <div class="nav-item">
                             <div class="main-item flex items-center justify-between py-2 cursor-pointer"
                                 onclick="toggleSubmenu('instant-solve')">
-                                <span class="py-2 text-white font-bold text-2xl hover:text-yellow-400 transition-colors duration-300">
+                                <span class="py-2 text-white font-bold text-base hover:text-yellow-400 transition-colors duration-300">
                                     ⚡ 問題即時解
                                 </span>
                                 <i id="instant-solve-arrow"
@@ -126,7 +128,7 @@
                         <div class="nav-item">
                             <div class="main-item flex items-center justify-between py-2 cursor-pointer"
                                 onclick="toggleSubmenu('relationship-insight')">
-                                <span class="py-2 text-white font-bold text-2xl hover:text-yellow-400 transition-colors duration-300">
+                                <span class="py-2 text-white font-bold text-base hover:text-yellow-400 transition-colors duration-300">
                                     👁️ 關係星盤洞察
                                 </span>
                                 <i id="relationship-insight-arrow"
@@ -149,7 +151,7 @@
                         <div class="nav-item">
                             <div class="main-item flex items-center justify-between py-2 cursor-pointer"
                                 onclick="toggleSubmenu('relationship-resonance')">
-                                <span class="py-2 text-white font-bold text-2xl hover:text-yellow-400 transition-colors duration-300">
+                                <span class="py-2 text-white font-bold text-base hover:text-yellow-400 transition-colors duration-300">
                                     🔗 關係共振探索
                                 </span>
                                 <i id="relationship-resonance-arrow"
@@ -164,7 +166,7 @@
                         <div class="nav-item">
                             <div class="main-item flex items-center justify-between py-2 cursor-pointer"
                                 onclick="toggleSubmenu('fortune-tracking')">
-                                <span class="py-2 text-white font-bold text-2xl hover:text-yellow-400 transition-colors duration-300">
+                                <span class="py-2 text-white font-bold text-base hover:text-yellow-400 transition-colors duration-300">
                                     📈 運勢週期脈動追蹤
                                 </span>
                                 <i id="fortune-tracking-arrow"
@@ -182,7 +184,107 @@
                     </div>
                 </div>
 
-                <!-- Desktop Navigation -->
+
+
+
+                 <!-- Mobile Navigation -->
+            <div id="mobile-menu" class="md:hidden mt-4 hidden">
+                <div class="md:flex space-y-1">
+                    <!-- <div class="nav-item nav-list desk-nav-list"> -->
+                    <div class="nav-item ">
+                        <a href="#" onclick="showSection('birth-chart')" class="py-2 text-white font-bold text-2xl hover:text-yellow-400 transition-colors duration-300">
+                            📝 星盤資料生成
+                        </a>
+                    </div>
+                    
+                    <!-- <div class="nav-item nav-list desk-nav-list"> -->
+                    <div class="nav-item ">
+                        <span class="py-2 text-white font-bold text-base hover:text-yellow-400 transition-colors duration-300">
+                            🌟 AI 占星引導
+                        </span>
+                        <div class="submenu">
+                            <a href="#" onclick="showSection('start-reading')" clsas="text-white text-xl">啟程！解讀星盤奧秘</a>
+                            <!-- <a href="#" onclick="showSection('question-method')">提問心法：問對了，就對了！</a>
+                            <a href="#" onclick="showSection('ai-principles')">AI 解讀原則：讓星盤會說話</a> -->
+                            <a href="#" onclick="showSection('advanced-questions')">進階提問技巧：讓 AI 為您深度解析</a>
+                        </div>
+                    </div>
+                    
+                    <!-- <div class="nav-item nav-list desk-nav-list"> -->
+                    <div class="nav-item ">
+                        <span class="py-2 text-white font-bold text-base hover:text-yellow-400 transition-colors duration-300">
+                            🗝️ 個人星圖解鎖
+                        </span>
+                        <div class="submenu">
+                            <a href="#" onclick="showSection('personal-chart')" class="text-white text-xl">個人星盤：解讀你的生命藍圖</a>
+                            <a href="#" onclick="showSection('self-discovery')">我是誰？內在天賦探索</a>
+                            <a href="#" onclick="showSection('career-guide')">職場升級：事業與職涯指南</a>
+                            <a href="#" onclick="showSection('wealth-chart')">財富星圖：金錢觀與開源秘密</a>
+                            <a href="#" onclick="showSection('love-language')">愛情星語：解鎖情場密碼</a>
+                            <a href="#" onclick="showSection('friendship')">友情連結：人際互動星解</a>
+                            <a href="#" onclick="showSection('family-chart')">根與脈絡：家庭星盤啟示</a>
+                            <a href="#" onclick="showSection('health-balance')">身心平衡：健康活力指南</a>
+                            <a href="#" onclick="showSection('life-lessons')">命運課題與成長之路</a>
+                            <a href="#" onclick="showSection('soul-imprint')">靈魂印記：前世今生</a>
+                        </div>
+                    </div>
+                    
+                    <!-- <div class="nav-item nav-list desk-nav-list"> -->
+                    <div class="nav-item ">
+                        <span class="py-2 text-white font-bold text-base hover:text-yellow-400 transition-colors duration-300">
+                            ⚡ 問題即時解
+                        </span>
+                        <div class="submenu">
+                            <a href="#" onclick="showSection('instant-solution')" class="text-white text-xl">占星卜卦盤：你的問題，星盤即刻解答</a>
+                            <a href="#" onclick="showSection('decision-moment')">決策時刻：選擇最佳路徑</a>
+                            <a href="#" onclick="showSection('situation-insight')">情境解惑：看清事件真相</a>
+                        </div>
+                    </div>
+                    
+                    <!-- <div class="nav-item nav-list desk-nav-list"> -->
+                    <div class="nav-item ">
+                        <a href="#" onclick="showSection('relationship-insight')" class="py-2 text-white font-bold text-base hover:text-yellow-400 transition-colors duration-300">
+                            👁️ 關係星盤洞察
+                        </a>
+                        <div class="submenu">
+                            <a href="#" onclick="showSection('relationship-core')">關係核心：解鎖彼此磁場</a>
+                            <a href="#" onclick="showSection('love-synastry')">愛情關係：情侶合盤解讀</a>
+                            <a href="#" onclick="showSection('parent-child')">親子關係：家庭合盤啟示</a>
+                            <a href="#" onclick="showSection('friendship-synastry')">友情關係：知己合盤探索</a>
+                            <a href="#" onclick="showSection('work-synastry')">合作關係：職場合盤解析</a>
+                        </div>
+                    </div>
+                    
+                    <!-- <div class="nav-item nav-list desk-nav-list"> -->
+                    <div class="nav-item ">
+                        <a href="#" onclick="showSection('relationship-resonance')" class="py-2 text-white font-bold text-base hover:text-yellow-400 transition-colors duration-300">
+                            🔗 關係共振探索
+                        </a>
+                        <div class="submenu">
+                            <a href="#" onclick="showSection('relationship-axis')">關係主軸：我們一起的「我們」</a>
+                        </div>
+                    </div>
+                    
+                    <!-- <div class="nav-item nav-list desk-nav-list"> -->
+                    <div class="nav-item ">
+                        <a href="#" onclick="showSection('fortune-tracking')" class="py-2 text-white font-bold text-base hover:text-yellow-400 transition-colors duration-300">
+                            📈 運勢週期脈動追蹤
+                        </a>
+                        <div class="submenu">
+                            <a href="#" onclick="showSection('recent-fortune')">近期運勢：預見未來三個月</a>
+                            <a href="#" onclick="showSection('annual-focus')">年度焦點：掌握關鍵轉折點</a>
+                            <a href="#" onclick="showSection('annual-focus')">特定事件/主題：針對性預測，精準規劃</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+
+
+
+
+<!-- Desktop Navigation -->
                 <div class="hidden md:flex space-x-6">
                     <!-- <div class="nav-item nav-list desk-nav-list"> -->
                     <div class="nav-item ">
@@ -860,7 +962,7 @@
 
                    
                 
-                    <div class="text-left text-white-400 text-lg leading-loose p-4 text-white flex flex-col gap-20 mt-8">
+                    <div class="text-left text-white-400 text-lg leading-loose p-4 text-zinc-800 flex flex-col gap-20 mt-8">
                         
 
                             <div class="rounded-lg overflow-hidden shadow-xl flex flex-col
