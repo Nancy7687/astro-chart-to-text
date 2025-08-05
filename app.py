@@ -50,8 +50,9 @@ all_timezones = pytz.all_timezones
 # --- Run the downloader and set the ephemeris path at startup ---
 # ==============================================================================
 # Use the path defined in the downloader to ensure consistency
-EPHE_PATH_CONFIG = swiss_ephe_downloader.EPHE_DIR
-
+# EPHE_PATH_CONFIG = swiss_ephe_downloader.EPHE_DIR
+EPHE_PATH_CONFIG = os.path.abspath(swiss_ephe_downloader.EPHE_DIR) # 確保是絕對路徑
+print(f"DEBUG: EPHE_PATH_CONFIG is set to: {EPHE_PATH_CONFIG}")
 try:
     # This will trigger downloads on the server if files are missing
     swiss_ephe_downloader.ensure_ephe_files_exist()

@@ -258,52 +258,183 @@ function toggleSubmenu(id) {
                 });
             }
 
-           async function handleCopyButtonClick(event) {
+        //    async function handleCopyButtonClick(event) {
+        //         const button = event.currentTarget;
+        //         let contentToCopy = ''; // 確保它一開始就是空字串
+
+        //         try {
+        //             if (button.classList.contains('copy-report-btn')) {
+        //                 const reportWrapper = button.closest('.report-wrapper');
+        //                 if (!reportWrapper) { // 加強檢查：如果找不到報告範圍，直接返回
+        //                     alert('無法找到報告內容範圍。');
+        //                     console.error('Copy report button clicked, but .report-wrapper not found.');
+        //                     return;
+        //                 }
+
+        //                 const mainReportTitleElement = reportWrapper.querySelector('.report-main-header h2');
+        //                 if (mainReportTitleElement) {
+        //                     contentToCopy += mainReportTitleElement.textContent.trim() + '\n';
+        //                 }
+
+    
+        //                 const chartWrappers = reportWrapper.querySelectorAll('.chart-wrapper');
+        //                 chartWrappers.forEach(chartWrapper => {
+        //                     const chartTitleElement = chartWrapper.querySelector('.chart-main-header h2');
+        //                     if (chartTitleElement) {
+        //                         contentToCopy += '\n' + chartTitleElement.textContent.trim() + '\n';
+        //                         contentToCopy += '====================\n';
+        //                     }
+
+        //                     // 確保獲取的是文字內容，並處理找不到元素的情況
+        //                      // 【核心修改】從整個 chartWrapper 改為只在 .sub-sections-container 中尋找，以排除 summary 區塊
+        //                 const preElements = chartWrapper.querySelectorAll(`.sub-sections-container pre.${currentDisplayMode}-content, .sub-sections-container div.${currentDisplayMode}-content`);
+                              
+        //                 preElements.forEach(pre => {
+        //                         if (pre) { // 確保 pre 存在
+        //                             contentToCopy += pre.innerText.trim() + '\n\n'; // 使用 trim() 確保沒有多餘空白
+        //                         }
+        //                     });
+        //                 });
+        //                 contentToCopy = contentToCopy.trim(); // 最後再 trim 一次整個字串
+
+        //             } else if (button.classList.contains('copy-chart-btn')) {
+        //                 const chartWrapper = button.closest('.chart-wrapper');
+        //                 if (!chartWrapper) { // 加強檢查：如果找不到命盤範圍，直接返回
+        //                     alert('無法找到單一命盤內容範圍。');
+        //                     console.error('Copy chart button clicked, but .chart-wrapper parent not found.');
+        //                     return;
+        //                 }
+
+        //                 const chartTitleElement = chartWrapper.querySelector('.chart-main-header h2');
+        //                 if (chartTitleElement) {
+        //                     contentToCopy += chartTitleElement.textContent.trim() + '\n';
+        //                     contentToCopy += '====================\n';
+        //                 }
+
+        //                 // 確保獲取的是文字內容，並處理找不到元素的情況
+        //                 const preElements = chartWrapper.querySelectorAll(`.sub-sections-container pre.${currentDisplayMode}-content`);
+        //                 preElements.forEach(pre => {
+        //                     if (pre) { // 確保 pre 存在
+        //                         contentToCopy += pre.innerText.trim() + '\n\n';
+        //                     }
+        //                 });
+        //                 contentToCopy = contentToCopy.trim();
+
+        //             } else if (button.classList.contains('section-copy-btn')) {
+        //                 const sectionItem = button.closest('.result-section-item');
+        //                 if (!sectionItem) { // 加強檢查：如果找不到區塊範圍，直接返回
+        //                     alert('無法找到區塊內容範圍。');
+        //                     console.error('Section copy button clicked, but .result-section-item parent not found.');
+        //                     return;
+        //                 }
+
+        //                 // 這是最常見的出錯點，確保 preElement 存在且取得其 innerText
+        //                 const preElement = sectionItem.querySelector(`pre.${currentDisplayMode}-content`);
+        //                 if (preElement) { // <-- 關鍵檢查：確保 preElement 確實找到了
+        //                     contentToCopy = preElement.innerText.trim(); // <-- 從元素中提取文字內容
+        //                 } else {
+        //                     contentToCopy = ''; // 如果找不到 <pre>，則內容為空字串，而不是 undefined 或 null
+        //                     console.warn(`在 ${currentDisplayMode}-content 中沒有找到 <pre> 元素進行複製。`);
+        //                 }
+        //             }
+
+        //             // 最後的檢查，確保 contentToCopy 是字串
+        //             if (typeof contentToCopy !== 'string') {
+        //                 console.error("錯誤：contentToCopy 最終不是字串，而是:", contentToCopy);
+        //                 alert('複製內容格式錯誤。');
+        //                 return;
+        //             }
+
+        //             if (contentToCopy === '') {
+        //                 alert('沒有找到可複製的內容。');
+        //                 return;
+        //             }
+
+        //             // 在這裡，contentToCopy 必須是字串
+        //             await copyContent(contentToCopy, button);
+
+        //         } catch (error) {
+        //             console.error('複製內容時發生錯誤:', error);
+        //             alert('複製失敗，請檢查控制台錯誤。');
+        //             if (button) {
+        //                 button.textContent = '複製失敗';
+        //                 setTimeout(() => button.textContent = '複製', 2000);
+        //             }
+        //         }
+        //     }
+            // // 設置複製按鈕事件監聽器的函數
+            // function setupCopyListeners() {
+            //     // 移除舊的事件監聽器，避免重複綁定
+            //     const oldCopyButtons = document.querySelectorAll('.copy-chart-btn, .section-copy-btn, .copy-report-btn');
+            //     oldCopyButtons.forEach(button => {
+            //         button.removeEventListener('click', handleCopyButtonClick);
+            //     });
+
+            //     // 重新綁定事件監聽器
+            //     const copyButtons = document.querySelectorAll('.copy-chart-btn, .section-copy-btn, .copy-report-btn');
+            //     console.log("setupCopyListeners: 找到的複製按鈕數量:", copyButtons.length);
+            //     copyButtons.forEach(button => {
+            //         button.addEventListener('click', handleCopyButtonClick);
+            //     });
+            // }
+
+            
+
+             // 設置複製按鈕事件監聽器的函數
+            function setupCopyListeners() {
+                // 移除舊的事件監聽器，避免重複綁定
+                const oldCopyButtons = document.querySelectorAll('.copy-chart-btn, .section-copy-btn, .copy-report-btn');
+                oldCopyButtons.forEach(button => {
+                    button.removeEventListener('click', handleCopyButtonClick);
+                });
+
+                // 重新綁定事件監聽器
+                const copyButtons = document.querySelectorAll('.copy-chart-btn, .section-copy-btn, .copy-report-btn');
+                console.log("setupCopyListeners: 找到的複製按鈕數量:", copyButtons.length);
+                copyButtons.forEach(button => {
+                    button.addEventListener('click', handleCopyButtonClick);
+                });
+            }
+
+
+            async function handleCopyButtonClick(event) {
                 const button = event.currentTarget;
                 let contentToCopy = ''; // 確保它一開始就是空字串
 
                 try {
                     if (button.classList.contains('copy-report-btn')) {
                         const reportWrapper = button.closest('.report-wrapper');
-                        // if (!reportWrapper) { // 加強檢查：如果找不到報告範圍，直接返回
-                        //     alert('無法找到報告內容範圍。');
-                        //     console.error('Copy report button clicked, but .report-wrapper not found.');
-                        //     return;
-                        // }
+                        if (!reportWrapper) { // 加強檢查：如果找不到報告範圍，直接返回
+                            alert('無法找到報告內容範圍。');
+                            console.error('Copy report button clicked, but .report-wrapper not found.');
+                            return;
+                        }
 
-                        // 👇【修正】直接使用已經存好的純文字變數
-        if (window.comparisonReportContent) {
-            contentToCopy = window.comparisonReportContent;
-        } else {
-            alert('沒有可供複製的報告內容。');
-            return;
-        }
-
-                        // const mainReportTitleElement = reportWrapper.querySelector('.report-main-header h2');
-                        // if (mainReportTitleElement) {
-                        //     contentToCopy += mainReportTitleElement.textContent.trim() + '\n';
-                        // }
+                        const mainReportTitleElement = reportWrapper.querySelector('.report-main-header h2');
+                        if (mainReportTitleElement) {
+                            contentToCopy += mainReportTitleElement.textContent.trim() + '\n';
+                        }
 
     
-                        // const chartWrappers = reportWrapper.querySelectorAll('.chart-wrapper');
-                        // chartWrappers.forEach(chartWrapper => {
-                        //     const chartTitleElement = chartWrapper.querySelector('.chart-main-header h2');
-                        //     if (chartTitleElement) {
-                        //         contentToCopy += '\n' + chartTitleElement.textContent.trim() + '\n';
-                        //         contentToCopy += '====================\n';
-                        //     }
+                        const chartWrappers = reportWrapper.querySelectorAll('.chart-wrapper');
+                        chartWrappers.forEach(chartWrapper => {
+                            const chartTitleElement = chartWrapper.querySelector('.chart-main-header h2');
+                            if (chartTitleElement) {
+                                contentToCopy += '\n' + chartTitleElement.textContent.trim() + '\n';
+                                contentToCopy += '====================\n';
+                            }
 
                             // 確保獲取的是文字內容，並處理找不到元素的情況
                              // 【核心修改】從整個 chartWrapper 改為只在 .sub-sections-container 中尋找，以排除 summary 區塊
-                        // const preElements = chartWrapper.querySelectorAll(`.sub-sections-container pre.${currentDisplayMode}-content, .sub-sections-container div.${currentDisplayMode}-content`);
+                        const preElements = chartWrapper.querySelectorAll(`.sub-sections-container pre.${currentDisplayMode}-content, .sub-sections-container div.${currentDisplayMode}-content`);
                               
-                        // preElements.forEach(pre => {
-                        //         if (pre) { // 確保 pre 存在
-                        //             contentToCopy += pre.innerText.trim() + '\n\n'; // 使用 trim() 確保沒有多餘空白
-                        //         }
-                        //     });
-                        // });
-                        // contentToCopy = contentToCopy.trim(); // 最後再 trim 一次整個字串
+                        preElements.forEach(pre => {
+                                if (pre) { // 確保 pre 存在
+                                    contentToCopy += pre.innerText.trim() + '\n\n'; // 使用 trim() 確保沒有多餘空白
+                                }
+                            });
+                        });
+                        contentToCopy = contentToCopy.trim(); // 最後再 trim 一次整個字串
 
                     } else if (button.classList.contains('copy-chart-btn')) {
                         const chartWrapper = button.closest('.chart-wrapper');
@@ -369,21 +500,6 @@ function toggleSubmenu(id) {
                         setTimeout(() => button.textContent = '複製', 2000);
                     }
                 }
-            }
-            // 設置複製按鈕事件監聽器的函數
-            function setupCopyListeners() {
-                // 移除舊的事件監聽器，避免重複綁定
-                const oldCopyButtons = document.querySelectorAll('.copy-chart-btn, .section-copy-btn, .copy-report-btn');
-                oldCopyButtons.forEach(button => {
-                    button.removeEventListener('click', handleCopyButtonClick);
-                });
-
-                // 重新綁定事件監聽器
-                const copyButtons = document.querySelectorAll('.copy-chart-btn, .section-copy-btn, .copy-report-btn');
-                console.log("setupCopyListeners: 找到的複製按鈕數量:", copyButtons.length);
-                copyButtons.forEach(button => {
-                    button.addEventListener('click', handleCopyButtonClick);
-                });
             }
 
             // 為切換按鈕添加事件監聽器
@@ -809,6 +925,8 @@ function toggleSubmenu(id) {
                 }
                 return isValid;
             }
+
+
             // 主要計算函式
             async function calculateChart() {
                 console.log('Calculate button clicked.');
@@ -917,6 +1035,10 @@ function toggleSubmenu(id) {
                     // 成功響應：將數據傳遞給 displayChartData 函數進行統一處理
                     displayChartData(response.data, chart1Name, chart2Name);
 
+                    // 呼叫 setupCopyListeners 函式
+                    setupCopyListeners(); 
+
+
                 } catch (error) {
                     // 錯誤處理邏輯 (你現有的)
                     resultOutput.classList.add('error-message');
@@ -988,120 +1110,61 @@ function toggleSubmenu(id) {
                         const finalHostName = name1;
                         const finalGuestName = name2;
 
-                        // // 1. 生成並構建第一個本命盤的 HTML
-                        // const natal1SectionsData = generateSingleChartSectionData(data.chart1_data, `${finalHostName}的本命盤`);
-                        // const natal1Html = buildSingleChartHTML(natal1SectionsData, `${finalHostName}的本命盤`);
+                        // 1. 生成並構建第一個本命盤的 HTML
+                        const natal1SectionsData = generateSingleChartSectionData(data.chart1_data, `${finalHostName}的本命盤`);
+                        const natal1Html = buildSingleChartHTML(natal1SectionsData, `${finalHostName}的本命盤`);
 
-                        // // 2. 生成並構建第二個本命盤的 HTML
-                        // const natal2SectionsData = generateSingleChartSectionData(data.chart2_data, `${finalGuestName}的本命盤`);
-                        // const natal2Html = buildSingleChartHTML(natal2SectionsData, `${finalGuestName}的本命盤`);
+                        // 2. 生成並構建第二個本命盤的 HTML
+                        const natal2SectionsData = generateSingleChartSectionData(data.chart2_data, `${finalGuestName}的本命盤`);
+                        const natal2Html = buildSingleChartHTML(natal2SectionsData, `${finalGuestName}的本命盤`);
 
-                    //     // 3. 生成並構建交互相位和疊盤的 HTML
-                    //     let interactionHtmlComparison = `<div class="sub-sections-container">`;
+                        // 3. 生成並構建交互相位和疊盤的 HTML
+                        let interactionHtmlComparison = `<div class="sub-sections-container">`;
 
-                    //     // --- 3.1 訪客星體落入主盤宮位 (Overlay: `name2` 的星體落入 `name1` 的宮位) ---
-                    //     // API 數據是 `data.chart2_planets_in_chart1_houses`
-                    //     const titleGuestIntoHost = `${finalGuestName}星體落入${finalHostName}宮位`;
-                    //     const overlayGuestIntoHostSectionsData = generateOverlaySectionData(
-                    //         data.chart2_planets_in_chart1_houses, // 👈 數據：訪客(chart2)行星在主盤(chart1)宮位
-                    //         finalGuestName,                       // 👈 Guest Name (訪客)
-                    //         finalHostName,                        // 👈 Host Name (主盤)
-                    //         titleGuestIntoHost                    // 👈 完整標題
-                    //     );
-                    //     interactionHtmlComparison += buildOverlayHTML(
-                    //         overlayGuestIntoHostSectionsData,
-                    //         finalGuestName,                       // 👈 Guest Name
-                    //         finalHostName,                        // 👈 Host Name
-                    //         titleGuestIntoHost                    // 👈 完整標題
-                    //     );
+                        // --- 3.1 訪客星體落入主盤宮位 (Overlay: `name2` 的星體落入 `name1` 的宮位) ---
+                        // API 數據是 `data.chart2_planets_in_chart1_houses`
+                        const titleGuestIntoHost = `${finalGuestName}星體落入${finalHostName}宮位`;
+                        const overlayGuestIntoHostSectionsData = generateOverlaySectionData(
+                            data.chart2_planets_in_chart1_houses, // 👈 數據：訪客(chart2)行星在主盤(chart1)宮位
+                            finalGuestName,                       // 👈 Guest Name (訪客)
+                            finalHostName,                        // 👈 Host Name (主盤)
+                            titleGuestIntoHost                    // 👈 完整標題
+                        );
+                        interactionHtmlComparison += buildOverlayHTML(
+                            overlayGuestIntoHostSectionsData,
+                            finalGuestName,                       // 👈 Guest Name
+                            finalHostName,                        // 👈 Host Name
+                            titleGuestIntoHost                    // 👈 完整標題
+                        );
 
-                    //     // --- 3.2 主盤星體落入訪客宮位 (Overlay: `name1` 的星體落入 `name2` 的宮位) ---
-                    //     // API 數據是 `data.chart1_planets_in_chart2_houses`
-                    //     const titleHostIntoGuest = `${finalHostName}星體落入${finalGuestName}宮位`;
-                    //     const overlayHostIntoGuestSectionsData = generateOverlaySectionData(
-                    //         data.chart1_planets_in_chart2_houses, // 👈 數據：主盤(chart1)行星在訪客(chart2)宮位
-                    //         finalHostName,                        // 👈 Guest Name (這裡的主盤相對這個報告是「被看」的客人)
-                    //         finalGuestName,                       // 👈 Host Name (這裡的訪客相對這個報告是「被落入」的盤主)
-                    //         titleHostIntoGuest                    // 👈 完整標題
-                    //     );
-                    //     interactionHtmlComparison += buildOverlayHTML(
-                    //         overlayHostIntoGuestSectionsData,
-                    //         finalHostName,
-                    //         finalGuestName,
-                    //         titleHostIntoGuest
-                    //     );
+                        // --- 3.2 主盤星體落入訪客宮位 (Overlay: `name1` 的星體落入 `name2` 的宮位) ---
+                        // API 數據是 `data.chart1_planets_in_chart2_houses`
+                        const titleHostIntoGuest = `${finalHostName}星體落入${finalGuestName}宮位`;
+                        const overlayHostIntoGuestSectionsData = generateOverlaySectionData(
+                            data.chart1_planets_in_chart2_houses, // 👈 數據：主盤(chart1)行星在訪客(chart2)宮位
+                            finalHostName,                        // 👈 Guest Name (這裡的主盤相對這個報告是「被看」的客人)
+                            finalGuestName,                       // 👈 Host Name (這裡的訪客相對這個報告是「被落入」的盤主)
+                            titleHostIntoGuest                    // 👈 完整標題
+                        );
+                        interactionHtmlComparison += buildOverlayHTML(
+                            overlayHostIntoGuestSectionsData,
+                            finalHostName,
+                            finalGuestName,
+                            titleHostIntoGuest
+                        );
 
-                    //     // 3.3 交互相位
-                    //     // 先生成兩種格式的內容數據
-                    //     const interAspectsSectionsDataComparison = generateInterAspectsSectionData(data.inter_aspects, name1, name2);
-                    //     // 再將數據傳給 HTML 組裝函數 (注意：buildInterAspectsHTML 的簽名已調整)
-                    //     interactionHtmlComparison += buildInterAspectsHTML(interAspectsSectionsDataComparison, name1, name2);
+                        // 3.3 交互相位
+                        // 先生成兩種格式的內容數據
+                        const interAspectsSectionsDataComparison = generateInterAspectsSectionData(data.inter_aspects, name1, name2);
+                        // 再將數據傳給 HTML 組裝函數 (注意：buildInterAspectsHTML 的簽名已調整)
+                        interactionHtmlComparison += buildInterAspectsHTML(interAspectsSectionsDataComparison, name1, name2);
 
-                    //     interactionHtmlComparison += `</div>`; // 關閉 sub-sections-container
+                        interactionHtmlComparison += `</div>`; // 關閉 sub-sections-container
 
-                    //     // 4. 組裝最終的報告 HTML
-                    //     reportHtmlContent = createReportWrapper(`${name1}與${name2}的比較盤報告`, natal1Html + natal2Html + interactionHtmlComparison);
-                    //     break;
-                    // ... 原有的 case 'comparison' 程式碼 ...
+                        // 4. 組裝最終的報告 HTML
+                        reportHtmlContent = createReportWrapper(`${name1}與${name2}的比較盤報告`, natal1Html + natal2Html + interactionHtmlComparison);
+                        break;
 
-// 1. 生成並構建第一個本命盤的 HTML
-const natal1SectionsData = generateSingleChartSectionData(data.chart1_data, `${finalHostName}的本命盤`);
-const natal1Html = buildSingleChartHTML(natal1SectionsData, `${finalHostName}的本命盤`);
-
-// 2. 生成並構建第二個本命盤的 HTML
-const natal2SectionsData = generateSingleChartSectionData(data.chart2_data, `${finalGuestName}的本命盤`);
-const natal2Html = buildSingleChartHTML(natal2SectionsData, `${finalGuestName}的本命盤`);
-
-// 3. 生成並構建交互相位和疊盤的 HTML
-let interactionHtmlComparison = `<div class="sub-sections-container">`;
-
-// --- 3.1 訪客星體落入主盤宮位 (Overlay: `name2` 的星體落入 `name1` 的宮位) ---
-const titleGuestIntoHost = `${finalGuestName}星體落入${finalHostName}宮位`;
-const overlayGuestIntoHostSectionsData = generateOverlaySectionData(
-    data.chart2_planets_in_chart1_houses, // 👈 數據：訪客(chart2)行星在主盤(chart1)宮位
-    finalGuestName,
-    finalHostName,
-    titleGuestIntoHost
-);
-interactionHtmlComparison += buildOverlayHTML(
-    overlayGuestIntoHostSectionsData,
-    finalGuestName,
-    finalHostName,
-    titleGuestIntoHost
-);
-
-// --- 3.2 主盤星體落入訪客宮位 (Overlay: `name1` 的星體落入 `name2` 的宮位) ---
-const titleHostIntoGuest = `${finalHostName}星體落入${finalGuestName}宮位`;
-const overlayHostIntoGuestSectionsData = generateOverlaySectionData(
-    data.chart1_planets_in_chart2_houses, // 👈 數據：主盤(chart1)行星在訪客(chart2)宮位
-    finalHostName,
-    finalGuestName,
-    titleHostIntoGuest
-);
-interactionHtmlComparison += buildOverlayHTML(
-    overlayHostIntoGuestSectionsData,
-    finalHostName,
-    finalGuestName,
-    titleHostIntoGuest
-);
-
-// 3.3 交互相位
-const interAspectsSectionsDataComparison = generateInterAspectsSectionData(data.inter_aspects, name1, name2);
-interactionHtmlComparison += buildInterAspectsHTML(interAspectsSectionsDataComparison, name1, name2);
-
-interactionHtmlComparison += `</div>`;
-
-// 4. 組裝最終的報告 HTML
-reportHtmlContent = createReportWrapper(`${name1}與${name2}的比較盤報告`, natal1Html + natal2Html + interactionHtmlComparison);
-
-// 👇【新增】在這裡將所有 HTML 字串轉換成純文字，並存到一個變數中
-// 創建一個臨時 div 來解析 HTML 字串並提取文字內容
-const tempDiv = document.createElement('div');
-tempDiv.innerHTML = natal1Html + natal2Html + interactionHtmlComparison;
-window.comparisonReportContent = tempDiv.innerText.trim();
-console.log("已生成 Comparison 報告的純文字內容，準備複製。");
-
-break;
                     case 'composite':
                         // Step 1: Generate the section data for the Composite Chart
                         const compositeSectionsData = generateSingleChartSectionData(data.composite_chart_data, `${name1}與${name2}的組合中點盤`);
