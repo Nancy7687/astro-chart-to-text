@@ -434,6 +434,26 @@ function toggleSubmenu(id) {
                                 }
                             });
                         });
+
+                // 【問題修正】為了解決合盤報告無法複製互動區塊（疊盤、交互相位）的問題，
+                // 我們在此特別找出不在 .chart-wrapper 內的 .sub-sections-container，並複製其內容。
+                // 這個容器通常包含了比較盤和行運盤的互動分析。
+                const interactionContainer = reportWrapper.querySelector(':scope > .sub-sections-container');
+                if (interactionContainer) {
+                    const sectionItems = interactionContainer.querySelectorAll('.result-section-item');
+                    sectionItems.forEach(item => {
+                        const sectionTitleElement = item.querySelector('.result-section-header h3');
+                        if (sectionTitleElement) {
+                            contentToCopy += '\n' + sectionTitleElement.textContent.trim() + '\n';
+                            contentToCopy += '--------------------\n';
+                        }
+                        const preElement = item.querySelector(`pre.${currentDisplayMode}-content`);
+                        if (preElement) {
+                            contentToCopy += preElement.innerText.trim() + '\n\n';
+                        }
+                    });
+                }
+
                         contentToCopy = contentToCopy.trim(); // 最後再 trim 一次整個字串
 
                     } else if (button.classList.contains('copy-chart-btn')) {
@@ -1289,7 +1309,7 @@ function toggleSubmenu(id) {
                     ].join('\n') : "基礎數據缺失";
 
                     sectionsData.summary.narrative = (timestamps && birth_info) ?
-                        `星盤基礎資訊\n--------------------\n本地時間：${timestamps.local_time}\nUTC時間：${timestamps.utc_time}\n出生地座標：緯度 ${birth_info.latitude}, 經度 ${birth_info.longitude}\n\n` :
+                        `==== 星盤基礎數據 ====\n本地時間：${timestamps.local_time}\nUTC時間：${timestamps.utc_time}\n出生地座標：緯度 ${birth_info.latitude}, 經度 ${birth_info.longitude}====================\n` :
                         "基礎數據缺失，無法提供完整敘述。\n";
                 }
 
@@ -1305,12 +1325,12 @@ function toggleSubmenu(id) {
                     ].join('\n');
 
                     // 【核心修正 2】: 在分隔線後方加上換行符 `\n`
-                    sectionsData.cusp.narrative = "宮頭\n--------------------\n";
+                    sectionsData.cusp.narrative = "==== 宮頭 ====\n";
                     house_cusps.forEach(c => {
                         // 敘述版沒有表格分隔線
                         sectionsData.cusp.narrative += `${c.house_number} 宮頭: ${c.zodiac_position_formatted}\n`;
                     });
-                    // sectionsData.cusp.narrative += "\n"; // 段落間距
+                    sectionsData.cusp.narrative += "====================\n";// 段落間距
                 } else {
                     sectionsData.cusp.table = "宮頭數據缺失";
                     sectionsData.cusp.narrative = "宮頭數據缺失，無法提供完整敘述。\n";
@@ -1337,7 +1357,7 @@ function toggleSubmenu(id) {
                     ].join('\n');
 
                     // 【核心修正 2】: 在分隔線後方加上換行符 `\n`
-                    sectionsData.planet.narrative = "星體位置\n--------------------\n";
+                    sectionsData.planet.narrative = "==== 星體位置 ====\n";
                     DISPLAY_ORDER_NAMES
                         .filter(name => planet_positions[name])
                         .forEach(name => {
@@ -1349,7 +1369,7 @@ function toggleSubmenu(id) {
                             const positionAndHouse = p.zodiac_position_formatted + (houseText ? houseText : '');
                             sectionsData.planet.narrative += `${name}${retrogradeText} ${positionAndHouse}\n`;
                         });
-                    // sectionsData.planet.narrative += "\n";
+                    sectionsData.cusp.narrative += "====================\n";// 段落間距
                 } else {
                     sectionsData.planet.table = "星體數據缺失";
                     sectionsData.planet.narrative = "星體數據缺失，無法提供完整敘述。\n";
@@ -1402,7 +1422,7 @@ function toggleSubmenu(id) {
                     ].join('\n');
 
                     // 【核心修正 2】: 在分隔線後方加上換行符 `\n`
-                    sectionsData.aspect.narrative = "主要相位\n--------------------\n";
+                    sectionsData.aspect.narrative = "==== 主要相位 ====\n";
                     aspects.sort((a, b) => DISPLAY_ORDER_NAMES.indexOf(a.p1_name) - DISPLAY_ORDER_NAMES.indexOf(b.p1_name) || DISPLAY_ORDER_NAMES.indexOf(a.p2_name) - DISPLAY_ORDER_NAMES.indexOf(b.p2_name)).forEach(a => {
                         const p1 = planet_positions[a.p1_name];
                         const p1HouseInfo = p1 && !HOUSE_DEFINING_POINTS.includes(a.p1_name) && p1.house != null
@@ -1420,7 +1440,7 @@ function toggleSubmenu(id) {
                         // 敘述版沒有表格分隔線
                         sectionsData.aspect.narrative += `${a.p1_name}${p1FullPosition}${a.aspect_name}${a.p2_name}${p2FullPosition}，${aspectType}${orbFormatted}。\n`;
                     });
-                    // sectionsData.aspect.narrative += "\n";
+                    sectionsData.cusp.narrative += "====================\n";// 段落間距
                 } else {
                     sectionsData.aspect.table = "沒有相位";
                     sectionsData.aspect.narrative = "本命盤中沒有偵測到主要相位。\n";
@@ -1479,7 +1499,8 @@ function toggleSubmenu(id) {
 
                 // --- 表格內容生成 ---
                 const tableLines = [
-                    `==== ${sectionTitle} ====`,
+                    // `==== ${sectionTitle} ====`,
+                    `==== 交互相位 ====`,
                     `${name1}星體 | 相位 | ${name2}星體 | 動態 | 容許度`,
                     "-----------------------------", // 表格分隔線
                     ...aspects.sort((a, b) => DISPLAY_ORDER_NAMES.indexOf(a.p1_name) - DISPLAY_ORDER_NAMES.indexOf(b.p1_name) || DISPLAY_ORDER_NAMES.indexOf(a.p2_name) - DISPLAY_ORDER_NAMES.indexOf(b.p2_name)).map(a =>
@@ -1491,9 +1512,10 @@ function toggleSubmenu(id) {
 
                 // --- 敘述內容生成 ---
                 const narrativeLines = [
-                    "====================",
-                    `${sectionTitle}`,
-                    "--------------------\n" // 【核心修正 2】: 加上換行符，讓分隔線與內容之間多一個空行，更美觀
+                    // "====================",
+                    // `${sectionTitle}`,
+                    `==== 交互相位 ====`,
+                    // "--------------------\n" // 【核心修正 2】: 加上換行符，讓分隔線與內容之間多一個空行，更美觀
                 ];
                 // 假設 planet_positions 在這裡是可以訪問的全局或通過參數傳入，用於獲取更多詳細信息
                 // 如果沒有，就只使用 a.p1_name, a.p2_name
@@ -1501,7 +1523,7 @@ function toggleSubmenu(id) {
                     // 你可以根據需要為敘述版添加更多細節，例如星體所落星座/宮位
                     narrativeLines.push(`${name1}的${a.p1_name}與${name2}的${a.p2_name}形成${a.aspect_name}，容許度為${formatDegreesMinutesSeconds(a.orb)}。`);
                 });
-                narrativeLines.push("--------------------");
+                narrativeLines.push("====================");
                 sectionData.narrative = narrativeLines.join('\n');
 
                 return sectionData;
@@ -1546,9 +1568,7 @@ function toggleSubmenu(id) {
 
                 // --- 敘述內容生成 ---
                 const narrativeLines = [
-                    "====================",
-                    `${title}`,
-                    "--------------------"
+                    `==== ${title} ====`,
                 ];
                 overlayData.sort((a, b) => DISPLAY_ORDER_NAMES.indexOf(a.planet_name) - DISPLAY_ORDER_NAMES.indexOf(b.planet_name))
                     .forEach(o => {
