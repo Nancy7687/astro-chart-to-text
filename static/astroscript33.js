@@ -442,11 +442,7 @@ function toggleSubmenu(id) {
                 if (interactionContainer) {
                     const sectionItems = interactionContainer.querySelectorAll('.result-section-item');
                     sectionItems.forEach(item => {
-                        const sectionTitleElement = item.querySelector('.result-section-header h3');
-                        if (sectionTitleElement) {
-                            contentToCopy += '\n' + sectionTitleElement.textContent.trim() + '\n';
-                            contentToCopy += '--------------------\n';
-                        }
+                        // 【使用者要求】只複製內文，不複製小標題
                         const preElement = item.querySelector(`pre.${currentDisplayMode}-content`);
                         if (preElement) {
                             contentToCopy += preElement.innerText.trim() + '\n\n';
@@ -1309,7 +1305,7 @@ function toggleSubmenu(id) {
                     ].join('\n') : "基礎數據缺失";
 
                     sectionsData.summary.narrative = (timestamps && birth_info) ?
-                        `==== 星盤基礎數據 ====\n本地時間：${timestamps.local_time}\nUTC時間：${timestamps.utc_time}\n出生地座標：緯度 ${birth_info.latitude}, 經度 ${birth_info.longitude}====================\n` :
+                        `==== 星盤基礎數據 ====\n本地時間：${timestamps.local_time}\nUTC時間：${timestamps.utc_time}\n出生地座標：緯度 ${birth_info.latitude}, 經度 ${birth_info.longitude}\n====================\n` :
                         "基礎數據缺失，無法提供完整敘述。\n";
                 }
 
@@ -1369,7 +1365,7 @@ function toggleSubmenu(id) {
                             const positionAndHouse = p.zodiac_position_formatted + (houseText ? houseText : '');
                             sectionsData.planet.narrative += `${name}${retrogradeText} ${positionAndHouse}\n`;
                         });
-                    sectionsData.cusp.narrative += "====================\n";// 段落間距
+                    sectionsData.planet.narrative += "====================\n";// 段落間距
                 } else {
                     sectionsData.planet.table = "星體數據缺失";
                     sectionsData.planet.narrative = "星體數據缺失，無法提供完整敘述。\n";
@@ -1440,7 +1436,7 @@ function toggleSubmenu(id) {
                         // 敘述版沒有表格分隔線
                         sectionsData.aspect.narrative += `${a.p1_name}${p1FullPosition}${a.aspect_name}${a.p2_name}${p2FullPosition}，${aspectType}${orbFormatted}。\n`;
                     });
-                    sectionsData.cusp.narrative += "====================\n";// 段落間距
+                    sectionsData.aspect.narrative += "====================\n";// 段落間距
                 } else {
                     sectionsData.aspect.table = "沒有相位";
                     sectionsData.aspect.narrative = "本命盤中沒有偵測到主要相位。\n";
