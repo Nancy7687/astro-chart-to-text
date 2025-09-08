@@ -60,10 +60,10 @@
             width: 80%;
             max-width: 350px;
             height: 70vh; */
-            top: 60px; /* 從 header 下方開始，您可以根據 header 的實際高度微調 */
+            top: 50px; /* 從 header 下方開始，您可以根據 header 的實際高度微調 */
             left: 0;
             width: 100%;
-            height: calc(100vh - 60px); /* 填滿 header 以下的剩餘高度 */
+            height: calc(100vh - 50px); /* 填滿 header 以下的剩餘高度 */
             /* background: linear-gradient(180deg, #1e1b4b 0%, #312e81 100%); */
             background: linear-gradient(180deg, #73737d 0%, #302f3b 100%);
             z-index: 1000;
