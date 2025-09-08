@@ -1371,9 +1371,10 @@
                 margin-right: 0;
             }
 
-            .card card1 {
-                padding: 100px;
-            }
+                   .card,
+                   .card1 {
+                       padding: 100px;
+                   }
         }
 
         /* --- 桌面設備 (通常 >= 1024px) --- */
