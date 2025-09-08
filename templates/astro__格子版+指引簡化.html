@@ -1,0 +1,2339 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>占星命盤文字資料</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <!-- 1. 引入轉輪套件 -->
+    <link href="https://cdn.jsdelivr.net/npm/pickerjs@1.2.1/dist/picker.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/pickerjs@1.2.1/dist/picker.min.js"></script>
+    <!-- 2. 原本ai_astrology_guide.html引用的套件 -->
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&family=Noto+Serif+TC&family=Playfair+Display:wght@400;500;600&display=swap" rel="stylesheet">
+    <!-- <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&family=Playfair+Display:wght@400;500;600&display=swap" rel="stylesheet"> -->
+    <!--3. 引入.css-->
+    <link rel="stylesheet" href="{{ url_for('static', filename='astrostyle.css') }}">
+    <!-- 4. 引入.TailwindCSS output.css -->
+    <link rel="stylesheet" href="../dist/output.css">
+</head>
+
+    <body class="bg-single leading-loose tracking-widest md:tracking-normal md:leading-normal">
+
+<!-- guild 的UI -->
+
+<!-- Header Navigation -->
+    <header class="bg-zinc-700 backdrop-filter backdrop-blur-lg border-b border-purple-500 sticky top-0 z-50">
+        <nav class="container mx-auto px-4 py-3 bg-zinc-700">
+            <!-- 漢堡選單按鈕 (手機版) -->
+        <button id="hamburger" class="hamburger md:hidden">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <div class="mobile-flex flex items-start justify-start md:justify-between">
+                <div class="flex items-center justify-start space-x-2">
+                    <i class="fas fa-star text-yellow-400 text-2xl"></i>
+                    <h1 class="text-4xl md:text-4xl font-bold text-[#fde68a]">問星</h1>
+                </div>
+                <!-- Mobile menu button -->
+                <!-- <button class="md:hidden text-white" onclick="toggleMobileMenu()">
+                    <i class="fas fa-bars text-xl"></i>
+                </button> -->
+                
+                 <!-- 新的手機nav -->
+                <div id="mobile-menu" class="md:hidden hidden fixed inset-0 bg-zinc-700/95 backdrop-blur-sm z-[1000] overflow-y-auto">
+                    <div class="pt-24 pb-12 px-8 space-y-6">
+                
+                        <div class="nav-item">
+                            <a href="#" onclick="showSection('birth-chart')"
+                                class="py-2 text-white font-bold text-2xl hover:text-[#38bdf8] transition-colors duration-300">
+                                📝 星盤資料生成
+                            </a>
+                        </div>
+                
+                        <div class="nav-item">
+                            
+                            <div class="main-item flex items-center justify-between py-2 cursor-pointer"
+                                onclick="toggleSubmenu('ai-guide')">
+                                <span class="py-2 text-white font-bold text-2xl hover:text-yellow-400 transition-colors duration-300">
+                                    🌟 AI 占星引導
+                                </span>
+                                <i id="ai-guide-arrow" class="fas fa-chevron-down text-white transition-transform duration-300"></i>
+                            </div>
+                            <div id="ai-guide-submenu" class="submenu hidden">
+                                <a href="#" onclick="showSection('start-reading')"
+                                    class="text-white text-xl sub-item block py-2">啟程！解讀星盤奧秘</a>
+                                <a href="#" onclick="showSection('advanced-questions')"
+                                    class="text-white text-xl sub-item block py-2">進階提問技巧：讓 AI 為您深度解析</a>
+                            </div>
+                        </div>
+                
+                        <div class="nav-item">
+                            <div class="main-item flex items-center justify-between py-2 cursor-pointer"
+                                onclick="toggleSubmenu('personal-chart-unlock')">
+                                <span class="py-2 text-white font-bold text-2xl hover:text-yellow-400 transition-colors duration-300">
+                                    🗝️ 個人星圖解鎖
+                                </span>
+                                <i id="personal-chart-unlock-arrow"
+                                    class="fas fa-chevron-down text-white transition-transform duration-300"></i>
+                            </div>
+                            <div id="personal-chart-unlock-submenu" class="submenu hidden">
+                                <a href="#" onclick="showSection('personal-chart')"
+                                    class="text-white text-xl sub-item block py-2">個人星盤：解讀你的生命藍圖</a>
+                                <a href="#" onclick="showSection('self-discovery')"
+                                    class="text-white text-xl sub-item block py-2">我是誰？內在天賦探索</a>
+                                <a href="#" onclick="showSection('career-guide')"
+                                    class="text-white text-xl sub-item block py-2">職場升級：事業與職涯指南</a>
+                                <a href="#" onclick="showSection('wealth-chart')"
+                                    class="text-white text-xl sub-item block py-2">財富星圖：金錢觀與開源秘密</a>
+                                <a href="#" onclick="showSection('love-language')"
+                                    class="text-white text-xl sub-item block py-2">愛情星語：解鎖情場密碼</a>
+                                <a href="#" onclick="showSection('friendship')"
+                                    class="text-white text-xl sub-item block py-2">友情連結：人際互動星解</a>
+                                <a href="#" onclick="showSection('family-chart')"
+                                    class="text-white text-xl sub-item block py-2">根與脈絡：家庭星盤啟示</a>
+                                <a href="#" onclick="showSection('health-balance')"
+                                    class="text-white text-xl sub-item block py-2">身心平衡：健康活力指南</a>
+                                <a href="#" onclick="showSection('life-lessons')"
+                                    class="text-white text-xl sub-item block py-2">命運課題與成長之路</a>
+                                <a href="#" onclick="showSection('soul-imprint')"
+                                    class="text-white text-xl sub-item block py-2">靈魂印記：前世今生</a>
+                            </div>
+                        </div>
+                
+                        <div class="nav-item">
+                            <div class="main-item flex items-center justify-between py-2 cursor-pointer"
+                                onclick="toggleSubmenu('instant-solve')">
+                                <span class="py-2 text-white font-bold text-2xl hover:text-yellow-400 transition-colors duration-300">
+                                    ⚡ 問題即時解
+                                </span>
+                                <i id="instant-solve-arrow"
+                                    class="fas fa-chevron-down text-white transition-transform duration-300"></i>
+                            </div>
+                            <div id="instant-solve-submenu" class="submenu hidden">
+                                <a href="#" onclick="showSection('instant-solution')"
+                                    class="text-white text-xl sub-item block py-2">占星卜卦盤：你的問題，星盤即刻解答</a>
+                                <a href="#" onclick="showSection('decision-moment')"
+                                    class="text-white text-xl sub-item block py-2">決策時刻：選擇最佳路徑</a>
+                                <a href="#" onclick="showSection('situation-insight')"
+                                    class="text-white text-xl sub-item block py-2">情境解惑：看清事件真相</a>
+                            </div>
+                        </div>
+                
+                        <div class="nav-item">
+                            <div class="main-item flex items-center justify-between py-2 cursor-pointer"
+                                onclick="toggleSubmenu('relationship-insight')">
+                                <span class="py-2 text-white font-bold text-2xl hover:text-yellow-400 transition-colors duration-300">
+                                    👁️ 關係星盤洞察
+                                </span>
+                                <i id="relationship-insight-arrow"
+                                    class="fas fa-chevron-down text-white transition-transform duration-300"></i>
+                            </div>
+                            <div id="relationship-insight-submenu" class="submenu hidden">
+                                <a href="#" onclick="showSection('relationship-core')"
+                                    class="text-white text-xl sub-item block py-2">關係核心：解鎖彼此磁場</a>
+                                <a href="#" onclick="showSection('love-synastry')"
+                                    class="text-white text-xl sub-item block py-2">愛情關係：情侶合盤解讀</a>
+                                <a href="#" onclick="showSection('parent-child')"
+                                    class="text-white text-xl sub-item block py-2">親子關係：家庭合盤啟示</a>
+                                <a href="#" onclick="showSection('friendship-synastry')"
+                                    class="text-white text-xl sub-item block py-2">友情關係：知己合盤探索</a>
+                                <a href="#" onclick="showSection('work-synastry')"
+                                    class="text-white text-xl sub-item block py-2">合作關係：職場合盤解析</a>
+                            </div>
+                        </div>
+                
+                        <div class="nav-item">
+                            <div class="main-item flex items-center justify-between py-2 cursor-pointer"
+                                onclick="toggleSubmenu('relationship-resonance')">
+                                <span class="py-2 text-white font-bold text-2xl hover:text-yellow-400 transition-colors duration-300">
+                                    🔗 關係共振探索
+                                </span>
+                                <i id="relationship-resonance-arrow"
+                                    class="fas fa-chevron-down text-white transition-transform duration-300"></i>
+                            </div>
+                            <div id="relationship-resonance-submenu" class="submenu hidden">
+                                <a href="#" onclick="showSection('relationship-axis')"
+                                    class="text-white text-xl sub-item block py-2">關係主軸：我們一起的「我們」</a>
+                            </div>
+                        </div>
+                
+                        <div class="nav-item">
+                            <div class="main-item flex items-center justify-between py-2 cursor-pointer"
+                                onclick="toggleSubmenu('fortune-tracking')">
+                                <span class="py-2 text-white font-bold text-2xl hover:text-yellow-400 transition-colors duration-300">
+                                    📈 運勢週期脈動追蹤
+                                </span>
+                                <i id="fortune-tracking-arrow"
+                                    class="fas fa-chevron-down text-white transition-transform duration-300"></i>
+                            </div>
+                            <div id="fortune-tracking-submenu" class="submenu hidden">
+                                <a href="#" onclick="showSection('recent-fortune')"
+                                    class="text-white text-xl sub-item block py-2">近期運勢：預見未來三個月</a>
+                                <a href="#" onclick="showSection('annual-focus')"
+                                    class="text-white text-xl sub-item block py-2">年度焦點：掌握關鍵轉折點</a>
+                                <a href="#" onclick="showSection('annual-focus')"
+                                    class="text-white text-xl sub-item block py-2">特定事件/主題：針對性預測，精準規劃</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Desktop Navigation -->
+                <div class="hidden md:flex space-x-6">
+                    <!-- <div class="nav-item nav-list desk-nav-list"> -->
+                    <div class="nav-item ">
+                        <!-- <a href="#" onclick="showSection('birth-chart')" class="py-2 px-4 text-black font-bold text-2xl transition-all duration-300
+                                  bg-yellow-400 rounded-full
+                                  md:hover:bg-blue-400 md:hover:text-white">
+                            📝 星盤資料生成
+                        </a> -->
+                        <a href="#" onclick="showSection('birth-chart')" class="text-white font-bold text-xl hover:text-[#38bdf8] transition-colors duration-300">
+                            📝 星盤資料生成
+                        </a>
+                    </div>
+                    
+                    <!-- <div class="nav-item nav-list desk-nav-list"> -->
+                    <div class="nav-item ">
+                        <span class="text-white font-bold text-base hover:text-yellow-400 transition-colors duration-300">
+                            🌟 AI 占星引導
+                        </span>
+                        <div class="submenu">
+                            <a href="#" onclick="showSection('start-reading')" class="text-white text-xl">啟程！解讀星盤奧秘</a>
+                            <!-- <a href="#" onclick="showSection('question-method')">提問心法：問對了，就對了！</a>
+                            <a href="#" onclick="showSection('ai-principles')">AI 解讀原則：讓星盤會說話</a> -->
+                            <a href="#" onclick="showSection('advanced-questions')">進階提問技巧：讓 AI 為您深度解析</a>
+                        </div>
+                    </div>
+                    
+                    <!-- <div class="nav-item nav-list desk-nav-list"> -->
+                    <div class="nav-item ">
+                        <span class="text-white font-bold text-base hover:text-yellow-400 transition-colors duration-300">
+                            🗝️ 個人星圖解鎖
+                        </span>
+                        <div class="submenu">
+                            <a href="#" onclick="showSection('personal-chart')" class="text-white text-xl">個人星盤：解讀你的生命藍圖</a>
+                            <a href="#" onclick="showSection('self-discovery')">我是誰？內在天賦探索</a>
+                            <a href="#" onclick="showSection('career-guide')">職場升級：事業與職涯指南</a>
+                            <a href="#" onclick="showSection('wealth-chart')">財富星圖：金錢觀與開源秘密</a>
+                            <a href="#" onclick="showSection('love-language')">愛情星語：解鎖情場密碼</a>
+                            <a href="#" onclick="showSection('friendship')">友情連結：人際互動星解</a>
+                            <a href="#" onclick="showSection('family-chart')">根與脈絡：家庭星盤啟示</a>
+                            <a href="#" onclick="showSection('health-balance')">身心平衡：健康活力指南</a>
+                            <a href="#" onclick="showSection('life-lessons')">命運課題與成長之路</a>
+                            <a href="#" onclick="showSection('soul-imprint')">靈魂印記：前世今生</a>
+                        </div>
+                    </div>
+                    
+                    <!-- <div class="nav-item nav-list desk-nav-list"> -->
+                    <div class="nav-item ">
+                        <span class="text-white font-bold text-base hover:text-yellow-400 transition-colors duration-300">
+                            ⚡ 問題即時解
+                        </span>
+                        <div class="submenu">
+                            <a href="#" onclick="showSection('instant-solution')" class="text-white text-xl">占星卜卦盤：你的問題，星盤即刻解答</a>
+                            <a href="#" onclick="showSection('decision-moment')">決策時刻：選擇最佳路徑</a>
+                            <a href="#" onclick="showSection('situation-insight')">情境解惑：看清事件真相</a>
+                        </div>
+                    </div>
+                    
+                    <!-- <div class="nav-item nav-list desk-nav-list"> -->
+                    <div class="nav-item ">
+                        <a href="#" onclick="showSection('relationship-insight')" class="text-white font-bold text-base hover:text-yellow-400 transition-colors duration-300">
+                            👁️ 關係星盤洞察
+                        </a>
+                        <div class="submenu">
+                            <a href="#" onclick="showSection('relationship-core')">關係核心：解鎖彼此磁場</a>
+                            <a href="#" onclick="showSection('love-synastry')">愛情關係：情侶合盤解讀</a>
+                            <a href="#" onclick="showSection('parent-child')">親子關係：家庭合盤啟示</a>
+                            <a href="#" onclick="showSection('friendship-synastry')">友情關係：知己合盤探索</a>
+                            <a href="#" onclick="showSection('work-synastry')">合作關係：職場合盤解析</a>
+                        </div>
+                    </div>
+                    
+                    <!-- <div class="nav-item nav-list desk-nav-list"> -->
+                    <div class="nav-item ">
+                        <a href="#" onclick="showSection('relationship-resonance')" class="text-white font-bold text-base hover:text-yellow-400 transition-colors duration-300">
+                            🔗 關係共振探索
+                        </a>
+                        <div class="submenu">
+                            <a href="#" onclick="showSection('relationship-axis')">關係主軸：我們一起的「我們」</a>
+                        </div>
+                    </div>
+                    
+                    <!-- <div class="nav-item nav-list desk-nav-list"> -->
+                    <div class="nav-item ">
+                        <a href="#" onclick="showSection('fortune-tracking')" class="text-white font-bold text-base hover:text-yellow-400 transition-colors duration-300">
+                            📈 運勢週期脈動追蹤
+                        </a>
+                        <div class="submenu">
+                            <a href="#" onclick="showSection('recent-fortune')">近期運勢：預見未來三個月</a>
+                            <a href="#" onclick="showSection('annual-focus')">年度焦點：掌握關鍵轉折點</a>
+                            <a href="#" onclick="showSection('annual-focus')">特定事件/主題：針對性預測，精準規劃</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+           
+        </nav>
+    </header>
+
+    <main class="container mx-auto px-4 py-8">
+        <!-- Hero Section -->
+        <section id="hero" class="hero-section text-center py-16 mb-12 relative z-10">
+            <h1 class="text-4xl md:text-6xl font-bold mb-4" style="font-family: 'Playfair Display', serif;">
+                <span class="bg-gradient-to-r from-yellow-400 to-purple-400 bg-clip-text text-transparent">
+                    問星
+                </span>
+            </h1>
+            <h2 class="text-xl md:text-2xl text-gray-400 mt-12 mb-8">
+                您的宇宙智慧導師，啟迪星圖奧秘
+            </h2>
+            <p class="text-lg text-gray-500 max-w-2xl mx-auto">
+                結合古老占星智慧與現代 AI 科技，為您提供精準個人化的星盤解析與人生指引
+            </p>
+        </section>
+
+        <!-- Content Sections -->
+        
+        <!-- 星盤資料生成 -->
+        <section id="birth-chart" class="content-section active">
+
+            <!-- astro__格子版ok 的 原UI -->
+            <!-- <div class="container"> -->
+                <div class="header-bg">
+                    <h1 class="text-4xl md:text-5xl font-bold text-center mb-0" style="letter-spacing: 0.1em;">星盤文字資料生成</h1>
+                </div>
+        
+                <div class="tab-buttons">
+                    <button id="singleChartTab" class="tab-button active"
+                        data-tab-content="singleChartSection">個人星盤&nbsp;&nbsp;or&nbsp;&nbsp;占星卜卦</button>
+                    <button id="synastryTab" class="tab-button"
+                        data-tab-content="synastryChartSection">雙人合盤&nbsp;&nbsp;or&nbsp;&nbsp;行運盤</button>
+                </div>
+        
+                <div id="singleChartSection" class="chart-section">
+                    <h2 class="text-xl md:text-2xl font-semibold text-gray-700 mb-2">姓名</h2>
+                    <div class="input-group">
+                        <input type="text" id="single_name" class="input-field" value="您">
+                        <p id="single_name-error" class="input-error-message" aria-live="polite"></p>
+                    </div>
+                    <br>
+                    <h2 class="text-xl md:text-2xl font-semibold text-gray-700 mb-2">出生日期與時間</h2>
+                    <div class="date-time-grid">
+                        <div class="input-group"><label for="single_year">西元年:</label><input type="number" id="single_year"
+                                class="input-field" value="1999" min="1900" max="2100">
+                            <p id="single_year-error" class="input-error-message" aria-live="polite"></p>
+                        </div>
+                        <div class="input-group">
+                            <label for="single_month">月:</label>
+                            <input type="number" id="single_month" class="input-field" value="1" min="1" max="12">
+                            <p id="single_month-error" class="input-error-message" aria-live="polite"></p>
+                        </div>
+                        <div class="input-group">
+                            <label for="single_day">日:</label>
+                            <input type="number" id="single_day" class="input-field" value="1" min="1" max="31">
+                            <p id="single_day-error" class="input-error-message" aria-live="polite"></p>
+                        </div>
+                        <div class="input-group">
+                            <label for="single_hour">時 (0-23):</label>
+                            <input type="number" id="single_hour" class="input-field" value="12" min="0" max="23">
+                            <p id="single_hour-error" class="input-error-message" aria-live="polite"></p>
+                        </div>
+                        <div class="input-group">
+                            <label for="single_minute">分 (0-59):</label>
+                            <input type="number" id="single_minute" class="input-field" value="00" min="0" max="59">
+                            <p id="single_minute-error" class="input-error-message" aria-live="polite"></p>
+                        </div>
+                    </div>
+        
+                    <h2 class="text-xl md:text-2xl font-semibold text-gray-700 mb-2">出生地點與時區</h2>
+                    <div class="location-timezone-grid">
+                        <div class="input-group">
+                            <label for="single_latitude">緯度 (+N / -S):</label>
+                            <input type="number" id="single_latitude" class="input-field" value="25.00" step="0.01">
+                            <p id="single_latitude-error" class="input-error-message" aria-live="polite"></p>
+                        </div>
+                        <div class="input-group">
+                            <label for="single_longitude">經度 (+E / -W):</label>
+                            <input type="number" id="single_longitude" class="input-field" value="121.50" step="0.01">
+                            <p id="single_longitude-error" class="input-error-message" aria-live="polite"></p>
+                        </div>
+                        <div class="input-group col-span-full">
+                            <label for="single_timezone">時區:</label>
+                            <div class="timezone-input-group-container">
+                                <select id="single_timezone" class="select-field timezone-select"></select>
+                                <input type="text" id="single_customTimezone" class="input-field"
+                                    placeholder="或手動輸入 IANA 時區 (例: Asia/Tokyo)">
+                                <div id="singleTimezoneSuggestions" class="timezone-suggestions"></div>
+                            </div>
+                            <p class="text-sm text-gray-500 mt-2">
+                                * 若時區不在列表，請手動輸入出生地經緯度及「洲名/城市」格式的 IANA 時區<br>
+                                （ 如台灣：Asia/Taipei，中國：Asia/Shanghai，日本：Asia/Tokyo，<br>
+                                美國紐約：America/New_York，美國洛杉磯：America/Los_Angeles ）<br><br>
+                                * IANA 時區可詢問 AI Chat 如 Chat GPT 或 Gemini AI 等，<br>
+                                或由Google搜尋「[您出生城市名] IANA 時區」，以取得正確的星盤資訊。
+                            </p>
+                            <p id="single_timezone-error" class="input-error-message" aria-live="polite"></p>
+                        </div>
+                    </div>
+                </div>
+        
+                <div id="synastryChartSection" class="chart-section hidden">
+                    <div class="chart-type-selection-sub" id="chartTypeSelectionSub">
+                        <div class="chart-card-sub active" data-chart-type="comparison">
+                            <h3>比較合盤</h3>
+                            <p>兩人關係互動</p>
+                        </div>
+                        <div class="chart-card-sub" data-chart-type="composite">
+                            <h3>中點盤</h3>
+                            <p>關係本質與命運</p>
+                        </div>
+                        <div class="chart-card-sub" data-chart-type="transit">
+                            <h3>行運盤</h3>
+                            <p>當下星體影響</p>
+                        </div>
+                    </div>
+                    <input type="hidden" id="selectedSubChartType" value="comparison">
+        
+                    <div id="comparisonChartInputs" class="synastry-inputs-wrapper">
+                        <div class="synastry-input-section">
+                            <h3 class="text-xl font-bold text-gray-800 mb-4 text-center">命盤A</h3>
+                            <div class="input-group"><label for="comp1_name">姓名:</label><input type="text" id="comp1_name"
+                                    class="input-field" value="您">
+                                <p id="comp1_name-error" class="input-error-message" aria-live="polite"></p>
+                            </div>
+                            <h4 class="text-lg font-semibold text-gray-700 mt-4 mb-2">出生日期與時間</h4>
+                            <div class="date-time-grid">
+                                <div class="input-group"><label for="comp1_year">西元年:</label><input type="number"
+                                        id="comp1_year" class="input-field" value="1999" min="1900" max="2100">
+                                    <p id="comp1_year-error" class="input-error-message" aria-live="polite"></p>
+                                </div>
+                                <div class="input-group"><label for="comp1_month">月:</label><input type="number"
+                                        id="comp1_month" class="input-field" value="1" min="1" max="12">
+                                    <p id="comp1_month-error" class="input-error-message" aria-live="polite"></p>
+                                </div>
+                                <div class="input-group"><label for="comp1_day">日:</label><input type="number" id="comp1_day"
+                                        class="input-field" value="1" min="1" max="31">
+                                    <p id="comp1_day-error" class="input-error-message" aria-live="polite"></p>
+                                </div>
+                                <div class="input-group">
+                                    <label for="comp1_hour">時 (0-23):</label>
+                                    <input type="number" id="comp1_hour" class="input-field" value="12" min="0" max="23">
+                                    <p id="comp1_hour-error" class="input-error-message" aria-live="polite"></p>
+                                </div>
+                                <div class="input-group">
+                                    <label for="comp1_minute">分 (0-59):</label>
+                                    <input type="number" id="comp1_minute" class="input-field" value="00" min="0" max="59">
+                                    <p id="comp1_minute-error" class="input-error-message" aria-live="polite"></p>
+                                </div>
+                            </div>
+                            <h4 class="text-lg font-semibold text-gray-700 mt-4 mb-2">出生地點與時區</h4>
+                            <div class="location-timezone-grid">
+                                <div class="input-group"><label for="comp1_latitude">緯度:</label><input type="number"
+                                        id="comp1_latitude" class="input-field" value="25.00" step="0.01">
+                                    <p id="comp1_latitude-error" class="input-error-message" aria-live="polite"></p>
+                                </div>
+                                <div class="input-group"><label for="comp1_longitude">經度:</label><input type="number"
+                                        id="comp1_longitude" class="input-field" value="121.50" step="0.01">
+                                    <p id="comp1_longitude-error" class="input-error-message" aria-live="polite"></p>
+                                </div>
+                                <div class="input-group col-span-full"><label for="comp1_timezone">時區:</label>
+                                    <div class="timezone-input-group-container"><select id="comp1_timezone"
+                                            class="select-field timezone-select"></select><input type="text"
+                                            id="comp1_customTimezone" class="input-field" placeholder="或手動輸入 IANA 時區 ">
+                                        <div id="comp1TimezoneSuggestions" class="timezone-suggestions"></div>
+                                    </div>
+                                    <p id="comp1_timezone-error" class="input-error-message" aria-live="polite"></p>
+                                </div>
+                            </div>
+                            <p class="text-sm text-gray-500 mt-2">
+                                * 若時區不在列表，請手動輸入出生地經緯度及「洲名/城市」格式的 IANA 時區<br>
+                                （ 如台灣：Asia/Taipei，中國：Asia/Shanghai，日本：Asia/Tokyo，<br>
+                                美國紐約：America/New_York，美國洛杉磯：America/Los_Angeles ）<br><br>
+                                * IANA 時區可詢問 AI Chat 如 Chat GPT 或 Gemini AI 等，<br>
+                                或由Google搜尋「[您出生城市名] IANA 時區」，以取得正確的星盤資訊。
+                            </p>
+                        </div>
+                        <div class="synastry-input-section">
+                            <h3 class="text-xl font-bold text-gray-800 mb-4 text-center">命盤B</h3>
+                            <div class="input-group"><label for="comp2_name">姓名:</label><input type="text" id="comp2_name"
+                                    class="input-field" value="對方">
+                                <p id="comp2_name-error" class="input-error-message" aria-live="polite"></p>
+                            </div>
+                            <h4 class="text-lg font-semibold text-gray-700 mt-4 mb-2">出生日期與時間</h4>
+                            <div class="date-time-grid">
+                                <div class="input-group"><label for="comp2_year">西元年:</label><input type="number"
+                                        id="comp2_year" class="input-field" value="1999" min="1900" max="2100">
+                                    <p id="comp2_year-error" class="input-error-message" aria-live="polite"></p>
+                                </div>
+                                <div class="input-group"><label for="comp2_month">月:</label><input type="number"
+                                        id="comp2_month" class="input-field" value="6" min="1" max="12">
+                                    <p id="comp2_month-error" class="input-error-message" aria-live="polite"></p>
+                                </div>
+                                <div class="input-group"><label for="comp2_day">日:</label><input type="number" id="comp2_day"
+                                        class="input-field" value="15" min="1" max="31">
+                                    <p id="comp2_day-error" class="input-error-message" aria-live="polite"></p>
+                                </div>
+                                <div class="input-group"><label for="comp2_hour">時:</label><input type="number" id="comp2_hour"
+                                        class="input-field" value="12" min="0" max="23">
+                                    <p id="comp2_hour-error" class="input-error-message" aria-live="polite"></p>
+                                </div>
+                                <div class="input-group"><label for="comp2_minute">分:</label><input type="number"
+                                        id="comp2_minute" class="input-field" value="00" min="0" max="59">
+                                    <p id="comp2_minute-error" class="input-error-message" aria-live="polite"></p>
+                                </div>
+                            </div>
+                            <h4 class="text-lg font-semibold text-gray-700 mt-4 mb-2">出生地點與時區</h4>
+                            <div class="location-timezone-grid">
+                                <div class="input-group"><label for="comp2_latitude">緯度:</label><input type="number"
+                                        id="comp2_latitude" class="input-field" value="21.00" step="0.01">
+                                    <p id="comp2_latitude-error" class="input-error-message" aria-live="polite"></p>
+                                </div>
+                                <div class="input-group"><label for="comp2_longitude">經度:</label><input type="number"
+                                        id="comp2_longitude" class="input-field" value="121.50" step="0.01">
+                                    <p id="comp2_longitude-error" class="input-error-message" aria-live="polite"></p>
+                                </div>
+                                <div class="input-group col-span-full"><label for="comp2_timezone">時區:</label>
+                                    <div class="timezone-input-group- "><select id="comp2_timezone"
+                                            class="select-field timezone-select"></select><input type="text"
+                                            id="comp2_customTimezone" class="input-field" placeholder="或手動輸入 IANA 時區 ">
+                                        <div id="comp2TimezoneSuggestions" class="timezone-suggestions"></div>
+                                    </div>
+                                    <p id="comp2_timezone-error" class="input-error-message" aria-live="polite"></p>
+                                </div>
+                            </div>
+                            <p class="text-sm text-gray-500 mt-2">
+                                * 若時區不在列表，請手動輸入出生地經緯度及「洲名/城市」格式的 IANA 時區<br>
+                                （ 如台灣：Asia/Taipei，中國：Asia/Shanghai，日本：Asia/Tokyo，<br>
+                                美國紐約：America/New_York，美國洛杉磯：America/Los_Angeles ）<br><br>
+                                * IANA 時區可詢問 AI Chat 如 Chat GPT 或 Gemini AI 等，<br>
+                                或由Google搜尋「[您出生城市名] IANA 時區」，以取得正確的星盤資訊。
+                            </p>
+                        </div>
+                    </div>
+        
+                    <div id="transitChartInputs" class="synastry-inputs-wrapper hidden">
+                        <div class="synastry-input-section">
+                            <h3 class="text-xl font-bold text-gray-800 mb-4 text-center">本命盤資訊</h3>
+                            <div class="input-group"><label for="natal_name">姓名:</label><input type="text" id="natal_name"
+                                    class="input-field" value="您">
+                                <p id="natal_name-error" class="input-error-message" aria-live="polite"></p>
+                            </div>
+                            <h4 class="text-lg font-semibold text-gray-700 mt-4 mb-2">出生日期與時間</h4>
+                            <div class="date-time-grid">
+                                <div class="input-group"><label for="natal_year">西元年:</label><input type="number"
+                                        id="natal_year" class="input-field" value="1999" min="1900" max="2100">
+                                    <p id="natal_year-error" class="input-error-message" aria-live="polite"></p>
+                                </div>
+                                <div class="input-group"><label for="natal_month">月:</label><input type="number"
+                                        id="natal_month" class="input-field" value="1" min="1" max="12">
+                                    <p id="natal_month-error" class="input-error-message" aria-live="polite"></p>
+                                </div>
+                                <div class="input-group"><label for="natal_day">日:</label><input type="number" id="natal_day"
+                                        class="input-field" value="1" min="1" max="31">
+                                    <p id="natal_day-error" class="input-error-message" aria-live="polite"></p>
+                                </div>
+                                <div class="input-group"><label for="natal_hour">時:</label><input type="number" id="natal_hour"
+                                        class="input-field" value="12" min="0" max="23">
+                                    <p id="natal_hour-error" class="input-error-message" aria-live="polite"></p>
+                                </div>
+                                <div class="input-group"><label for="natal_minute">分:</label><input type="number"
+                                        id="natal_minute" class="input-field" value="00" min="0" max="59">
+                                    <p id="natal_minute-error" class="input-error-message" aria-live="polite"></p>
+                                </div>
+                            </div>
+                            <h4 class="text-lg font-semibold text-gray-700 mt-4 mb-2">出生地點與時區</h4>
+                            <div class="location-timezone-grid">
+                                <div class="input-group"><label for="natal_latitude">緯度:</label><input type="number"
+                                        id="natal_latitude" class="input-field" value="25.00" step="0.01">
+                                    <p id="natal_latitude-error" class="input-error-message" aria-live="polite"></p>
+                                </div>
+                                <div class="input-group"><label for="natal_longitude">經度:</label><input type="number"
+                                        id="natal_longitude" class="input-field" value="121.50" step="0.01">
+                                    <p id="natal_longitude-error" class="input-error-message" aria-live="polite"></p>
+                                </div>
+                                <div class="input-group col-span-full"><label for="natal_timezone">時區:</label>
+                                    <div class="timezone-input-group-container"><select id="natal_timezone"
+                                            class="select-field timezone-select"></select><input type="text"
+                                            id="natal_customTimezone" class="input-field" placeholder="或手動輸入 IANA 時區 ">
+                                        <div id="natalTimezoneSuggestions" class="timezone-suggestions"></div>
+                                    </div>
+                                    <p id="natal_timezone-error" class="input-error-message" aria-live="polite"></p>
+                                </div>
+                            </div>
+                            <p class="text-sm text-gray-500 mt-2">
+                                * 若時區不在列表，請手動輸入出生地經緯度及「洲名/城市」格式的 IANA 時區<br>
+                                （ 如台灣：Asia/Taipei，中國：Asia/Shanghai，日本：Asia/Tokyo，<br>
+                                美國紐約：America/New_York，美國洛杉磯：America/Los_Angeles ）<br><br>
+                                * IANA 時區可詢問 AI Chat 如 Chat GPT 或 Gemini AI 等，<br>
+                                或由Google搜尋「[您出生城市名] IANA 時區」，以取得正確的星盤資訊。
+                            </p>
+                        </div>
+                        <div class="synastry-input-section">
+                            <h3 class="text-xl font-bold text-gray-800 mb-4 text-center">行運盤資訊</h3>
+                            <br>
+                            <h3 class="text-2xl font-bold text-gray-800 mb-3 text-left">行運</h3>
+                            <div class="input-group"><label for="transit_name "></label><input type="text" id="transit_name"
+                                    class="input-group hidden" value="行運">
+                                <p id="transit_name-error" class="input-error-message" aria-live="polite"></p>
+                            </div>
+                            <h4 class="text-lg font-semibold text-gray-700 mt-4 mb-2">日期與時間</h4>
+                            <div class="date-time-grid">
+                                <div class="input-group"><label for="transit_year">西元年:</label><input type="number"
+                                        id="transit_year" class="input-field" value="2025" min="1900" max="2100">
+                                    <p id="transit_year-error" class="input-error-message" aria-live="polite"></p>
+                                </div>
+                                <div class="input-group"><label for="transit_month">月:</label><input type="number"
+                                        id="transit_month" class="input-field" value="7" min="1" max="12">
+                                    <p id="transit_month-error" class="input-error-message" aria-live="polite"></p>
+                                </div>
+                                <div class="input-group"><label for="transit_day">日:</label><input type="number"
+                                        id="transit_day" class="input-field" value="1" min="1" max="31">
+                                    <p id="transit_day-error" class="input-error-message" aria-live="polite"></p>
+                                </div>
+                                <div class="input-group"><label for="transit_hour">時:</label><input type="number"
+                                        id="transit_hour" class="input-field" value="12" min="0" max="23">
+                                    <p id="transit_hour-error" class="input-error-message" aria-live="polite"></p>
+                                </div>
+                                <div class="input-group"><label for="transit_minute">分:</label><input type="number"
+                                        id="transit_minute" class="input-field" value="00" min="0" max="59">
+                                    <p id="transit_minute-error" class="input-error-message" aria-live="polite"></p>
+                                </div>
+                            </div>
+                            <h4 class="text-lg font-semibold text-gray-700 mt-4 mb-2">地點與時區</h4>
+                            <div class="location-timezone-grid">
+                                <div class="input-group"><label for="transit_latitude">緯度:</label><input type="number"
+                                        id="transit_latitude" class="input-field" value="25.00" step="0.01">
+                                    <p id="transit_latitude-error" class="input-error-message" aria-live="polite"></p>
+                                </div>
+                                <div class="input-group"><label for="transit_longitude">經度:</label><input type="number"
+                                        id="transit_longitude" class="input-field" value="121.50" step="0.01">
+                                    <p id="transit_longitude-error" class="input-error-message" aria-live="polite"></p>
+                                </div>
+                                <div class="input-group col-span-full"><label for="transit_timezone">時區:</label>
+                                    <div class="timezone-input-group-container"><select id="transit_timezone"
+                                            class="select-field timezone-select"></select><input type="text"
+                                            id="transit_customTimezone" class="input-field" placeholder="或手動輸入 IANA 時區 ">
+                                        <div id="transitTimezoneSuggestions" class="timezone-suggestions"></div>
+                                    </div>
+                                    <p id="transit_timezone-error" class="input-error-message" aria-live="polite"></p>
+                                </div>
+                            </div>
+                            <p class="text-sm text-gray-500 mt-2">
+                                * 若時區不在列表，請手動輸入出生地經緯度及「洲名/城市」格式的 IANA 時區<br>
+                                （ 如台灣：Asia/Taipei，中國：Asia/Shanghai，日本：Asia/Tokyo，<br>
+                                美國紐約：America/New_York，美國洛杉磯：America/Los_Angeles ）<br><br>
+                                * IANA 時區可詢問 AI Chat 如 Chat GPT 或 Gemini AI 等，<br>
+                                或由Google搜尋「[您出生城市名] IANA 時區」，以取得正確的星盤資訊。
+                            </p>
+                        </div>
+                    </div>
+                </div>
+        
+                <div id="planetSelection" class="my-6 p-4 border border-gray-200 rounded-lg bg-gray-50">
+                    <div class="flex justify-between items-center mb-3">
+                        <h3 class="text-xl md:text-2xl font-bold text-gray-700">顯示選項 (小行星/虛點)</h3>
+                        <div>
+                            <button id="toggleAllPlanetsBtn"
+                                class="text-sm md:text-base font-medium text-indigo-600 hover:text-indigo-800">全部取消</button>
+                        </div>
+                    </div>
+                    <div id="optionalPlanetsContainer"
+                        class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-x-6 gap-y-3">
+                    </div>
+                </div>
+        
+                <div class="text-center mb-6">
+                    <button id="calculateBtn" aria-live="polite">計算星盤</button>
+                    <div id="loadingSpinner" class="loading-spinner" role="status" aria-label="計算中，請稍候"></div>
+                </div>
+        
+                <div class="result-section">
+                    <h2 class="text-2xl md:text-3xl font-semibold text-gray-700 p-4" id="resultHeader">生成結果</h2>
+                    <div class="display-mode-toggle-container">
+                        <button id="toggle-table-mode" class="mode-toggle-btn active">表格式文字</button>
+                        <button id="toggle-narrative-mode" class="mode-toggle-btn">敘述模式</button>
+                    </div>
+                    <div id="resultOutput" class="result-box" role="region" aria-live="polite" aria-atomic="true">
+        
+                    </div>
+                </div>
+            <!-- </div> -->
+
+            <!-- <div class="card max-w-4xl mx-auto">
+                <h1 class="text-3xl md:text-4xl font-bold mb-4 text-center">
+                    <i class="fas fa-star text-yellow-400 mr-3"></i>
+                    星盤資料生成：即刻開啟您的宇宙藍圖
+                </h1>
+                <h2 class="text-xl md:text-2xl text-gray-300 mb-8 text-center">
+                    輸入您的出生資訊，體驗個人化AI占星洞察之旅
+                </h2>
+                
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div class="space-y-6">
+                        <div>
+                            <label class="block text-sm font-medium mb-2 text-gray-300">姓名 <span class="text-red-400">*</span></label>
+                            <input type="text" class="form-input" placeholder="請輸入您的姓名">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium mb-2 text-gray-300">出生日期 <span class="text-red-400">*</span></label>
+                            <input type="date" class="form-input">
+                        </div>
+                        
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium mb-2 text-gray-300">出生時間 <span class="text-red-400">*</span></label>
+                                <input type="time" class="form-input">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium mb-2 text-gray-300">性別</label>
+                                <select class="form-input">
+                                    <option value="">請選擇</option>
+                                    <option value="male">男性</option>
+                                    <option value="female">女性</option>
+                                    <option value="other">其他</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium mb-2 text-gray-300">出生城市 <span class="text-red-400">*</span></label>
+                            <input type="text" class="form-input" placeholder="例：台北市">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium mb-2 text-gray-300">出生國家 <span class="text-red-400">*</span></label>
+                            <input type="text" class="form-input" placeholder="例：台灣">
+                        </div>
+                    </div>
+                    
+                    <div class="space-y-6">
+                        <div class="bg-purple-900 bg-opacity-30 p-6 rounded-lg">
+                            <h3 class="text-lg font-semibold mb-3 text-yellow-400">
+                                <i class="fas fa-info-circle mr-2"></i>
+                                重要提醒
+                            </h3>
+                            <ul class="space-y-2 text-sm text-gray-300">
+                                <li><i class="fas fa-check text-green-400 mr-2"></i>出生時間請盡量精確到分鐘</li>
+                                <li><i class="fas fa-check text-green-400 mr-2"></i>如不確定時間，可填寫大概時段</li>
+                                <li><i class="fas fa-check text-green-400 mr-2"></i>出生地點影響宮位系統計算</li>
+                                <li><i class="fas fa-check text-green-400 mr-2"></i>所有資料僅用於星盤計算</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="bg-blue-900 bg-opacity-30 p-6 rounded-lg">
+                            <h3 class="text-lg font-semibold mb-3 text-blue-300">
+                                <i class="fas fa-magic mr-2"></i>
+                                星盤生成後您將獲得
+                            </h3>
+                            <ul class="space-y-2 text-sm text-gray-300">
+                                <li><i class="fas fa-star text-yellow-400 mr-2"></i>完整個人本命盤圖</li>
+                                <li><i class="fas fa-star text-yellow-400 mr-2"></i>十大行星位置解析</li>
+                                <li><i class="fas fa-star text-yellow-400 mr-2"></i>十二宮位詳細說明</li>
+                                <li><i class="fas fa-star text-yellow-400 mr-2"></i>相位關係解讀</li>
+                                <li><i class="fas fa-star text-yellow-400 mr-2"></i>AI個人化分析建議</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="text-center mt-8">
+                    <button class="btn-primary text-lg px-8 py-3">
+                        <i class="fas fa-magic mr-2"></i>
+                        立即生成我的星盤
+                    </button>
+                </div>
+            </div> -->
+        </section>
+
+        <!-- AI 占星引導 -->
+        <section id="ai-guide" class="content-section">
+            <div class="card">
+                <h1 class="text-3xl md:text-4xl font-bold mb-4 text-center">
+                    <i class="fas fa-star text-yellow-400 mr-3"></i>
+                    AI 占星引導：您的宇宙智慧導師
+                </h1>
+                <h2 class="text-xl md:text-2xl text-gray-300 mb-8 text-center">
+                    啟迪星圖奧秘，助您智慧前行
+                </h2>
+                <div class="text-center text-gray-400">
+                    <p class="text-lg">探索 AI 占星的無限可能，讓科技與古老智慧完美結合</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 啟程！解讀星盤奧秘 -->
+        <section id="start-reading" class="content-section">
+            <div class="grid grid-cols-1 bg-white bg-opacity-50 rounded-xl t-8 p-X">
+                <h3 class="text-3xl md:text-4xl font-bold mt-36 mb-12 text-center text-yellow-400">
+                    <p class="mb-6 text-5xl">啟程！解讀星盤奧秘：</p>
+                    AI 如何成為您最貼心的星盤夥伴？
+                </h3>
+                <div class="text-center text-gray-400 mb-36">
+                    <p class="text-2xl">開始您的占星解讀之旅，讓 AI 成為您最信賴的星盤解讀夥伴</p>
+                </div>
+            </div>
+            <div class="card">
+                <div class="text-left text-white-400 text-lg leading-loose p-4">
+                    <p class="font-bold text-3xl mb-8">這份指南是您運用 AI 星盤解析服務的「藏寶圖」。</p>
+                    <hr class="border-gray-400  mb-8">
+                    我們理解您對自我探索、關係洞察或未來趨勢的好奇，在此將引導您如何有效提問，<br>
+                    讓 AI 能根據您的星盤資訊，給出最貼近您現況、最實用且有深度的分析。
+                    <br>
+                    請放心，我們會提供您生活化且易懂的建議，幫助您更好地理解自己，並在人生旅途中做出更明智的選擇。
+                    <br>
+                    當您懂得「問對問題」，AI 不再只是冰冷的資料庫，而是您探索自我與生命旅程的智慧夥伴。
+                    <hr class="mt-8 border-gray-400  mb-8">
+                    <p class="mb-6">（ 此網站皆採用現代占星常用的普拉西度（Placidus）宮位制。 ）</p>
+                    <p class="mb-2">為了讓您更方便的使用 AI 聊天詢問占星，此網站提供 AI 占星所需的星盤文字資料，以及向 AI 諮詢占星的提問建議。</p>
+                    <p class="mt-6 mb-2"> 星盤文字資料有兩種格式選擇：
+                        <br>
+                        <p class=" mt-4 mb-2 underline decoration-[#93c5fd] decoration-2"><strong class="text-xl">表格式文字：</strong>屬於 AI 友善的格式，減輕 AI 理解時的負擔。</p>
+                        <p class="mb-6 underline decoration-[#93c5fd] decoration-2"><strong class="text-xl">敘述模式：</strong>更符合一般人的閱讀使用習慣。</p>
+                        </p>
+                        按下星盤文字資料的右上方的複製按鈕，可一鍵複製資料內容，
+                        <br>
+                        個人出生時間地點的資訊較屬於隱私，因此採另外個別複製。
+                        <br>
+                        <p class="mt-6">期待能夠與您一起探尋，拓展 AI 占星領域更廣袤的可能性，
+                        <br>
+                        善用現代科技，讓占星日常解讀運用與輔助學習方式，跟著 AI 一起與時俱進。
+                        </p>
+                        <hr class="mt-8 border-gray-400  mb-8">
+                        請於星盤資料生成表格裡輸入您的出生時間與地點的準確資料，
+                        <br>
+                        建議可先使用 Google Map 或 AI 聊天等，查詢出生的醫院或婦產科診所的準確經緯度，
+                        <br>
+                        若不確定也可輸入出生城市經緯度或ＩＮＮＡ時區（ 見表格裡的備註解釋 ），
+                        <br>
+                        提供的資訊越精準，得到的星盤資料也會越準確。
+                    <!-- <hr class="border-gray-400  mb-20 mt-8">
+                    <p class="font-bold text-3xl mt-40 mb-8">為何依循本指南提問？</p>
+                    <hr class="border-gray-400  mb-8">
+                    AI 擁有強大的占星資料整合與分析能力，能從您的星盤中讀取豐富的生命密碼。<br>
+                    然而，問題的品質，直接決定了 AI 回饋的深度與精準度。 -->
+        
+                    <!-- <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-10 mt-8"> -->
+                        <!-- CARD 1 -->
+                        <!-- <div class="rounded-lg overflow-hidden shadow-xl flex flex-col bg-[#3b0764]
+                                    transition-all duration-300 ease-in-out
+                                    hover:shadow-card-glow-intense hover:scale-[1.03]">
+                            <div class="relative">
+                                <div class="absolute inset-0 bg-[#3b0764] opacity-25
+                                    transition-opacity duration-300 ease-in-out
+                                    hover:opacity-0
+                                    pointer-events-none"> </div>
+        
+                                <div class="px-6 py-4 relative z-10 text-white">
+                                    <p class="font-bold text-2xl mt-8 mb-4 underline decoration-[#a855f7]">避免空泛：</p>
+                                    <p>清晰具體聚焦的提問，能幫助 AI 精準回答您的核心關切，避免廣泛空泛的答案，讓建議更切合您的實際需求。</p>
+                                </div>
+                            </div>
+                        </div> -->
+        
+                        <!-- CARD 2 -->
+                        <!-- <div class="rounded-lg overflow-hidden shadow-xl flex flex-col bg-[#3b0764]
+                                            transition-all duration-300 ease-in-out
+                                            hover:shadow-card-glow-intense hover:scale-[1.03]">
+                            <div class="relative">
+                                <div class="absolute inset-0 bg-[#3b0764] opacity-25
+                                                    transition-opacity duration-300 ease-in-out
+                                                    hover:opacity-0 pointer-events-none"> </div>
+        
+                                <div class="px-6 py-4 relative z-10 text-white">
+                                    <p class="font-bold text-2xl mt-8 mb-4 underline decoration-[#a855f7]">個人化體驗：</p>
+                                    <p>您輸入的背景情境越詳細，AI 的回覆就越能貼合您的個人狀況，給予更具生活感的實用建議。</p>
+                                </div>
+                            </div>
+                        </div> -->
+                        <!-- CARD 3 -->
+                        <!-- <div class="rounded-lg overflow-hidden shadow-xl flex flex-col bg-[#3b0764]
+                                            transition-all duration-300 ease-in-out
+                                            hover:shadow-card-glow-intense hover:scale-[1.03]">
+                            <div class="relative">
+                                <div class="absolute inset-0 bg-[#3b0764] opacity-25
+                                                    transition-opacity duration-300 ease-in-out
+                                                    hover:opacity-0 pointer-events-none"> </div>
+        
+                                <div class="px-6 py-4 relative z-10 text-white">
+                                    <p class="font-bold text-2xl mt-8 mb-4 underline decoration-[#a855f7]">提升效益：</p>
+                                    <p>若您對於占星有興趣，從書本，影片等身邊資源或占星課程，了解一些基礎的占星概念與名詞，或進行更進階的學習，能夠協助您向 AI 提出更專業深入的占星問題，以及更容易的辨認出 AI 解析時可能出現的錯誤。</p>
+                                </div>
+                            </div>
+                        </div> -->
+        
+        
+        
+                    <!-- </div> -->
+                </div>
+            </div>
+                <!-- AI 解讀原則 -->
+                <!-- <div class="card bg-white">
+                    <h3 class="text-4xl md:text-3xl font-bold mt-28 mb-4 text-center text-yellow-400 p-X">
+                        AI 解讀原則：讓星盤會說話，駕馭宇宙潛能
+                    </h3>
+                    <div class="text-center text-gray-300 mb-36">
+                        <p class="text-3xl">了解AI解讀的核心原則，讓星盤為您揭示宇宙的秘密</p>
+                    </div>
+
+                   
+                
+                    <div class="text-left text-white-400 text-lg leading-loose p-4 text-white flex flex-col gap-20 mt-8">
+                        
+
+                            <div class="rounded-lg overflow-hidden shadow-xl flex flex-col
+                            bg-white">
+                                                                     
+                                    <div class="relative z-10 text-white">
+                                        <div class="rounded-lg overflow-hidden flex flex-col md:flex-row gap-10 bg-white">
+                                    
+                                                <div class="w-full md:w-1/2">
+                                                    <img src="{{ url_for('static', filename='images/AI-Chart-with-man-web.jpg') }}" alt="Astro Chart" style="display: block; margin: 0 auto;" class="w-full h-auto" width="auto" height="250px" >
+                                                </div>
+                                                <div class="w-full md:w-1/2 p-6 flex items-center justify-center text-gray-400">
+                                                    我們旨在提供星盤文字資訊給 AI，讓 AI 用生活化、淺顯易懂的語言，呈現精確且專業的星盤分析。<br><br>
+                                                    它在每一次解讀中，會根據您提問的深度和廣度，盡力整合與權衡星盤上的關鍵占星要素。<br><br>
+                                                    這些要素包括：星座度數、宮位度數、行星間的相位（細緻考量入相與出相、精準的容許度範圍），甚至行星的廟旺落陷、飛星等。 -->
+                                                    <!-- <hr class="border-gray-400 mb-4"> -->
+                                                <!-- </div>
+                                            
+                                        
+                                        
+                                        
+                                        </div>
+                                    </div>
+                                
+                            </div>
+
+                            <div class="rounded-lg overflow-hidden shadow-xl flex flex-col
+                            bg-[#164e63]"> -->
+                                        <!-- bg-gradient-to-tr from-[#164e63] to-[#84cc16] h-32 w-full"> -->
+                                                            <!-- transition-all duration-300 ease-in-out
+                                                            hover:shadow-card-glow-intense hover:scale-[1.03]"
+                                                            > -->
+                                <!-- <div class="relative">
+                                    <div class="absolute inset-0 bg-[#164e63] opacity-25"> </div> -->
+                                                            <!-- transition-opacity duration-300 ease-in-out
+                                                            hover:opacity-0
+                                                            pointer-events-none"> </div> -->
+                
+                                    <!-- <div class="px-6 py-4 relative z-10 text-white">
+                                        <p class="font-bold text-3xl mt-8 mb-8">重要提醒：</p>
+                                        <hr class="border-gray-400  mb-8">
+                                        當您僅提出籠統的問題時，AI 可能會給出過於模糊或偏離您的真正需求的解釋。<br>
+                                        因此，建議您在提問時，明確要求 AI 綜合考量多個相關占星元素。<br>
+                                        例如：『 請同時考量 ●● 星體與 ● 宮位、●● 星座的交互作用，以及它與 ●● 星體刑沖相位的影響。』<br>
+                                        這樣一來，AI 便能更深入地融會專業知識，將其帶入您實際的生活現象或事件中，給予重點式的生活化總結。<br>
+                                        這將幫助您不僅看懂星盤符號，更能應用其智慧，掌握人生機遇。
+                                    </div>
+                                </div>
+                            </div>
+                
+                
+                        </div>
+                    </div>
+                </div> -->
+
+
+            <!-- 提問心法 -->
+            <div class="card1">
+                <!-- <h3 class="text-3xl md:text-4xl font-bold mt-28 mb-4 text-center text-yellow-400">
+                    提問心法：問對了，就對了！解鎖 AI 精準解析的鑰匙
+                </h3>
+                <div class="text-center text-gray-300 mb-8">
+                    <p class="text-2xl">掌握提問技巧，讓 AI 為您提供更精準的占星解析</p>
+                </div> -->
+                <div class="text-left text-white-400 text-lg leading-loose p-4">
+                    <!-- <p class="font-bold text-3xl mt-12 mb-8">想讓 AI 成為您的專屬星盤顧問？掌握以下「心法」是關鍵：</p> -->
+                    <p class="font-bold text-3xl mb-8">掌握核心技巧，讓 AI 為您提供更精準的占星解析</p>
+                    <hr class="border-gray-400  mb-8">
+                    <p class="mb-20">AI 擁有強大的占星資料整合與分析能力，能從您的星盤中讀取豐富的生命密碼。<br>
+                    然而，問題的品質，直接決定了 AI 回饋的深度與精準度。</p>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-10 mt-8">
+                        
+                        <!-- CARD 1 -->
+                        <div class="rounded-lg overflow-hidden shadow-xl flex flex-col bg-[#312e81]
+                                                    transition-all duration-300 ease-in-out
+                                                    hover:shadow-card-glow-intense hover:scale-[1.03]">
+                            <div class="relative">
+                                <div class="absolute inset-0 bg-[#312e81] opacity-25
+                                                            transition-opacity duration-300 ease-in-out
+                                                            hover:opacity-0 pointer-events-none"> </div>
+        
+                                <div class="px-6 py-4 relative z-10 text-white">
+                                    <p class="font-bold text-2xl mt-8 mb-4 underline decoration-[#a855f7]">避免空泛：
+                                    </p>
+                                    <p>清晰具體聚焦的提問，能幫助 AI 精準回答您的核心關切，讓解答更切合您的實際需求。</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- CARD 2 -->
+                        <div class="rounded-lg overflow-hidden shadow-xl flex flex-col bg-[#312e81]
+                                                    transition-all duration-300 ease-in-out
+                                                    hover:shadow-card-glow-intense hover:scale-[1.03]">
+                            <div class="relative">
+                                <div class="absolute inset-0 bg-[#312e81] opacity-25
+                                                            transition-opacity duration-300 ease-in-out
+                                                            hover:opacity-0 pointer-events-none"> </div>
+        
+                                <div class="px-6 py-4 relative z-10 text-white">
+                                    <p class="font-bold text-2xl mt-8 mb-4 underline decoration-[#a855f7]">個人化體驗：</p>
+                                    <p>您輸入的背景情境越詳細，AI 的回覆就越能貼合您的個人狀況，給予更具生活感的實用建議。</p>
+                                </div>
+                            </div>
+                        </div>
+        
+                        <!-- CARD 3 -->
+                        <div class="rounded-lg overflow-hidden shadow-xl flex flex-col bg-[#312e81]
+                                                    transition-all duration-300 ease-in-out
+                                                    hover:shadow-card-glow-intense hover:scale-[1.03]">
+                            <div class="relative">
+                                <div class="absolute inset-0 bg-[#312e81] opacity-25
+                                                            transition-opacity duration-300 ease-in-out
+                                                            hover:opacity-0 pointer-events-none"> </div>
+        
+                                <div class="px-6 py-4 relative z-10 text-white">
+                                    <p class="font-bold text-2xl mt-8 mb-4 underline decoration-[#a855f7]">提升效益：
+                                    </p>
+                                    <p>若您對於占星有興趣，從書本，影片等身邊資源或占星課程，了解一些基礎的占星概念與名詞，或進行更進階的學習，能夠協助您向 AI 提出更專業深入的占星問題，以及更容易的辨認出 AI 解析時可能出現的錯誤。</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        
+                        <!-- CARD 4 -->
+                        <div class="rounded-lg overflow-hidden shadow-xl flex flex-col bg-[#312e81]
+                                            transition-all duration-300 ease-in-out
+                                            hover:shadow-card-glow-intense hover:scale-[1.03]">
+                            <div class="relative">
+                                <div class="absolute inset-0 bg-[#312e81] opacity-25
+                                            transition-opacity duration-300 ease-in-out
+                                            hover:opacity-0
+                                            pointer-events-none"> </div>
+        
+                                <div class="px-6 py-4 relative z-10 text-white">
+                                    <p class="font-bold text-2xl mt-8 mb-4 underline decoration-[#a855f7]">擅用各類 AI 軟體資源</p>
+                                    <p>可使用如 Google AI Studio，NotebookLM 等整理 AI 聊天的占星解讀，或轉為音檔形式便於理解吸收，也可詢問 AI 聊天，獲得更多應用 AI 占星結果與 AI 資源的靈感。
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+        
+                    </div>
+
+
+
+                    
+                    
+                    <p class="font-bold text-3xl mt-32 mb-8">AI 星盤解析的定位與建議</p>
+                    AI 的分析基於廣泛的占星學資料與模型，能提供客觀且多維度的視角。然而，它有其獨特定位：
+                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-10 mt-8">
+                        <!-- CARD 1 -->
+                        <div class="rounded-lg overflow-hidden shadow-xl flex flex-col bg-[#3b0764]
+                                            transition-all duration-300 ease-in-out
+                                            hover:shadow-card-glow-intense hover:scale-[1.03]">
+                            <div class="relative">
+                                <div class="absolute inset-0 bg-[#3b0764] opacity-25
+                                            transition-opacity duration-300 ease-in-out
+                                            hover:opacity-0
+                                            pointer-events-none"> </div>
+        
+                                <div class="px-6 py-4 relative z-10 text-white">
+                                    <p class="font-bold text-2xl mt-8 mb-4 underline decoration-[#a855f7]">輔助工具，而非唯一解答：</p>
+                                    <p>將 AI 的分析視為一份有力的參考，而非聖旨。它能為您提供新的角度與啟發，但最終的決策仍需結合您自身的實際情況、直覺與內在感受。</p>
+                                </div>
+                            </div>
+                        </div>
+        
+                        <!-- CARD 2 -->
+                        <div class="rounded-lg overflow-hidden shadow-xl flex flex-col bg-[#3b0764]
+                                                    transition-all duration-300 ease-in-out
+                                                    hover:shadow-card-glow-intense hover:scale-[1.03]">
+                            <div class="relative">
+                                <div class="absolute inset-0 bg-[#3b0764] opacity-25
+                                                            transition-opacity duration-300 ease-in-out
+                                                            hover:opacity-0 pointer-events-none"> </div>
+        
+                                <div class="px-6 py-4 relative z-10 text-white">
+                                    <p class="font-bold text-2xl mt-8 mb-4 underline decoration-[#a855f7]">不取代專業諮詢：</p>
+                                    <p>AI 不應完全取代專業占星師的細膩解讀與個人化互動。在面對重大抉擇或複雜議題時，結合人機分析能讓您獲得更全面的幫助。</p>
+                                </div>
+                            </div>
+                        </div>
+        
+                        <!-- CARD 3 -->
+                        <div class="rounded-lg overflow-hidden shadow-xl flex flex-col bg-[#3b0764]
+                                                    transition-all duration-300 ease-in-out
+                                                    hover:shadow-card-glow-intense hover:scale-[1.03]">
+                            <div class="relative">
+                                <div class="absolute inset-0 bg-[#3b0764] opacity-25
+                                                            transition-opacity duration-300 ease-in-out
+                                                            hover:opacity-0 pointer-events-none"> </div>
+        
+                                <div class="px-6 py-4 relative z-10 text-white">
+                                    <p class="font-bold text-2xl mt-8 mb-4 underline decoration-[#a855f7]">保護隱私：</p>
+                                    <p>在提問時，請保護個人隱私，避免提供過於敏感的個人資訊。您只需提供必要的出生資訊或問題背景，AI 即可進行解析。</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+        
+        
+        
+        
+                </div>
+            </div>
+
+            
+            
+        </section>
+
+        <!-- 提問心法 -->
+        <!-- <section id="question-method" class="content-section">
+            
+        </section> -->
+
+        <!-- AI 解讀原則 -->
+        <!-- <section id="ai-principles" class="content-section">
+            
+        </section> -->
+
+        <!-- 進階提問技巧 -->
+        <section id="advanced-questions" class="content-section">
+            <div class="card">
+                <h3 class="text-3xl md:text-4xl font-bold mb-4 text-center text-yellow-400">
+                    進階提問技巧：讓 AI 為您深度解析
+                </h3>
+                <div class="text-center text-gray-300 mb-8">
+                    <p class="text-lg">掌握進階提問技巧，獲得更深層的占星洞察</p>
+                </div>
+                <div class="text-left text-white-400 text-lg leading-loose ">
+                    希望 AI 的分析更全面、更貼合您的複雜情況？
+                    試試以下這些進階引導句，幫助 AI 綜合考量星盤細節，避免單點解讀的偏差。
+                    <br>
+                    <p class="font-bold text-2xl mt-12 mb-4 underline decoration-[#a855f7]">基礎設定 (穩定回答細膩程度)：</p>
+                    <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                        <p class="text-gray-300">請根據我的星盤，以生活化、貼切、易懂且精確真實的方式解讀。</p>
+                        <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                    </div>
+                    <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                        <p class="text-gray-300">請深入且淺顯易懂地解析，並套入實際生活現象或事件來解讀，提供具體實例。</p>
+                        <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                    </div>
+                    <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                        <p class="text-gray-300">請綜合考量此星體在特定星座、宮位以及與其他星體的相位以及出入相容許度，給予全盤分析。</p>
+                        <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                    </div>
+                    <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                        <p class="text-gray-300">針對這段關係，請不僅分析相位，也要考量出入相容許度，以及雙方行星的星座與宮位落點，給予更完整的解讀。 </p>
+                        <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                    </div>
+
+                    <p class="font-bold text-2xl mt-12 mb-4 underline decoration-[#a855f7]">指定分析範圍 (選擇性，越具體越好)：</p>
+                    <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg">
+                        <p class="text-gray-300">請深入分析我的事業發展。</p>
+                        <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                    </div>
+                    <p>（或：愛情關係、財富狀況、家庭關係、個人成長等）</p>
+                    <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                        <p class="text-gray-300">請結合我的個人特質，分析某特定行運對我情緒的具體影響。</p>
+                        <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                    </div>
+                    <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                        <p class="text-gray-300">請指出我的星盤中，在某個特定領域（如事業或感情）中，同時存在的機會與挑戰。</p>
+                        <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                    </div>
+
+                    <p class="font-bold text-2xl mt-12 mb-4 underline decoration-[#a855f7]">加強深度與實用性 (選擇性，可多選)：</p>
+                    <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                        <p class="text-gray-300">請將飛星的影響也納入考量。</p>
+                        <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                    </div>
+                    <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                        <p class="text-gray-300">請針對某特定行運（請註明行運星體與時間）對我情緒的具體影響進行分析。</p>
+                        <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                    </div>
+                    <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                        <p class="text-gray-300">請指出我的星盤中，在某個特定領域（如事業或感情）中，同時存在的機會與挑戰。</p>
+                        <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                    </div>
+                   
+
+                    <p class="font-bold text-2xl mt-12 mb-4 underline decoration-[#a855f7]">額外要求 (依需求加入)：</p>
+                    <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                        <p class="text-gray-300">請客觀真實地為我分析。</p>
+                        <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                    </div>
+                     <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                        <p class="text-gray-300">請提供一些實用的建議或應對策略。</p>
+                        <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                    </div>
+                    
+                </div>
+                </div>
+        </section>
+
+        <!-- 個人星圖解鎖 -->
+        <section id="personal-chart" class="content-section">
+            <div class="card">
+                <h1 class="text-3xl md:text-4xl font-bold mb-4 text-center">
+                    <i class="fas fa-key text-yellow-400 mr-3"></i>
+                    個人星盤：解讀你的生命藍圖
+                    <!-- 本命星圖解鎖：探索您的生命藍圖 -->
+                </h1>
+                <h2 class="text-xl md:text-2xl text-gray-300 mb-8 text-center">
+                    <!-- 揭示天賦潛能，指引人生方向 -->
+                </h2>
+                <div class="text-center text-gray-400">
+                    <p class="text-lg mb-28">
+                        <!-- 深入探索您的個人星圖，發現隱藏的天賦與人生使命 -->
+                    </p>
+                </div>
+                <div class="text-left md:text-center text-white-400 text-lg leading-loose mb-4 ">
+                    個人星盤 (Natal Chart)，又稱本命盤，<br>
+                    就像是你在出生那一刻，<br>
+                    宇宙中所有行星、太陽、月亮以及其他重要天體在天空中的精準位置圖。<br>
+                    它是一張獨一無二的藍圖，<br>
+                    因為每個人的出生時間、地點都不同，<br>
+                    所以每個人的星盤也都是獨一無二的。<br>
+                    <br>
+                    想像一下，當你哇哇墜地的那一瞬間，<br>
+                    整個宇宙的能量模式就被「快照」下來，<br>
+                    而這張快照就是你的個人星盤。<br>
+                    占星學相信，<br>
+                    這張圖蘊含了你與生俱來的潛力、<br>
+                    性格特質、天賦、挑戰以及人生各個面向的傾向<br>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- 其他子頁面 (簡化顯示) -->
+        <section id="self-discovery" class="content-section">
+            <div class="card">
+                <h3 class="text-3xl md:text-4xl font-bold mb-4 text-center text-yellow-400">我是誰？內在天賦探索</h3>
+                <div class="text-center text-gray-300 mb-12">
+                    <p class="text-2xl">發掘您內在的天賦與潛能</p></div>
+                <div class="text-left md:text-center text-gray-200"><p class="text-lg leading-[2.2]">
+                    您的本命星圖是獨一無二的宇宙藍圖，蘊藏著您與生俱來的個性、潛能與天賦。<br>
+                    本頁將引導您透過 AI 深入探索自我，解鎖那些可能被忽略的內在寶藏。<br>
+                    從性格特質到潛藏優勢，讓星盤幫助您更全面地認識自己，發掘您獨有的生命光芒。</p></div>
+
+                
+                <br>
+                <br>
+                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                    <p class="text-gray-300">根據我的星盤，我最大的天賦和潛能是什麼？</p>
+                    <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                </div>
+                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                    <p class="text-gray-300">星盤如何揭示我天生的優勢與待磨練特質？該如何發揚優勢、轉化劣勢？</p>
+                    <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                </div>
+                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                    <p class="text-gray-300">我的核心動力來源是什麼？什麼能真正點燃我的熱情與能量？</p>
+                    <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                </div>
+                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                    <p class="text-gray-300">我對 [特定領域/興趣] 有濃厚興趣，星盤顯示我有發展潛力嗎？該如何有效培養？</p>
+                    <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                </div>
+                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                    <p class="text-gray-300">我的哪個宮位能量最強？這個生活領域對我的人生有何重要性？</p>
+                    <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                </div>
+                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                    <p class="text-gray-300">我的情緒模式是怎樣的？那些適合我的方式能讓我更健康的處理負面情緒？</p>
+                    <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                </div>
+                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                    <p class="text-gray-300">我的太陽和月亮落在 [星座]，這如何形塑我的核心個性和內在情緒？</p>
+                    <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                </div>
+                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                    <p class="text-gray-300">我的幽默感程度及風格類型為何？</p>
+                    <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                </div>
+                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                    <p class="text-gray-300">此星盤的品味喜好傾向何種類型風格</p>
+                    <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                </div>
+                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                    <p class="text-gray-300">我的邏輯思維能力如何？星盤顯示我傾向哪種獨特的思考模式？</p>
+                    <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                </div>
+                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                    <p class="text-gray-300">此星盤傾向的溝通方式</p>
+                    <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                </div>
+                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                    <p class="text-gray-300">我的水星相位如何影響我的溝通風格、思維模式和學習能力？</p>
+                    <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                </div>
+                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                    <p class="text-gray-300">我的火星配置揭示了我的行動力、脾氣和慾望的表達方式是什麼？</p>
+                    <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                </div>
+                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                    <p class="text-gray-300">土星在本命盤中代表我的主要挑戰和恐懼在哪裡？我該如何克服這些限制以求成長？</p>
+                    <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                </div>
+                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                    <p class="text-gray-300">根據我的天王星、海王星和冥王星位置，我這一代人的共同使命和變革主題是什麼？</p>
+                    <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                </div>
+                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                    <p class="text-gray-300">在壓力下，我最可能出現的負面行為模式是什麼？（可分析火星和土星的困難相位）</p>
+                    <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                </div>
+                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                    <p class="text-gray-300">我的福點（Part of Fortune）落在哪裡？它暗示了我在哪個領域最能找到喜悅和成功？</p>
+                    <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                </div>
+                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                    <p class="text-gray-300">分析我的第十二宮，我有哪些潛藏的天賦或弱點？我該如何處理我的潛意識？</p>
+                    <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                </div>
+                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                    <p class="text-gray-300">我的運動天賦如何？星盤能看出我是否具備良好的運動細胞嗎？</p>
+                    <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                </div>
+                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                    <p class="text-gray-300">盤中有哪些元素（火、土、風、水）或模式（基本、固定、變動）最為缺乏？我該如何在生活中補強？</p>
+                    <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                </div> 
+                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                    <p class="text-gray-300">從星盤看此人的出國發展運勢</p>
+                    <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                </div>
+                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                    <p class="text-gray-300">從星盤看此人天生的外語學習能力程度好壞，以及適合的學習外語方式</p>
+                    <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                </div>
+                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                    <p class="text-gray-300">從星盤看此人重朋友講義氣的程度高低</p>
+                    <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                </div>
+                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                    <p class="text-gray-300">從星盤看此人的誠實程度與說謊傾向</p>
+                    <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                </div>
+                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                    <p class="text-gray-300">從星盤看此人的音樂天分</p>
+                    <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                </div>
+                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                    <p class="text-gray-300">從星盤看此人天生唱歌的悅耳程度</p>
+                    <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                </div>
+                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                    <p class="text-gray-300">從星盤看此人喜歡的音樂與歌曲類型傾向</p>
+                    <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                </div>
+                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                    <p class="text-gray-300">從星盤看此人的藝術天賦強弱</p>
+                    <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                </div> 
+            </div>
+        </section>
+
+        <section id="career-guide" class="content-section">
+            <div class="card">
+                <h3 class="text-3xl md:text-4xl font-bold mb-4 text-center text-yellow-400">職場升級：事業與職涯指南</h3>
+                <div class="text-center text-gray-300 mb-12">星盤指引您的事業發展方向</p></div>
+                <div class="text-left md:text-center text-gray-200"><p class="text-lg leading-[2.2]">
+                    您的星盤不僅揭示個人特質，更蘊含著您在事業與職涯發展上的潛能與方向。<br>
+                    本頁將引導您運用 AI 探索星盤中關於工作、財富和社會成就的線索。<br>
+                    無論是尋找理想職業、規劃職涯路徑，還是提升職場表現，<br>
+                    讓星盤為您提供精準的指引，助您找到熱情所在，邁向成功。</p></div> 
+                <br>
+                <br>
+                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                    <p class="text-gray-300">我具備創業家的特質嗎？</p>
+                    <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                </div>
+                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                    <p class="text-gray-300">我適合創業嗎?最適合的創業規模與創業類型?</p>
+                    <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                </div>
+                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                    <p class="text-gray-300">我正在考慮轉職或創業，我的星盤顯示我適合哪種類型的工作？</p>
+                    <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                </div>
+                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                    <p class="text-gray-300">我在職場上常常遇到小人/溝通問題，星盤能給我哪些建議來改善這些情況，提升我的職場優勢？</p>
+                    <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                </div>
+                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                    <p class="text-gray-300">我適合做自由工作者嗎?適合與不適合的部分。</p>
+                    <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                </div>
+                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                    <p class="text-gray-300">我是喜歡穩定還是變化的工作環境？</p>
+                    <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                </div>
+                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                    <p class="text-gray-300">星盤能告訴我哪種職場環境更能讓我如魚得水？</p>
+                    <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                </div>
+                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                    <p class="text-gray-300">我的星盤顯示我在事業上能達到怎樣的成就？</p>
+                    <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                </div>
+            </div>
+        </section>
+
+        <section id="wealth-chart" class="content-section">
+            <div class="card">
+                <h3 class="text-3xl md:text-4xl font-bold mb-4 text-center text-yellow-400">財富星圖：金錢觀與開源秘密</h3>
+                <div class="text-center text-gray-300 mb-12">解讀您的財富運勢與理財天賦</p></div>
+                <div class="text-center text-gray-200 "><p class="text-lg leading-[2.2]">
+                    金錢不僅是物質，更是一種能量流動。<br>
+                    您的本命星圖揭示了您獨特的金錢觀、財富潛能以及適合的開源方式。<br>
+                    本頁將引導您透過 AI 深入解讀星盤中的財富密碼，了解您的消費習慣、投資傾向，以及如何吸引豐盛。<br>
+                    運用星盤智慧，打造屬於您的豐盛人生。</p></div>
+                <br>
+                <br>
+                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                    <p class="text-gray-300">我有哪些未被發掘的賺錢機會？</p>
+                    <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                </div>
+                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                    <p class="text-gray-300">我的星盤顯示我容易在哪些方面破財？有什麼好的守財建議嗎？</p>
+                    <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                </div>
+                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                    <p class="text-gray-300">我希望提早實現財富自由，請根據星盤給我一些適合我的關於理財和投資的綜合性建議。</p>
+                    <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                </div>
+                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                    <p class="text-gray-300">我適合穩健型還是積極型的投資？</p>
+                    <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                </div>
+                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                    <p class="text-gray-300">我的財富觀念和對金錢的態度是什麼？如何改善？</p>
+                    <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                </div>
+                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                    <p class="text-gray-300">我的偏財運程度?</p>
+                    <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                </div>
+                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                    <p class="text-gray-300">此星盤的在財富上的投機心態大小。</p>
+                    <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                </div>
+                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                    <p class="text-gray-300">此星盤有暴富潛力嗎?如果有，傾向以何種方式達到?</p>
+                    <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                </div>
+                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                    <p class="text-gray-300">此星盤傾向豪賭或保守</p>
+                    <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                </div>
+                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                    <p class="text-gray-300">分析我的財帛宮（第二宮）和資源宮（第八宮），我天生的理財觀念和潛在的財富來源是什麼？</p>
+                    <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                </div>
+            </div>
+        </section>
+
+        <section id="love-language" class="content-section">
+            <div class="card">
+                <h3 class="text-3xl md:text-4xl font-bold mb-4 text-center text-yellow-400">愛情星語：解鎖情場密碼</h3>
+                <div class="text-center text-gray-300 mb-12">探索您的愛情模式與情感表達</p></div>
+                <div class="text-left md:text-center text-gray-200"><p class="text-lg leading-[2.2]">
+                    愛情是生命中永恆的課題，您的本命星圖描繪了您在愛情中的特質、吸引力以及對關係的期待。<br>
+                    本頁將引導您透過 AI 探索星盤中的愛情宮位與行星配置，解鎖您的情場密碼。<br>
+                    無論是了解自身在關係中的模式，還是吸引理想伴侶，讓星盤成為您愛情路上的智慧導師。</p></div>
+                <br>
+                <br>
+                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                    <p class="text-gray-300">我喜歡什麼類型的男生/女生？喜歡的個性和外表傾向</p>
+                    <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                </div>
+                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                    <p class="text-gray-300">我會吸引哪種類型的人？</p>
+                    <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                </div>
+                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                    <p class="text-gray-300">我在親密關係（第八宮）中尋求什麼？我對深度連結和轉化的態度為何？</p>
+                    <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                </div>
+                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                    <p class="text-gray-300">從星盤看此人的忠誠與花心程度</p>
+                    <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                </div>
+                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                    <p class="text-gray-300">從星盤看此人最容易對哪種類型的人在感情上忠誠</p>
+                    <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                </div>
+                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                    <p class="text-gray-300">我有戀愛腦傾向嗎?哪種類型的戀愛腦</p>
+                    <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                </div>
+                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                    <p class="text-gray-300">哪種特質的伴侶最適合我？</p>
+                    <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                </div>
+                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                    <p class="text-gray-300">此星盤的戀愛依附傾向屬於哪種類型?請詳細分析。</p>
+                    <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                </div>
+                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                    <p class="text-gray-300">我總是在感情中遇到類似的困境，星盤能分析這是我的慣性模式嗎？如何突破？</p>
+                    <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                </div>
+                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                    <p class="text-gray-300">我在感情中常常缺乏安全感，星盤能給我一些建議來平衡我的情感需求嗎？</p>
+                    <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                </div>
+                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                    <p class="text-gray-300">此星盤容易在感情上執著嗎?容易因為什麼原因而執著?</p>
+                    <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                </div>
+            </div>
+        </section>
+
+        <section id="friendship" class="content-section">
+            <div class="card">
+                <h3 class="text-3xl md:text-4xl font-bold mb-4 text-center text-yellow-400">友情連結：人際互動星解</h3>
+                <div class="text-center text-gray-300 mb-12">了解您的社交天賦與人際關係</p></div>
+                <div class="text-left md:text-center text-gray-200"><p class="text-lg leading-[2.2]">
+                    人際關係是我們生活中不可或缺的一部分，您的本命星圖揭示了您在友情、社交以及團體互動中的特質與模式。<br>
+                    本頁將引導您透過 AI 深入解讀星盤中與人際關係相關的配置，幫助您了解如何建立更和諧、更深入的連結。<br>
+                    運用星盤智慧，編織屬於您的美好緣分網絡。</p></div>
+                <br>
+                <br>
+                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                    <p class="text-gray-300">我喜歡哪些類型的朋友</p>
+                    <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                </div>
+                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                    <p class="text-gray-300">那些類型的朋友與我合拍</p>
+                    <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                </div>
+                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                    <p class="text-gray-300">我習慣的與朋友相處的模式</p>
+                    <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                </div>
+                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                    <p class="text-gray-300">與朋友怎樣的相處模式讓我感到最自在開心</p>
+                    <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                </div>
+                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                    <p class="text-gray-300">我的星盤如何揭示我最吸引朋友的核心特質和獨特魅力？</p>
+                    <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                </div>
+                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                    <p class="text-gray-300">從我的星盤看，我天生有具備哪些容易建立深厚友誼或擴展社交圈的優勢嗎？</p>
+                    <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                </div>
+                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                    <p class="text-gray-300">在人際關係和友誼（第十一宮）方面，我扮演什麼樣的角色？我適合什麼樣的團體？</p>
+                    <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                </div>
+                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                    <p class="text-gray-300">請根據我的第十一宮與金星相位，分析我喜歡的朋友類型。</p>
+                    <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                </div>
+            </div>
+        </section>
+
+        <section id="family-chart" class="content-section">
+            <div class="card">
+                <h3 class="text-3xl md:text-4xl font-bold mb-4 text-center text-yellow-400">根與脈絡：家庭星盤啟示</h3>
+                <div class="text-center text-gray-300 mb-12">探索家庭關係與原生家庭影響</p></div>
+                <div class="text-left md:text-center text-gray-200"><p class="text-lg leading-[2.2]">
+                    家庭是我們生命最初的根基，深刻影響著我們的成長與發展。<br>
+                    您的本命星圖揭示了您與原生家庭的連結、家庭模式對您的影響以及您在家庭關係中的角色。<br>
+                    本頁將引導您透過 AI 探索星盤中的家庭宮位與相關配置，<br>
+                    幫助您理解家庭的根源與脈絡，從而滋養更健康、更深層的世代情感連結。</p></div>
+                <br>
+                <br>
+                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                    <p class="text-gray-300">我總覺得在家裡很難做自己，星盤能看出我在家庭中的潛在課題嗎？</p>
+                    <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                </div>
+                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                    <p class="text-gray-300">從星盤看此人的原生家庭狀況傾向</p>
+                    <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                </div>
+                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                    <p class="text-gray-300">我發現自己的一些習慣或觀念受原生家庭影響很深，星盤能給我一些理解和療癒的指引嗎？</p>
+                    <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                </div>
+                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                    <p class="text-gray-300">如果我有小孩，我的星盤會顯示我在教養上的優勢和挑戰是什麼？</p>
+                    <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                </div>
+                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                    <p class="text-gray-300">我的這個小孩喜歡的親子溝通方式</p>
+                    <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                </div>
+            </div>
+        </section>
+
+        <section id="health-balance" class="content-section">
+            <div class="card">
+                <h3 class="text-3xl md:text-4xl font-bold mb-4 text-center text-yellow-400">身心平衡：健康活力指南</h3>
+                <div class="text-center text-gray-300 mb-12">星盤指引您的健康維護方向</p></div>
+                <div class="text-left md:text-center text-gray-200"><p class="text-lg leading-[2.2]">
+                    您的本命星圖不僅關乎精神層面，也與您的身心健康息息相關。<br>
+                    它能揭示您天生可能存在的體質傾向、壓力應對模式以及維持身心平衡的關鍵。<br>
+                    本頁將引導您透過 AI 探索星盤中與健康、活力相關的線索，<br>
+                    幫助您聆聽身體的聲音，制定個人化的健康策略，實現身心靈的全面平衡。</p></div>
+                <br>
+                <br>
+                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                    <p class="text-gray-300">我很容易感到壓力大，星盤能告訴我哪些紓壓方式對我最有效？</p>
+                    <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                </div>
+                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                    <p class="text-gray-300">星盤能給我一些生活作息或飲食上的建議，幫助我維持更好的身心狀態嗎？</p>
+                    <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                </div>
+                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                    <p class="text-gray-300">我的壓力來源是什麼？</p>
+                    <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                </div>
+                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                    <p class="text-gray-300">我是易胖體質嗎?最適合我的維持身材方式。</p>
+                    <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                </div>
+                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                    <p class="text-gray-300">我天生的體質狀況，有沒有要特別注意的部分?</p>
+                    <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                </div>
+                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                    <p class="text-gray-300">哪些健康問題是我需要特別注意的？（可分析第一宮、第六宮的行星和相位）</p>
+                    <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                </div>
+            </div>
+        </section>
+
+        <section id="life-lessons" class="content-section">
+            <div class="card">
+                <h3 class="text-3xl md:text-4xl font-bold mb-4 text-center text-yellow-400">命運課題與成長之路</h3>
+                <div class="text-center text-gray-300 mb-12">了解人生課題與成長機會</p></div>
+                <div class="text-left md:text-center text-gray-200"><p class="text-lg leading-[2.2]">
+                    您的本命星圖中，刻寫著此生必須修習的「核心課程」與「天生挑戰點」。<br>
+                    這些深層課題貫穿一生，是您靈魂成長的必經之路。<br>
+                    本頁將引導您透過 AI 深入解讀星盤中那些固有的、反覆出現的生命模式，<br>
+                    幫助您理解其背後的意義，轉化內在陰影，從挑戰中汲取智慧，最終活出更高意識的自己。</p></div>
+                <br>
+                <br>
+                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                    <p class="text-gray-300">我總覺得有些困難像宿命一樣難以擺脫，星盤能給我突破的指引嗎？</p>
+                    <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                </div>
+                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                    <p class="text-gray-300">我的人生目標是XX，星盤能給我具體步驟，幫助我發揮潛力達成目標嗎？</p>
+                    <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                </div>
+                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                    <p class="text-gray-300">從此星盤看此生最重要課題目標</p>
+                    <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                </div>
+                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                    <p class="text-gray-300"></p>
+                    <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                </div>
+            </div>
+            </div>
+        </section>
+
+        <section id="soul-imprint" class="content-section">
+            <div class="card">
+                <h3 class="text-3xl md:text-4xl font-bold mb-4 text-center text-yellow-400">靈魂印記：前世今生</h3>
+                <div class="text-center text-gray-300 mb-12">探索靈魂的印記與前世連結</p></div>
+                <div class="text-left md:text-center text-gray-200"><p class="text-lg leading-[2.2]">
+                    您的星盤不僅是今生的藍圖，更承載著累世的靈魂印記。<br>
+                    透過南北交點、凱龍星等特殊配置，<br>
+                    本頁將引導您透過 AI 探索前世的習性、今生的宿命課題以及需要修煉的成長方向。<br>
+                    解碼這些靈魂訊息，將幫助您突破舊有模式，更清晰地認識自己的生命使命，活出更豐盛的今生。</p></div>
+                <br>
+                <br>
+                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                    <p class="text-gray-300">從此星盤看前世帶下來的業力</p>
+                    <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                </div>
+                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                    <p class="text-gray-300">從此星盤看前世帶下來的習性</p>
+                    <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                </div>
+                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                    <p class="text-gray-300">從此星盤看前世可能發生那些影響今生重大的事件</p>
+                    <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                </div>
+                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                    <p class="text-gray-300">從此星盤看此生難以避免的宿命事件</p>
+                    <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 問題即時解 -->
+        <section id="instant-solution" class="content-section">
+            <div class="card">
+                <h1 class="text-3xl md:text-4xl font-bold mb-4 text-center">
+                    <i class="fas fa-bolt text-yellow-400 mr-3"></i>
+                    <!-- 問題即時解：卜卦星盤，當下解惑 -->
+                     占星卜卦盤：你的問題，星盤即刻解答
+                </h1>
+                <h2 class="text-xl md:text-2xl text-gray-300 mb-8 text-center">
+                    問對一刻，即刻洞察，指引行動
+                </h2>
+                <div class="text-left md:text-center mb-4 text-gray-400">
+                    <p class="text-lg">運用卜卦占星術，為您當下的困惑提供即時指引</p>
+                </div>
+                <div class="text-left md:text-center text-gray-400">
+                    <p class="text-lg">時間點與情境
+                        請務必提供您「發出提問」的具體時間點和地點，<br>
+                        這對卜卦盤的準確性至關重要。<br>
+                        提供精確的提問時間（年、月、日、時、分）與地點，<br>
+                        簡述提問時的情境，幫助 AI 更好地理解問題背景。</p>
+                </div>
+                <!-- <div class=" text-left md:text-center text-gray-200"><p class="text-lg">
+                    您的本命星圖是獨一無二的宇宙藍圖，蘊藏著您與生俱來的個性、潛能與天賦。<br>
+                    本頁將引導您透過 AI 深入探索自我，解鎖那些可能被忽略的內在寶藏。<br>
+                    從性格特質到潛藏優勢，讓星盤幫助您更全面地認識自己，發掘您獨有的生命光芒。</p></div> -->
+                
+        </section>
+
+        <section id="decision-moment" class="content-section">
+            <div class="card">
+                <h3 class="text-3xl md:text-4xl font-bold mb-4 text-center text-yellow-400">決策時刻：選擇最佳路徑</h3>
+                <div class="text-center text-gray-300 mb-12">在重要決策時刻獲得星盤指引</p></div>
+                <div class="text-left md:text-center text-gray-200"><p class="text-lg leading-[2.2]">
+                    <br>
+                    當您面臨重要選擇，猶豫不決時，卜卦星盤能為您指出哪條路徑更有利。<br>
+                    本頁提供一系列具體提問範例，涵蓋事業、財務、感情等不同面向的決策情境。<br>
+                    請針對您心中最明確的問題，提供精確的提問時間與地點，<br>
+                    讓卜卦盤在當下為您提供最速、最實用的行動指引。</p></div>
+                    <br>
+                <div class="text-center text-gray-300">
+                卜卦盤是針對一個具體問題，在您提問的當下所繪製的星盤。它能為您提供針對性的答案與方向。
+                <br>
+                問題核心
+                提問時，請確保您的問題清晰、明確，且是您當下最想知道的。</div>
+                <br>
+                <br>
+                <br>
+                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                    <p class="text-gray-300">我剛收到一個新公司的Offer，這個工作機會對我未來的發展是利是弊？</p>
+                    <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                </div>
+                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                    <p class="text-gray-300">我正在考慮投入一筆資金在XX項目上，這個投資的結果會如我所願嗎？</p>
+                    <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                </div>
+                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                    <p class="text-gray-300"></p>
+                    <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                </div>
+                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                    <p class="text-gray-300"></p>
+                    <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                </div>
+                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                    <p class="text-gray-300"></p>
+                    <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                </div>
+                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                    <p class="text-gray-300"></p>
+                    <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                </div>
+                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                    <p class="text-gray-300"></p>
+                    <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                </div>
+                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                    <p class="text-gray-300"></p>
+                    <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                </div>
+            </div>
+        </section>
+
+        <section id="situation-insight" class="content-section">
+            <div class="card">
+                <h3 class="text-3xl md:text-4xl font-bold mb-4 text-center text-yellow-400">情境解惑：看清事件真相</h3>
+                <div class="text-center text-gray-300 mb-12">透過星盤洞察事件的深層含義</p></div>
+                <br>
+                <div class="text-left md:text-center text-gray-200"><p class="text-lg leading-[2.2]">
+                    當您對某個情況感到困惑、想了解其背後的真相或未來走向時，卜卦星盤能提供清晰的洞察。<br>
+                    本頁列舉多種情境解惑的提問範例，從關係真相到事件結果，甚至失物尋回。<br>
+                    請提出您最關切的問題，並提供精確的提問時間與地點，讓卜卦盤為您撥開迷霧，看清事件的全貌。</p></div>
+                <br>
+                <br>
+                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                    <p class="text-gray-300">他/她對我的真實想法是什麼？</p>
+                    <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                </div>
+                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                    <p class="text-gray-300">他對我到底是朋友還是有其他意思？</p>
+                    <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                </div>
+                
+                <br>
+                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                    <p class="text-gray-300">我剛認識一個對象/合作夥伴，我們未來的關係走向會是怎樣？</p>
+                    <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                </div>
+                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                    <p class="text-gray-300">我的XX東西不見了，星盤能顯示我能不能找到它？大概在哪裡找到的機會最大？</p>
+                    <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                </div>
+
+               
+            </div>
+            </div>
+        </section>
+
+        <!-- 關係星盤洞察 -->
+        <section id="relationship-insight" class="content-section">
+            <div class="card">
+                <h1 class="text-3xl md:text-4xl font-bold mb-4 text-center">
+                    <i class="fas fa-eye text-yellow-400 mr-3"></i>
+                    關係星盤洞察：揭示人際互動的化學反應
+                </h1>
+                <h2 class="text-xl md:text-2xl text-gray-300 mb-8 text-center">
+                    理解彼此磁場，共創和諧連結，深化人際互動
+                </h2>
+                <div class="text-left md:text-center mb-4 text-gray-400">
+                    <p class="text-lg">透過合盤分析，深入了解人際關係的奧秘</p>
+                </div>
+                <div class="text-left md:text-center text-gray-400">
+                    <p class="text-lg">比較盤是透過比對兩個人星盤的行星相位，<br>
+                        來分析兩人之間的互動模式、吸引力與潛在挑戰。</p>
+                </div>
+
+            </div>
+        </section>
+
+        <section id="relationship-core" class="content-section">
+            <div class="card">
+                <h3 class="text-3xl md:text-4xl font-bold mb-4 text-center text-yellow-400">關係核心：解鎖彼此磁場</h3>
+                <div class="text-center text-gray-300 mb-12">探索關係中的核心動力與連結</p></div>
+                <div class="text-left md:text-center text-gray-200"><p class="text-lg">
+                    關係合盤，揭示了你們互動的化學反應，<br>
+                    幫助你探索彼此在愛、溝通與成長中的核心連結。<br>
+                    透過這份洞察，你將能更深入地理解彼此，<br>
+                    並找到共同成長與深化情感連結的最佳途徑。<br>
+            </div>
+        </section>
+
+        <section id="love-synastry" class="content-section">
+            <div class="card">
+                <h3 class="text-3xl md:text-4xl font-bold mb-4 text-center text-yellow-400">愛情關係：情侶合盤解讀</h3>
+                <div class="text-center text-gray-300 mb-12">深入分析戀愛關係的星盤配對</p></div>
+                <div class="text-left md:text-center text-gray-200"><p class="text-lg">
+                    比較盤是理解兩人關係動態的絕佳工具。<br>
+                    本頁將引導您透過 AI 分析兩個人星盤的相互影響，揭示關係中的優勢、挑戰與潛在的化學反應。<br>
+                    無論是伴侶、家人、朋友或合作夥伴，<br>
+                    深入了解彼此的磁場，將有助於深化理解，共創更和諧、更有意義的連結。</p></div>
+                <br>
+                <br>
+                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                    <p class="text-gray-300">我與他之間關係的SWOT</p>
+                    <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                </div>
+                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                    <p class="text-gray-300">他最喜歡我什麼地方?</p>
+                    <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                </div>
+                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                    <p class="text-gray-300">我最喜歡他的那些特質?</p>
+                    <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                </div>
+                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                    <p class="text-gray-300">我們之間最大的磨合點是什麼？如何化解？</p>
+                    <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                </div>
+                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                    <p class="text-gray-300">我們在溝通、財務、價值觀等方面的相處模式如何？</p>
+                    <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                </div>
+                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                    <p class="text-gray-300">我們如何才能更好地理解對方，減少誤會？</p>
+                    <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                </div>
+                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                    <p class="text-gray-300">我們的溝通模式合拍與需要磨合的部分，請給我適合我們的好建議。</p>
+                    <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                </div>
+                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                    <p class="text-gray-300">我和他之間最適合的溝通相處方式</p>
+                    <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                </div>
+                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                    <p class="text-gray-300">我和伴侶在感情上有哪些共通點和差異？</p>
+                    <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                </div>
+                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                    <p class="text-gray-300">我感覺他在我的生命中很重要，星盤能說明我們之間的特殊連結嗎？</p>
+                    <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                </div>
+                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                    <p class="text-gray-300">我們為什麼常常吵架，又為什麼分不開？星盤能解釋這種奇妙的吸引力嗎？</p>
+                    <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                </div>
+                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                    <p class="text-gray-300">我們在彼此生命中扮演的角色是什麼？</p>
+                    <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                </div>
+                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                    <p class="text-gray-300">從星盤看我們前世的關聯，以及如何影響此生的緣分與相處關係。</p>
+                    <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                </div>
+                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                    <p class="text-gray-300">我們對於對方互相的的吸引力強弱分析，會執著到不想分開嗎?</p>
+                    <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                </div>
+                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                    <p class="text-gray-300">我與對方的感情容易穩定長久嗎?</p>
+                    <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                </div>
+                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                    <p class="text-gray-300">我們有沒有宿世緣分?是怎樣的緣分關係?</p>
+                    <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                </div>
+                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                    <p class="text-gray-300">我們之間容易維持新鮮感嗎?如何維持?如何讓我們感情越來越好呢?</p>
+                    <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                </div>
+                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                    <p class="text-gray-300">對方的月亮落入我的哪個宮位？與我的星體之間有哪些相位?在這段情感關係裡如何影響我？</p>
+                    <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                </div>
+                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                    <p class="text-gray-300">我們之間的金星與火星相位如何？這揭示了我們的愛情化學反應和性吸引力有多強烈？</p>
+                    <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                </div>
+                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                    <p class="text-gray-300">我們的水星入對方的宮位位置，以及與對方的星體之間的相位，呈現我們的溝通是否順暢？是否存在誤解的可能？</p>
+                    <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                </div>
+                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                    <p class="text-gray-300">我的土星是否與對方的星體，尤其是個人行星（日、月、水、金、火）形成困難相位？這段關係中我會給對方帶來什麼樣的責任或限制？</p>
+                    <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                </div>
+                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                    <p class="text-gray-300">對方的木星如何影響我的本命盤？他/她在哪個方面能為我帶來成長和幸運？</p>
+                    <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                </div>
+                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                    <p class="text-gray-300">我的行星落入對方的第七宮（伴侶宮）意味著什麼？對方是否視我為理想的合作夥伴？</p>
+                    <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                </div>
+                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                    <p class="text-gray-300">我們之間是否存在雙重互容（Double Whammy），例如我的金星刑克對方的火星，同時對方的金星也刑克我的火星？這代表什麼樣的強烈互動？</p>
+                    <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                </div>
+                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                    <p class="text-gray-300">對方的凱龍星與我的行星有何互動？我們是否有潛力療癒彼此的傷痛？</p>
+                    <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                </div>
+                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                    <p class="text-gray-300">對方的凱龍星與我的行星有何互動？我們是否有潛力療癒彼此的傷痛？</p>
+                    <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                </div>
+            </div>
+        </section>
+
+        <section id="parent-child" class="content-section">
+            <div class="card">
+                <h3 class="text-3xl md:text-4xl font-bold mb-4 text-center text-yellow-400">親子關係：家庭合盤啟示</h3>
+                <div class="text-center text-gray-300 mb-12">了解親子間的星盤互動模式</p></div>
+                <div class="text-left md:text-center text-gray-200"><p class="text-lg">
+                    親子關係是生命中最初且最深刻的連結。<br>
+                    本頁將引導您透過 AI 進行親子比較盤的分析，揭示父母與子女之間天生的互動模式、潛在挑戰與共同成長的課題。<br>
+                    理解世代間的星盤啟示，將幫助您更好地理解彼此，滋養家庭情感，建立更具支持性與愛的連結。</p></div>
+                <br>
+                <br>
+                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                    <p class="text-gray-300">我和我這小孩適合的溝通與相處方式，怎樣能讓我們關係感情更好?</p>
+                    <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                </div>
+                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                    <p class="text-gray-300">我會容易讓這小孩感到壓力束縛嗎?比較盤顯示有哪些優勢的部分能協助我們調和讓關係更好?</p>
+                    <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                </div>
+                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                    <p class="text-gray-300">我對這小孩在哪些方面的助益最大</p>
+                    <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                </div>
+                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                    <p class="text-gray-300">我適合用什麼樣的方式來改善與我父親/母親/兄弟姊妹的關係?</p>
+                    <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                </div>
+                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                    <p class="text-gray-300">我與父親/母親/小孩的相處情形?</p>
+                    <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                </div>
+                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                    <p class="text-gray-300"></p>
+                    <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                </div>
+            </div>
+        </section>
+
+        <section id="friendship-synastry" class="content-section">
+            <div class="card">
+                <h3 class="text-3xl md:text-4xl font-bold mb-4 text-center text-yellow-400">友情關係：知己合盤探索</h3>
+                <div class="text-center text-gray-400"><p class="text-lg">探索友誼關係的深層連結</div>
+                <div class="text-left md:text-center text-gray-200"><p class="text-lg">
+                    朋友是我們生命旅途中的重要夥伴。<br>
+                    本頁將引導您透過 AI 探索朋友之間的比較盤，揭示彼此在性格、興趣、溝通等方面的契合度與潛在互補性。<br>
+                    了解友情關係的星盤動態，將幫助您深化彼此的理解，編織更堅固、更有意義的緣分網絡。</p></div>
+                <br>
+                <br>
+                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                    <p class="text-gray-300">為何我和這位朋友的感情這麼好又長久</p>
+                    <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                </div>
+                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                    <p class="text-gray-300">我和這位朋友相處最合拍的地方</p>
+                    <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                </div>
+                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                    <p class="text-gray-300">我和這位朋友相處對彼此的影響利弊的部分</p>
+                    <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                </div>
+                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                    <p class="text-gray-300">我和這位朋友最適合的相處模式與最適合的距離遠近</p>
+                    <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                </div>
+                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                    <p class="text-gray-300">我和這位朋友的前世因緣與今生緣分</p>
+                    <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                </div>
+                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                    <p class="text-gray-300"></p>
+                    <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                </div>
+            </div>
+        </section>
+
+        <section id="work-synastry" class="content-section">
+            <div class="card">
+                <h3 class="text-3xl md:text-4xl font-bold mb-4 text-center text-yellow-400">合作關係：職場合盤解析</h3>
+                <div class="text-center text-gray-400"><p class="text-lg">分析工作夥伴間的合作潛能</div>
+                <div class="text-left md:text-center text-gray-200"><p class="text-lg">
+                    在職場中，有效的合作是成功的關鍵。<br>
+                    本頁將引導您透過 AI 進行合作夥伴或團隊成員的比較盤解析，<br>
+                    洞察彼此在工作風格、溝通模式、目標追求上的契合與挑戰。<br>
+                    理解職場合盤的動態，將幫助您優化團隊協作，發揮各自優勢，共創雙贏的商業綜效。</p></div>
+                <br>
+                <br>
+                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                    <p class="text-gray-300">我與他合夥時的職責內容分配怎樣最恰當</p>
+                    <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                </div>
+                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                    <p class="text-gray-300">我與他合夥時最需要注意的部分</p>
+                    <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                </div>
+                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                    <p class="text-gray-300">我與他適合與不適合合夥的部分</p>
+                    <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                </div>
+                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                    <p class="text-gray-300">我們合夥最可能發生怎樣的情形</p>
+                    <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                </div>
+                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                    <p class="text-gray-300">我們合夥時的互信情形</p>
+                    <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                </div>
+                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                    <p class="text-gray-300">我們合夥互相會為對方著想的程度</p>
+                    <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                </div>
+                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                    <p class="text-gray-300">我們合夥對於雙方的獲利情形評估</p>
+                    <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                </div>
+                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                    <p class="text-gray-300">我們容易合作愉快嗎</p>
+                    <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                </div>
+                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                    <p class="text-gray-300">我們合夥容易會有好的成果嗎</p>
+                    <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                </div>
+                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                    <p class="text-gray-300">我們合夥的默契程度</p>
+                    <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                </div>
+                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                    <p class="text-gray-300">我們適合在哪些領域合夥</p>
+                    <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 關係共振探索 -->
+        <section id="relationship-resonance" class="content-section">
+            <div class="card">
+                <h1 class="text-3xl md:text-4xl font-bold mb-4 text-center">
+                    <i class="fas fa-link text-yellow-400 mr-3"></i>
+                    關係共振探索：關係共譜的生命旋律
+                </h1>
+                <h2 class="text-xl md:text-2xl text-gray-300 mb-8 text-center">
+                    超越個體，洞察「我們」的共同使命與潛能
+                </h2>
+                <div class="text-left md:text-center text-gray-400">
+                    <p class="text-lg">探索關係中的共同振動頻率與集體潛能</p>
+                </div>
+                <div class="text-left md:text-center text-gray-400 text-lg">
+                中點盤（又稱組合盤或關係盤）是將兩個星盤合併成一個新的星盤，代表這段關係本身的「個性」。<br>
+                它能揭示兩人關係的整體基調、目的與共同課題。
+            </div>
+            </div>
+        </section>
+
+        <section id="relationship-axis" class="content-section">
+            <div class="card">
+                <h3 class="text-3xl md:text-4xl font-bold mb-4 text-center text-yellow-400">關係主軸：我們一起的「我們」</h3>
+                <div class="text-center text-gray-300 text-2xl mb-12">發現關係中的共同主軸與使命</p></div>
+                <div class="text-left md:text-center text-gray-200"><p class="text-lg">
+                    中點盤（組合盤）超越了個體，它呈現的是兩個人或一個群體作為一個「實體」的共同特質、目的與命運。<br>
+                    本頁將引導您透過 AI 探索關係本身所具備的「個性」與「生命旋律」，<br>
+                    了解關係的核心能量與發展主軸，將幫助您洞察「我們」的共同使命與潛能，並為關係的未來發展提供指引。</p></div>
+                <br>
+                <br>
+                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                    <p class="text-gray-300">我們關係中的核心議題是什麼？</p>
+                    <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                </div>
+                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                    <p class="text-gray-300">我們的愛情關係是充滿激情還是穩定踏實？</p>
+                    <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                </div>
+                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                    <p class="text-gray-300">我們共同的人生課題是什麼？</p>
+                    <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                </div>
+                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                    <p class="text-gray-300">我們兩人共同的目標或挑戰是什麼？</p>
+                    <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                </div>
+                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                    <p class="text-gray-300">我們有什麼共同的夢想可以一起實現？</p>
+                    <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                </div>
+                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                    <p class="text-gray-300">我們在感情中需要一起面對和克服什麼？</p>
+                    <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                </div>
+                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                    <p class="text-gray-300">我們的關係是長期穩定的，還是會有階段性變化？未來會如何發展？</p>
+                    <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                </div>
+                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                    <p class="text-gray-300"></p>
+                    <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                </div>
+                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                    <p class="text-gray-300"></p>
+                    <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                </div>
+                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                    <p class="text-gray-300"></p>
+                    <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 運勢週期脈動追蹤 -->
+        <section id="fortune-tracking" class="content-section">
+            <div class="card">
+                <h1 class="text-3xl md:text-4xl font-bold mb-4 text-center">
+                    <i class="fas fa-chart-line text-yellow-400 mr-3"></i>
+                    運勢週期脈動追蹤：掌握生命起伏與趨勢
+                </h1>
+                <h2 class="text-xl md:text-2xl text-gray-300 mb-8 text-center">
+                    順勢而為，預見機會，應對挑戰
+                </h2>
+                <div class="text-left md:text-center mb-4 text-gray-300">
+                    <p class="text-lg">透過行運分析，掌握人生的節奏與機遇</p>
+                </div>
+                <div class="text-left md:text-center text-gray-200"><p class="text-lg">
+                    運勢週期追蹤就像一張人生潮汐圖，<br>
+                    透過行運星盤，我們能預見某段時期，甚至未來幾年的重要星象變化。<br>
+                    這不僅是預測事件，更是幫助你理解當下，順應能量，<br>
+                    在機會來臨時果斷把握，在挑戰來臨時沉著應對，<br>
+                    協助您每一步都走在最佳節奏上。</p></div>
+            </div>
+        </section>
+
+        <section id="recent-fortune" class="content-section">
+            <div class="card">
+                <h3 class="text-3xl md:text-4xl font-bold mb-4 text-center text-yellow-400">近期運勢：預見未來三個月</h3>
+                <div class="text-center text-gray-300 mb-12">預測並準備未來三個月的重要趨勢</p></div>
+                <div class="text-left md:text-center text-gray-200"><p class="text-lg leading-[2.2]">
+                    您的生命能量持續流動，與宇宙的脈動息息相關。<br>
+                    本頁將引導您透過 AI 進行個人行運盤的解析，特別聚焦於未來三個月的運勢走向。<br>
+                    了解當前天體運行對您本命盤的影響，<br>
+                    將幫助您洞悉近期在事業、感情、健康等方面的機遇與挑戰，<br>
+                    從而順勢而為，把握關鍵契機。</p></div>
+                <br>
+                <br>
+                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                    <p class="text-gray-300">請根據我的星盤分析近期是否有進財機會或收入提升的可能。</p>
+                    <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                </div>
+                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                    <p class="text-gray-300">根據我星盤中的二宮與八宮運行，近期是否有進財、偏財或收入提升的跡象？</p>
+                    <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                </div>
+                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                    <p class="text-gray-300">近期我在投資方面的運勢如何？有哪些潛在的機會與需要注意的風險？</p>
+                    <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                </div>
+                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                    <p class="text-gray-300">根據我星盤中與財務相關的宮位與行星相位，請分析我近期的投資運勢和財務狀況。</p>
+                    <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                </div>
+                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                    <p class="text-gray-300">請從占星角度整體評估我接下來一段時間的投資運勢，包括適不適合進行理財或擴張資金規模。</p>
+                    <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                </div>
+                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                    <p class="text-gray-300">我想了解近期的投資運勢整體如何，請從星盤中財帛宮、八宮與木星、土星等星體的狀況分析。</p>
+                    <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                </div>
+                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                    <p class="text-gray-300">請根據我的星盤評估近期的投資運勢整體走向與風險高低。</p>
+                    <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                </div>
+                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                    <p class="text-gray-300">我單身，最近的感情運勢如何</p>
+                    <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                </div>
+                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                    <p class="text-gray-300">我最近與伴侶的相處情形如何</p>
+                    <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                </div>
+                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                    <p class="text-gray-300">最近有容易遇到什麼宿命性事件嗎</p>
+                    <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                </div>
+                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                    <p class="text-gray-300">最近職場運勢如何</p>
+                    <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                </div>
+                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                    <p class="text-gray-300">我與家人/伴侶的關係，在未來一年內可能經歷怎樣的變化或考驗？</p>
+                    <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                </div>
+            </div>
+        </section>
+
+        <section id="annual-focus" class="content-section">
+            <div class="card">
+                <h3 class="text-3xl md:text-4xl font-bold mb-4 text-center text-yellow-400">年度焦點：掌握關鍵轉折點</h3>
+                <div class="text-center text-gray-400"><p class="text-lg">識別年度中的重要轉折與機會點</div>
+                <div class="text-left md:text-center text-gray-200"><p class="text-lg leading-[2.2]">
+                    每一年都有其獨特的能量主題與重要轉折點。<br>
+                    本頁將引導您透過 AI 進行年度行運盤的深度分析，<br>
+                    揭示未來一年中可能遇到的重大事件、成長機會與潛在挑戰。<br>
+                    掌握這些關鍵轉折點，將幫助您更精準地規劃人生每一步，<br>
+                    有效應對變局，並最大化地利用宇宙能量來實現目標。</p></div>
+                <br>
+                <br>
+                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                    <p class="text-gray-300">今年運勢適合的事業布局計劃</p>
+                    <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                </div>
+                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                    <p class="text-gray-300">今年運勢適合的理財與營利規劃</p>
+                    <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                </div>
+                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                    <p class="text-gray-300"></p>
+                    <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                </div>
+                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                    <p class="text-gray-300"></p>
+                    <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                </div>
+                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                    <p class="text-gray-300"></p>
+                    <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                </div>
+                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                    <p class="text-gray-300"></p>
+                    <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                </div>
+            </div>
+        </section>
+
+        <section id="annual-focus" class="content-section">
+            <div class="card">
+                <h3 class="text-3xl md:text-4xl font-bold mb-4 text-center text-yellow-400">特定事件/主題：針對性預測，精準規劃</h3>
+                <div class="text-center text-gray-400"><p class="text-lg"></div>
+                <div class="text-left md:text-center text-gray-200"><p class="text-lg leading-[2.2]">
+                    每一年都有其獨特的能量主題與重要轉折點。<br>
+                    本頁將引導您透過 AI 進行年度行運盤的深度分析，<br>
+                    揭示未來一年中可能遇到的重大事件、成長機會與潛在挑戰。<br>
+                    掌握這些關鍵轉折點，將幫助您更精準地規劃人生每一步，<br>
+                    有效應對變局，並最大化地利用宇宙能量來實現目標。</p></div>
+                <br>
+                <br>
+                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                    <p class="text-gray-300">我什麼時候最有可能迎來一個重要的事業轉型期或晉升機會？</p>
+                    <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                </div>
+                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                    <p class="text-gray-300">在財務方面，我應在哪個時間段特別留意風險或把握投資機會？</p>
+                    <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                </div>
+                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                    <p class="text-gray-300">是否有特定的行運會激發我的創意或學習能力？我該如何利用這段黃金時期？</p>
+                    <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                </div>
+                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                    <p class="text-gray-300">我將在何時面臨一個需要做出重大個人選擇的時期？屆時該如何應對，才能做出最適合自己的決定？</p>
+                    <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                </div>
+                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                    <p class="text-gray-300"></p>
+                    <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                </div>
+                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                    <p class="text-gray-300"></p>
+                    <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white bg-opacity-50 border-t border-purple-500 border-opacity-30 mt-16 py-8">
+        <div class="container mx-auto px-4 text-center">
+            <div class="flex items-center justify-center mb-4">
+                <i class="fas fa-star text-yellow-400 text-2xl mr-2"></i>
+                <span class="text-xl font-bold text-gray-300">問星</span>
+            </div>
+            <p class="text-gray-400 mb-4">結合古老占星智慧與現代 AI 科技的專業解析平台</p>
+            <p class="text-gray-300 mb-3">本研究中使用的星體位置數據來自 Swiss Ephemeris，由 Astrodienst 提供，其高精度星曆表基於 NASA JPL 的 DE431 星曆數據。</p>
+            <div class="flex justify-center space-x-6 text-sm text-gray-500">
+                <span>© 2025 問星</span>
+                <span>隱私政策</span>
+                <span>服務條款</span>
+            </div>
+        </div>
+    </footer>
+    <script src="{{ url_for('static', filename='astroscript33.js') }}"></script>
+</body>
+</html>

@@ -237,10 +237,19 @@
         }
 
         .card {
-            background: rgba(26, 35, 50, 0.6);
+            background: linear-gradient(to top right, #a1a1aa, #1e1b4b);
             backdrop-filter: blur(10px);
             border: 1px solid rgba(139, 92, 246, 0.2);
-            border-radius: 12px;
+            /* border-radius: 12px; */
+            padding: 24px;
+            transition: all 0.3s ease;
+        }
+
+        .card1 {
+            background: linear-gradient(to top right, #a1a1aa, #3b0764);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(139, 92, 246, 0.2);
+            /* border-radius: 12px; */
             padding: 24px;
             transition: all 0.3s ease;
         }
