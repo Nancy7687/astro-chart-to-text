@@ -1,61 +1,33 @@
         
-// 漢堡選單的開關邏輯
-const hamburger = document.getElementById('hamburger');
-const navMenu = document.getElementById('mobile-menu');
-
-// 漢堡選單的開關邏輯
-
-
-if (hamburger && navMenu) {
-    hamburger.addEventListener('click', () => {
-        // 這行程式碼讓漢堡圖標變成 X
-        hamburger.classList.toggle('active');
-        
-        // 這行程式碼讓導覽列顯示或隱藏
-        navMenu.classList.toggle('hidden');
-    }); 
-}
-// if (hamburger) {
-//     hamburger.addEventListener('click', () => {
-//         hamburger.classList.toggle('active');
-//     });
-// }
-
-// if (hamburger && navMenu) {
-//     hamburger.addEventListener('click', () => {
-//         navMenu.classList.toggle('hidden');
-//     });
-// }
-
 // 點擊主標題展開/收合子選單的邏輯
-function toggleSubmenu(id) {
-    const currentSubmenu = document.getElementById(id + '-submenu');
-    const currentArrow = document.getElementById(id + '-arrow');
+// function toggleSubmenu(id) {
+//     const currentSubmenu = document.getElementById(id + '-submenu');
+//     const currentArrow = document.getElementById(id + '-arrow');
     
-    // 取得所有子選單和箭頭
-    const allSubmenus = document.querySelectorAll('.submenu');
-    const allArrows = document.querySelectorAll('.main-item i'); // 假設箭頭都在 main-item 內
+//     // 取得所有子選單和箭頭
+//     const allSubmenus = document.querySelectorAll('.submenu');
+//     const allArrows = document.querySelectorAll('.main-item i'); // 假設箭頭都在 main-item 內
 
-    // 迴圈遍歷所有子選單
-    allSubmenus.forEach(submenu => {
-        // 如果子選單不是你當前點擊的，就把它隱藏
-        if (submenu.id !== currentSubmenu.id) {
-            submenu.classList.add('hidden');
-        }
-    });
+//     // 迴圈遍歷所有子選單
+//     allSubmenus.forEach(submenu => {
+//         // 如果子選單不是你當前點擊的，就把它隱藏
+//         if (submenu.id !== currentSubmenu.id) {
+//             submenu.classList.add('hidden');
+//         }
+//     });
 
-    // 迴圈遍歷所有箭頭
-    allArrows.forEach(arrow => {
-        // 如果箭頭不是你當前點擊的，就把它旋轉回來
-        if (arrow.id !== currentArrow.id) {
-            arrow.classList.remove('rotate-180');
-        }
-    });
+//     // 迴圈遍歷所有箭頭
+//     allArrows.forEach(arrow => {
+//         // 如果箭頭不是你當前點擊的，就把它旋轉回來
+//         if (arrow.id !== currentArrow.id) {
+//             arrow.classList.remove('rotate-180');
+//         }
+//     });
 
-    // 最後，才對你當前點擊的選單進行切換
-    currentSubmenu.classList.toggle('hidden');
-    currentArrow.classList.toggle('rotate-180');
-}
+//     // 最後，才對你當前點擊的選單進行切換
+//     currentSubmenu.classList.toggle('hidden');
+//     currentArrow.classList.toggle('rotate-180');
+// }
         //* ai_astrology_guide.html 的原 script
         // 頁面切換功能
         function showSection(sectionId) {
@@ -81,63 +53,11 @@ function toggleSubmenu(id) {
             closeMobileMenu();
         }
 
-//     // 取得漢堡按鈕和手機選單元素
-//     const hamburger = document.getElementById('hamburger');
-//     const navMenu = document.getElementById('mobile-menu');
-
-//     // 確保元素存在後，再綁定事件       
-//     if (hamburger && navMenu) {
-//     // 綁定點擊事件到漢堡按鈕上
-//     hamburger.addEventListener('click', () => {
-//     // 1. 切換漢堡圖標的 X 樣式
-//     hamburger.classList.toggle('active');
-        
-//     // 2. 切換導覽列的顯示與隱藏
-//     navMenu.classList.toggle('hidden');
-//     });
-
-//     // 關閉手機選單的函式 (如果需要)
-//     // 這裡只是示範，你可以根據需要呼叫它
-//     // 例如：點擊選單項目後關閉選單
-//     const menuLinks = navMenu.querySelectorAll('a');
-//     menuLinks.forEach(link => {
-//         link.addEventListener('click', () => {
-//             closeMobileMenu();
-//         });
-//     });
-
-//     function closeMobileMenu() {
-//         navMenu.classList.add('hidden');
-//         hamburger.classList.remove('active'); // 關閉選單時，漢堡圖標也要恢復
-//     }
-// }
-
-        // 手機選單控制
-        function toggleMobileMenu() {
-            const menu = document.getElementById('mobile-menu');
-            menu.classList.toggle('hidden');
-        }
-
-        function closeMobileMenu() {
-            const menu = document.getElementById('mobile-menu');
-            menu.classList.add('hidden');
-        }
-
         // // 初始化 - 顯示首頁
         // document.addEventListener('DOMContentLoaded', function() {
         //     // 預設顯示星盤資料生成頁面
         //     showSection('birth-chart');
         // });
-
-        // 點擊外部區域關閉手機選單
-        document.addEventListener('click', function(event) {
-            const nav = document.querySelector('nav');
-            const menu = document.getElementById('mobile-menu');
-            
-            if (!nav.contains(event.target) && !menu.classList.contains('hidden')) {
-                closeMobileMenu();
-            }
-        });
 
         //* astro__格子版ok.html 的 原 script
 
@@ -630,6 +550,7 @@ function toggleSubmenu(id) {
             // 頁面啟動時執行的主要函式
             async function initializeApp() {
                 setupTabListeners();
+                setupNavigation(); // 【新增】執行導覽列功能設定
                 setupSubChartListeners();
                 setupPlanetCheckboxes();
                 setupInputErrorClearing();
@@ -651,6 +572,53 @@ function toggleSubmenu(id) {
                 } catch (error) {
                     console.error('初始化時區功能失敗:', error);
                 }
+            }
+
+            // =============================================================
+            // 導覽列與選單功能 (Refactored)
+            // =============================================================
+            function setupNavigation() {
+                const hamburger = document.getElementById('hamburger');
+                const mobileMenu = document.getElementById('mobile-menu');
+                const nav = document.querySelector('nav'); // 獲取整個 <nav> 元素
+
+                if (!hamburger || !mobileMenu || !nav) {
+                    console.warn('導覽列或漢堡選單元素未找到，功能將無法啟用。');
+                    return;
+                }
+
+                // 統一的關閉選單函式
+                function closeMenu() {
+                    hamburger.classList.remove('active');
+                    mobileMenu.classList.add('hidden');
+                    document.body.classList.remove('overflow-hidden');
+                }
+
+                // 漢堡按鈕點擊事件
+                hamburger.addEventListener('click', (event) => {
+                    event.stopPropagation(); // 防止事件冒泡到 document
+                    const isActive = hamburger.classList.toggle('active');
+                    mobileMenu.classList.toggle('hidden');
+                    document.body.classList.toggle('overflow-hidden', isActive);
+                });
+
+                // 【新增】點擊選單內的連結時，關閉選單
+                mobileMenu.addEventListener('click', (event) => {
+                    // 確保點擊的是一個 <a> 連結
+                    if (event.target.tagName === 'A') {
+                        closeMenu();
+                    }
+                });
+
+                // 點擊選單外部區域關閉選單
+                document.addEventListener('click', (event) => {
+                    // 檢查點擊的目標是否在 <nav> 之外，並且選單是打開的
+                    // !nav.contains(event.target) 確保點擊的不是導覽列本身
+                    // !mobileMenu.classList.contains('hidden') 確保只在選單打開時作用
+                    if (!nav.contains(event.target) && !mobileMenu.classList.contains('hidden')) {
+                        closeMenu();
+                    }
+                });
             }
 
             // 4. 【新增】一個用來設定轉輪的全新函式

@@ -27,21 +27,21 @@
             padding: 8px;
             z-index: 1001;
             position:fixed;
-            top: 5px;
-            right: 5px;
+            top: 10px;
+            right: 10px;
         }
 
         .hamburger span {
-            width: 25px;
+            width: 40px;
             height: 3px;
             background-color: #fbbf24;
-            margin: 3px 0;
-            transition: 0.3s;
+            margin: 5px 0;
+            transition: 0.2s;
             border-radius: 2px;
         }
 
         .hamburger.active span:nth-child(1) {
-            transform: rotate(-45deg) translate(-5px, 6px);
+            transform: rotate(-45deg) translate(-9px, 9px);
         }
 
         .hamburger.active span:nth-child(2) {
@@ -49,26 +49,39 @@
         }
 
         .hamburger.active span:nth-child(3) {
-            transform: rotate(45deg) translate(-5px, -6px);
+            transform: rotate(45deg) translate(-9px, -9px);
         }
 
         /* 手機導覽選單 */
         .mobile-nav {
             position: fixed;
-            top: 0;
+            /* top: 0;
             left: -100%;
             width: 80%;
             max-width: 350px;
-            height: 100vh;
-            background: linear-gradient(180deg, #1e1b4b 0%, #312e81 100%);
+            height: 70vh; */
+            top: 65px; /* 從 header 下方開始，您可以根據 header 的實際高度微調 */
+            left: 0;
+            width: 100%;
+            height: calc(100vh - 65px); /* 填滿 header 以下的剩餘高度 */
+            /* background: linear-gradient(180deg, #1e1b4b 0%, #312e81 100%); */
+            background: linear-gradient(180deg, #73737d 0%, #302f3b 100%);
             z-index: 1000;
-            transition: left 0.3s ease;
+            /* transition: left 0.3s ease; */
+            transition: transform 0.3s ease-in-out;
+            transform: translateX(-100%); /* 預設將選單移到畫面左邊外面 */
             overflow-y: auto;
-            padding-top: 80px;
+            /* padding-top: 80px; */
+            padding-top: 10px; /* 調整頂部間距 */
+            padding-bottom: 60px; /* 增加底部間距 */
         }
 
-        .mobile-nav.active {
+        /* .mobile-nav.active {
             left: 0;
+        } */
+         /* 當選單被觸發時，將它移回畫面內 */
+        .mobile-nav:not(.hidden) {
+            transform: translateX(0);
         }
 
         .mobile-nav-overlay {
@@ -114,21 +127,18 @@
         /* } */
             
             .nav-list > a  {
-                padding: 15px 20px;
-                display: block;
-                justify-content: flex-start;
-                min-width: 190px;
-                /* color: var(--text-muted); */
+                display: flex; /* 使用 Flexbox 佈局 */
+                align-items: center; /* 確保垂直置中 */
+                justify-content: center; /* 水平置中文字 */
+                min-height: 50px; /* 【關鍵】設定一個最小高度，確保有足夠空間進行垂直對齊 */
+                padding: 12px 20px; /* 調整內距 */
+                color: var(--text-light); /* 確保文字顏色清晰可見 */
                 text-decoration: none;
-                transition: all 0.3s ease;
-                border-bottom: 1px solid #3e3aa3;
-                transform: translateY(-10px);
-                transition: opacity 0.3s ease, visibility 0.3s ease; /* 過渡效果 */
-                backdrop-filter: blur(10px);
-                border: 1px solid #282569;
-                box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
-                border-radius: 8px;
-                background: linear-gradient(180deg, #1e1b4b 0%, #312e81 100%); 
+                transition: filter 0.3s ease;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.2); /* 加上分隔線 */
+                font-size: 1.1rem; /* 稍微放大字體 */
+                width: 100%; /* 確保連結填滿其父容器寬度 */
+                background: linear-gradient(180deg, #73737d 0%, #302f3b 100%); /* 【新增】灰色漸層背景 */
         }
 
         .submenu {
@@ -432,7 +442,7 @@
         .header-bg {
             background: linear-gradient(to right, #6A0DAD, #C71585);
             border-radius: 12px;
-            padding: 40px 0;
+            padding: 60px 0;
             margin-bottom: 32px;
             box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
         }

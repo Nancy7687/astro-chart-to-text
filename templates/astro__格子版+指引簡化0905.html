@@ -35,9 +35,9 @@
                 <span></span>
             </button>
             <div class="mobile-flex flex items-start justify-start md:justify-between">
-                <div class="flex items-center justify-start space-x-2">
+                <div class="flex items-center justify-start space-x-4">
                     <i class="fas fa-star text-yellow-400 text-2xl"></i>
-                    <h1 class="text-4xl md:text-4xl font-bold text-[#fde68a]">問星</h1>
+                    <h1 class="text-6xl md:text-4xl font-bold text-[#fde68a]">問星</h1>
                 </div>
                 <!-- Mobile menu button -->
                 <!-- <button class="md:hidden text-white" onclick="toggleMobileMenu()">
@@ -45,45 +45,48 @@
                 </button> -->
                 
                  <!-- 新的手機nav -->
-                <div id="mobile-menu" class="md:hidden mt-4 hidden w-full h-screen">
+                <div id="mobile-menu" class="mobile-nav md:hidden mt-4 hidden w-full h-screen">
                     <div class="md:flex space-y-1 flex flex-col justify-evenly h-full">
                 
                         <div class="nav-item">
                             <a href="#" onclick="showSection('birth-chart')"
-                                class="py-2 text-white font-bold text-2xl hover:text-[#38bdf8] transition-colors duration-300">
+                                class="py-2 text-white font-bold text-4xl hover:text-[#38bdf8] transition-colors duration-300">
                                 📝 星盤資料生成
                             </a>
                         </div>
-                
+                        <hr>
                         <div class="nav-item">
                             
-                            <div class="main-item flex items-center justify-between py-2 cursor-pointer"
-                                onclick="toggleSubmenu('ai-guide')">
-                                <span class="py-2 text-white font-bold text-2xl hover:text-yellow-400 transition-colors duration-300">
+                            <div class="main-item flex items-center justify-between py-2 cursor-pointer">
+                                <!-- onclick="toggleSubmenu('ai-guide')"> -->
+                                <a href="#" onclick="showSection('start-reading')" class="py-2 text-white font-bold text-3xl hover:text-yellow-400 transition-colors duration-300">
                                     🌟 AI 占星引導
-                                </span>
-                                <i id="ai-guide-arrow" class="fas fa-chevron-down text-white transition-transform duration-300"></i>
+                                </a>
+                                <!-- <i id="ai-guide-arrow" class="fas fa-chevron-down text-white transition-transform duration-300"></i> -->
                             </div>
-                            <div id="ai-guide-submenu" class="submenu hidden">
+                            
+                            <!-- <div id="ai-guide-submenu" class="submenu hidden">
                                 <a href="#" onclick="showSection('start-reading')"
                                     class="text-white text-xl sub-item block py-2">啟程！解讀星盤奧秘</a>
                                 <a href="#" onclick="showSection('advanced-questions')"
                                     class="text-white text-xl sub-item block py-2">進階提問技巧：讓 AI 為您深度解析</a>
-                            </div>
+                            </div> -->
                         </div>
-                
+                        <hr>
                         <div class="nav-item">
-                            <div class="main-item flex items-center justify-between py-2 cursor-pointer"
-                                onclick="toggleSubmenu('personal-chart-unlock')">
-                                <span class="py-2 text-white font-bold text-2xl hover:text-yellow-400 transition-colors duration-300">
+                            <div class="main-item flex items-center justify-between py-2 cursor-pointer">
+                                <!-- onclick="toggleSubmenu('personal-chart-unlock')"> -->
+                                <!-- <a href="#" onclick="showSection('personal-chart')" class="py-2 text-white font-bold text-2xl hover:text-yellow-400 transition-colors duration-300"> -->
+                                <a href="#" onclick="showSection('personal-chart')" class="py-2 text-white font-bold text-3xl hover:text-yellow-400 transition-colors duration-300">
                                     🗝️ 個人星圖解鎖
-                                </span>
-                                <i id="personal-chart-unlock-arrow"
-                                    class="fas fa-chevron-down text-white transition-transform duration-300"></i>
+                                </a>
+                                
+                                <!-- <i id="personal-chart-unlock-arrow"
+                                    class="fas fa-chevron-down text-white transition-transform duration-300"></i> -->
                             </div>
-                            <div id="personal-chart-unlock-submenu" class="submenu hidden">
+                            <!-- <div id="personal-chart-unlock-submenu" class="submenu hidden">
                                 <a href="#" onclick="showSection('personal-chart')"
-                                    class="text-white text-xl sub-item block py-2">個人星盤：解讀你的生命藍圖</a>
+                                    class="text-white text-xl sub-item block py-2">個人星圖解鎖：解讀你的生命藍圖</a>
                                 <a href="#" onclick="showSection('self-discovery')"
                                     class="text-white text-xl sub-item block py-2">我是誰？內在天賦探索</a>
                                 <a href="#" onclick="showSection('career-guide')"
@@ -102,38 +105,38 @@
                                     class="text-white text-xl sub-item block py-2">命運課題與成長之路</a>
                                 <a href="#" onclick="showSection('soul-imprint')"
                                     class="text-white text-xl sub-item block py-2">靈魂印記：前世今生</a>
-                            </div>
+                            </div> -->
                         </div>
-                
+                        <hr>
                         <div class="nav-item">
-                            <div class="main-item flex items-center justify-between py-2 cursor-pointer"
-                                onclick="toggleSubmenu('instant-solve')">
-                                <span class="py-2 text-white font-bold text-2xl hover:text-yellow-400 transition-colors duration-300">
-                                    ⚡ 問題即時解
-                                </span>
-                                <i id="instant-solve-arrow"
-                                    class="fas fa-chevron-down text-white transition-transform duration-300"></i>
+                            <div class="main-item flex items-center justify-between py-2 cursor-pointer">
+                                <!-- onclick="toggleSubmenu('instant-solve')"> -->
+                                <a href="#" onclick="showSection('instant-solution')" class="py-2 text-white font-bold text-3xl hover:text-yellow-400 transition-colors duration-300">
+                                    ⚡占星卜卦
+                                </a>
+                                <!-- <i id="instant-solve-arrow"
+                                    class="fas fa-chevron-down text-white transition-transform duration-300"></i> -->
                             </div>
-                            <div id="instant-solve-submenu" class="submenu hidden">
+                            <!-- <div id="instant-solve-submenu" class="submenu hidden">
                                 <a href="#" onclick="showSection('instant-solution')"
                                     class="text-white text-xl sub-item block py-2">占星卜卦盤：你的問題，星盤即刻解答</a>
                                 <a href="#" onclick="showSection('decision-moment')"
                                     class="text-white text-xl sub-item block py-2">決策時刻：選擇最佳路徑</a>
                                 <a href="#" onclick="showSection('situation-insight')"
                                     class="text-white text-xl sub-item block py-2">情境解惑：看清事件真相</a>
-                            </div>
+                            </div> -->
                         </div>
-                
+                        <hr>
                         <div class="nav-item">
-                            <div class="main-item flex items-center justify-between py-2 cursor-pointer"
-                                onclick="toggleSubmenu('relationship-insight')">
-                                <span class="py-2 text-white font-bold text-2xl hover:text-yellow-400 transition-colors duration-300">
-                                    👁️ 關係星盤洞察
-                                </span>
-                                <i id="relationship-insight-arrow"
-                                    class="fas fa-chevron-down text-white transition-transform duration-300"></i>
+                            <div class="main-item flex items-center justify-between py-2 cursor-pointer">
+                                <!-- onclick="toggleSubmenu('relationship-insight')"> -->
+                                <a href="#" onclick="showSection('relationship-insight')" class="py-2 text-white font-bold text-3xl hover:text-yellow-400 transition-colors duration-300">
+                                    👁️ 關係比較盤洞察
+                                </a>
+                                <!-- <i id="relationship-insight-arrow"
+                                    class="fas fa-chevron-down text-white transition-transform duration-300"></i> -->
                             </div>
-                            <div id="relationship-insight-submenu" class="submenu hidden">
+                            <!-- <div id="relationship-insight-submenu" class="submenu hidden">
                                 <a href="#" onclick="showSection('relationship-core')"
                                     class="text-white text-xl sub-item block py-2">關係核心：解鎖彼此磁場</a>
                                 <a href="#" onclick="showSection('love-synastry')"
@@ -144,44 +147,45 @@
                                     class="text-white text-xl sub-item block py-2">友情關係：知己合盤探索</a>
                                 <a href="#" onclick="showSection('work-synastry')"
                                     class="text-white text-xl sub-item block py-2">合作關係：職場合盤解析</a>
-                            </div>
+                            </div> -->
                         </div>
-                
+                        <hr>
                         <div class="nav-item">
-                            <div class="main-item flex items-center justify-between py-2 cursor-pointer"
-                                onclick="toggleSubmenu('relationship-resonance')">
-                                <span class="py-2 text-white font-bold text-2xl hover:text-yellow-400 transition-colors duration-300">
-                                    🔗 關係共振探索
-                                </span>
-                                <i id="relationship-resonance-arrow"
-                                    class="fas fa-chevron-down text-white transition-transform duration-300"></i>
+                            <div class="main-item flex items-center justify-between py-2 cursor-pointer">
+                                <!-- onclick="toggleSubmenu('relationship-resonance')"> -->
+                                <a href="#" onclick="showSection('relationship-resonance')" class="py-2 text-white font-bold text-3xl hover:text-yellow-400 transition-colors duration-300">
+                                    🔗 關係中點盤
+                                </a>
+                                <!-- <i id="relationship-resonance-arrow"
+                                    class="fas fa-chevron-down text-white transition-transform duration-300"></i> -->
                             </div>
-                            <div id="relationship-resonance-submenu" class="submenu hidden">
+                            <!-- <div id="relationship-resonance-submenu" class="submenu hidden">
                                 <a href="#" onclick="showSection('relationship-axis')"
                                     class="text-white text-xl sub-item block py-2">關係主軸：我們一起的「我們」</a>
-                            </div>
+                            </div> -->
                         </div>
-                
+                        <hr>
                         <div class="nav-item">
-                            <div class="main-item flex items-center justify-between py-2 cursor-pointer"
-                                onclick="toggleSubmenu('fortune-tracking')">
-                                <span class="py-2 text-white font-bold text-2xl hover:text-yellow-400 transition-colors duration-300">
+                            <div class="main-item flex items-center justify-between py-2 cursor-pointer"></div>
+                                <!-- onclick="toggleSubmenu('fortune-tracking')"> -->
+                                <a href="#" onclick="showSection('fortune-tracking')" class="py-2 text-white font-bold text-3xl hover:text-yellow-400 transition-colors duration-300">
                                     📈 運勢週期脈動追蹤
-                                </span>
-                                <i id="fortune-tracking-arrow"
-                                    class="fas fa-chevron-down text-white transition-transform duration-300"></i>
+                                </a>
+                                <!-- <i id="fortune-tracking-arrow"
+                                    class="fas fa-chevron-down text-white transition-transform duration-300"></i> -->
                             </div>
-                            <div id="fortune-tracking-submenu" class="submenu hidden">
+                        <hr>
+                            <!-- <div id="fortune-tracking-submenu" class="submenu hidden">
                                 <a href="#" onclick="showSection('recent-fortune')"
                                     class="text-white text-xl sub-item block py-2">近期運勢：預見未來三個月</a>
                                 <a href="#" onclick="showSection('annual-focus')"
                                     class="text-white text-xl sub-item block py-2">年度焦點：掌握關鍵轉折點</a>
                                 <a href="#" onclick="showSection('annual-focus')"
                                     class="text-white text-xl sub-item block py-2">特定事件/主題：針對性預測，精準規劃</a>
-                            </div>
+                            </div> -->
                         </div>
                     </div>
-                </div>
+                
 
                 <!-- Desktop Navigation -->
                 <div class="hidden md:flex space-x-6">
@@ -199,24 +203,24 @@
                     
                     <!-- <div class="nav-item nav-list desk-nav-list"> -->
                     <div class="nav-item ">
-                        <span class="text-white font-bold text-base hover:text-yellow-400 transition-colors duration-300">
+                        <a href="#" onclick="showSection('start-reading')" class="text-white font-bold text-base hover:text-yellow-400 transition-colors duration-300">
                             🌟 AI 占星引導
-                        </span>
-                        <div class="submenu">
-                            <a href="#" onclick="showSection('start-reading')" class="text-white text-xl">啟程！解讀星盤奧秘</a>
+                        </a>
+                        <!-- <div class="submenu">
+                            <a href="#" onclick="showSection('start-reading')" class="text-white text-xl">啟程！解讀星盤奧秘</a> -->
                             <!-- <a href="#" onclick="showSection('question-method')">提問心法：問對了，就對了！</a>
                             <a href="#" onclick="showSection('ai-principles')">AI 解讀原則：讓星盤會說話</a> -->
-                            <a href="#" onclick="showSection('advanced-questions')">進階提問技巧：讓 AI 為您深度解析</a>
-                        </div>
+                            <!-- <a href="#" onclick="showSection('advanced-questions')">進階提問技巧：讓 AI 為您深度解析</a>
+                        </div> -->
                     </div>
                     
                     <!-- <div class="nav-item nav-list desk-nav-list"> -->
                     <div class="nav-item ">
-                        <span class="text-white font-bold text-base hover:text-yellow-400 transition-colors duration-300">
+                        <a href="#" onclick="showSection('personal-chart')" class="text-white font-bold text-base hover:text-yellow-400 transition-colors duration-300">
                             🗝️ 個人星圖解鎖
-                        </span>
-                        <div class="submenu">
-                            <a href="#" onclick="showSection('personal-chart')" class="text-white text-xl">個人星盤：解讀你的生命藍圖</a>
+                        </a>
+                        <!-- <div class="submenu">
+                            <a href="#" onclick="showSection('personal-chart')" class="text-white text-xl">個人星圖解鎖：解讀你的生命藍圖</a>
                             <a href="#" onclick="showSection('self-discovery')">我是誰？內在天賦探索</a>
                             <a href="#" onclick="showSection('career-guide')">職場升級：事業與職涯指南</a>
                             <a href="#" onclick="showSection('wealth-chart')">財富星圖：金錢觀與開源秘密</a>
@@ -226,43 +230,43 @@
                             <a href="#" onclick="showSection('health-balance')">身心平衡：健康活力指南</a>
                             <a href="#" onclick="showSection('life-lessons')">命運課題與成長之路</a>
                             <a href="#" onclick="showSection('soul-imprint')">靈魂印記：前世今生</a>
-                        </div>
+                        </div> -->
                     </div>
                     
                     <!-- <div class="nav-item nav-list desk-nav-list"> -->
                     <div class="nav-item ">
-                        <span class="text-white font-bold text-base hover:text-yellow-400 transition-colors duration-300">
-                            ⚡ 問題即時解
-                        </span>
-                        <div class="submenu">
+                        <a href="#" onclick="showSection('instant-solution')" class="text-white font-bold text-base hover:text-yellow-400 transition-colors duration-300">
+                            ⚡占星卜卦
+                        </a>
+                        <!-- <div class="submenu">
                             <a href="#" onclick="showSection('instant-solution')" class="text-white text-xl">占星卜卦盤：你的問題，星盤即刻解答</a>
                             <a href="#" onclick="showSection('decision-moment')">決策時刻：選擇最佳路徑</a>
                             <a href="#" onclick="showSection('situation-insight')">情境解惑：看清事件真相</a>
-                        </div>
+                        </div> -->
                     </div>
                     
                     <!-- <div class="nav-item nav-list desk-nav-list"> -->
                     <div class="nav-item ">
                         <a href="#" onclick="showSection('relationship-insight')" class="text-white font-bold text-base hover:text-yellow-400 transition-colors duration-300">
-                            👁️ 關係星盤洞察
+                            👁️ 關係比較盤洞察
                         </a>
-                        <div class="submenu">
+                        <!-- <div class="submenu">
                             <a href="#" onclick="showSection('relationship-core')">關係核心：解鎖彼此磁場</a>
                             <a href="#" onclick="showSection('love-synastry')">愛情關係：情侶合盤解讀</a>
                             <a href="#" onclick="showSection('parent-child')">親子關係：家庭合盤啟示</a>
                             <a href="#" onclick="showSection('friendship-synastry')">友情關係：知己合盤探索</a>
                             <a href="#" onclick="showSection('work-synastry')">合作關係：職場合盤解析</a>
-                        </div>
+                        </div> -->
                     </div>
                     
                     <!-- <div class="nav-item nav-list desk-nav-list"> -->
                     <div class="nav-item ">
                         <a href="#" onclick="showSection('relationship-resonance')" class="text-white font-bold text-base hover:text-yellow-400 transition-colors duration-300">
-                            🔗 關係共振探索
+                            🔗 關係中點盤
                         </a>
-                        <div class="submenu">
+                        <!-- <div class="submenu">
                             <a href="#" onclick="showSection('relationship-axis')">關係主軸：我們一起的「我們」</a>
-                        </div>
+                        </div> -->
                     </div>
                     
                     <!-- <div class="nav-item nav-list desk-nav-list"> -->
@@ -270,13 +274,14 @@
                         <a href="#" onclick="showSection('fortune-tracking')" class="text-white font-bold text-base hover:text-yellow-400 transition-colors duration-300">
                             📈 運勢週期脈動追蹤
                         </a>
-                        <div class="submenu">
+                        <!-- <div class="submenu">
                             <a href="#" onclick="showSection('recent-fortune')">近期運勢：預見未來三個月</a>
                             <a href="#" onclick="showSection('annual-focus')">年度焦點：掌握關鍵轉折點</a>
                             <a href="#" onclick="showSection('annual-focus')">特定事件/主題：針對性預測，精準規劃</a>
-                        </div>
+                        </div> -->
                     </div>
                 </div>
+            </div>
             </div>
             
            
@@ -295,7 +300,17 @@
                 您的宇宙智慧導師，啟迪星圖奧秘
             </h2>
             <p class="text-lg text-gray-500 max-w-2xl mx-auto">
+        
+                為了讓您更方便的使用 AI 聊天詢問占星，<br>
+                此網站提供 AI 占星所需的星盤文字資料，<br>
+                以及向 AI 諮詢占星的提問建議。
+            </p>
+        
+            <p class="text-lg text-gray-500 max-w-2xl mx-auto mt-8">
                 結合古老占星智慧與現代AI科技，為您提供精準個人化的星盤解析與人生指引
+            </p>
+            <p class="text-lg text-gray-500 max-w-2xl mx-auto mt-8">
+                （ 此網站皆採用現代占星常用的普拉西度（Placidus）宮位制。 ）
             </p>
         </section>
 
@@ -1092,23 +1107,6 @@
         
                 </div>
             </div>
-
-            
-            
-        </section>
-
-        <!-- 提問心法 -->
-        <!-- <section id="question-method" class="content-section">
-            
-        </section> -->
-
-        <!-- AI 解讀原則 -->
-        <!-- <section id="ai-principles" class="content-section">
-            
-        </section> -->
-
-        <!-- 進階提問技巧 -->
-        <section id="advanced-questions" class="content-section">
             <div class="card">
                 <h3 class="text-3xl md:text-4xl font-bold mb-4 text-center text-yellow-400">
                     進階提問技巧：讓 AI 為您深度解析
@@ -1137,7 +1135,7 @@
                         <p class="text-gray-300">針對這段關係，請不僅分析相位，也要考量出入相容許度，以及雙方行星的星座與宮位落點，給予更完整的解讀。 </p>
                         <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
                     </div>
-
+    
                     <p class="font-bold text-2xl mt-12 mb-4 underline decoration-[#a855f7]">指定分析範圍 (選擇性，越具體越好)：</p>
                     <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg">
                         <p class="text-gray-300">請深入分析我的事業發展。</p>
@@ -1152,7 +1150,7 @@
                         <p class="text-gray-300">請指出我的星盤中，在某個特定領域（如事業或感情）中，同時存在的機會與挑戰。</p>
                         <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
                     </div>
-
+    
                     <p class="font-bold text-2xl mt-12 mb-4 underline decoration-[#a855f7]">加強深度與實用性 (選擇性，可多選)：</p>
                     <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
                         <p class="text-gray-300">請將飛星的影響也納入考量。</p>
@@ -1167,7 +1165,7 @@
                         <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
                     </div>
                    
-
+    
                     <p class="font-bold text-2xl mt-12 mb-4 underline decoration-[#a855f7]">額外要求 (依需求加入)：</p>
                     <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
                         <p class="text-gray-300">請客觀真實地為我分析。</p>
@@ -1180,14 +1178,31 @@
                     
                 </div>
                 </div>
+
+            
+            
         </section>
+
+        <!-- 提問心法 -->
+        <!-- <section id="question-method" class="content-section">
+            
+        </section> -->
+
+        <!-- AI 解讀原則 -->
+        <!-- <section id="ai-principles" class="content-section">
+            
+        </section> -->
+
+        <!-- 進階提問技巧 -->
+        <!-- <section id="advanced-questions" class="content-section">
+        </section> -->
 
         <!-- 個人星圖解鎖 -->
         <section id="personal-chart" class="content-section">
             <div class="card">
                 <h1 class="text-3xl md:text-4xl font-bold mb-4 text-center">
                     <i class="fas fa-key text-yellow-400 mr-3"></i>
-                    個人星盤：解讀你的生命藍圖
+                    個人星圖解鎖：解讀你的生命藍圖
                     <!-- 本命星圖解鎖：探索您的生命藍圖 -->
                 </h1>
                 <h2 class="text-xl md:text-2xl text-gray-300 mb-8 text-center">
@@ -1215,11 +1230,7 @@
                 </div>
 
             </div>
-        </section>
-
-        <!-- 其他子頁面 (簡化顯示) -->
-        <section id="self-discovery" class="content-section">
-            <div class="card">
+             <div class="card">
                 <h3 class="text-3xl md:text-4xl font-bold mb-4 text-center text-yellow-400">我是誰？內在天賦探索</h3>
                 <div class="text-center text-gray-300 mb-12">
                     <p class="text-2xl">發掘您內在的天賦與潛能</p></div>
@@ -1344,10 +1355,7 @@
                     <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
                 </div> 
             </div>
-        </section>
-
-        <section id="career-guide" class="content-section">
-            <div class="card">
+             <div class="card">
                 <h3 class="text-3xl md:text-4xl font-bold mb-4 text-center text-yellow-400">職場升級：事業與職涯指南</h3>
                 <div class="text-center text-gray-300 mb-12">星盤指引您的事業發展方向</p></div>
                 <div class="text-left md:text-center text-gray-200"><p class="text-lg leading-[2.2]">
@@ -1390,10 +1398,7 @@
                     <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
                 </div>
             </div>
-        </section>
-
-        <section id="wealth-chart" class="content-section">
-            <div class="card">
+             <div class="card">
                 <h3 class="text-3xl md:text-4xl font-bold mb-4 text-center text-yellow-400">財富星圖：金錢觀與開源秘密</h3>
                 <div class="text-center text-gray-300 mb-12">解讀您的財富運勢與理財天賦</p></div>
                 <div class="text-center text-gray-200 "><p class="text-lg leading-[2.2]">
@@ -1444,9 +1449,6 @@
                     <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
                 </div>
             </div>
-        </section>
-
-        <section id="love-language" class="content-section">
             <div class="card">
                 <h3 class="text-3xl md:text-4xl font-bold mb-4 text-center text-yellow-400">愛情星語：解鎖情場密碼</h3>
                 <div class="text-center text-gray-300 mb-12">探索您的愛情模式與情感表達</p></div>
@@ -1501,9 +1503,6 @@
                     <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
                 </div>
             </div>
-        </section>
-
-        <section id="friendship" class="content-section">
             <div class="card">
                 <h3 class="text-3xl md:text-4xl font-bold mb-4 text-center text-yellow-400">友情連結：人際互動星解</h3>
                 <div class="text-center text-gray-300 mb-12">了解您的社交天賦與人際關係</p></div>
@@ -1546,10 +1545,7 @@
                     <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
                 </div>
             </div>
-        </section>
-
-        <section id="family-chart" class="content-section">
-            <div class="card">
+             <div class="card">
                 <h3 class="text-3xl md:text-4xl font-bold mb-4 text-center text-yellow-400">根與脈絡：家庭星盤啟示</h3>
                 <div class="text-center text-gray-300 mb-12">探索家庭關係與原生家庭影響</p></div>
                 <div class="text-left md:text-center text-gray-200"><p class="text-lg leading-[2.2]">
@@ -1580,9 +1576,6 @@
                     <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
                 </div>
             </div>
-        </section>
-
-        <section id="health-balance" class="content-section">
             <div class="card">
                 <h3 class="text-3xl md:text-4xl font-bold mb-4 text-center text-yellow-400">身心平衡：健康活力指南</h3>
                 <div class="text-center text-gray-300 mb-12">星盤指引您的健康維護方向</p></div>
@@ -1618,10 +1611,7 @@
                     <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
                 </div>
             </div>
-        </section>
-
-        <section id="life-lessons" class="content-section">
-            <div class="card">
+             <div class="card">
                 <h3 class="text-3xl md:text-4xl font-bold mb-4 text-center text-yellow-400">命運課題與成長之路</h3>
                 <div class="text-center text-gray-300 mb-12">了解人生課題與成長機會</p></div>
                 <div class="text-left md:text-center text-gray-200"><p class="text-lg leading-[2.2]">
@@ -1643,15 +1633,11 @@
                     <p class="text-gray-300">從此星盤看此生最重要課題目標</p>
                     <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
                 </div>
-                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                <!-- <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
                     <p class="text-gray-300"></p>
                     <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
-                </div>
+                </div> -->
             </div>
-            </div>
-        </section>
-
-        <section id="soul-imprint" class="content-section">
             <div class="card">
                 <h3 class="text-3xl md:text-4xl font-bold mb-4 text-center text-yellow-400">靈魂印記：前世今生</h3>
                 <div class="text-center text-gray-300 mb-12">探索靈魂的印記與前世連結</p></div>
@@ -1679,14 +1665,51 @@
                     <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
                 </div>
             </div>
-        </section>
+        </section>  
 
-        <!-- 問題即時解 -->
+        <!-- 其他子頁面 (簡化顯示) -->
+        <!-- <section id="self-discovery" class="content-section">
+           
+        </section> -->
+
+        <!-- <section id="career-guide" class="content-section">
+           
+        </section> -->
+
+        <!-- <section id="wealth-chart" class="content-section">
+           
+        </section> -->
+
+        <!-- <section id="love-language" class="content-section">
+            
+        </section> -->
+
+        <!-- <section id="friendship" class="content-section">
+            
+        </section> -->
+
+        <!-- <section id="family-chart" class="content-section">
+           
+        </section> -->
+
+        <!-- <section id="health-balance" class="content-section">
+            
+        </section> -->
+
+        <!-- <section id="life-lessons" class="content-section">
+           
+        </section> -->
+
+        <!-- <section id="soul-imprint" class="content-section">
+            
+        </section> -->
+
+        <!--占星卜卦 -->
         <section id="instant-solution" class="content-section">
             <div class="card">
                 <h1 class="text-3xl md:text-4xl font-bold mb-4 text-center">
                     <i class="fas fa-bolt text-yellow-400 mr-3"></i>
-                    <!-- 問題即時解：卜卦星盤，當下解惑 -->
+                    <!--占星卜卦：卜卦星盤，當下解惑 -->
                      占星卜卦盤：你的問題，星盤即刻解答
                 </h1>
                 <h2 class="text-xl md:text-2xl text-gray-300 mb-8 text-center">
@@ -1706,11 +1729,8 @@
                     您的本命星圖是獨一無二的宇宙藍圖，蘊藏著您與生俱來的個性、潛能與天賦。<br>
                     本頁將引導您透過 AI 深入探索自我，解鎖那些可能被忽略的內在寶藏。<br>
                     從性格特質到潛藏優勢，讓星盤幫助您更全面地認識自己，發掘您獨有的生命光芒。</p></div> -->
-                
-        </section>
-
-        <section id="decision-moment" class="content-section">
-            <div class="card">
+                </div>
+                <div class="card">
                 <h3 class="text-3xl md:text-4xl font-bold mb-4 text-center text-yellow-400">決策時刻：選擇最佳路徑</h3>
                 <div class="text-center text-gray-300 mb-12">在重要決策時刻獲得星盤指引</p></div>
                 <div class="text-left md:text-center text-gray-200"><p class="text-lg leading-[2.2]">
@@ -1737,33 +1757,11 @@
                     <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
                 </div>
                 <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
-                    <p class="text-gray-300"></p>
+                    <p class="text-gray-300">我現在做的XX專案，請給我規劃與實行上改進的建議。</p>
                     <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
                 </div>
-                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
-                    <p class="text-gray-300"></p>
-                    <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
-                </div>
-                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
-                    <p class="text-gray-300"></p>
-                    <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
-                </div>
-                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
-                    <p class="text-gray-300"></p>
-                    <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
-                </div>
-                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
-                    <p class="text-gray-300"></p>
-                    <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
-                </div>
-                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
-                    <p class="text-gray-300"></p>
-                    <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
-                </div>
+                
             </div>
-        </section>
-
-        <section id="situation-insight" class="content-section">
             <div class="card">
                 <h3 class="text-3xl md:text-4xl font-bold mb-4 text-center text-yellow-400">情境解惑：看清事件真相</h3>
                 <div class="text-center text-gray-300 mb-12">透過星盤洞察事件的深層含義</p></div>
@@ -1782,8 +1780,6 @@
                     <p class="text-gray-300">他對我到底是朋友還是有其他意思？</p>
                     <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
                 </div>
-                
-                <br>
                 <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
                     <p class="text-gray-300">我剛認識一個對象/合作夥伴，我們未來的關係走向會是怎樣？</p>
                     <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
@@ -1795,15 +1791,22 @@
 
                
             </div>
-            </div>
         </section>
 
-        <!-- 關係星盤洞察 -->
+        <!-- <section id="decision-moment" class="content-section">
+            
+        </section> -->
+
+        <!-- <section id="situation-insight" class="content-section">
+            
+        </section> -->
+
+        <!-- 關係比較盤洞察 -->
         <section id="relationship-insight" class="content-section">
             <div class="card">
                 <h1 class="text-3xl md:text-4xl font-bold mb-4 text-center">
                     <i class="fas fa-eye text-yellow-400 mr-3"></i>
-                    關係星盤洞察：揭示人際互動的化學反應
+                    關係比較盤洞察：揭示人際互動的化學反應
                 </h1>
                 <h2 class="text-xl md:text-2xl text-gray-300 mb-8 text-center">
                     理解彼此磁場，共創和諧連結，深化人際互動
@@ -1817,9 +1820,6 @@
                 </div>
 
             </div>
-        </section>
-
-        <section id="relationship-core" class="content-section">
             <div class="card">
                 <h3 class="text-3xl md:text-4xl font-bold mb-4 text-center text-yellow-400">關係核心：解鎖彼此磁場</h3>
                 <div class="text-center text-gray-300 mb-12">探索關係中的核心動力與連結</p></div>
@@ -1829,9 +1829,7 @@
                     透過這份洞察，你將能更深入地理解彼此，<br>
                     並找到共同成長與深化情感連結的最佳途徑。<br>
             </div>
-        </section>
-
-        <section id="love-synastry" class="content-section">
+            </div>
             <div class="card">
                 <h3 class="text-3xl md:text-4xl font-bold mb-4 text-center text-yellow-400">愛情關係：情侶合盤解讀</h3>
                 <div class="text-center text-gray-300 mb-12">深入分析戀愛關係的星盤配對</p></div>
@@ -1947,9 +1945,6 @@
                     <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
                 </div>
             </div>
-        </section>
-
-        <section id="parent-child" class="content-section">
             <div class="card">
                 <h3 class="text-3xl md:text-4xl font-bold mb-4 text-center text-yellow-400">親子關係：家庭合盤啟示</h3>
                 <div class="text-center text-gray-300 mb-12">了解親子間的星盤互動模式</p></div>
@@ -1979,14 +1974,11 @@
                     <p class="text-gray-300">我與父親/母親/小孩的相處情形?</p>
                     <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
                 </div>
-                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                <!-- <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
                     <p class="text-gray-300"></p>
                     <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
-                </div>
+                </div> -->
             </div>
-        </section>
-
-        <section id="friendship-synastry" class="content-section">
             <div class="card">
                 <h3 class="text-3xl md:text-4xl font-bold mb-4 text-center text-yellow-400">友情關係：知己合盤探索</h3>
                 <div class="text-center text-gray-400"><p class="text-lg">探索友誼關係的深層連結</div>
@@ -2016,14 +2008,11 @@
                     <p class="text-gray-300">我和這位朋友的前世因緣與今生緣分</p>
                     <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
                 </div>
-                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                <!-- <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
                     <p class="text-gray-300"></p>
                     <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
-                </div>
+                </div> -->
             </div>
-        </section>
-
-        <section id="work-synastry" class="content-section">
             <div class="card">
                 <h3 class="text-3xl md:text-4xl font-bold mb-4 text-center text-yellow-400">合作關係：職場合盤解析</h3>
                 <div class="text-center text-gray-400"><p class="text-lg">分析工作夥伴間的合作潛能</div>
@@ -2081,12 +2070,32 @@
             </div>
         </section>
 
-        <!-- 關係共振探索 -->
+        <!-- <section id="relationship-core" class="content-section">
+            
+        </section> -->
+
+        <!-- <section id="love-synastry" class="content-section">
+            
+        </section> -->
+
+        <!-- <section id="parent-child" class="content-section">
+            
+        </section> -->
+
+        <!-- <section id="friendship-synastry" class="content-section">
+            
+        </section>
+
+        <section id="work-synastry" class="content-section">
+            
+        </section> -->
+
+        <!-- 關係中點盤 -->
         <section id="relationship-resonance" class="content-section">
             <div class="card">
                 <h1 class="text-3xl md:text-4xl font-bold mb-4 text-center">
                     <i class="fas fa-link text-yellow-400 mr-3"></i>
-                    關係共振探索：關係共譜的生命旋律
+                    關係中點盤：關係共譜的生命旋律
                 </h1>
                 <h2 class="text-xl md:text-2xl text-gray-300 mb-8 text-center">
                     超越個體，洞察「我們」的共同使命與潛能
@@ -2099,9 +2108,6 @@
                 它能揭示兩人關係的整體基調、目的與共同課題。
             </div>
             </div>
-        </section>
-
-        <section id="relationship-axis" class="content-section">
             <div class="card">
                 <h3 class="text-3xl md:text-4xl font-bold mb-4 text-center text-yellow-400">關係主軸：我們一起的「我們」</h3>
                 <div class="text-center text-gray-300 text-2xl mb-12">發現關係中的共同主軸與使命</p></div>
@@ -2139,7 +2145,7 @@
                     <p class="text-gray-300">我們的關係是長期穩定的，還是會有階段性變化？未來會如何發展？</p>
                     <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
                 </div>
-                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
+                <!-- <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
                     <p class="text-gray-300"></p>
                     <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
                 </div>
@@ -2150,9 +2156,13 @@
                 <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
                     <p class="text-gray-300"></p>
                     <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
-                </div>
+                </div> -->
             </div>
         </section>
+
+        <!-- <section id="relationship-axis" class="content-section">
+            
+        </section> -->
 
         <!-- 運勢週期脈動追蹤 -->
         <section id="fortune-tracking" class="content-section">
@@ -2174,9 +2184,6 @@
                     在機會來臨時果斷把握，在挑戰來臨時沉著應對，<br>
                     協助您每一步都走在最佳節奏上。</p></div>
             </div>
-        </section>
-
-        <section id="recent-fortune" class="content-section">
             <div class="card">
                 <h3 class="text-3xl md:text-4xl font-bold mb-4 text-center text-yellow-400">近期運勢：預見未來三個月</h3>
                 <div class="text-center text-gray-300 mb-12">預測並準備未來三個月的重要趨勢</p></div>
@@ -2237,9 +2244,6 @@
                     <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
                 </div>
             </div>
-        </section>
-
-        <section id="annual-focus" class="content-section">
             <div class="card">
                 <h3 class="text-3xl md:text-4xl font-bold mb-4 text-center text-yellow-400">年度焦點：掌握關鍵轉折點</h3>
                 <div class="text-center text-gray-400"><p class="text-lg">識別年度中的重要轉折與機會點</div>
@@ -2260,25 +2264,11 @@
                     <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
                 </div>
                 <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
-                    <p class="text-gray-300"></p>
+                    <p class="text-gray-300">今年的感情運勢如何?桃花運好的時期，與感情需要特別注意相處情形的時期</p>
                     <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
                 </div>
-                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
-                    <p class="text-gray-300"></p>
-                    <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
-                </div>
-                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
-                    <p class="text-gray-300"></p>
-                    <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
-                </div>
-                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
-                    <p class="text-gray-300"></p>
-                    <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
-                </div>
+               
             </div>
-        </section>
-
-        <section id="annual-focus" class="content-section">
             <div class="card">
                 <h3 class="text-3xl md:text-4xl font-bold mb-4 text-center text-yellow-400">特定事件/主題：針對性預測，精準規劃</h3>
                 <div class="text-center text-gray-400"><p class="text-lg"></div>
@@ -2310,12 +2300,20 @@
                     <p class="text-gray-300"></p>
                     <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
                 </div>
-                <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
-                    <p class="text-gray-300"></p>
-                    <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
-                </div>
             </div>
         </section>
+
+        <!-- <section id="recent-fortune" class="content-section">
+            
+        </section>
+
+        <section id="annual-focus" class="content-section">
+            
+        </section>
+
+        <section id="annual-focus" class="content-section">
+            
+        </section> -->
     </main>
 
     <!-- Footer -->
