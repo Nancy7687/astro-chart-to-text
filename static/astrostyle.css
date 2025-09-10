@@ -27,21 +27,21 @@
             padding: 8px;
             z-index: 1001;
             position:fixed;
-            top: 10px;
-            right: 10px;
+            top: 5px;
+            right: 5px;
         }
 
         .hamburger span {
-            width: 40px;
+            width: 25px;
             height: 3px;
             background-color: #fbbf24;
-            margin: 5px 0;
+            margin: 3px 0;
             transition: 0.2s;
             border-radius: 2px;
         }
 
         .hamburger.active span:nth-child(1) {
-            transform: rotate(-45deg) translate(-9px, 9px);
+            transform: rotate(-45deg) translate(-6px, 6px);
         }
 
         .hamburger.active span:nth-child(2) {
@@ -49,7 +49,7 @@
         }
 
         .hamburger.active span:nth-child(3) {
-            transform: rotate(45deg) translate(-9px, -9px);
+            transform: rotate(45deg) translate(-6px, -6px);
         }
 
         /* 手機導覽選單 */
@@ -60,10 +60,10 @@
             width: 80%;
             max-width: 350px;
             height: 70vh; */
-            top: 50px; /* 從 header 下方開始，您可以根據 header 的實際高度微調 */
+            top: 40px; /* 從 header 下方開始，您可以根據 header 的實際高度微調 */
             left: 0;
             width: 100%;
-            height: calc(100vh - 50px); /* 填滿 header 以下的剩餘高度 */
+            height: calc(100vh - 40px); /* 填滿 header 以下的剩餘高度 */
             /* background: linear-gradient(180deg, #1e1b4b 0%, #312e81 100%); */
             background: linear-gradient(180deg, #73737d 0%, #302f3b 100%);
             z-index: 1000;
@@ -72,7 +72,7 @@
             transform: translateX(-100%); /* 預設將選單移到畫面左邊外面 */
             overflow-y: auto;
             /* padding-top: 80px; */
-            padding-top: 10px; /* 調整頂部間距 */
+            padding-top: 20px; /* 調整頂部間距 */
             padding-bottom: 20px; /* 增加底部間距 */
         }
 
@@ -442,7 +442,7 @@
         .header-bg {
             background: linear-gradient(to right, #6A0DAD, #C71585);
             border-radius: 12px;
-            padding: 60px 0;
+            padding: 40px 0;
             margin-bottom: 32px;
             box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
         }
@@ -1371,10 +1371,9 @@
                 margin-right: 0;
             }
 
-                   .card,
-                   .card1 {
-                       padding: 100px;
-                   }
+            .card {
+                padding: 100px;
+            }
         }
 
         /* --- 桌面設備 (通常 >= 1024px) --- */
