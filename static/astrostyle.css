@@ -55,9 +55,9 @@
                 /*手機版導覽選單樣式    緊貼 header，扣除底部導覽列*/
                 .mobile-nav {
                     position: fixed;
-                    top: 55px;
-                    /* 假設 header 高度為 55px，請依實際情況調整 */
-                    bottom: 60px;
+                    top: 50px;
+                    /* 假設 header 高度為 50px，請依實際情況調整 */
+                    bottom: 100px;
                     /* 假設底部手機導覽列高度為 60px，請依實際情況調整 */
                     left: 0;
                     width: 100%;
@@ -75,18 +75,16 @@
                 }
         
                 /*選單內部項目，使用 Flexbox 平均分散*/
-                .mobile-nav ul {
-                    display: flex;
-                    flex-direction: column;
-                    justify-content: space-evenly;
-                    /* 將項目平均分散 */
-                    height: 100%;
-                    /* 填滿父容器高度 */
-                    list-style: none;
-                    margin: 0;
-                    padding: 0 20px;
-                    /* 左右內間距 */
-                }
+                                .mobile-nav ul {
+                                    display: flex;
+                                    flex-direction: column;
+                                    /* justify-content: flex-start; */
+                                    /* 這是預設值，項目會從頭部開始排列 */
+                                    list-style: none;
+                                    margin: 0;
+                                    padding: 20px;
+                                    /* 上下左右都加上一些內間距，比原先的更好看 */
+                                }
         
                 /*選單項目的基本樣式*/
                 .mobile-nav a {
@@ -94,7 +92,7 @@
                     color: white;
                     /* 範例顏色 */
                     text-align: center;
-                    padding: 15px 0;
+                    padding: 10px 0;
                     /* 調整上下間距 */
                     text-decoration: none;
                 }
