@@ -1,0 +1,589 @@
+/* 優化後的 astrostyle.css - 手機優先設計 */
+
+/* CSS 變量定義 */
+:root {
+    --primary-dark: #1A2332;
+    --secondary-dark: #0F1419;
+    --accent-gold: #D4AF37;
+    --accent-purple: #8B5CF6;
+    --accent-silver: #C0C0C0;
+    --text-light: #F8FAFC;
+    --text-muted: #CBD5E1;
+    --border-color: rgba(139, 92, 246, 0.2);
+    --shadow-light: 0 2px 8px rgba(0, 0, 0, 0.1);
+    --shadow-medium: 0 4px 16px rgba(0, 0, 0, 0.15);
+    --shadow-heavy: 0 8px 32px rgba(0, 0, 0, 0.25);
+    --border-radius: 8px;
+    --border-radius-large: 12px;
+    --transition: all 0.3s ease;
+}
+
+/* 基礎重置和全局樣式 */
+* {
+    box-sizing: border-box;
+}
+
+html {
+    font-size: 16px;
+    scroll-behavior: smooth;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Noto Sans TC', 'Inter', sans-serif;
+    background: linear-gradient(135deg, var(--primary-dark) 0%, var(--secondary-dark) 100%);
+    color: var(--text-light);
+    line-height: 1.6;
+    min-height: 100vh;
+    overflow-x: hidden;
+}
+
+/* 響應式圖片 */
+img {
+    max-width: 100%;
+    height: auto;
+}
+
+/* 手機優先：基礎佈局 */
+.container {
+    width: 100%;
+    max-width: 100%;
+    margin: 0 auto;
+    padding: 1rem;
+    background-color: rgba(255, 255, 255, 0.95);
+    box-shadow: var(--shadow-heavy);
+    min-height: 100vh;
+}
+
+/* 標題樣式 */
+h1 {
+    font-size: 1.75rem;
+    font-weight: 700;
+    margin: 0 0 1rem 0;
+    color: var(--text-light);
+    text-align: center;
+    line-height: 1.3;
+}
+
+h2 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin: 1.5rem 0 1rem 0;
+    color: var(--accent-gold);
+    line-height: 1.4;
+}
+
+h3 {
+    font-size: 1.25rem;
+    font-weight: 500;
+    margin: 1rem 0 0.75rem 0;
+    color: var(--text-light);
+    line-height: 1.4;
+}
+
+/* 段落樣式 */
+p {
+    margin: 0 0 1rem 0;
+    color: var(--text-muted);
+    line-height: 1.7;
+}
+
+/* 漢堡菜單樣式 */
+.hamburger {
+    display: flex;
+    flex-direction: column;
+    cursor: pointer;
+    padding: 12px;
+    z-index: 1001;
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    background: rgba(26, 35, 50, 0.9);
+    border-radius: var(--border-radius);
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--border-color);
+}
+
+.hamburger span {
+    width: 24px;
+    height: 3px;
+    background-color: var(--accent-gold);
+    margin: 2px 0;
+    transition: var(--transition);
+    border-radius: 2px;
+}
+
+.hamburger.active span:nth-child(1) {
+    transform: rotate(-45deg) translate(-5px, 6px);
+}
+
+.hamburger.active span:nth-child(2) {
+    opacity: 0;
+}
+
+.hamburger.active span:nth-child(3) {
+    transform: rotate(45deg) translate(-5px, -6px);
+}
+
+/* 手機版導航菜單 */
+.mobile-nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    height: calc(100vh - env(safe-area-inset-bottom));
+    z-index: 1000;
+    background: linear-gradient(180deg, var(--primary-dark) 0%, var(--secondary-dark) 100%);
+    transform: translateX(-100%);
+    transition: transform 0.3s ease-in-out;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    padding-top: 60px;
+}
+
+.mobile-nav.is-open {
+    transform: translateX(0);
+}
+
+.mobile-nav ul {
+    display: flex;
+    flex-direction: column;
+    list-style: none;
+    margin: 0;
+    padding: 2rem 1rem;
+    min-height: calc(100vh - 60px);
+    gap: 0.5rem;
+}
+
+.mobile-nav a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-light);
+    text-align: center;
+    padding: 1rem;
+    text-decoration: none;
+    min-height: 48px;
+    border-radius: var(--border-radius);
+    background: rgba(139, 92, 246, 0.1);
+    border: 1px solid var(--border-color);
+    transition: var(--transition);
+    font-size: 1rem;
+    font-weight: 500;
+}
+
+.mobile-nav a:hover,
+.mobile-nav a:focus {
+    background: rgba(212, 175, 55, 0.2);
+    border-color: var(--accent-gold);
+    color: var(--accent-gold);
+    transform: translateY(-2px);
+}
+
+/* 遮罩層 */
+.mobile-nav-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+    opacity: 0;
+    visibility: hidden;
+    transition: var(--transition);
+}
+
+.mobile-nav-overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* 主要內容區域 */
+.hero-section {
+    background: radial-gradient(circle at center, rgba(139, 92, 246, 0.1) 0%, transparent 70%);
+    position: relative;
+    overflow: hidden;
+    padding: 2rem 0;
+    text-align: center;
+}
+
+.hero-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="1" fill="%23d4af37" opacity="0.3"><animate attributeName="opacity" values="0.3;0.8;0.3" dur="2s" repeatCount="indefinite"/></circle><circle cx="20" cy="20" r="0.5" fill="%23c0c0c0" opacity="0.5"/><circle cx="80" cy="30" r="0.8" fill="%238b5cf6" opacity="0.4"/><circle cx="30" cy="80" r="0.6" fill="%23d4af37" opacity="0.6"/></svg>') repeat;
+    animation: twinkle 20s linear infinite;
+    pointer-events: none;
+}
+
+@keyframes twinkle {
+    0% { transform: translateY(0); }
+    100% { transform: translateY(-100px); }
+}
+
+/* 內容區塊 */
+.content-section {
+    display: none;
+    padding: 1rem 0;
+}
+
+.content-section.active {
+    display: block;
+}
+
+/* 卡片樣式 */
+.card {
+    background: linear-gradient(135deg, rgba(139, 92, 246, 0.1) 0%, rgba(26, 35, 50, 0.8) 100%);
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-large);
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    transition: var(--transition);
+    box-shadow: var(--shadow-light);
+}
+
+.card:hover {
+    border-color: var(--accent-gold);
+    box-shadow: var(--shadow-medium);
+    transform: translateY(-2px);
+}
+
+.card1 {
+    background: linear-gradient(135deg, rgba(139, 92, 246, 0.15) 0%, rgba(59, 7, 100, 0.8) 100%);
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-large);
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    transition: var(--transition);
+    box-shadow: var(--shadow-light);
+}
+
+/* 表單樣式 */
+.form-input {
+    background: rgba(26, 35, 50, 0.8);
+    border: 1px solid var(--border-color);
+    color: var(--text-light);
+    border-radius: var(--border-radius);
+    padding: 0.75rem 1rem;
+    width: 100%;
+    font-size: 1rem;
+    transition: var(--transition);
+    margin-bottom: 1rem;
+}
+
+.form-input:focus {
+    outline: none;
+    border-color: var(--accent-gold);
+    box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.1);
+}
+
+.form-input::placeholder {
+    color: var(--text-muted);
+}
+
+/* 按鈕樣式 */
+.btn-primary {
+    background: linear-gradient(135deg, var(--accent-purple) 0%, var(--accent-gold) 100%);
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: var(--border-radius);
+    font-weight: 500;
+    font-size: 1rem;
+    transition: var(--transition);
+    cursor: pointer;
+    width: 100%;
+    min-height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-primary:hover,
+.btn-primary:focus {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(139, 92, 246, 0.3);
+}
+
+/* 輸入組樣式 */
+.input-group {
+    margin-bottom: 1.5rem;
+}
+
+.input-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: var(--text-light);
+    font-weight: 500;
+}
+
+/* 選擇框樣式 */
+select.form-input {
+    appearance: none;
+    background-image: url('data:image/svg+xml;charset=US-ASCII,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 4 5"><path fill="%23CBD5E1" d="M2 0L0 2h4zm0 5L0 3h4z"/></svg>');
+    background-repeat: no-repeat;
+    background-position: right 0.75rem center;
+    background-size: 0.75rem;
+    padding-right: 2.5rem;
+}
+
+/* 結果輸出區域 */
+#resultOutput {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    margin-top: 2rem;
+}
+
+/* 星盤包裝器 */
+.chart-wrapper {
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-large);
+    background-color: rgba(255, 255, 255, 0.95);
+    overflow: hidden;
+    box-shadow: var(--shadow-medium);
+    margin-bottom: 2rem;
+}
+
+/* 星盤標題 */
+.chart-main-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 1.5rem;
+    color: white;
+    border-radius: var(--border-radius-large) var(--border-radius-large) 0 0;
+}
+
+.chart-main-header h2 {
+    margin: 0;
+    font-size: 1.25rem;
+    flex-grow: 1;
+}
+
+/* 特定標題顏色 */
+.single-chart-header-main {
+    background: linear-gradient(135deg, #2084ff 0%, #dfecff 100%);
+}
+
+.comparison-chart-header-main {
+    background: linear-gradient(135deg, #8B008B 0%, #ffc0cb 100%);
+}
+
+.composite-chart-header-main {
+    background: linear-gradient(135deg, #fde047 0%, #fef9c3 100%);
+}
+
+.transit-chart-header-main {
+    background: linear-gradient(135deg, #00db6d 0%, #ceffe6 100%);
+}
+
+/* 子區塊容器 */
+.sub-sections-container,
+.summary-section-container {
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+/* 動態背景 */
+@keyframes move-bg {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+.bg-single {
+    background: radial-gradient(circle at top left, #00008B, transparent 40%), 
+                radial-gradient(circle at top right, #ffd13b, transparent 40%), 
+                radial-gradient(circle at bottom left, #009d95, transparent 40%), 
+                radial-gradient(circle at bottom right, #2F4F4F, transparent 40%);
+    background-size: 400% 400%;
+    animation: move-bg 20s ease infinite;
+}
+
+.bg-synastry {
+    background: radial-gradient(circle at top left, #FF4500, transparent 40%), 
+                radial-gradient(circle at top right, #ff45a2, transparent 40%), 
+                radial-gradient(circle at bottom left, #DA70D6, transparent 40%), 
+                radial-gradient(circle at bottom right, #5800aa, transparent 40%);
+    background-size: 400% 400%;
+    animation: move-bg 20s ease infinite;
+}
+
+/* 平板樣式 (768px 及以上) */
+@media (min-width: 768px) {
+    .container {
+        max-width: 1280px;
+        padding: 2rem;
+        border-radius: var(--border-radius-large);
+    }
+    
+    h1 {
+        font-size: 2.5rem;
+    }
+    
+    h2 {
+        font-size: 2rem;
+    }
+    
+    .hero-section {
+        padding: 3rem 0;
+    }
+    
+    .card,
+    .card1 {
+        padding: 2rem;
+    }
+    
+    .btn-primary {
+        width: auto;
+        min-width: 200px;
+    }
+    
+    /* 隱藏漢堡菜單，顯示桌面導航 */
+    .hamburger {
+        display: none;
+    }
+    
+    .mobile-nav {
+        display: none;
+    }
+    
+    /* 桌面導航樣式 */
+    .desktop-nav {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 1rem 0;
+        background: rgba(26, 35, 50, 0.9);
+        backdrop-filter: blur(10px);
+        border-radius: var(--border-radius-large);
+        margin-bottom: 2rem;
+        border: 1px solid var(--border-color);
+    }
+    
+    .desktop-nav ul {
+        display: flex;
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        gap: 2rem;
+    }
+    
+    .desktop-nav a {
+        color: var(--text-light);
+        text-decoration: none;
+        padding: 0.75rem 1.5rem;
+        border-radius: var(--border-radius);
+        transition: var(--transition);
+        font-weight: 500;
+    }
+    
+    .desktop-nav a:hover,
+    .desktop-nav a:focus {
+        background: rgba(212, 175, 55, 0.2);
+        color: var(--accent-gold);
+    }
+    
+    /* 多欄佈局 */
+    .grid-2 {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 2rem;
+    }
+    
+    .grid-3 {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 2rem;
+    }
+    
+    .chart-main-header h2 {
+        font-size: 1.5rem;
+    }
+}
+
+/* 大螢幕樣式 (1024px 及以上) */
+@media (min-width: 1024px) {
+    h1 {
+        font-size: 3rem;
+    }
+    
+    h2 {
+        font-size: 2.25rem;
+    }
+    
+    .hero-section {
+        padding: 4rem 0;
+    }
+    
+    .desktop-nav ul {
+        gap: 3rem;
+    }
+    
+    .card,
+    .card1 {
+        padding: 2.5rem;
+    }
+}
+
+/* 超大螢幕樣式 (1280px 及以上) */
+@media (min-width: 1280px) {
+    .container {
+        padding: 3rem;
+    }
+    
+    .hero-section {
+        padding: 5rem 0;
+    }
+}
+
+/* 可訪問性改善 */
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+/* 高對比度模式 */
+@media (prefers-contrast: high) {
+    :root {
+        --border-color: rgba(255, 255, 255, 0.5);
+        --text-muted: #E2E8F0;
+    }
+}
+
+/* 打印樣式 */
+@media print {
+    .hamburger,
+    .mobile-nav,
+    .desktop-nav,
+    .mobile-nav-overlay {
+        display: none !important;
+    }
+    
+    body {
+        background: white !important;
+        color: black !important;
+    }
+    
+    .card,
+    .card1 {
+        border: 1px solid #ccc !important;
+        background: white !important;
+        box-shadow: none !important;
+    }
+}
+
