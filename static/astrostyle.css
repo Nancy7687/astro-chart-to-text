@@ -52,30 +52,52 @@
             transform: rotate(45deg) translate(-6px, -6px);
         }
 
-        /* 手機導覽選單 */
-        .mobile-nav {
-            position: fixed;
-            /* top: 0;
-            left: -100%;
-            width: 80%;
-            max-width: 350px;
-            height: 70vh; */
-            top: 55px; /* 從 header 下方開始，您可以根據 header 的實際高度微調 */
-            bottom: 60px;
-            left: 0;
-            width: 100%;
-            height: calc(100vh - 115px); /* 填滿 header 以下的剩餘高度 */
-            /* background: linear-gradient(180deg, #1e1b4b 0%, #312e81 100%); */
-            background: linear-gradient(180deg, #73737d 0%, #302f3b 100%);
-            z-index: 1000;
-            /* transition: left 0.3s ease; */
-            transition: transform 0.3s ease-in-out;
-            transform: translateX(-100%); /* 預設將選單移到畫面左邊外面 */
-            overflow-y: auto;
-            /* padding-top: 80px; */
-            padding-top: 20px; /* 調整頂部間距 */
-            padding-bottom: 20px; /* 增加底部間距 */
-        }
+                /*手機版導覽選單樣式    緊貼 header，扣除底部導覽列*/
+                .mobile-nav {
+                    position: fixed;
+                    top: 55px;
+                    /* 假設 header 高度為 55px，請依實際情況調整 */
+                    bottom: 60px;
+                    /* 假設底部手機導覽列高度為 60px，請依實際情況調整 */
+                    left: 0;
+                    width: 100%;
+                    z-index: 1000;
+                    background: linear-gradient(180deg, #73737d 0%, #302f3b 100%);
+                    transition: transform 0.3s ease-in-out;
+                    transform: translateX(-100%);
+                    /* 預設隱藏 */
+                    overflow-y: auto;
+                }
+        
+                /*當選單開啟時的狀態*/
+                .mobile-nav.is-open {
+                    transform: translateX(0);
+                }
+        
+                /*選單內部項目，使用 Flexbox 平均分散*/
+                .mobile-nav ul {
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: space-evenly;
+                    /* 將項目平均分散 */
+                    height: 100%;
+                    /* 填滿父容器高度 */
+                    list-style: none;
+                    margin: 0;
+                    padding: 0 20px;
+                    /* 左右內間距 */
+                }
+        
+                /*選單項目的基本樣式*/
+                .mobile-nav a {
+                    display: block;
+                    color: white;
+                    /* 範例顏色 */
+                    text-align: center;
+                    padding: 15px 0;
+                    /* 調整上下間距 */
+                    text-decoration: none;
+                }
 
         /* .mobile-nav.active {
             left: 0;
