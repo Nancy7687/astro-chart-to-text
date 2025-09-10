@@ -57,7 +57,7 @@
                     position: fixed;
                     top: 50px;
                     /* 修復：使用 calc() 來確保導航不會超出螢幕底部 */
-                    height: calc(100vh - 50px - env(safe-area-inset-bottom));
+                    height: calc(100vh - 50px);
                     /* 移除 bottom 屬性，改用 height 來控制高度 */
                     left: 0;
                     width: 100%;
@@ -76,7 +76,7 @@
                 @media (max-height: 600px) {
                     .mobile-nav {
                         top: 40px;
-                        height: calc(100vh - 40px - env(safe-area-inset-bottom));
+                        height: calc(100vh - 40px);
                     }
                 }
         
