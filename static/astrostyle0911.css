@@ -52,13 +52,13 @@
             transform: rotate(45deg) translate(-6px, -6px);
         }
 
-                /*手機版導覽選單樣式 - 修復版本*/
+                /*手機版導覽選單樣式    緊貼 header，扣除底部導覽列*/
                 .mobile-nav {
                     position: fixed;
                     top: 50px;
-                    /* 修復：使用 calc() 來確保導航不會超出螢幕底部 */
-                    height: calc(100vh - 50px);
-                    /* 移除 bottom 屬性，改用 height 來控制高度 */
+                    /* 假設 header 高度為 50px，請依實際情況調整 */
+                    bottom: 100px;
+                    /* 假設底部手機導覽列高度為 60px，請依實際情況調整 */
                     left: 0;
                     width: 100%;
                     z-index: 1000;
@@ -67,17 +67,6 @@
                     transform: translateX(-100%);
                     /* 預設隱藏 */
                     overflow-y: auto;
-                    /* 確保內容過多時可以滾動 */
-                    -webkit-overflow-scrolling: touch;
-                    /* iOS 平滑滾動 */
-                }
-
-                /* 為小螢幕設備進一步優化 */
-                @media (max-height: 600px) {
-                    .mobile-nav {
-                        top: 40px;
-                        height: calc(100vh - 40px);
-                    }
                 }
         
                 /*當選單開啟時的狀態*/
@@ -95,28 +84,17 @@
                                     margin: 0;
                                     padding: 20px;
                                     /* 上下左右都加上一些內間距，比原先的更好看 */
-                                    /* 修復：確保有足夠的底部間距 */
-                                    padding-bottom: 40px;
-                                    /* 為底部留出更多空間 */
-                                    min-height: 100%;
-                                    /* 確保列表至少填滿容器高度 */
-                                    box-sizing: border-box;
                                 }
         
                 /*選單項目的基本樣式*/
                 .mobile-nav a {
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
+                    display: block;
                     color: white;
                     /* 範例顏色 */
                     text-align: center;
-                    padding: 15px 0;
-                    /* 修復：增加上下間距以改善觸控體驗 */
+                    padding: 10px 0;
+                    /* 調整上下間距 */
                     text-decoration: none;
-                    /* 修復：為每個項目添加最小高度 */
-                    min-height: 44px;
-                    /* iOS 建議的最小觸控目標尺寸 */
                 }
 
         /* .mobile-nav.active {
