@@ -251,7 +251,7 @@
             backdrop-filter: blur(10px);
             border: 1px solid rgba(139, 92, 246, 0.2);
             /* border-radius: 12px; */
-            padding: 24px;
+            padding: 14px;
             transition: all 0.3s ease;
         }
 
@@ -260,7 +260,7 @@
             backdrop-filter: blur(10px);
             border: 1px solid rgba(139, 92, 246, 0.2);
             /* border-radius: 12px; */
-            padding: 24px;
+            padding: 14px;
             transition: all 0.3s ease;
         }
 
