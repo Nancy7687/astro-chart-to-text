@@ -27,7 +27,7 @@
 
 <!-- Header Navigation -->
     <header class="bg-zinc-700 backdrop-filter backdrop-blur-lg border-b border-purple-500 sticky top-0 z-50">
-        <nav class="container mx-auto px-4 py-3 bg-zinc-700">
+        <nav class="container mx-auto h-16 px-4 py-3 bg-zinc-700">
             <!-- 漢堡選單按鈕 (手機版) -->
         <button id="hamburger" class="hamburger md:hidden">
                 <span></span>
@@ -36,8 +36,8 @@
             </button>
             <div class="mobile-flex flex items-start justify-start md:justify-between">
                 <div class="flex items-center justify-start space-x-4">
-                    <i class="fas fa-star text-yellow-400 text-2xl"></i>
-                    <h1 class="text-3xl md:text-4xl font-bold text-[#fde68a]">問星</h1>
+                    <i class="fas fa-star text-yellow-400 text-4xl"></i>
+                    <h1 class="text-4xl md:text-4xl font-bold text-[#fde68a]">問星</h1>
                 </div>
                 <!-- Mobile menu button -->
                 <!-- <button class="md:hidden text-[#F0F0F0]" onclick="toggleMobileMenu()">
@@ -48,52 +48,59 @@
                   <nav id="mobile-menu" class="mobile-nav md:hidden mt-4 hidden w-full h-screen">
   <ul class="flex flex-col justify-evenly h-full space-y-1">
     <li>
-      <a href="#" onclick="showSection('birth-chart')" class="py-2 text-[#ffedd5] font-bold text-2xl hover:text-[#38bdf8] transition-colors duration-300">
+      <a href="#" onclick="showSection('birth-chart')" class="py-2 text-[#ffedd5] font-bold text-3xl hover:text-[#38bdf8] transition-colors duration-300">
         📝 星盤資料生成
       </a>
     </li>
     <hr class="border-gray-400">
 
     <li>
-      <a href="#" onclick="showSection('start-reading')" class="py-2 text-[#F0F0F0] font-bold text-xl hover:text-yellow-400 transition-colors duration-300">
+      <a href="#" onclick="showSection('start-reading')" class="py-2 text-[#F0F0F0] font-bold text-2xl hover:text-yellow-400 transition-colors duration-300">
         🌟 AI 占星引導
       </a>
     </li>
     <hr class="border-gray-400">
 
     <li>
-      <a href="#" onclick="showSection('personal-chart')" class="py-2 text-[#F0F0F0] font-bold text-xl hover:text-yellow-400 transition-colors duration-300">
+      <a href="#" onclick="showSection('personal-chart')" class="py-2 text-[#F0F0F0] font-bold text-2xl hover:text-yellow-400 transition-colors duration-300">
         🗝️ 個人星圖解鎖
       </a>
     </li>
     <hr class="border-gray-400">
 
     <li>
-      <a href="#" onclick="showSection('instant-solution')" class="py-2 text-[#F0F0F0] font-bold text-xl hover:text-yellow-400 transition-colors duration-300">
+      <a href="#" onclick="showSection('instant-solution')" class="py-2 text-[#F0F0F0] font-bold text-2xl hover:text-yellow-400 transition-colors duration-300">
         ⚡占星卜卦
       </a>
     </li>
     <hr class="border-gray-400">
 
     <li>
-      <a href="#" onclick="showSection('relationship-insight')" class="py-2 text-[#F0F0F0] font-bold text-xl hover:text-yellow-400 transition-colors duration-300">
+      <a href="#" onclick="showSection('relationship-insight')" class="py-2 text-[#F0F0F0] font-bold text-2xl hover:text-yellow-400 transition-colors duration-300">
         👁️ 關係比較盤洞察
       </a>
     </li>
     <hr class="border-gray-400">
 
     <li>
-      <a href="#" onclick="showSection('relationship-resonance')" class="py-2 text-[#F0F0F0] font-bold text-xl hover:text-yellow-400 transition-colors duration-300">
+      <a href="#" onclick="showSection('relationship-resonance')" class="py-2 text-[#F0F0F0] font-bold text-2xl hover:text-yellow-400 transition-colors duration-300">
         🔗 關係中點盤
       </a>
     </li>
     <hr class="border-gray-400">
 
     <li>
-      <a href="#" onclick="showSection('fortune-tracking')" class="py-2 text-[#F0F0F0] font-bold text-xl hover:text-yellow-400 transition-colors duration-300">
+      <a href="#" onclick="showSection('fortune-tracking')" class="py-2 text-[#F0F0F0] font-bold text-2xl hover:text-yellow-400 transition-colors duration-300">
         📈 運勢週期脈動追蹤
       </a>
     </li>
+    <hr class="border-gray-400">
+    <li>
+      <a href="#" class="py-2 text-[#F0F0F0] font-bold text-xl hover:text-yellow-400 transition-colors duration-300">    
+          <i class="fa-solid fa-star-of-david text-zinc-400 text-3xl text-center"></i>
+      </a>
+      </li>
+      <hr class="border-gray-400">
   </ul>
 </nav>
                 <!-- <div id="mobile-menu" class="mobile-nav md:hidden mt-4 hidden w-full h-screen">
@@ -380,9 +387,13 @@
         
                 <div class="tab-buttons">
                     <button id="singleChartTab" class="tab-button active"
-                        data-tab-content="singleChartSection">個人星盤&nbsp;&nbsp;or&nbsp;&nbsp;占星卜卦</button>
+                        data-tab-content="singleChartSection">個人星盤<br>or<br>
+                        <!-- &nbsp;&nbsp;or&nbsp;&nbsp; -->
+                        占星卜卦</button>
                     <button id="synastryTab" class="tab-button"
-                        data-tab-content="synastryChartSection">雙人合盤&nbsp;&nbsp;or&nbsp;&nbsp;行運盤</button>
+                        data-tab-content="synastryChartSection">雙人合盤<br>or<br>
+                        <!-- &nbsp;&nbsp;or&nbsp;&nbsp; -->
+                        行運盤</button>
                 </div>
         
                 <div id="singleChartSection" class="chart-section">
@@ -1811,7 +1822,7 @@
                     <p class="mb-14">請提出您最關切的問題，並提供精確的提問時間與地點，讓卜卦盤為您撥開迷霧，看清事件的全貌。</p>
                 </div>
                 <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
-                    <p class="text-gray-300">他/她對我的真實想法是什麼？</p>
+                    <p class="text-gray-300">他/她對我的感情和真實想法是什麼？</p>
                     <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
                 </div>
                 <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
@@ -2359,8 +2370,8 @@
             <p class="text-gray-300 mb-3">本研究中使用的星體位置數據來自 Swiss Ephemeris，由 Astrodienst 提供，其高精度星曆表基於 NASA JPL 的 DE431 星曆數據。</p>
             <div class="flex justify-center space-x-6 text-sm text-gray-500">
                 <span>© 2025 問星</span>
-                <span>隱私政策</span>
-                <span>服務條款</span>
+                <!-- <span>隱私政策</span>
+                <span>服務條款</span> -->
             </div>
         </div>
     </footer>

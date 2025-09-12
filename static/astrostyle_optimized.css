@@ -129,12 +129,13 @@ p {
 /* 手機版導航菜單 */
 .mobile-nav {
     position: fixed;
-    top: 0;
+    top: 40;
     left: 0;
     width: 100%;
     height: 100vh;
-    height: calc(100vh - env(safe-area-inset-bottom));
-    z-index: 1000;
+    height: calc(100vh - 40(safe-area-inset-bottom));
+    /* height: calc(100vh - env(safe-area-inset-bottom)); */
+    z-index: 49;
     background: linear-gradient(180deg, var(--primary-dark) 0%, var(--secondary-dark) 100%);
     transform: translateX(-100%);
     transition: transform 0.3s ease-in-out;
