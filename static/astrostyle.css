@@ -376,6 +376,24 @@
             box-sizing: inherit;
         }
 
+        /* 桌機nav項目樣式 */
+                .desk-nav-list {
+                    padding: 8px 16px;
+                    border-radius: 9999px;
+                    /* 做出橢圓/膠囊形狀 */
+                    color: #fff;
+                    background: transparent;
+                    /* 預設透明 */
+                    transition: background 0.4s ease, box-shadow 0.4s ease;
+                    cursor: pointer;
+                }
+        
+                .desk-nav-list:hover {
+                    background: linear-gradient(135deg, #a5b4fc, #c084fc, #f9a8d4);
+                    /* indigo-300 → purple-400 → pink-300 光明星際感 */
+                    box-shadow: 0 0 12px rgba(200, 150, 255, 0.5);
+                }
+
         /* 輸出容器 */
         #resultOutput {
             display: flex;
