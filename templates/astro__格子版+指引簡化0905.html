@@ -562,7 +562,7 @@
         </nav>
     </header>
 
-    <main class="container mx-auto md:px-4 py-8">
+    <main class="container mx-0 md:mx-auto md:px-4 py-8">
         <!-- Hero Section -->
         <section id="hero" class="hero-section text-center py-16 mb-12 relative z-10">
             <h1 class="text-4xl md:text-6xl font-bold mb-4" style="font-family: 'Playfair Display', serif;">
@@ -930,19 +930,53 @@
                         </div>
                     </div>
                 </div>
-        
+                
                 <div id="planetSelection" class="my-6 p-4 border border-gray-200 rounded-lg bg-gray-50">
-                    <div class="flex justify-between items-center mb-3">
+    <!-- 開合的觸發區域 -->
+    <div id="toggleHeader" class="flex justify-between items-center mb-3 cursor-pointer">
+        <h3 class="text-xl md:text-2xl font-bold text-gray-700">顯示選項
+            (小行星/虛點)</h3>
+        <div class="flex flex-col items-end space-y-2">
+            <span id="toggleIcon" class="transition-transform duration-300 transform rotate-0">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-purple-800" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                </svg>
+            </span>
+        </div>
+    </div> <!-- toggleHeader 結束 -->
+    
+    <!-- 【關鍵修改】將「全部取消」按鈕移到這裡 -->
+    <!-- 【修改部分】用一個 flex 容器讓按鈕靠右 -->
+    <div class="flex justify-end">
+        <button id="toggleAllPlanetsBtn" class="planet-toggle-btn all-toggle-btn text-sm md:text-base font-bold text-purple-800 hover:text-purple-800 hidden mb-3">全部取消</button>
+    </div>
+    <!-- 選項容器 -->
+    <div id="optionalPlanetsContainer"
+        class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-x-6 gap-y-3 hidden">
+    </div>
+    </div>
+
+                <!-- <div id="planetSelection" class="my-6 p-4 border border-gray-200 rounded-lg bg-gray-50">
+                    <div id="toggleHeader" class="flex justify-between items-center mb-3 cursor-pointer">
                         <h3 class="text-xl md:text-2xl font-bold text-gray-700">顯示選項 <br>(小行星/虛點)</h3>
-                        <div>
-                            <button id="toggleAllPlanetsBtn"
-                                class="text-sm md:text-base font-medium text-indigo-600 hover:text-indigo-800">全部取消</button>
-                        </div>
+                
+                        <div class="flex flex-col items-end space-y-2">
+                            <span id="toggleIcon" class="transition-transform duration-300 transform rotate-0">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-purple-800" fill="none" viewBox="0 0 24 24"
+                                stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                            </svg>
+                        </span>
+                    </div>
+                    <button id="toggleAllPlanetsBtn"
+                        class="planet-toggle-btn all-toggle-btn text-sm md:text-base font-bold text-purple-800 hover:text-purple-800 hidden">全部取消</button>
                     </div>
                     <div id="optionalPlanetsContainer"
-                        class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-x-6 gap-y-3">
+                        class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-x-6 gap-y-3 hidden">
                     </div>
-                </div>
+                </div> -->
+                
         
                 <div class="text-center mb-6">
                     <button id="calculateBtn" aria-live="polite">計算星盤</button>

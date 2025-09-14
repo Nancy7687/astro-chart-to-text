@@ -397,7 +397,8 @@
             /* 各個星盤報告之間的間距 */
         }
 
-        .chart-main-header {
+        .chart-main-header,
+        .report-main-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -425,9 +426,10 @@
 
 
         .chart-main-header h2 {
-            margin: 0;
+            margin: 0 auto 0 0;
             font-size: 1.5em;
-            flex-grow: 1;
+            flex-grow: 0;
+            flex-shrink: 1; /* 如果空間不足，允許標題縮小 */
             margin-right: 20px;
         }
 
@@ -561,7 +563,7 @@
             font-weight: bold;
             transition: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             border: none;
-            border-radius: 8px;
+            border-radius: 15px;
             cursor: pointer;
         }
 
@@ -819,8 +821,7 @@
             height: 100%;
         }
 
-        button.section-copy-btn,
-        button.copy-chart-btn {
+        button.section-copy-btn {
             border: none;
             padding: 5px 10px;
             border-radius: 4px;
@@ -846,26 +847,55 @@
 
         /* button.section-copy-btn:hover, button.copy-chart-btn:hover { opacity: 0.85; } */
         /* 為不同按鈕設定各自的 hover 效果 */
-        button.section-copy-btn:hover {
-            background-color: #0056b3;
-        }
+                .copy-chart-btn,
+                .download-chart-btn {
+                    border: none;
+                    padding: 8px 16px;
+                    border-radius: 4px;
+                    cursor: pointer;
+                    font-weight: bold;
+                    font-size: 1rem;
+                    transition: all 0.2s ease-in-out;
+                    color: white;
+                    white-space: nowrap;
+                    flex-shrink: 0;
+                    width: auto;
+                    display: inline-block;
+                    margin-left: auto;
+                    margin-right: 0;
+                }
+                .copy-chart-btn {
+                    background-color: #008CBA;
+                }
 
-        .report-main-header .copy-report-btn:hover,
-        .chart-main-header .copy-chart-btn:hover {
-            filter: brightness(90%);
-            /* 讓按鈕顏色稍微變暗，比透明度更有質感 */
-        }
-
-        .chart-main-header .copy-chart-btn {
-            background-color: #42b72a;
-            color: white;
-            font-size: 1rem;
-            padding: 8px 16px;
-        }
+                .download-chart-btn {
+                    background-color: #1e8bff;
+                    margin-left:10px;
+                }
+                
+                
+                .copy-chart-btn:hover {
+                    background-color: #007B9A;
+                }
+                
+        
+                /* 讓所有 hover 效果都共用濾鏡 */
+                .copy-report-btn:hover,
+                .copy-chart-btn:hover,
+                .download-report-btn:hover,
+                .download-chart-btn:hover {
+                    filter: brightness(90%);
+                }
+                
+                .section-copy-btn:hover {
+                    background-color: #0056b3;
+                }
 
         .section-copy-btn.copied {
             background-color: #10b981;
         }
+
+
 
         .chart-type-selection-sub {
             display: flex;
@@ -944,25 +974,23 @@
 
         /* 報告的總標題列 */
         .report-main-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 1rem 1.5rem;
-            color: white;
             background: linear-gradient(to right, #6A0DAD, #C71585);
             /* 主要的紫色漸層 */
+            
         }
 
         .report-main-header h2 {
             font-size: 1.5em;
             font-weight: bold;
+            flex-grow: 1; /* 讓標題佔據所有剩餘空間，將按鈕推到最右邊 */
+            margin: 0 20px 0 0; /* 確保標題和按鈕之間有間距 */
         }
 
         /* 讓總複製按鈕更顯眼 */
-        .report-main-header .copy-report-btn {
-            background-color: #4CAF50;
-            /* 綠色 */
+        .copy-report-btn,
+        .download-report-btn {
             font-size: 1.25rem;
+            font-weight: bold;
             padding: 8px 16px;
             border-radius: 8px;
             /* 【新增】設定 8px 的圓角 */
@@ -970,17 +998,23 @@
             /* 加上過渡效果讓 hover 更平滑 */
         }
 
-        .report-main-header .copy-report-btn:hover {
-            background-color: #45a049;
+        .copy-report-btn {
+            background: linear-gradient(to right, #d27fbd, rgb(255, 186, 230));
+            /* color: rgb(136, 21, 136); */
         }
 
-        /* 確保單一星盤的複製按鈕樣式也被覆蓋 */
-        .chart-main-header .copy-chart-btn {
-            background-color: #008CBA;
-            /* 藍色 */
+        .copy-report-btn:hover {
+            background-color:  rgb(143, 100, 137);ㄏ
         }
 
-        .chart-main-header .copy-chart-btn:hover {
+        .download-report-btn {
+            background: linear-gradient(to right, #eed7ff, #ffd1ee);
+            color: purple;
+            margin-left:10px;
+        }
+
+
+        .copy-chart-btn:hover {
             background-color: #007B9A;
         }
 
@@ -1232,7 +1266,7 @@
             /* 與下方報告內容保持距離 */
             border: 1px solid #ccc;
             /* 外框 */
-            border-radius: 5px;
+            border-radius: 10px;
             /* 圓角 */
             overflow: hidden;
             /* 確保按鈕圓角不超出容器 */
@@ -1376,7 +1410,7 @@
                 /* 移除垂直間距 */
             }
 
-            .chart-main-header .copy-chart-btn {
+            .copy-chart-btn {
                 width: auto;
                 /* 按鈕寬度自適應內容 */
             }

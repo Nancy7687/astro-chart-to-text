@@ -9,6 +9,13 @@
             --text-muted: #cbd5e1;
         }
 
+                /* 這是個常見的 CSS Reset */
+                * {
+                    margin: 0;
+                    padding: 0;
+                    box-sizing: border-box;
+                }
+
         body {
             font-family: 'Noto Sans TC', sans-serif;
             background: linear-gradient(135deg, var(--primary-dark) 0%, var(--secondary-dark) 100%);
@@ -868,12 +875,6 @@
             background-color: #0056b3;
         }
 
-        .report-main-header .copy-report-btn:hover,
-        .chart-main-header .copy-chart-btn:hover {
-            filter: brightness(90%);
-            /* 讓按鈕顏色稍微變暗，比透明度更有質感 */
-        }
-
         .chart-main-header .copy-chart-btn {
             background-color: #42b72a;
             color: white;
@@ -976,6 +977,8 @@
             font-weight: bold;
         }
 
+        
+
         /* 讓總複製按鈕更顯眼 */
         .report-main-header .copy-report-btn {
             background-color: #4CAF50;
@@ -991,6 +994,52 @@
         .report-main-header .copy-report-btn:hover {
             background-color: #45a049;
         }
+
+        
+                /* 讓所有主標題按鈕都共用基本樣式 */
+                .report-main-header .copy-report-btn,
+                .report-main-header .download-report-btn {
+                    font-size: 1.25rem;
+                    padding: 8px 16px;
+                    border-radius: 8px;
+                    transition: all 0.2s ease-in-out;
+                }
+
+                /* 僅針對複製按鈕設定顏色 */
+                .report-main-header .copy-report-btn {
+                    background-color: #4CAF50;
+                    /* 綠色 */
+                }
+        
+                /* 僅針對下載按鈕設定顏色 */
+                .report-main-header .download-report-btn {
+                    background-color: #72b174;
+                    /* 綠色 */
+                }
+        
+                /* 設定 hover 效果 */
+                .report-main-header .copy-report-btn:hover {
+                    background-color: #45a049;
+                }
+        
+                .report-main-header .download-report-btn:hover {
+                    background-color: #538154;
+                }
+
+                /* 【新增】為單一星盤的下載按鈕設定樣式 */
+                .chart-main-header .download-chart-btn {
+                    background-color: #008CBA; /* 與複製按鈕顏色一致或自訂 */
+                    margin-left: 10px; /* 與複製按鈕間隔 */
+                }
+        
+                /* 讓所有 hover 效果都共用濾鏡 */
+                .report-main-header .copy-report-btn:hover,
+                .chart-main-header .copy-chart-btn:hover,
+                .report-main-header .download-report-btn:hover,
+                .chart-main-header .download-chart-btn:hover {
+                    filter: brightness(90%);
+                }
+
 
         /* 確保單一星盤的複製按鈕樣式也被覆蓋 */
         .chart-main-header .copy-chart-btn {

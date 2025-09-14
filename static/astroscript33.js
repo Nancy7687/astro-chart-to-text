@@ -303,13 +303,13 @@
              // 設置複製按鈕事件監聽器的函數
             function setupCopyListeners() {
                 // 移除舊的事件監聽器，避免重複綁定
-                const oldCopyButtons = document.querySelectorAll('.copy-chart-btn, .section-copy-btn, .copy-report-btn');
+                const oldCopyButtons = document.querySelectorAll('.copy-chart-btn, .section-copy-btn, .copy-report-btn, .download-report-btn, .download-chart-btn');
                 oldCopyButtons.forEach(button => {
                     button.removeEventListener('click', handleCopyButtonClick);
                 });
 
                 // 重新綁定事件監聽器
-                const copyButtons = document.querySelectorAll('.copy-chart-btn, .section-copy-btn, .copy-report-btn');
+                const copyButtons = document.querySelectorAll('.copy-chart-btn, .section-copy-btn, .copy-report-btn, .download-report-btn, .download-chart-btn');
                 console.log("setupCopyListeners: 找到的複製按鈕數量:", copyButtons.length);
                 copyButtons.forEach(button => {
                     button.addEventListener('click', handleCopyButtonClick);
@@ -317,126 +317,332 @@
             }
 
 
+            // 整合後的 handleCopyButtonClick 版本
             async function handleCopyButtonClick(event) {
-                const button = event.currentTarget;
-                let contentToCopy = ''; // 確保它一開始就是空字串
+    const button = event.currentTarget;
+    let contentToCopy = ''; // 確保它一開始就是空字串
 
-                try {
-                    if (button.classList.contains('copy-report-btn')) {
-                        const reportWrapper = button.closest('.report-wrapper');
-                        if (!reportWrapper) { // 加強檢查：如果找不到報告範圍，直接返回
-                            alert('無法找到報告內容範圍。');
-                            console.error('Copy report button clicked, but .report-wrapper not found.');
-                            return;
-                        }
+    try {
+        // 合併複製報告和下載報告按鈕的邏輯
+        if (button.classList.contains('copy-report-btn') || button.classList.contains('download-report-btn')) {
+            const reportWrapper = button.closest('.report-wrapper');
+            if (!reportWrapper) {
+                alert('無法找到報告內容範圍。');
+                console.error('Copy/Download report button clicked, but .report-wrapper not found.');
+                return;
+            }
+            
+            // 1. 先蒐集 Title
+            const mainReportTitleElement = reportWrapper.querySelector('.report-main-header h2');
+            if (mainReportTitleElement) {
+                contentToCopy += mainReportTitleElement.textContent.trim() + '\n\n';
+            }
 
-                        const mainReportTitleElement = reportWrapper.querySelector('.report-main-header h2');
-                        if (mainReportTitleElement) {
-                            contentToCopy += mainReportTitleElement.textContent.trim() + '\n';
-                        }
+            
+            const chartWrappers = reportWrapper.querySelectorAll('.chart-wrapper');
+    chartWrappers.forEach((chartWrapper, index) => { // 新增 index 參數
+        // 先蒐集每個命盤各自的 Title
+        const chartTitleElement = chartWrapper.querySelector('.chart-main-header h2');
+        if (chartTitleElement) {
+            if (index > 0) {
+                contentToCopy += '\n\n\n'; // 在每個命盤之間增加額外空行
+            }
+            contentToCopy += '\n' + chartTitleElement.textContent.trim() + '\n';
+            contentToCopy += '====================\n';
+        }
 
+        // 新增邏輯：如果按鈕是下載報告，則在 Title 後額外加入 summary 內容
+        if (button.classList.contains('download-report-btn')) {
+            // 在此範圍內尋找 table-content，確保它只屬於當前的 chartWrapper
+            const summaryElement = chartWrapper.querySelector(`pre.table-content`);
+            if (summaryElement) {
+                contentToCopy += summaryElement.innerText.trim() + '\n\n';
+            }
+        }
+        
+        // 再蒐集其他除了 summary 以外的文字內容
+        const preElements = chartWrapper.querySelectorAll(`.sub-sections-container pre.${currentDisplayMode}-content, .sub-sections-container div.${currentDisplayMode}-content`);
+        preElements.forEach(pre => {
+            if (pre) {
+                contentToCopy += pre.innerText.trim() + '\n\n';
+            }
+        });
+    });
+
+    // 3. 最後蒐集所有互動區塊的內容
+    const interactionContainer = reportWrapper.querySelector(':scope > .sub-sections-container');
+    if (interactionContainer) {
+        // 【新增】在互動區塊內容開始前，加入三個空行，但僅限於下載按鈕
+        if (button.classList.contains('download-report-btn')) {
+            contentToCopy += '\n\n\n';
+        }
+
+        const sectionItems = interactionContainer.querySelectorAll('.result-section-item');
+        sectionItems.forEach(item => {
+            const preElement = item.querySelector(`pre.${currentDisplayMode}-content`);
+            if (preElement) {
+                contentToCopy += preElement.innerText.trim() + '\n\n';
+            }
+        });
+    }
+
+    contentToCopy = contentToCopy.trim();
+            
+            // 處理「沒有找到內容」的警示
+            if (contentToCopy === '') {
+                alert('沒有找到可處理的內容。');
+                return;
+            }
+
+            // 這裡根據按鈕的 class 決定是下載還是複製
+            if (button.classList.contains('download-report-btn')) {
+
+                // 取得 mainReportTitleElement 的文字作為檔名，並移除多餘空格
+                let filename = mainReportTitleElement.textContent.trim();
     
-                        const chartWrappers = reportWrapper.querySelectorAll('.chart-wrapper');
-                        chartWrappers.forEach(chartWrapper => {
-                            const chartTitleElement = chartWrapper.querySelector('.chart-main-header h2');
-                            if (chartTitleElement) {
-                                contentToCopy += '\n' + chartTitleElement.textContent.trim() + '\n';
-                                contentToCopy += '====================\n';
-                            }
-
-                            // 確保獲取的是文字內容，並處理找不到元素的情況
-                             // 【核心修改】從整個 chartWrapper 改為只在 .sub-sections-container 中尋找，以排除 summary 區塊
-                        const preElements = chartWrapper.querySelectorAll(`.sub-sections-container pre.${currentDisplayMode}-content, .sub-sections-container div.${currentDisplayMode}-content`);
-                              
-                        preElements.forEach(pre => {
-                                if (pre) { // 確保 pre 存在
-                                    contentToCopy += pre.innerText.trim() + '\n\n'; // 使用 trim() 確保沒有多餘空白
-                                }
-                            });
-                        });
-
-                // 【問題修正】為了解決合盤報告無法複製互動區塊（疊盤、交互相位）的問題，
-                // 我們在此特別找出不在 .chart-wrapper 內的 .sub-sections-container，並複製其內容。
-                // 這個容器通常包含了比較盤和行運盤的互動分析。
-                const interactionContainer = reportWrapper.querySelector(':scope > .sub-sections-container');
-                if (interactionContainer) {
-                    const sectionItems = interactionContainer.querySelectorAll('.result-section-item');
-                    sectionItems.forEach(item => {
-                        // 【使用者要求】只複製內文，不複製小標題
-                        const preElement = item.querySelector(`pre.${currentDisplayMode}-content`);
-                        if (preElement) {
-                            contentToCopy += preElement.innerText.trim() + '\n\n';
-                        }
-                    });
+                // 如果標題為空，則使用預設檔名
+                if (filename === '') {
+                    filename = '占星報告';
                 }
 
-                        contentToCopy = contentToCopy.trim(); // 最後再 trim 一次整個字串
+                // 根據目前的顯示模式，新增後綴
+                if (currentDisplayMode === 'table') {
+                    filename += ' (表格式文字)';
+                   } else if (currentDisplayMode === 'narrative') {
+                      filename += ' (敘述模式)';
+                }
+    
+            // 呼叫下載函式，並傳入新的動態檔名
+            downloadTextFile(button, contentToCopy, filename + '.txt');
+            } else {
+                await copyContent(contentToCopy, button);
+              }
 
-                    } else if (button.classList.contains('copy-chart-btn')) {
-                        const chartWrapper = button.closest('.chart-wrapper');
-                        if (!chartWrapper) { // 加強檢查：如果找不到命盤範圍，直接返回
-                            alert('無法找到單一命盤內容範圍。');
-                            console.error('Copy chart button clicked, but .chart-wrapper parent not found.');
-                            return;
-                        }
+            } else if (button.classList.contains('copy-chart-btn') || button.classList.contains('download-chart-btn')) {
+               const chartWrapper = button.closest('.chart-wrapper');
+                if (!chartWrapper) {
+                alert('無法找到單一命盤內容範圍。');
+                console.error('Copy chart button clicked, but .chart-wrapper parent not found.');
+                return;
+            }
 
-                        const chartTitleElement = chartWrapper.querySelector('.chart-main-header h2');
-                        if (chartTitleElement) {
-                            contentToCopy += chartTitleElement.textContent.trim() + '\n';
-                            contentToCopy += '====================\n';
-                        }
+            // 蒐集 單命盤的 Title
+            const chartTitleElement = chartWrapper.querySelector('.chart-main-header h2');
+            if (chartTitleElement) {
+                contentToCopy += chartTitleElement.textContent.trim() + '\n';
+                contentToCopy += '====================\n\n';
+            }
 
-                        // 確保獲取的是文字內容，並處理找不到元素的情況
-                        const preElements = chartWrapper.querySelectorAll(`.sub-sections-container pre.${currentDisplayMode}-content`);
-                        preElements.forEach(pre => {
-                            if (pre) { // 確保 pre 存在
-                                contentToCopy += pre.innerText.trim() + '\n\n';
-                            }
-                        });
-                        contentToCopy = contentToCopy.trim();
+            // 新增的邏輯：如果按鈕是下載按鈕，則額外加入 summary 內容
+            if (button.classList.contains('download-chart-btn')) {
+            const summaryElement = chartWrapper.querySelector(`pre.table-content`);
+            console.log("找到的 summaryElement:", summaryElement); // <-- 新增這行
 
-                    } else if (button.classList.contains('section-copy-btn')) {
-                        const sectionItem = button.closest('.result-section-item');
-                        if (!sectionItem) { // 加強檢查：如果找不到區塊範圍，直接返回
-                            alert('無法找到區塊內容範圍。');
-                            console.error('Section copy button clicked, but .result-section-item parent not found.');
-                            return;
-                        }
-
-                        // 這是最常見的出錯點，確保 preElement 存在且取得其 innerText
-                        const preElement = sectionItem.querySelector(`pre.${currentDisplayMode}-content`);
-                        if (preElement) { // <-- 關鍵檢查：確保 preElement 確實找到了
-                            contentToCopy = preElement.innerText.trim(); // <-- 從元素中提取文字內容
-                        } else {
-                            contentToCopy = ''; // 如果找不到 <pre>，則內容為空字串，而不是 undefined 或 null
-                            console.warn(`在 ${currentDisplayMode}-content 中沒有找到 <pre> 元素進行複製。`);
-                        }
-                    }
-
-                    // 最後的檢查，確保 contentToCopy 是字串
-                    if (typeof contentToCopy !== 'string') {
-                        console.error("錯誤：contentToCopy 最終不是字串，而是:", contentToCopy);
-                        alert('複製內容格式錯誤。');
-                        return;
-                    }
-
-                    if (contentToCopy === '') {
-                        alert('沒有找到可複製的內容。');
-                        return;
-                    }
-
-                    // 在這裡，contentToCopy 必須是字串
-                    await copyContent(contentToCopy, button);
-
-                } catch (error) {
-                    console.error('複製內容時發生錯誤:', error);
-                    alert('複製失敗，請檢查控制台錯誤。');
-                    if (button) {
-                        button.textContent = '複製失敗';
-                        setTimeout(() => button.textContent = '複製', 2000);
-                    }
+                if (summaryElement) {
+                  console.log("summaryElement 的內容:", summaryElement.innerText); // <-- 新增這行
+                  
+                  // 【修正】這裡將 `=` 改為 `+=`，讓內容追加在最後面
+                    contentToCopy += summaryElement.innerText.trim() + '\n\n';
+                //   contentToCopy = summaryElement.innerText.trim() + '\n\n' + contentToCopy;
                 }
             }
+
+            // 再蒐集其他除了summary以外的文字內容
+            const preElements = chartWrapper.querySelectorAll(`.sub-sections-container pre.${currentDisplayMode}-content`);
+            preElements.forEach(pre => {
+                if (pre) {
+                    contentToCopy += pre.innerText.trim() + '\n\n';
+                }
+            });
+
+
+            contentToCopy = contentToCopy.trim();
+            
+            if (contentToCopy === '') {
+                alert('沒有找到可處理的內容。');
+                return;
+            }
+            
+            // 新增的邏輯：根據按鈕類別決定動作
+            if (button.classList.contains('download-chart-btn')) {
+                // 取得 chartTitleElement 的文字作為檔名，並移除多餘空格
+                let filename = chartTitleElement.textContent.trim();
+
+                // 如果標題為空，則使用預設檔名
+                if (filename === '') {
+                    filename = '單命盤報告';
+                }
+
+                // 根據目前的顯示模式，新增後綴
+                if (currentDisplayMode === 'table') {
+                      filename += ' (表格式文字)';
+                  } else if (currentDisplayMode === 'narrative') {
+                      filename += ' (敘述模式)';
+                }
+    
+
+                // 呼叫下載函式，並傳入新的動態檔名
+                downloadTextFile(button, contentToCopy, filename + '.txt');
+            
+            } else {
+                await copyContent(contentToCopy, button);
+            }
+            
+        } else if (button.classList.contains('section-copy-btn')) {
+            const sectionItem = button.closest('.result-section-item');
+            if (!sectionItem) {
+                alert('無法找到區塊內容範圍。');
+                console.error('Section copy button clicked, but .result-section-item parent not found.');
+                return;
+            }
+            const preElement = sectionItem.querySelector(`pre.${currentDisplayMode}-content`);
+            if (preElement) {
+                contentToCopy = preElement.innerText.trim();
+            } else {
+                contentToCopy = '';
+                console.warn(`在 ${currentDisplayMode}-content 中沒有找到 <pre> 元素進行複製。`);
+            }
+            if (contentToCopy === '') {
+                alert('沒有找到可複製的內容。');
+                return;
+            }
+            await copyContent(contentToCopy, button);
+        }
+
+    } catch (error) {
+        console.error('處理按鈕事件時發生錯誤:', error);
+        alert('操作失敗，請檢查控制台錯誤。');
+        if (button) {
+            button.textContent = '操作失敗';
+            setTimeout(() => button.textContent = '複製', 2000);
+        }
+    }
+}
+
+
+            // async function handleCopyButtonClick(event) {
+            //     const button = event.currentTarget;
+            //     let contentToCopy = ''; // 確保它一開始就是空字串
+
+            //     try {
+            //         if (button.classList.contains('copy-report-btn')|| button.classList.contains('download-report-btn')) {
+            //             const reportWrapper = button.closest('.report-wrapper');
+            //             if (!reportWrapper) { // 加強檢查：如果找不到報告範圍，直接返回
+            //                 alert('無法找到報告內容範圍。');
+            //                 console.error('Copy report button clicked, but .report-wrapper not found.');
+            //                 return;
+            //             }
+
+            //             const mainReportTitleElement = reportWrapper.querySelector('.report-main-header h2');
+            //             if (mainReportTitleElement) {
+            //                 contentToCopy += mainReportTitleElement.textContent.trim() + '\n';
+            //             }
+
+    
+            //             const chartWrappers = reportWrapper.querySelectorAll('.chart-wrapper');
+            //             chartWrappers.forEach(chartWrapper => {
+            //                 const chartTitleElement = chartWrapper.querySelector('.chart-main-header h2');
+            //                 if (chartTitleElement) {
+            //                     contentToCopy += '\n' + chartTitleElement.textContent.trim() + '\n';
+            //                     contentToCopy += '====================\n';
+            //                 }
+
+            //                 // 確保獲取的是文字內容，並處理找不到元素的情況
+            //                  // 【核心修改】從整個 chartWrapper 改為只在 .sub-sections-container 中尋找，以排除 summary 區塊
+            //             const preElements = chartWrapper.querySelectorAll(`.sub-sections-container pre.${currentDisplayMode}-content, .sub-sections-container div.${currentDisplayMode}-content`);
+                              
+            //             preElements.forEach(pre => {
+            //                     if (pre) { // 確保 pre 存在
+            //                         contentToCopy += pre.innerText.trim() + '\n\n'; // 使用 trim() 確保沒有多餘空白
+            //                     }
+            //                 });
+            //             });
+
+            //     // 【問題修正】為了解決合盤報告無法複製互動區塊（疊盤、交互相位）的問題，
+            //     // 我們在此特別找出不在 .chart-wrapper 內的 .sub-sections-container，並複製其內容。
+            //     // 這個容器通常包含了比較盤和行運盤的互動分析。
+            //     const interactionContainer = reportWrapper.querySelector(':scope > .sub-sections-container');
+            //     if (interactionContainer) {
+            //         const sectionItems = interactionContainer.querySelectorAll('.result-section-item');
+            //         sectionItems.forEach(item => {
+            //             // 【使用者要求】只複製內文，不複製小標題
+            //             const preElement = item.querySelector(`pre.${currentDisplayMode}-content`);
+            //             if (preElement) {
+            //                 contentToCopy += preElement.innerText.trim() + '\n\n';
+            //             }
+            //         });
+            //     }
+
+            //             contentToCopy = contentToCopy.trim(); // 最後再 trim 一次整個字串
+
+            //         } else if (button.classList.contains('copy-chart-btn')) {
+            //             const chartWrapper = button.closest('.chart-wrapper');
+            //             if (!chartWrapper) { // 加強檢查：如果找不到命盤範圍，直接返回
+            //                 alert('無法找到單一命盤內容範圍。');
+            //                 console.error('Copy chart button clicked, but .chart-wrapper parent not found.');
+            //                 return;
+            //             }
+
+            //             const chartTitleElement = chartWrapper.querySelector('.chart-main-header h2');
+            //             if (chartTitleElement) {
+            //                 contentToCopy += chartTitleElement.textContent.trim() + '\n';
+            //                 contentToCopy += '====================\n';
+            //             }
+
+            //             // 確保獲取的是文字內容，並處理找不到元素的情況
+            //             const preElements = chartWrapper.querySelectorAll(`.sub-sections-container pre.${currentDisplayMode}-content`);
+            //             preElements.forEach(pre => {
+            //                 if (pre) { // 確保 pre 存在
+            //                     contentToCopy += pre.innerText.trim() + '\n\n';
+            //                 }
+            //             });
+            //             contentToCopy = contentToCopy.trim();
+
+            //         } else if (button.classList.contains('section-copy-btn')) {
+            //             const sectionItem = button.closest('.result-section-item');
+            //             if (!sectionItem) { // 加強檢查：如果找不到區塊範圍，直接返回
+            //                 alert('無法找到區塊內容範圍。');
+            //                 console.error('Section copy button clicked, but .result-section-item parent not found.');
+            //                 return;
+            //             }
+
+            //             // 這是最常見的出錯點，確保 preElement 存在且取得其 innerText
+            //             const preElement = sectionItem.querySelector(`pre.${currentDisplayMode}-content`);
+            //             if (preElement) { // <-- 關鍵檢查：確保 preElement 確實找到了
+            //                 contentToCopy = preElement.innerText.trim(); // <-- 從元素中提取文字內容
+            //             } else {
+            //                 contentToCopy = ''; // 如果找不到 <pre>，則內容為空字串，而不是 undefined 或 null
+            //                 console.warn(`在 ${currentDisplayMode}-content 中沒有找到 <pre> 元素進行複製。`);
+            //             }
+            //         }
+
+            //         // 最後的檢查，確保 contentToCopy 是字串
+            //         if (typeof contentToCopy !== 'string') {
+            //             console.error("錯誤：contentToCopy 最終不是字串，而是:", contentToCopy);
+            //             alert('複製內容格式錯誤。');
+            //             return;
+            //         }
+
+            //         // **從這裡開始替換您原本的 await copyContent 呼叫**
+            //         // 新增的邏輯：根據按鈕類別決定動作
+            //         if (button.classList.contains('download-report-btn')) {
+            //         // 如果是下載按鈕，則呼叫下載函數
+            //         downloadTextFile(contentToCopy, '占星報告.txt');
+            //         } else {
+            //         // 否則，執行原有的複製到剪貼簿功能
+            //         await copyContent(contentToCopy, button);
+            //         }
+
+
+            //     } catch (error) {
+            //         console.error('複製內容時發生錯誤:', error);
+            //         alert('複製失敗，請檢查控制台錯誤。');
+            //         if (button) {
+            //             button.textContent = '複製失敗';
+            //             setTimeout(() => button.textContent = '複製', 2000);
+            //         }
+            //     }
+            // }
 
             // 為切換按鈕添加事件監聽器
             if (toggleTableModeBtn) {
@@ -478,6 +684,91 @@
 
             // 開始觀察 body 元素及其子元素的變化
             observer.observe(document.body, { childList: true, subtree: true });
+
+
+
+
+
+            // *下載文字內容為 .txt 文件的函數*
+            function downloadTextFile(buttonElement, content, filename) {
+    // 確保按鈕元素存在，避免錯誤
+    if (!buttonElement) return;
+
+    // 創建 Blob 和 URL
+    const blob = new Blob([content], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+
+    // 創建並點擊 <a> 元素
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+
+    // 在下載成功後，改變按鈕文字
+    buttonElement.textContent = '已下載';
+
+    // 設置計時器，在 2 秒後恢復文字
+    setTimeout(() => {
+        // 根據 class 判斷是哪個按鈕，並恢復其原始文字
+        if (buttonElement.classList.contains('download-report-btn')) {
+            buttonElement.textContent = '下載完整報告';
+        } else if (buttonElement.classList.contains('download-chart-btn')) {
+            buttonElement.textContent = '下載此盤';
+        }
+    }, 2000); // 2000 毫秒 = 2 秒
+}
+// function downloadTextFile(content, filename) {
+//     // 創建一個 Blob 物件，類型為純文字
+//     const blob = new Blob([content], { type: 'text/plain' });
+    
+//     // 創建一個臨時的 URL 來指向這個 Blob
+//     const url = URL.createObjectURL(blob);
+    
+//     // 創建一個隱藏的 <a> 元素來觸發下載
+//     const a = document.createElement('a');
+//     a.href = url;
+//     a.download = filename; // 設定下載時的檔案名稱
+//     document.body.appendChild(a);
+    
+//     // 模擬點擊 <a> 元素來啟動下載
+//     a.click();
+    
+//     // 清理資源，釋放創建的 URL
+//     document.body.removeChild(a);
+//     URL.revokeObjectURL(url);
+// }
+
+// 範例：如何在您的 handleCopyButtonClick 函數中調用它
+// async function handleCopyButtonClick(event) {
+//     const button = event.currentTarget;
+//     let contentToCopy = ''; // 確保它一開始就是空字串
+
+//     // ... (這裡保留您原有的邏輯，將所有內容組合成 contentToCopy 變數) ...
+//     if (button.classList.contains('copy-report-btn')|| button.classList.contains('download-report-btn')) {
+//         // ... (原有的複製程式碼邏輯) ...
+
+//         contentToCopy = contentToCopy.trim();
+
+//         if (contentToCopy === '') {
+//             alert('沒有找到可複製的內容。');
+//             return;
+//         }
+
+//         // === 在這裡新增呼叫下載函數 ===
+//         // 假設您的下載按鈕有 .download-report-btn 這個 class
+//         // 您可以根據按鈕的 class 來決定是複製還是下載
+//         if (button.classList.contains('download-report-btn')) {
+//             downloadTextFile(contentToCopy, '占星報告.txt');
+//         } else {
+//             // 原有的複製到剪貼簿功能
+//             await copyContent(contentToCopy, button);
+//         }
+//     }
+//     // ... (其他複製按鈕的邏輯) ...
+// }
 
 
             // 如果你的報告是動態生成的，並且是在 DOMContentLoaded 之後才渲染，
@@ -692,84 +983,196 @@
                 });
             }
 
+
+            // 優化的小行星/虛點選項 toggle
+            const optionalPlanetsConfig = {
+                '核心星體': ["太陽", "月亮", "水星", "金星", "火星", "木星", "土星", "天王", "海王", "冥王"],
+                '四軸': ["上升", "下降", "天頂", "天底"],
+                '命運與潛意識': ["北交", "南交", "宿命", "福點", "莉莉絲"],
+                '小行星': ["凱龍", "穀神", "智神", "婚神", "灶神", "愛神", "靈神", "人龍"]
+            };
+            
             function setupPlanetCheckboxes() {
-                const optionalPlanetsConfig = {
-                    '核心星體': ["太陽", "月亮", "水星", "金星", "火星", "木星", "土星", "天王", "海王", "冥王"],
-                    '四軸': ["上升", "下降", "天頂", "天底"],
-                    '命運與潛意識': ["北交", "南交", "宿命", "福點", "莉莉絲"],
-                    '小行星': ["凱龍", "穀神", "智神", "婚神", "灶神", "愛神", "靈神", "人龍"]
-                };
-                const container = document.getElementById('optionalPlanetsContainer');
-                container.innerHTML = ''; // 清空
+    const container = document.getElementById('optionalPlanetsContainer');
+    container.innerHTML = ''; // 清空
 
-                // 修改1動態生成所有內容
-                for (const groupName in optionalPlanetsConfig) {
-                    // 建立一個包含標題和按鈕的 header div
-                    const headerDiv = document.createElement('div');
-                    headerDiv.className = 'planet-group-header col-span-full mt-2'; // 使用新的 CSS class
+    // 動態生成所有內容
+    for (const groupName in optionalPlanetsConfig) {
+        // 建立一個包含標題和按鈕的 header div
+        const headerDiv = document.createElement('div');
+        headerDiv.className = 'planet-group-header col-span-full mt-2';
+        headerDiv.style.display = 'flex';
+        headerDiv.style.justifyContent = 'space-between';
+        headerDiv.style.alignItems = 'center';
 
-                    // 建立分類標題
-                    const groupTitle = document.createElement('span');
-                    groupTitle.className = 'font-semibold text-lg text-fuchsia-900';
-                    groupTitle.textContent = groupName;
+        // 建立分類標題
+        const groupTitle = document.createElement('span');
+        groupTitle.className = 'font-semibold text-lg text-fuchsia-900';
+        groupTitle.textContent = groupName;
 
-                    // 建立分類切換按鈕
-                    const groupToggleButton = document.createElement('button');
-                    groupToggleButton.className = 'planet-toggle-btn group-toggle-btn'; // 通用按鈕樣式 + 分類按鈕的專屬 class
-                    groupToggleButton.textContent = '此類取消';
-                    groupToggleButton.dataset.state = 'all-checked';
-                    groupToggleButton.dataset.groupKey = groupName; // 用 data-* 屬性記住它屬於哪個分類
+        // 建立分類切換按鈕，並重新加回
+        const groupToggleButton = document.createElement('button');
+        groupToggleButton.className = 'planet-toggle-btn group-toggle-btn';
+        groupToggleButton.textContent = '此類取消';
+        groupToggleButton.dataset.state = 'all-checked';
+        groupToggleButton.dataset.groupKey = groupName;
 
-                    headerDiv.appendChild(groupTitle);
-                    headerDiv.appendChild(groupToggleButton);
-                    container.appendChild(headerDiv);
+        headerDiv.appendChild(groupTitle);
+        headerDiv.appendChild(groupToggleButton);
+        container.appendChild(headerDiv);
 
-                    // 生成該分類下的所有 checkbox
-                    optionalPlanetsConfig[groupName].forEach(planet => {
-                        const wrapper = document.createElement('div');
-                        wrapper.className = 'flex items-center';
-                        wrapper.innerHTML = `
+        // 生成該分類下的所有 checkbox
+        optionalPlanetsConfig[groupName].forEach(planet => {
+            const wrapper = document.createElement('div');
+            wrapper.className = 'flex items-center';
+            wrapper.innerHTML = `
                 <input id="chk-${planet}" type="checkbox" value="${planet}" class="optional-planet-checkbox h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500" data-group="${groupName}" checked>
                 <label for="chk-${planet}" class="ml-2 block text-lg text-gray-900">${planet}</label>
             `;
-                        container.appendChild(wrapper);
-                    });
-                }
+            container.appendChild(wrapper);
+        });
+    }
 
-                // 修改2使用「事件代理」來統一處理所有按鈕的點擊事件，更高效
-                const selectionDiv = document.getElementById('planetSelection');
-                selectionDiv.addEventListener('click', (event) => {
-                    const target = event.target;
+    // 使用「事件代理」來統一處理所有按鈕的點擊事件
+    const selectionDiv = document.getElementById('planetSelection');
+    selectionDiv.addEventListener('click', (event) => {
+        const target = event.target;
 
-                    // --- 判斷點擊的是「總開關」按鈕 ---
-                    if (target.id === 'toggleAllPlanetsBtn') {
-                        const checkboxes = document.querySelectorAll('.optional-planet-checkbox');
-                        const isChecked = target.dataset.state === 'all-checked';
-                        checkboxes.forEach(cb => { cb.checked = !isChecked; });
-                        target.textContent = isChecked ? '全部選取' : '全部取消';
-                        target.dataset.state = isChecked ? 'all-unchecked' : 'all-checked';
+        // --- 處理「總開關」按鈕 ---
+        if (target.id === 'toggleAllPlanetsBtn') {
+            event.stopPropagation(); // 阻止事件冒泡！
+            const checkboxes = document.querySelectorAll('.optional-planet-checkbox');
+            const isChecked = target.dataset.state === 'all-checked';
+            checkboxes.forEach(cb => { cb.checked = !isChecked; });
+            target.textContent = isChecked ? '全部選取' : '全部取消';
+            target.dataset.state = isChecked ? 'all-unchecked' : 'all-checked';
 
-                        // 同步更新所有分類按鈕的狀態和文字
-                        document.querySelectorAll('.group-toggle-btn').forEach(btn => {
-                            btn.textContent = isChecked ? '此類別選取' : '此類取消';
-                            btn.dataset.state = isChecked ? 'all-unchecked' : 'all-checked';
-                        });
-                    }
+            // 同步更新所有分類按鈕的狀態和文字
+            document.querySelectorAll('.group-toggle-btn').forEach(btn => {
+                btn.textContent = isChecked ? '此類別選取' : '此類取消';
+                btn.dataset.state = isChecked ? 'all-unchecked' : 'all-checked';
+            });
+        }
 
-                    // --- 判斷點擊的是「分類」按鈕 ---
-                    if (target.classList.contains('group-toggle-btn')) {
-                        const groupKey = target.dataset.groupKey;
-                        const checkboxesInGroup = document.querySelectorAll(`.optional-planet-checkbox[data-group="${groupKey}"]`);
-                        const isChecked = target.dataset.state === 'all-checked';
-                        checkboxesInGroup.forEach(cb => { cb.checked = !isChecked; });
-                        target.textContent = isChecked ? '此類別選取' : '此類取消';
-                        target.dataset.state = isChecked ? 'all-unchecked' : 'all-checked';
-                    }
-                });
+        // --- 處理「分類」按鈕 ---
+        if (target.classList.contains('group-toggle-btn')) {
+            const groupKey = target.dataset.groupKey;
+            const checkboxesInGroup = document.querySelectorAll(`.optional-planet-checkbox[data-group="${groupKey}"]`);
+            const isChecked = target.dataset.state === 'all-checked';
+            checkboxesInGroup.forEach(cb => { cb.checked = !isChecked; });
+            target.textContent = isChecked ? '此類別選取' : '此類取消';
+            target.dataset.state = isChecked ? 'all-unchecked' : 'all-checked';
+        }
+    });
 
-                // 最後，確保最上面的總按鈕也套用新樣式
-                document.getElementById('toggleAllPlanetsBtn').className = 'planet-toggle-btn all-toggle-btn';
-            }
+    // 最後，確保最上面的總按鈕也套用新樣式
+    // document.getElementById('toggleAllPlanetsBtn').className = 'planet-toggle-btn all-toggle-btn';
+}
+
+// 處理整個「顯示選項」區塊的開合
+const toggleHeader = document.getElementById('toggleHeader');
+const optionalPlanetsContainer = document.getElementById('optionalPlanetsContainer');
+const toggleIcon = document.getElementById('toggleIcon');
+const toggleAllPlanetsBtn = document.getElementById('toggleAllPlanetsBtn'); // 選擇「全部取消」按鈕
+
+if (toggleHeader && optionalPlanetsContainer && toggleIcon && toggleAllPlanetsBtn) {
+    toggleHeader.addEventListener('click', () => {
+        // 如果目前是收合狀態 (有 hidden class)
+        if (optionalPlanetsContainer.classList.contains('hidden')) {
+            // 則展開面板、顯示按鈕，並旋轉箭頭
+            optionalPlanetsContainer.classList.remove('hidden');
+            toggleAllPlanetsBtn.classList.remove('hidden');
+            toggleIcon.classList.add('rotate-90');
+        } else {
+            // 如果目前是展開狀態
+            // 則收合面板、隱藏按鈕，並恢復箭頭
+            optionalPlanetsContainer.classList.add('hidden');
+            toggleAllPlanetsBtn.classList.add('hidden');
+            toggleIcon.classList.remove('rotate-90');
+        }
+    });
+}
+
+
+            // 原本的 小行星/虛點選項
+            // function setupPlanetCheckboxes() {
+            //     const optionalPlanetsConfig = {
+            //         '核心星體': ["太陽", "月亮", "水星", "金星", "火星", "木星", "土星", "天王", "海王", "冥王"],
+            //         '四軸': ["上升", "下降", "天頂", "天底"],
+            //         '命運與潛意識': ["北交", "南交", "宿命", "福點", "莉莉絲"],
+            //         '小行星': ["凱龍", "穀神", "智神", "婚神", "灶神", "愛神", "靈神", "人龍"]
+            //     };
+            //     const container = document.getElementById('optionalPlanetsContainer');
+            //     container.innerHTML = ''; // 清空
+
+            //     // 修改1動態生成所有內容
+            //     for (const groupName in optionalPlanetsConfig) {
+            //         // 建立一個包含標題和按鈕的 header div
+            //         const headerDiv = document.createElement('div');
+            //         headerDiv.className = 'planet-group-header col-span-full mt-2'; // 使用新的 CSS class
+
+            //         // 建立分類標題
+            //         const groupTitle = document.createElement('span');
+            //         groupTitle.className = 'font-semibold text-lg text-fuchsia-900';
+            //         groupTitle.textContent = groupName;
+
+            //         // 建立分類切換按鈕
+            //         const groupToggleButton = document.createElement('button');
+            //         groupToggleButton.className = 'planet-toggle-btn group-toggle-btn'; // 通用按鈕樣式 + 分類按鈕的專屬 class
+            //         groupToggleButton.textContent = '此類取消';
+            //         groupToggleButton.dataset.state = 'all-checked';
+            //         groupToggleButton.dataset.groupKey = groupName; // 用 data-* 屬性記住它屬於哪個分類
+
+            //         headerDiv.appendChild(groupTitle);
+            //         headerDiv.appendChild(groupToggleButton);
+            //         container.appendChild(headerDiv);
+
+            //         // 生成該分類下的所有 checkbox
+            //         optionalPlanetsConfig[groupName].forEach(planet => {
+            //             const wrapper = document.createElement('div');
+            //             wrapper.className = 'flex items-center';
+            //             wrapper.innerHTML = `
+            //     <input id="chk-${planet}" type="checkbox" value="${planet}" class="optional-planet-checkbox h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500" data-group="${groupName}" checked>
+            //     <label for="chk-${planet}" class="ml-2 block text-lg text-gray-900">${planet}</label>
+            // `;
+            //             container.appendChild(wrapper);
+            //         });
+            //     }
+
+            //     // 修改2使用「事件代理」來統一處理所有按鈕的點擊事件，更高效
+            //     const selectionDiv = document.getElementById('planetSelection');
+            //     selectionDiv.addEventListener('click', (event) => {
+            //         const target = event.target;
+
+            //         // --- 判斷點擊的是「總開關」按鈕 ---
+            //         if (target.id === 'toggleAllPlanetsBtn') {
+            //             const checkboxes = document.querySelectorAll('.optional-planet-checkbox');
+            //             const isChecked = target.dataset.state === 'all-checked';
+            //             checkboxes.forEach(cb => { cb.checked = !isChecked; });
+            //             target.textContent = isChecked ? '全部選取' : '全部取消';
+            //             target.dataset.state = isChecked ? 'all-unchecked' : 'all-checked';
+
+            //             // 同步更新所有分類按鈕的狀態和文字
+            //             document.querySelectorAll('.group-toggle-btn').forEach(btn => {
+            //                 btn.textContent = isChecked ? '此類別選取' : '此類取消';
+            //                 btn.dataset.state = isChecked ? 'all-unchecked' : 'all-checked';
+            //             });
+            //         }
+
+            //         // --- 判斷點擊的是「分類」按鈕 ---
+            //         if (target.classList.contains('group-toggle-btn')) {
+            //             const groupKey = target.dataset.groupKey;
+            //             const checkboxesInGroup = document.querySelectorAll(`.optional-planet-checkbox[data-group="${groupKey}"]`);
+            //             const isChecked = target.dataset.state === 'all-checked';
+            //             checkboxesInGroup.forEach(cb => { cb.checked = !isChecked; });
+            //             target.textContent = isChecked ? '此類別選取' : '此類取消';
+            //             target.dataset.state = isChecked ? 'all-unchecked' : 'all-checked';
+            //         }
+            //     });
+
+            //     // 最後，確保最上面的總按鈕也套用新樣式
+            //     document.getElementById('toggleAllPlanetsBtn').className = 'planet-toggle-btn all-toggle-btn';
+            // }
 
             // 設定輸入時自動清除錯誤提示
             function setupInputErrorClearing() {
@@ -909,6 +1312,36 @@
                 }
                 return isValid;
             }
+
+            
+
+//             // toggle 小行星/虛點選項內容
+//             document.addEventListener('DOMContentLoaded', () => {
+//     // 取得新的元素
+//     const toggleHeader = document.getElementById('toggleHeader');
+//     const toggleIcon = document.getElementById('toggleIcon');
+//     const toggleAllPlanetsBtn = document.getElementById('toggleAllPlanetsBtn');
+//     const optionalPlanetsContainer = document.getElementById('optionalPlanetsContainer');
+
+//     // 為標題新增點擊事件
+//     toggleHeader.addEventListener('click', () => {
+//         const isHidden = optionalPlanetsContainer.classList.contains('hidden');
+
+//         if (isHidden) {
+//             // 展開時
+//             optionalPlanetsContainer.classList.remove('hidden');
+//             toggleAllPlanetsBtn.classList.remove('hidden');
+//             toggleIcon.classList.remove('rotate-0');
+//             toggleIcon.classList.add('rotate-90');
+//         } else {
+//             // 收合時
+//             optionalPlanetsContainer.classList.add('hidden');
+//             toggleAllPlanetsBtn.classList.add('hidden');
+//             toggleIcon.classList.remove('rotate-90');
+//             toggleIcon.classList.add('rotate-0');
+//         }
+//     });
+// });
 
 
             // 主要計算函式
@@ -1082,10 +1515,10 @@
                 switch (data.chart_type) {
                     case 'single':
                         // 步驟 1: 先呼叫 generateSingleChartSectionData 來準備好所有章節的表格和敘述文本
-                        const singleChartSectionsData = generateSingleChartSectionData(data, `${name1}的星盤資訊`);
+                        const singleChartSectionsData = generateSingleChartSectionData(data, `${name1}的星盤文字資訊`);
 
                         // 步驟 2: 然後將準備好的 sectionsData 傳遞給 buildSingleChartHTML 進行 HTML 結構的組裝
-                        reportHtmlContent = buildSingleChartHTML(singleChartSectionsData, `${name1}的星盤資訊`);
+                        reportHtmlContent = buildSingleChartHTML(singleChartSectionsData, `${name1}的星盤文字資訊`);
                         break;
 
                     case 'comparison':
@@ -1265,15 +1698,15 @@
                     sectionsData.summary.narrative = "星盤基礎資訊\n組合中點盤是透過數學方式計算兩張本命盤中點所形成的特殊星盤，用於探索兩人關係的獨立生命本質。\n";
                 } else {
                     sectionsData.summary.table = (timestamps && birth_info) ? [
-                        "==== 星盤基礎數據 ====",
+                        "\n==== 星盤基礎數據 ====\n",
                         `本地時間: ${timestamps.local_time}`,
                         `UTC 時間: ${timestamps.utc_time}`,
                         `緯度: ${birth_info.latitude}, 經度: ${birth_info.longitude}`,
-                        "====================\n"
+                        "\n====================\n"
                     ].join('\n') : "基礎數據缺失";
 
                     sectionsData.summary.narrative = (timestamps && birth_info) ?
-                        `==== 星盤基礎數據 ====\n本地時間：${timestamps.local_time}\nUTC時間：${timestamps.utc_time}\n出生地座標：緯度 ${birth_info.latitude}, 經度 ${birth_info.longitude}\n====================\n` :
+                        `\n==== 星盤基礎數據 ====\n本地時間：${timestamps.local_time}\nUTC時間：${timestamps.utc_time}\n出生地座標：緯度 ${birth_info.latitude}, 經度 ${birth_info.longitude}\n====================\n` :
                         "基礎數據缺失，無法提供完整敘述。\n";
                 }
 
@@ -1425,6 +1858,7 @@
             <div class="chart-main-header ${headerStyleClass}">
                 <h2 class="main-title">${title}</h2>
                 <button class="copy-chart-btn">複製此盤</button>
+                <button class="download-chart-btn">下載此盤</button>
             </div>
 
             <div class="summary-section-container">
@@ -1464,7 +1898,7 @@
                 // --- 表格內容生成 ---
                 const tableLines = [
                     // `==== ${sectionTitle} ====`,
-                    `==== 交互相位 ====`,
+                    `\n==== 交互相位 ====\n`,
                     `${name1}星體 | 相位 | ${name2}星體 | 動態 | 容許度`,
                     "-----------------------------", // 表格分隔線
                     ...aspects.sort((a, b) => DISPLAY_ORDER_NAMES.indexOf(a.p1_name) - DISPLAY_ORDER_NAMES.indexOf(b.p1_name) || DISPLAY_ORDER_NAMES.indexOf(a.p2_name) - DISPLAY_ORDER_NAMES.indexOf(b.p2_name)).map(a =>
@@ -1478,7 +1912,7 @@
                 const narrativeLines = [
                     // "====================",
                     // `${sectionTitle}`,
-                    `==== 交互相位 ====`,
+                    `\n==== 交互相位 ====\n`,
                     // "--------------------\n" // 【核心修正 2】: 加上換行符，讓分隔線與內容之間多一個空行，更美觀
                 ];
                 // 假設 planet_positions 在這裡是可以訪問的全局或通過參數傳入，用於獲取更多詳細信息
@@ -1596,6 +2030,7 @@
                 <div class="report-main-header">
                     <h2>${title}</h2>
                     <button class="copy-report-btn">複製完整報告</button>
+                    <button class="download-report-btn">下載完整報告</button>
                 </div>
                 ${content}
             </div>`;
