@@ -985,113 +985,242 @@
 
 
             // 優化的小行星/虛點選項 toggle
-            const optionalPlanetsConfig = {
-                '核心星體': ["太陽", "月亮", "水星", "金星", "火星", "木星", "土星", "天王", "海王", "冥王"],
-                '四軸': ["上升", "下降", "天頂", "天底"],
-                '命運與潛意識': ["北交", "南交", "宿命", "福點", "莉莉絲"],
-                '小行星': ["凱龍", "穀神", "智神", "婚神", "灶神", "愛神", "靈神", "人龍"]
-            };
-            
-            function setupPlanetCheckboxes() {
-    const container = document.getElementById('optionalPlanetsContainer');
-    container.innerHTML = ''; // 清空
+            document.addEventListener('DOMContentLoaded', () => {
 
-    // 動態生成所有內容
-    for (const groupName in optionalPlanetsConfig) {
-        // 建立一個包含標題和按鈕的 header div
-        const headerDiv = document.createElement('div');
-        headerDiv.className = 'planet-group-header col-span-full mt-2';
-        headerDiv.style.display = 'flex';
-        headerDiv.style.justifyContent = 'space-between';
-        headerDiv.style.alignItems = 'center';
+    // --- 核心設定：行星選項分組 ---
+    const optionalPlanetsConfig = {
+        '核心星體': ["太陽", "月亮", "水星", "金星", "火星", "木星", "土星", "天王", "海王", "冥王"],
+        '四軸': ["上升", "下降", "天頂", "天底"],
+        '命運與潛意識': ["北交", "南交", "宿命", "福點", "莉莉絲"],
+        '小行星': ["凱龍", "穀神", "智神", "婚神", "灶神", "愛神", "靈神", "人龍"]
+    };
 
-        // 建立分類標題
-        const groupTitle = document.createElement('span');
-        groupTitle.className = 'font-semibold text-lg text-fuchsia-900';
-        groupTitle.textContent = groupName;
+    // --- 核心函式：生成行星勾選框 ---
+    function setupPlanetCheckboxes(containerId) {
+        const container = document.getElementById(containerId);
+        if (!container) return;
 
-        // 建立分類切換按鈕，並重新加回
-        const groupToggleButton = document.createElement('button');
-        groupToggleButton.className = 'planet-toggle-btn group-toggle-btn';
-        groupToggleButton.textContent = '此類取消';
-        groupToggleButton.dataset.state = 'all-checked';
-        groupToggleButton.dataset.groupKey = groupName;
+        container.innerHTML = '';
 
-        headerDiv.appendChild(groupTitle);
-        headerDiv.appendChild(groupToggleButton);
-        container.appendChild(headerDiv);
+        for (const groupName in optionalPlanetsConfig) {
+            const headerDiv = document.createElement('div');
+            headerDiv.className = 'planet-group-header col-span-full mt-2';
+            headerDiv.style.display = 'flex';
+            headerDiv.style.justifyContent = 'space-between';
+            headerDiv.style.alignItems = 'center';
 
-        // 生成該分類下的所有 checkbox
-        optionalPlanetsConfig[groupName].forEach(planet => {
-            const wrapper = document.createElement('div');
-            wrapper.className = 'flex items-center';
-            wrapper.innerHTML = `
-                <input id="chk-${planet}" type="checkbox" value="${planet}" class="optional-planet-checkbox h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500" data-group="${groupName}" checked>
-                <label for="chk-${planet}" class="ml-2 block text-lg text-gray-900">${planet}</label>
-            `;
-            container.appendChild(wrapper);
-        });
+            const groupTitle = document.createElement('span');
+            groupTitle.className = 'font-semibold text-lg text-fuchsia-900';
+            groupTitle.textContent = groupName;
+
+            const groupToggleButton = document.createElement('button');
+            groupToggleButton.className = 'planet-toggle-btn group-toggle-btn text-sm md:text-base font-medium text-indigo-600 hover:text-indigo-800';
+            groupToggleButton.textContent = '此類取消';
+            groupToggleButton.dataset.state = 'all-checked';
+            groupToggleButton.dataset.groupKey = groupName;
+            groupToggleButton.dataset.containerId = containerId; // 新增：記錄所屬的容器 ID
+
+            headerDiv.appendChild(groupTitle);
+            headerDiv.appendChild(groupToggleButton);
+            container.appendChild(headerDiv);
+
+            optionalPlanetsConfig[groupName].forEach(planet => {
+                const wrapper = document.createElement('div');
+                wrapper.className = 'flex items-center';
+                wrapper.innerHTML = `
+                    <input id="${containerId}-chk-${planet}" type="checkbox" value="${planet}" class="optional-planet-checkbox h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500" data-group="${groupName}" checked>
+                    <label for="${containerId}-chk-${planet}" class="ml-2 block text-lg text-gray-900">${planet}</label>
+                `;
+                container.appendChild(wrapper);
+            });
+        }
     }
 
-    // 使用「事件代理」來統一處理所有按鈕的點擊事件
-    const selectionDiv = document.getElementById('planetSelection');
-    selectionDiv.addEventListener('click', (event) => {
-        const target = event.target;
+    // --- 核心函式：根據模式顯示正確的容器 ---
+    function showCorrectPlanetOptions(chartType) {
+        document.querySelectorAll('.planet-options-container').forEach(container => {
+            container.classList.add('hidden');
+        });
+        document.querySelectorAll('.planet-toggle-header').forEach(header => {
+            header.classList.add('hidden');
+        });
 
-        // --- 處理「總開關」按鈕 ---
-        if (target.id === 'toggleAllPlanetsBtn') {
-            event.stopPropagation(); // 阻止事件冒泡！
-            const checkboxes = document.querySelectorAll('.optional-planet-checkbox');
-            const isChecked = target.dataset.state === 'all-checked';
-            checkboxes.forEach(cb => { cb.checked = !isChecked; });
-            target.textContent = isChecked ? '全部選取' : '全部取消';
-            target.dataset.state = isChecked ? 'all-unchecked' : 'all-checked';
+        if (chartType === 'single') {
+            document.getElementById('planetOptionsHeader_single').classList.remove('hidden');
+            document.getElementById('optionalPlanetsContainer_single').classList.remove('hidden');
+        } else if (chartType === 'comparison' || chartType === 'transit') {
+            document.getElementById('planetOptionsHeader_chart1').classList.remove('hidden');
+            document.getElementById('optionalPlanetsContainer_chart1').classList.remove('hidden');
+            document.getElementById('planetOptionsHeader_chart2').classList.remove('hidden');
+            document.getElementById('optionalPlanetsContainer_chart2').classList.remove('hidden');
+        } else if (chartType === 'composite') {
+            document.getElementById('planetOptionsHeader_composite').classList.remove('hidden');
+            document.getElementById('optionalPlanetsContainer_composite').classList.remove('hidden');
+        }
+    }
+    
+    // --- 事件監聽器區塊 ---
+    document.getElementById('calculateChartBtn').addEventListener('click', (event) => {
+        const activeChartType = document.querySelector('.chart-type-btn.active').dataset.chartType;
+        let optionalPlanets = [];
+        let optionalPlanets_chart2 = [];
 
-            // 同步更新所有分類按鈕的狀態和文字
-            document.querySelectorAll('.group-toggle-btn').forEach(btn => {
-                btn.textContent = isChecked ? '此類別選取' : '此類取消';
-                btn.dataset.state = isChecked ? 'all-unchecked' : 'all-checked';
+        // 根據星盤類型收集星體選項
+        if (activeChartType === 'single') {
+            document.querySelectorAll('#optionalPlanetsContainer_single .optional-planet-checkbox:checked').forEach(checkbox => {
+                optionalPlanets.push(checkbox.value);
+            });
+        } else if (activeChartType === 'comparison' || activeChartType === 'transit') {
+            document.querySelectorAll('#optionalPlanetsContainer_chart1 .optional-planet-checkbox:checked').forEach(checkbox => {
+                optionalPlanets.push(checkbox.value);
+            });
+            document.querySelectorAll('#optionalPlanetsContainer_chart2 .optional-planet-checkbox:checked').forEach(checkbox => {
+                optionalPlanets_chart2.push(checkbox.value);
+            });
+        } else if (activeChartType === 'composite') {
+            document.querySelectorAll('#optionalPlanetsContainer_composite .optional-planet-checkbox:checked').forEach(checkbox => {
+                optionalPlanets.push(checkbox.value);
             });
         }
 
-        // --- 處理「分類」按鈕 ---
-        if (target.classList.contains('group-toggle-btn')) {
-            const groupKey = target.dataset.groupKey;
-            const checkboxesInGroup = document.querySelectorAll(`.optional-planet-checkbox[data-group="${groupKey}"]`);
-            const isChecked = target.dataset.state === 'all-checked';
-            checkboxesInGroup.forEach(cb => { cb.checked = !isChecked; });
-            target.textContent = isChecked ? '此類別選取' : '此類取消';
-            target.dataset.state = isChecked ? 'all-unchecked' : 'all-checked';
+        // ... (這裡是你原本處理表單資料的程式碼，請保留) ...
+        const chartType = document.querySelector('.chart-type-btn.active').dataset.chartType;
+        const formDiv = document.getElementById(chartType + 'Form');
+        const formData = new FormData(formDiv);
+        const payload = Object.fromEntries(formData.entries());
+        payload.optional_planets = optionalPlanets;
+        if (activeChartType === 'comparison' || activeChartType === 'transit') {
+            payload.optional_planets_chart1 = optionalPlanets;
+            payload.optional_planets_chart2 = optionalPlanets_chart2;
         }
+
+        // ... (這裡是你原本的 fetch 呼叫，請保留) ...
     });
 
-    // 最後，確保最上面的總按鈕也套用新樣式
-    // document.getElementById('toggleAllPlanetsBtn').className = 'planet-toggle-btn all-toggle-btn';
-}
-
-// 處理整個「顯示選項」區塊的開合
-const toggleHeader = document.getElementById('toggleHeader');
-const optionalPlanetsContainer = document.getElementById('optionalPlanetsContainer');
-const toggleIcon = document.getElementById('toggleIcon');
-const toggleAllPlanetsBtn = document.getElementById('toggleAllPlanetsBtn'); // 選擇「全部取消」按鈕
-
-if (toggleHeader && optionalPlanetsContainer && toggleIcon && toggleAllPlanetsBtn) {
-    toggleHeader.addEventListener('click', () => {
-        // 如果目前是收合狀態 (有 hidden class)
-        if (optionalPlanetsContainer.classList.contains('hidden')) {
-            // 則展開面板、顯示按鈕，並旋轉箭頭
-            optionalPlanetsContainer.classList.remove('hidden');
-            toggleAllPlanetsBtn.classList.remove('hidden');
-            toggleIcon.classList.add('rotate-90');
-        } else {
-            // 如果目前是展開狀態
-            // 則收合面板、隱藏按鈕，並恢復箭頭
-            optionalPlanetsContainer.classList.add('hidden');
-            toggleAllPlanetsBtn.classList.add('hidden');
-            toggleIcon.classList.remove('rotate-90');
-        }
+    // --- 處理切換不同星盤模式的事件 ---
+    document.querySelectorAll('.chart-type-btn').forEach(button => {
+        button.addEventListener('click', () => {
+            const chartType = button.dataset.chartType;
+            showCorrectPlanetOptions(chartType);
+        });
     });
-}
+
+    // --- 初始化 ---
+    setupPlanetCheckboxes('optionalPlanetsContainer_single');
+    setupPlanetCheckboxes('optionalPlanetsContainer_chart1');
+    setupPlanetCheckboxes('optionalPlanetsContainer_chart2');
+    setupPlanetCheckboxes('optionalPlanetsContainer_composite');
+    
+    showCorrectPlanetOptions(document.querySelector('.chart-type-btn.active').dataset.chartType);
+});
+
+               // 舊的 setupPlanetCheckboxes()
+//             function setupPlanetCheckboxes() {
+//     const optionalPlanetsConfig = {
+//         '核心星體': ["太陽", "月亮", "水星", "金星", "火星", "木星", "土星", "天王", "海王", "冥王"],
+//         '四軸': ["上升", "下降", "天頂", "天底"],
+//         '命運與潛意識': ["北交", "南交", "宿命", "福點", "莉莉絲"],
+//         '小行星': ["凱龍", "穀神", "智神", "婚神", "灶神", "愛神", "靈神", "人龍"]
+//     };
+//     const container = document.getElementById('optionalPlanetsContainer');
+//     container.innerHTML = ''; // 清空
+
+//     // 動態生成所有內容
+//     for (const groupName in optionalPlanetsConfig) {
+//         // 建立一個包含標題和按鈕的 header div
+//         const headerDiv = document.createElement('div');
+//         headerDiv.className = 'planet-group-header col-span-full mt-2';
+//         headerDiv.style.display = 'flex';
+//         headerDiv.style.justifyContent = 'space-between';
+//         headerDiv.style.alignItems = 'center';
+
+//         // 建立分類標題
+//         const groupTitle = document.createElement('span');
+//         groupTitle.className = 'font-semibold text-lg text-fuchsia-900';
+//         groupTitle.textContent = groupName;
+
+//         // 建立分類切換按鈕，並重新加回
+//         const groupToggleButton = document.createElement('button');
+//         groupToggleButton.className = 'planet-toggle-btn group-toggle-btn';
+//         groupToggleButton.textContent = '此類取消';
+//         groupToggleButton.dataset.state = 'all-checked';
+//         groupToggleButton.dataset.groupKey = groupName;
+
+//         headerDiv.appendChild(groupTitle);
+//         headerDiv.appendChild(groupToggleButton);
+//         container.appendChild(headerDiv);
+
+//         // 生成該分類下的所有 checkbox
+//         optionalPlanetsConfig[groupName].forEach(planet => {
+//             const wrapper = document.createElement('div');
+//             wrapper.className = 'flex items-center';
+//             wrapper.innerHTML = `
+//                 <input id="chk-${planet}" type="checkbox" value="${planet}" class="optional-planet-checkbox h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500" data-group="${groupName}" checked>
+//                 <label for="chk-${planet}" class="ml-2 block text-lg text-gray-900">${planet}</label>
+//             `;
+//             container.appendChild(wrapper);
+//         });
+//     }
+
+//     // 使用「事件代理」來統一處理所有按鈕的點擊事件
+//     const selectionDiv = document.getElementById('planetSelection');
+//     selectionDiv.addEventListener('click', (event) => {
+//         const target = event.target;
+
+//         // --- 處理「總開關」按鈕 ---
+//         if (target.id === 'toggleAllPlanetsBtn') {
+//             event.stopPropagation(); // 阻止事件冒泡！
+//             const checkboxes = document.querySelectorAll('.optional-planet-checkbox');
+//             const isChecked = target.dataset.state === 'all-checked';
+//             checkboxes.forEach(cb => { cb.checked = !isChecked; });
+//             target.textContent = isChecked ? '全部選取' : '全部取消';
+//             target.dataset.state = isChecked ? 'all-unchecked' : 'all-checked';
+
+//             // 同步更新所有分類按鈕的狀態和文字
+//             document.querySelectorAll('.group-toggle-btn').forEach(btn => {
+//                 btn.textContent = isChecked ? '此類別選取' : '此類取消';
+//                 btn.dataset.state = isChecked ? 'all-unchecked' : 'all-checked';
+//             });
+//         }
+
+//         // --- 處理「分類」按鈕 ---
+//         if (target.classList.contains('group-toggle-btn')) {
+//             const groupKey = target.dataset.groupKey;
+//             const checkboxesInGroup = document.querySelectorAll(`.optional-planet-checkbox[data-group="${groupKey}"]`);
+//             const isChecked = target.dataset.state === 'all-checked';
+//             checkboxesInGroup.forEach(cb => { cb.checked = !isChecked; });
+//             target.textContent = isChecked ? '此類別選取' : '此類取消';
+//             target.dataset.state = isChecked ? 'all-unchecked' : 'all-checked';
+//         }
+//     });
+
+//     // 最後，確保最上面的總按鈕也套用新樣式
+//     // document.getElementById('toggleAllPlanetsBtn').className = 'planet-toggle-btn all-toggle-btn';
+// }
+
+// // 處理整個「顯示選項」區塊的開合
+// const toggleHeader = document.getElementById('toggleHeader');
+// const optionalPlanetsContainer = document.getElementById('optionalPlanetsContainer');
+// const toggleIcon = document.getElementById('toggleIcon');
+// const toggleAllPlanetsBtn = document.getElementById('toggleAllPlanetsBtn'); // 選擇「全部取消」按鈕
+
+// if (toggleHeader && optionalPlanetsContainer && toggleIcon && toggleAllPlanetsBtn) {
+//     toggleHeader.addEventListener('click', () => {
+//         // 如果目前是收合狀態 (有 hidden class)
+//         if (optionalPlanetsContainer.classList.contains('hidden')) {
+//             // 則展開面板、顯示按鈕，並旋轉箭頭
+//             optionalPlanetsContainer.classList.remove('hidden');
+//             toggleAllPlanetsBtn.classList.remove('hidden');
+//             toggleIcon.classList.add('rotate-90');
+//         } else {
+//             // 如果目前是展開狀態
+//             // 則收合面板、隱藏按鈕，並恢復箭頭
+//             optionalPlanetsContainer.classList.add('hidden');
+//             toggleAllPlanetsBtn.classList.add('hidden');
+//             toggleIcon.classList.remove('rotate-90');
+//         }
+//     });
+// }
 
 
             // 原本的 小行星/虛點選項
@@ -1315,33 +1444,33 @@ if (toggleHeader && optionalPlanetsContainer && toggleIcon && toggleAllPlanetsBt
 
             
 
-//             // toggle 小行星/虛點選項內容
-//             document.addEventListener('DOMContentLoaded', () => {
-//     // 取得新的元素
-//     const toggleHeader = document.getElementById('toggleHeader');
-//     const toggleIcon = document.getElementById('toggleIcon');
-//     const toggleAllPlanetsBtn = document.getElementById('toggleAllPlanetsBtn');
-//     const optionalPlanetsContainer = document.getElementById('optionalPlanetsContainer');
+            // toggle 小行星/虛點選項內容
+            document.addEventListener('DOMContentLoaded', () => {
+    // 取得新的元素
+    const toggleHeader = document.getElementById('toggleHeader');
+    const toggleIcon = document.getElementById('toggleIcon');
+    const toggleAllPlanetsBtn = document.getElementById('toggleAllPlanetsBtn');
+    const optionalPlanetsContainer = document.getElementById('optionalPlanetsContainer');
 
-//     // 為標題新增點擊事件
-//     toggleHeader.addEventListener('click', () => {
-//         const isHidden = optionalPlanetsContainer.classList.contains('hidden');
+    // 為標題新增點擊事件
+    toggleHeader.addEventListener('click', () => {
+        const isHidden = optionalPlanetsContainer.classList.contains('hidden');
 
-//         if (isHidden) {
-//             // 展開時
-//             optionalPlanetsContainer.classList.remove('hidden');
-//             toggleAllPlanetsBtn.classList.remove('hidden');
-//             toggleIcon.classList.remove('rotate-0');
-//             toggleIcon.classList.add('rotate-90');
-//         } else {
-//             // 收合時
-//             optionalPlanetsContainer.classList.add('hidden');
-//             toggleAllPlanetsBtn.classList.add('hidden');
-//             toggleIcon.classList.remove('rotate-90');
-//             toggleIcon.classList.add('rotate-0');
-//         }
-//     });
-// });
+        if (isHidden) {
+            // 展開時
+            optionalPlanetsContainer.classList.remove('hidden');
+            toggleAllPlanetsBtn.classList.remove('hidden');
+            toggleIcon.classList.remove('rotate-0');
+            toggleIcon.classList.add('rotate-90');
+        } else {
+            // 收合時
+            optionalPlanetsContainer.classList.add('hidden');
+            toggleAllPlanetsBtn.classList.add('hidden');
+            toggleIcon.classList.remove('rotate-90');
+            toggleIcon.classList.add('rotate-0');
+        }
+    });
+});
 
 
             // 主要計算函式
@@ -1855,14 +1984,13 @@ if (toggleHeader && optionalPlanetsContainer && toggleIcon && toggleAllPlanetsBt
 
                 return `
         <div class="chart-wrapper">
-            <div class="chart-main-header flex justify-between items-center w-full ${headerStyleClass}">
+            <div class="chart-main-header flex items-center justify-between${headerStyleClass}">
                 <h2 class="main-title">${title}</h2>
-                <div class="flex gap-4">
-                    <button class="copy-chart-btn">複製此盤</button>
-                    <button class="download-chart-btn">下載此盤</button>
+                <div class="flex gap-2">
+                <button class="copy-chart-btn">複製此盤</button>
+                <button class="download-chart-btn">下載此盤</button>
                 </div>
             </div>
-
 
             <div class="summary-section-container">
                 <div class="result-section-item">
@@ -2030,12 +2158,12 @@ if (toggleHeader && optionalPlanetsContainer && toggleIcon && toggleAllPlanetsBt
             // 這是一個全新的函式，請將它新增到 script 中
             function createReportWrapper(title, content) {
                 return `<div class="report-wrapper">
-                <div class="report-main-header flex flex-col justify-between h-full">
-                  <h2>${title}</h2>
-                  <div class="flex flex-col gap-2">
-                    <button class="copy-report-btn">複製完整報告</button>
-                    <button class="download-report-btn">下載完整報告</button>
-                  </div>
+                <div class="report-main-header flex items-center justify-between">
+                      <h2 class="main-title">${title}</h2>
+                      <div class="flex gap-2">
+                          <button class="copy-report-btn">複製完整報告</button>
+                          <button class="download-report-btn">下載完整報告</button>
+                       </div>
                 </div>
                 ${content}
             </div>`;

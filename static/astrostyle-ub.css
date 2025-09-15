@@ -859,7 +859,7 @@
                     color: white;
                     white-space: nowrap;
                     flex-shrink: 0;
-                    width: auto;
+                    width: auto;   /* 按鈕寬度自適應內容 */
                     display: inline-block;
                     margin-left: auto;
                     margin-right: 0;
@@ -1133,19 +1133,19 @@
             /* 確保文字佔滿寬度 */
         }
 
-        .chart-main-header .copy-chart-btn {
+        /* .copy-chart-btn {
             padding: 8px 12px;
             font-size: 0.85em;
             /* 按鈕字體小一點 */
             /* 確保按鈕有足夠的寬度或自適應 */
-            width: fit-content;
+            /* width: fit-content; */
             /* 讓按鈕根據內容自動調整寬度 */
-            background-color: #6c757d;
+            /* background-color: #6c757d;
             color: white;
             border: none;
             border-radius: 5px;
             cursor: pointer;
-        }
+        } */ 
 
         /* 總結數據區塊（基礎數據） */
         .summary-section-container {
@@ -1410,10 +1410,6 @@
                 /* 移除垂直間距 */
             }
 
-            .copy-chart-btn {
-                width: auto;
-                /* 按鈕寬度自適應內容 */
-            }
 
             .summary-section-container {
                 padding: 20px 25px;

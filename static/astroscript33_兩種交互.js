@@ -985,14 +985,13 @@
 
 
             // 優化的小行星/虛點選項 toggle
-            const optionalPlanetsConfig = {
-                '核心星體': ["太陽", "月亮", "水星", "金星", "火星", "木星", "土星", "天王", "海王", "冥王"],
-                '四軸': ["上升", "下降", "天頂", "天底"],
-                '命運與潛意識': ["北交", "南交", "宿命", "福點", "莉莉絲"],
-                '小行星': ["凱龍", "穀神", "智神", "婚神", "灶神", "愛神", "靈神", "人龍"]
-            };
-            
             function setupPlanetCheckboxes() {
+    const optionalPlanetsConfig = {
+        '核心星體': ["太陽", "月亮", "水星", "金星", "火星", "木星", "土星", "天王", "海王", "冥王"],
+        '四軸': ["上升", "下降", "天頂", "天底"],
+        '命運與潛意識': ["北交", "南交", "宿命", "福點", "莉莉絲"],
+        '小行星': ["凱龍", "穀神", "智神", "婚神", "灶神", "愛神", "靈神", "人龍"]
+    };
     const container = document.getElementById('optionalPlanetsContainer');
     container.innerHTML = ''; // 清空
 
@@ -1315,33 +1314,33 @@ if (toggleHeader && optionalPlanetsContainer && toggleIcon && toggleAllPlanetsBt
 
             
 
-//             // toggle 小行星/虛點選項內容
-//             document.addEventListener('DOMContentLoaded', () => {
-//     // 取得新的元素
-//     const toggleHeader = document.getElementById('toggleHeader');
-//     const toggleIcon = document.getElementById('toggleIcon');
-//     const toggleAllPlanetsBtn = document.getElementById('toggleAllPlanetsBtn');
-//     const optionalPlanetsContainer = document.getElementById('optionalPlanetsContainer');
+            // toggle 小行星/虛點選項內容
+            document.addEventListener('DOMContentLoaded', () => {
+    // 取得新的元素
+    const toggleHeader = document.getElementById('toggleHeader');
+    const toggleIcon = document.getElementById('toggleIcon');
+    const toggleAllPlanetsBtn = document.getElementById('toggleAllPlanetsBtn');
+    const optionalPlanetsContainer = document.getElementById('optionalPlanetsContainer');
 
-//     // 為標題新增點擊事件
-//     toggleHeader.addEventListener('click', () => {
-//         const isHidden = optionalPlanetsContainer.classList.contains('hidden');
+    // 為標題新增點擊事件
+    toggleHeader.addEventListener('click', () => {
+        const isHidden = optionalPlanetsContainer.classList.contains('hidden');
 
-//         if (isHidden) {
-//             // 展開時
-//             optionalPlanetsContainer.classList.remove('hidden');
-//             toggleAllPlanetsBtn.classList.remove('hidden');
-//             toggleIcon.classList.remove('rotate-0');
-//             toggleIcon.classList.add('rotate-90');
-//         } else {
-//             // 收合時
-//             optionalPlanetsContainer.classList.add('hidden');
-//             toggleAllPlanetsBtn.classList.add('hidden');
-//             toggleIcon.classList.remove('rotate-90');
-//             toggleIcon.classList.add('rotate-0');
-//         }
-//     });
-// });
+        if (isHidden) {
+            // 展開時
+            optionalPlanetsContainer.classList.remove('hidden');
+            toggleAllPlanetsBtn.classList.remove('hidden');
+            toggleIcon.classList.remove('rotate-0');
+            toggleIcon.classList.add('rotate-90');
+        } else {
+            // 收合時
+            optionalPlanetsContainer.classList.add('hidden');
+            toggleAllPlanetsBtn.classList.add('hidden');
+            toggleIcon.classList.remove('rotate-90');
+            toggleIcon.classList.add('rotate-0');
+        }
+    });
+});
 
 
             // 主要計算函式
@@ -1487,6 +1486,49 @@ if (toggleHeader && optionalPlanetsContainer && toggleIcon && toggleAllPlanetsBt
                 }
             }
 
+
+            // 生成兩種交互相位
+            function generateFullInterAspectsHTML(aspects, name1, name2) {
+    // 檢查數據是否存在
+    if (!aspects || aspects.length === 0) {
+        // 如果沒有相位，返回一個提示訊息
+        return `<div class="result-section-item">
+                    <div class="result-section-header">
+                        <h2>交互相位</h2>
+                        <div class="section-content">
+                            <p>雙方之間沒有偵測到交互相位。</p>
+                        </div>
+                    </div>
+                </div>`;
+    }
+
+    // 第一步：生成「${name1}的星體與${name2}的星體」的交互相位內容
+    const sectionsDataAtoB = generateInterAspectsSectionData(aspects, name1, name2);
+    const htmlAtoB = `
+        <div class="result-section-item">
+            ${createResultSection(`交互相位：${name1}的星體與${name2}的星體`, sectionsDataAtoB.table, sectionsDataAtoB.narrative, false, 'interaction-header-style')}
+        </div>`;
+
+    // 第二步：創建反轉的數據
+    const reversedAspects = aspects.map(a => ({
+        ...a, // 複製所有屬性
+        p1_name: a.p2_name, // 星體1變星體2
+        p2_name: a.p1_name, // 星體2變星體1
+        // 注意：這裡的 p1_pos 和 p2_pos 如果需要，也應對調
+        // 但因為 generateInterAspectsSectionData 函數沒有用到它們，所以可以省略
+    }));
+
+    // 第三步：生成「${name2}的星體與${name1}的星體」的交互相位內容
+    const sectionsDataBtoA = generateInterAspectsSectionData(reversedAspects, name2, name1);
+    const htmlBtoA = `
+        <div class="result-section-item">
+            ${createResultSection(`交互相位：${name2}的星體與${name1}的星體`, sectionsDataBtoA.table, sectionsDataBtoA.narrative, false, 'interaction-header-style')}
+        </div>`;
+
+    // 第四步：將兩個 HTML 區塊拼接起來
+    return htmlAtoB + htmlBtoA;
+}
+
             // =============================================================
             // 結果顯示與 HTML 生成
             // =============================================================
@@ -1570,13 +1612,33 @@ if (toggleHeader && optionalPlanetsContainer && toggleIcon && toggleAllPlanetsBt
                             titleHostIntoGuest
                         );
 
-                        // 3.3 交互相位
-                        // 先生成兩種格式的內容數據
-                        const interAspectsSectionsDataComparison = generateInterAspectsSectionData(data.inter_aspects, name1, name2);
-                        // 再將數據傳給 HTML 組裝函數 (注意：buildInterAspectsHTML 的簽名已調整)
-                        interactionHtmlComparison += buildInterAspectsHTML(interAspectsSectionsDataComparison, name1, name2);
+                        // // 3.3 交互相位
+                        // // 先生成兩種格式的內容數據
+                        // const interAspectsSectionsDataComparison = generateInterAspectsSectionData(data.inter_aspects, name1, name2);
+                        // // 再將數據傳給 HTML 組裝函數 (注意：buildInterAspectsHTML 的簽名已調整)
+                        // interactionHtmlComparison += buildInterAspectsHTML(interAspectsSectionsDataComparison, name1, name2);
 
-                        interactionHtmlComparison += `</div>`; // 關閉 sub-sections-container
+                        // interactionHtmlComparison += `</div>`; // 關閉 sub-sections-container
+
+
+                        // 3.3 交互相位 (改為雙向生成)
+
+// 步驟一：生成「${name1}的星體與${name2}的星體」的交互相位內容
+const sectionsDataAtoB = generateInterAspectsSectionData(data.inter_aspects, name1, name2);
+
+// 步驟二：創建反轉的數據，用來生成另一方向的內容
+const reversedAspects = data.inter_aspects.map(a => ({
+    ...a, // 複製所有屬性
+    p1_name: a.p2_name, // 星體1變星體2
+    p2_name: a.p1_name, // 星體2變星體1
+}));
+
+// 步驟三：生成「${name2}的星體與${name1}的星體」的交互相位內容
+const sectionsDataBtoA = generateInterAspectsSectionData(reversedAspects, name2, name1);
+
+// 步驟四：將兩個方向的數據傳入一個新的 HTML 組裝函數，一次生成兩個區塊
+// 這裡假設你已經根據我之前的教學，將 buildInterAspectsHTML 函數改寫成可以處理兩個方向的數據。
+interactionHtmlComparison += buildInterAspectsHTML(sectionsDataAtoB, sectionsDataBtoA, name1, name2);
 
                         // 4. 組裝最終的報告 HTML
                         reportHtmlContent = createReportWrapper(`${name1}與${name2}的比較盤報告`, natal1Html + natal2Html + interactionHtmlComparison);
@@ -1855,14 +1917,13 @@ if (toggleHeader && optionalPlanetsContainer && toggleIcon && toggleAllPlanetsBt
 
                 return `
         <div class="chart-wrapper">
-            <div class="chart-main-header flex justify-between items-center w-full ${headerStyleClass}">
+            <div class="chart-main-header flex items-center justify-between${headerStyleClass}">
                 <h2 class="main-title">${title}</h2>
-                <div class="flex gap-4">
-                    <button class="copy-chart-btn">複製此盤</button>
-                    <button class="download-chart-btn">下載此盤</button>
+                <div class="flex gap-2">
+                <button class="copy-chart-btn">複製此盤</button>
+                <button class="download-chart-btn">下載此盤</button>
                 </div>
             </div>
-
 
             <div class="summary-section-container">
                 <div class="result-section-item">
@@ -1889,9 +1950,8 @@ if (toggleHeader && optionalPlanetsContainer && toggleIcon && toggleAllPlanetsBt
             // 新增的輔助函數：生成交互相位部分的數據（表格和敘述兩種格式）
             function generateInterAspectsSectionData(aspects, name1, name2, isTransit = false) {
                 const sectionData = { table: '', narrative: '' };
-                const titlePrefix = isTransit ? `${name1}與${name2}` : `主要`;
-                const sectionTitle = `${titlePrefix}相位`; // 用於內部文本標題
-
+                // 修改後的標題，更具體地指出方向
+                const sectionTitle = isTransit ? `${name1}與${name2}` : `${name1}與${name2}`;
                 if (!aspects?.length) {
                     sectionData.table = "沒有相位";
                     sectionData.narrative = `雙方之間沒有偵測到${titlePrefix}交互相位。`;
@@ -1901,7 +1961,7 @@ if (toggleHeader && optionalPlanetsContainer && toggleIcon && toggleAllPlanetsBt
                 // --- 表格內容生成 ---
                 const tableLines = [
                     // `==== ${sectionTitle} ====`,
-                    `\n==== 交互相位 ====\n`,
+                    `\n==== 交互相位：${name1}的星體與${name2}的星體 ====\n`,
                     `${name1}星體 | 相位 | ${name2}星體 | 動態 | 容許度`,
                     "-----------------------------", // 表格分隔線
                     ...aspects.sort((a, b) => DISPLAY_ORDER_NAMES.indexOf(a.p1_name) - DISPLAY_ORDER_NAMES.indexOf(b.p1_name) || DISPLAY_ORDER_NAMES.indexOf(a.p2_name) - DISPLAY_ORDER_NAMES.indexOf(b.p2_name)).map(a =>
@@ -1915,7 +1975,7 @@ if (toggleHeader && optionalPlanetsContainer && toggleIcon && toggleAllPlanetsBt
                 const narrativeLines = [
                     // "====================",
                     // `${sectionTitle}`,
-                    `\n==== 交互相位 ====\n`,
+                    `\n==== 交互相位：${name1}的星體與${name2}的星體 ====\n`,
                     // "--------------------\n" // 【核心修正 2】: 加上換行符，讓分隔線與內容之間多一個空行，更美觀
                 ];
                 // 假設 planet_positions 在這裡是可以訪問的全局或通過參數傳入，用於獲取更多詳細信息
@@ -1945,6 +2005,8 @@ if (toggleHeader && optionalPlanetsContainer && toggleIcon && toggleAllPlanetsBt
             ${createResultSection(title, sectionsData.table, sectionsData.narrative, false, 'interaction-header-style')}
         </div>`;
             }
+
+            
             // 新增的輔助函數：生成行星落宮部分的數據（表格和敘述兩種格式）
             function generateOverlaySectionData(overlayData, guestName, hostName, title) {
                 const sectionData = { table: '', narrative: '' };
@@ -2030,12 +2092,12 @@ if (toggleHeader && optionalPlanetsContainer && toggleIcon && toggleAllPlanetsBt
             // 這是一個全新的函式，請將它新增到 script 中
             function createReportWrapper(title, content) {
                 return `<div class="report-wrapper">
-                <div class="report-main-header flex flex-col justify-between h-full">
-                  <h2>${title}</h2>
-                  <div class="flex flex-col gap-2">
-                    <button class="copy-report-btn">複製完整報告</button>
-                    <button class="download-report-btn">下載完整報告</button>
-                  </div>
+                <div class="report-main-header flex items-center justify-between">
+                      <h2 class="main-title">${title}</h2>
+                      <div class="flex gap-2">
+                          <button class="copy-report-btn">複製完整報告</button>
+                          <button class="download-report-btn">下載完整報告</button>
+                       </div>
                 </div>
                 ${content}
             </div>`;
