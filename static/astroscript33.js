@@ -2032,7 +2032,7 @@ if (toggleHeader && optionalPlanetsContainer && toggleIcon && toggleAllPlanetsBt
                 return `<div class="report-wrapper">
                 <div class="report-main-header flex flex-col justify-between h-full">
                   <h2>${title}</h2>
-                  <div class="flex flex-col gap-2">
+                  <div class="flex flex-col gap-2 justify-evenly">
                     <button class="copy-report-btn">複製完整報告</button>
                     <button class="download-report-btn">下載完整報告</button>
                   </div>
