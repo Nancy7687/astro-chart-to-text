@@ -19,6 +19,24 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='astrostyle-ub.css') }}">
     <!-- 4. 引入.TailwindCSS output.css -->
     <link rel="stylesheet" href="../dist/output.css">
+    <meta property="og:title" content="問星 Ask Star" />
+    
+    <meta property="og:image" content="https://astro-chart-to-text-simple.onrender.com/static/pexels-maksud-2470308-4090111.jpg
+
+" />
+    
+    <meta property="og:url" content="https://astro-chart-to-text-simple.onrender.com/" />
+    
+    <meta property="og:description" content=" 結合古老占星智慧與現代AI科技，
+                為您提供客製個人化的星盤解析與人生指引。為了讓您更方便的使用 AI 聊天詢問占星，
+                此網站提供 AI 占星所需的星盤文字資料，
+                以及向 AI 諮詢占星的提問建議。" />
+    
+    <meta property="og:type" content="website" />
+    
+    <meta property="og:site_name" content="問星 Ask Star" />
+    
+    <meta property="og:locale" content="zh_TW" />
 </head>
 
     <body class="bg-single leading-loose tracking-widest md:tracking-normal md:leading-normal">
@@ -56,19 +74,20 @@
             py-2 
             rounded-full 
             
-            
-            bg-[linear-gradient(135deg,#84cc16,#f87171)]
+            bg-gradient-to-r from-emerald-400 to-cyan-500
             
             transition-all 
             duration-300
             ">
+            <!-- bg-gradient-to-r from-teal-400 to-green-500 -->
+            <!-- bg-[linear-gradient(135deg,#84cc16,#f87171)] -->
             <!-- bg-[linear-gradient(135deg,#0891b2,#34d399)] -->
       <!-- py-2 text-[#ffedd5] font-bold text-3xl hover:text-[#38bdf8] transition-colors duration-300"> -->
         <!-- 📝 星盤資料生成 -->
         星盤文字資料生成
       </a>
     </li>
-    <hr class="border-gray-400">
+    <!-- <hr class="border-gray-400"> -->
 
     <li>
       <a href="#" onclick="showSection('start-reading')" class="
@@ -81,23 +100,25 @@
                          
             bg-[linear-gradient(135deg,#fef08a,#f87171)]
             
+            
             transition-all 
             duration-300
             ">
+            <!-- bg-gradient-to-r from-amber-400 to-orange-500 -->
             <!-- bg-[linear-gradient(135deg,#fef08a,#f9a8d4)] -->
         <!-- 🌟 AI 占星引導 -->
          AI 占星引導
       </a>
     </li>
     
-    <hr class="border-gray-400">
+    <!-- <hr class="border-gray-400"> -->
 
     <li>
       <a href="#" class="py-2 text-[#F0F0F0] font-bold text-xl hover:text-yellow-400 transition-colors duration-300">    
-          <i class="fa-solid fa-star-of-david text-zinc-400 text-3xl text-center"></i>
+          <i class="fa-solid fa-star-of-david text-[#fef7c3] text-3xl text-center"></i>
       </a>
       </li>
-      <hr class="border-gray-400">
+      <!-- <hr class="border-gray-400"> -->
   </ul>
 </nav>
                
@@ -112,9 +133,11 @@
                          px-10 
                          py-2 
                          rounded-full 
-                         
-                         hover:bg-[linear-gradient(135deg,#84cc16,#f9a8d4)]
                          hover:text-[#422006]
+                         
+                         bg-[linear-gradient(135deg,#84cc16,#00cadc)]
+                         hover:bg-[linear-gradient(135deg,#84cc16,#cdfeff)]
+
                          
                          transition-all 
                          duration-300">
@@ -133,9 +156,11 @@
                          px-10 
                          py-2 
                          rounded-full 
-                         
+                         bg-[linear-gradient(135deg,#fde747,#ec48a1)]
                          hover:bg-[linear-gradient(135deg,#fef08a,#f9a8d4)]
                          hover:text-[#422006]
+
+                         ml-10
                          
                          transition-all 
                          duration-300">
@@ -175,7 +200,7 @@
         
             <p class="text-base md:text-xl text-gray-500 max-w-2xl mx-auto mt-8">
                 結合古老占星智慧與現代AI科技，<br>
-                為您提供精準個人化的星盤解析與人生指引
+                為您提供客製個人化的星盤解析與人生指引
             </p>
             <p class="text-sm md:text-base text-gray-500 max-w-2xl mx-auto mt-8">
                 （ 此網站皆採用現代占星常用的<br>
@@ -527,7 +552,7 @@
                 <div id="planetSelection" class="my-6 p-4 border border-gray-200 rounded-lg bg-gray-50">
     <!-- 開合的觸發區域 -->
     <div id="toggleHeader" class="flex justify-between items-center mb-3 cursor-pointer">
-        <h3 class="text-xl md:text-2xl font-bold text-gray-700">顯示選項
+        <h3 class="text-xl md:text-2xl font-bold text-gray-700">運算選項
             (小行星/虛點)</h3>
         <div class="flex flex-col items-end space-y-2">
             <span id="toggleIcon" class="transition-transform duration-300 transform rotate-0">
@@ -542,7 +567,7 @@
     <!-- 【關鍵修改】將「全部取消」按鈕移到這裡 -->
     <!-- 【修改部分】用一個 flex 容器讓按鈕靠右 -->
     <div class="flex justify-end">
-        <button id="toggleAllPlanetsBtn" class="planet-toggle-btn all-toggle-btn text-base font-bold text-purple-800 hover:text-purple-800 hidden mb-3">全部取消</button>
+        <button id="toggleAllPlanetsBtn" class="planet-toggle-btn all-toggle-btn text-lg font-bold text-purple-800 hover:text-purple-800 hidden mb-3">全部取消</button>
     </div>
     <!-- 選項容器 -->
     <div id="optionalPlanetsContainer"
@@ -804,7 +829,7 @@
                 <div class="text-left text-white-400 text-lg leading-loose mb-12">
                     希望 AI 的分析更全面、更貼合您的複雜情況？
                     試試以下這些進階引導句，幫助 AI 綜合考量星盤細節，避免單點解讀的偏差。
-                    <p class="font-bold text-2xl mt-14 mb-4 underline decoration-[#a855f7]">基礎設定 (穩定回答細膩程度)：</p>
+                    <p class="font-bold text-2xl mt-20 mb-4 underline decoration-[#a855f7]">基礎設定 (穩定回答細膩程度)：</p>
                     <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
                         <p class="text-gray-300">請根據我的星盤，以生活化、貼切、易懂且精確真實的方式解讀。</p>
                         <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
@@ -822,7 +847,7 @@
                         <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
                     </div>
     
-                    <p class="font-bold text-2xl mt-14 mb-4 underline decoration-[#a855f7]">指定分析範圍 (選擇性，越具體越好)：</p>
+                    <p class="font-bold text-2xl mt-20 mb-4 underline decoration-[#a855f7]">指定分析範圍 (選擇性，越具體越好)：</p>
                     <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg">
                         <p class="text-gray-300">請深入分析我的事業發展。</p>
                         <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
@@ -833,9 +858,9 @@
                         <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
                     </div>
     
-                    <p class="font-bold text-2xl mt-14 mb-4 underline decoration-[#a855f7]">加強深度（選擇性）：</p>
+                    <p class="font-bold text-2xl mt-20 mb-4 underline decoration-[#a855f7]">加強深度（選擇性）：</p>
                     <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
-                        <p class="text-gray-300">請將飛星的影響也納入考量。</p>
+                        <p class="text-gray-300">請將每個宮位飛星的影響也納入考量。</p>
                         <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
                     </div>
                     <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
@@ -848,7 +873,7 @@
                     </div> -->
                    
     
-                    <p class="font-bold text-2xl mt-14 mb-4 underline decoration-[#a855f7]">額外要求 (依需求加入)：</p>
+                    <p class="font-bold text-2xl mt-20 mb-4 underline decoration-[#a855f7]">額外要求 (依需求加入)：</p>
                     <div class="prompt-item flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-4">
                         <p class="text-gray-300">請客觀真實地為我分析。</p>
                         <button class="copy-prompt-btn btn-primary text-sm px-3 py-1">複製</button>
