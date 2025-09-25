@@ -780,6 +780,8 @@
             // 全域設定與常數
             // =============================================================
             const BASE_API_URL = 'https://astro-chart-to-text.onrender.com/'; // 相對路徑，適用於前後端同源部署
+            // 【修改】動態判斷 API URL，確保本地和線上都正確
+            const BASE_API_URL = window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost' ? 'http://127.0.0.1:5001' : 'https://astro-chart-to-text-simple.onrender.com';
             const YOUR_API_KEY = window.FRONTEND_ASTRO_API_KEY || "local_dev_key";
             const HOUSE_DEFINING_POINTS = ['上升', '下降', '天頂', '天底'];
             const DISPLAY_ORDER_NAMES = [
